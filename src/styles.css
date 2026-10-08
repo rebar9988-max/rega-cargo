@@ -1,4 +1,9 @@
 @import "tailwindcss";
+/* Self-hosted (OFL-1.1) instead of fonts.googleapis.com: no render-blocking
+   third-party stylesheet and no visitor IPs sent to Google. Variable fonts,
+   split by unicode-range so only the scripts a page uses are downloaded. */
+@import "@fontsource-variable/outfit/wght.css";
+@import "@fontsource-variable/noto-sans-arabic/wght.css";
 
 @theme {
   --color-paper: #f6f5f3;
@@ -9,8 +14,8 @@
   --color-pine: #e10600;
   --color-pine-ink: #ffffff;
   --color-clay: #8a1c1c;
-  --font-sans: "Outfit", "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
-  --font-ar: "Noto Sans Arabic", "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Outfit Variable", "Noto Sans Arabic Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-ar: "Noto Sans Arabic Variable", "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
