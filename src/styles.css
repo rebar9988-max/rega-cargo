@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #ffffff;
+  --color-paper: #f6f5f3;
   --color-surface: #ffffff;
-  --color-ink: #161616;
-  --color-muted: #5e5e5e;
-  --color-line: #e6e6e6;
-  --color-pine: #db0100;
+  --color-ink: #111111;
+  --color-muted: #6b6b6b;
+  --color-line: #eceae6;
+  --color-pine: #e10600;
   --color-pine-ink: #ffffff;
   --color-clay: #8a1c1c;
   --font-sans: "Outfit", "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
@@ -37,6 +37,35 @@
     font-family: var(--font-ar);
   }
 
+  /* Language changes the text direction only. The chrome stays put. */
+  html[data-textdir="rtl"] :where(h1, h2, h3, h4, p, blockquote, figcaption, summary) {
+    direction: rtl;
+  }
+
+  html[data-textdir="rtl"] label {
+    direction: rtl;
+  }
+
+  html[data-textdir="rtl"] li:not(.flex):not(.grid) {
+    direction: rtl;
+  }
+
+  html[data-textdir="rtl"] li.flex > p,
+  html[data-textdir="rtl"] li.flex > span:last-child {
+    direction: rtl;
+    min-width: 0;
+  }
+
+  html[data-textdir="rtl"] :where(input, textarea, select):not([dir="ltr"]) {
+    direction: rtl;
+    text-align: right;
+  }
+
+  html[data-textdir="rtl"] :where([dir="ltr"], bdi) {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
   ::selection {
     background: var(--color-pine);
     color: var(--color-pine-ink);
@@ -58,7 +87,7 @@
 
 @layer components {
   .ticket {
-    box-shadow: 0 22px 50px -32px rgb(22 22 22 / 0.28);
+    box-shadow: 0 18px 40px -28px rgb(28 28 28 / 0.28);
   }
 }
 

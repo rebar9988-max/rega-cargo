@@ -1,12 +1,8 @@
-node_modules/
-dist/
-.output/
-.vercel/
-.nitro/
+node_modules
+dist
+.output
+.nitro
+.vinxi
 .env
 .env.*
-!.env.example
-.grok/
-screenshots/
 *.log
-.DS_Store

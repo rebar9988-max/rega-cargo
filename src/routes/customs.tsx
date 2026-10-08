@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/customs")({
   head: () => ({
-    meta: [{ title: "گومرگ · Rega Cargo" }],
+    meta: [{ title: "گومرگ · R&L" }],
   }),
   component: CustomsPage,
 });

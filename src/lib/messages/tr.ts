@@ -4,10 +4,10 @@ export const tr = {
   skip: "İçeriğe geç",
   menuOpen: "Menüyü aç",
   menuClose: "Menüyü kapat",
-  brandSub: "Kargo",
-  nav: { home: "Başlangıç", quote: "Fiyat", track: "Takip", customs: "Gümrük", contact: "İletişim" },
-  footerBlurb: "Rega Kürtçede yol demek. Biz bir yol işletiyoruz: Avrupa’dan Kürdistan’a.",
-  footerNote: "© 2026 Rega Cargo. Bu sayfadaki fiyatlar plan içindir ve toplamadan önce onaylanır.",
+  brandSub: "MOVE SMART. DELIVER FAST.",
+  nav: { home: "Başlangıç", quote: "Fiyat", track: "Takip", customs: "Gümrük", stores: "Pazar", market: "Kıyas", move: "Taşıma", contact: "İletişim" },
+  footerBlurb: "Tek koridor. Avrupa, Kürdistan ve Irak.",
+  footerNote: "© 2026 R&L. Bu sayfadaki fiyatlar plan içindir ve toplamadan önce onaylanır.",
   hubsTitle: "Masalar",
   hubs: [
     { name: "Erbil kapısı", detail: "Kürdistan Bölgesi" },
@@ -23,7 +23,7 @@ export const tr = {
   hero: {
     kicker: "Avrupa — Kürdistan",
     title: "Avrupa’daki bir kapıdan Kürt kapısına.",
-    lede: "Rega koli ve ticari yükü tek koridorda taşır. Hesaplanan ağırlığı, euro ve dinarı ve her taramayı — bir şey yola çıkmadan görürsünüz.",
+    lede: "R&L koli ve ticari yükü tek koridorda taşır. Hesaplanan ağırlığı, euro ve dinarı ve her taramayı — bir şey yola çıkmadan görürsünüz.",
     fullQuote: "Gerçek kutunun fiyatı",
     track: "Bir örneği izle",
   },
@@ -43,7 +43,7 @@ export const tr = {
   ],
   gapKicker: "Eksik olan",
   gapTitle: "Koridor ya bir dükkândı ya bir broşür.",
-  gapLede: "Alışveriş uygulamaları malı satar. Broşür firmaları bir telefon satar. Rega hareketin kendisini satar, sayı sayfadadır.",
+  gapLede: "Alışveriş uygulamaları malı satar. Broşür firmaları bir telefon satar. R&L hareketin kendisini satar, sayı sayfadadır.",
   columns: [
     {
       title: "Alışveriş uygulamaları",
@@ -54,7 +54,7 @@ export const tr = {
       items: ["«Fiyat iste», sonra bekle", "Takip demek ofisi aramak", "Kürtçe bir bayrak, ürünün kendisi değil"],
     },
     {
-      title: "Rega",
+      title: "R&L",
       items: [
         "Euro ve dinar aynı ekranda",
         "Hesaplanan ağırlık açıklanır, gizlenmez",
@@ -97,7 +97,7 @@ export const tr = {
   faq: [
     {
       q: "Malı benim için alıyor musunuz?",
-      a: "Hayır. Alışveriş uygulamaları bunu yapar ve nakliyeyle karıştırır. Rega sizin aldığınızı ya da şirketinizin yükünü taşır.",
+      a: "Hayır. Alışveriş uygulamaları bunu yapar ve nakliyeyle karıştırır. R&L sizin aldığınızı ya da şirketinizin yükünü taşır.",
     },
     {
       q: "Fiyat neden terazideki kilodan yüksek?",

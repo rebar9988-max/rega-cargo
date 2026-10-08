@@ -10,14 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CustomsRouteImport } from './routes/customs'
+import { Route as MarketRouteImport } from './routes/market'
+import { Route as MoveRouteImport } from './routes/move'
 import { Route as QuoteRouteImport } from './routes/quote'
+import { Route as StoresRouteImport } from './routes/stores'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as MarketIndexRouteImport } from './routes/market.index'
+import { Route as MarketSlugRouteImport } from './routes/market.$slug'
+import { Route as MarketSellRouteImport } from './routes/market.sell'
+import { Route as StoresIndexRouteImport } from './routes/stores.index'
+import { Route as StoresRequestRouteImport } from './routes/stores.request'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -30,9 +44,24 @@ const CustomsRoute = CustomsRouteImport.update({
   path: '/customs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketRoute = MarketRouteImport.update({
+  id: '/market',
+  path: '/market',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoveRoute = MoveRouteImport.update({
+  id: '/move',
+  path: '/move',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuoteRoute = QuoteRouteImport.update({
   id: '/quote',
   path: '/quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoresRoute = StoresRouteImport.update({
+  id: '/stores',
+  path: '/stores',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackRoute = TrackRouteImport.update({
@@ -40,42 +69,137 @@ const TrackRoute = TrackRouteImport.update({
   path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketIndexRoute = MarketIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MarketRoute,
+} as any)
+const MarketSlugRoute = MarketSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => MarketRoute,
+} as any)
+const MarketSellRoute = MarketSellRouteImport.update({
+  id: '/sell',
+  path: '/sell',
+  getParentRoute: () => MarketRoute,
+} as any)
+const StoresIndexRoute = StoresIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StoresRoute,
+} as any)
+const StoresRequestRoute = StoresRequestRouteImport.update({
+  id: '/request',
+  path: '/request',
+  getParentRoute: () => StoresRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/market': typeof MarketRouteWithChildren
+  '/move': typeof MoveRoute
   '/quote': typeof QuoteRoute
+  '/stores': typeof StoresRouteWithChildren
   '/track': typeof TrackRoute
+  '/market/$slug': typeof MarketSlugRoute
+  '/market/sell': typeof MarketSellRoute
+  '/stores/request': typeof StoresRequestRoute
+  '/market/': typeof MarketIndexRoute
+  '/stores/': typeof StoresIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/move': typeof MoveRoute
   '/quote': typeof QuoteRoute
   '/track': typeof TrackRoute
+  '/market/$slug': typeof MarketSlugRoute
+  '/market/sell': typeof MarketSellRoute
+  '/stores/request': typeof StoresRequestRoute
+  '/market': typeof MarketIndexRoute
+  '/stores': typeof StoresIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/market': typeof MarketRouteWithChildren
+  '/move': typeof MoveRoute
   '/quote': typeof QuoteRoute
+  '/stores': typeof StoresRouteWithChildren
   '/track': typeof TrackRoute
+  '/market/$slug': typeof MarketSlugRoute
+  '/market/sell': typeof MarketSellRoute
+  '/stores/request': typeof StoresRequestRoute
+  '/market/': typeof MarketIndexRoute
+  '/stores/': typeof StoresIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contact' | '/customs' | '/quote' | '/track'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/contact'
+    | '/customs'
+    | '/market'
+    | '/move'
+    | '/quote'
+    | '/stores'
+    | '/track'
+    | '/market/$slug'
+    | '/market/sell'
+    | '/stores/request'
+    | '/market/'
+    | '/stores/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/customs' | '/quote' | '/track'
-  id: '__root__' | '/' | '/contact' | '/customs' | '/quote' | '/track'
+  to:
+    | '/'
+    | '/admin'
+    | '/contact'
+    | '/customs'
+    | '/move'
+    | '/quote'
+    | '/track'
+    | '/market/$slug'
+    | '/market/sell'
+    | '/stores/request'
+    | '/market'
+    | '/stores'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/contact'
+    | '/customs'
+    | '/market'
+    | '/move'
+    | '/quote'
+    | '/stores'
+    | '/track'
+    | '/market/$slug'
+    | '/market/sell'
+    | '/stores/request'
+    | '/market/'
+    | '/stores/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   ContactRoute: typeof ContactRoute
   CustomsRoute: typeof CustomsRoute
+  MarketRoute: typeof MarketRouteWithChildren
+  MoveRoute: typeof MoveRoute
   QuoteRoute: typeof QuoteRoute
+  StoresRoute: typeof StoresRouteWithChildren
   TrackRoute: typeof TrackRoute
 }
 
@@ -86,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -102,11 +233,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/market': {
+      id: '/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof MarketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/move': {
+      id: '/move'
+      path: '/move'
+      fullPath: '/move'
+      preLoaderRoute: typeof MoveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quote': {
       id: '/quote'
       path: '/quote'
       fullPath: '/quote'
       preLoaderRoute: typeof QuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stores': {
+      id: '/stores'
+      path: '/stores'
+      fullPath: '/stores'
+      preLoaderRoute: typeof StoresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track': {
@@ -116,14 +268,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/market/': {
+      id: '/market/'
+      path: '/'
+      fullPath: '/market/'
+      preLoaderRoute: typeof MarketIndexRouteImport
+      parentRoute: typeof MarketRoute
+    }
+    '/market/$slug': {
+      id: '/market/$slug'
+      path: '/$slug'
+      fullPath: '/market/$slug'
+      preLoaderRoute: typeof MarketSlugRouteImport
+      parentRoute: typeof MarketRoute
+    }
+    '/market/sell': {
+      id: '/market/sell'
+      path: '/sell'
+      fullPath: '/market/sell'
+      preLoaderRoute: typeof MarketSellRouteImport
+      parentRoute: typeof MarketRoute
+    }
+    '/stores/': {
+      id: '/stores/'
+      path: '/'
+      fullPath: '/stores/'
+      preLoaderRoute: typeof StoresIndexRouteImport
+      parentRoute: typeof StoresRoute
+    }
+    '/stores/request': {
+      id: '/stores/request'
+      path: '/request'
+      fullPath: '/stores/request'
+      preLoaderRoute: typeof StoresRequestRouteImport
+      parentRoute: typeof StoresRoute
+    }
   }
 }
 
+interface MarketRouteChildren {
+  MarketSlugRoute: typeof MarketSlugRoute
+  MarketSellRoute: typeof MarketSellRoute
+  MarketIndexRoute: typeof MarketIndexRoute
+}
+
+const MarketRouteChildren: MarketRouteChildren = {
+  MarketSlugRoute: MarketSlugRoute,
+  MarketSellRoute: MarketSellRoute,
+  MarketIndexRoute: MarketIndexRoute,
+}
+
+const MarketRouteWithChildren =
+  MarketRoute._addFileChildren(MarketRouteChildren)
+
+interface StoresRouteChildren {
+  StoresRequestRoute: typeof StoresRequestRoute
+  StoresIndexRoute: typeof StoresIndexRoute
+}
+
+const StoresRouteChildren: StoresRouteChildren = {
+  StoresRequestRoute: StoresRequestRoute,
+  StoresIndexRoute: StoresIndexRoute,
+}
+
+const StoresRouteWithChildren =
+  StoresRoute._addFileChildren(StoresRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   ContactRoute: ContactRoute,
   CustomsRoute: CustomsRoute,
+  MarketRoute: MarketRouteWithChildren,
+  MoveRoute: MoveRoute,
   QuoteRoute: QuoteRoute,
+  StoresRoute: StoresRouteWithChildren,
   TrackRoute: TrackRoute,
 }
 export const routeTree = rootRouteImport

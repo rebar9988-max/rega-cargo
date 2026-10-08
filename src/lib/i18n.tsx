@@ -12,10 +12,10 @@ const en = {
   skip: "Skip to content",
   menuOpen: "Open menu",
   menuClose: "Close menu",
-  brandSub: "Cargo",
-  nav: { home: "Home", quote: "Price", track: "Track", customs: "Customs", contact: "Contact" },
-  footerBlurb: "Rega is the Kurdish word for the road. We run one of them: Europe to Kurdistan.",
-  footerNote: "© 2026 Rega Cargo. Rates on this page are planning figures, confirmed before collection.",
+  brandSub: "MOVE SMART. DELIVER FAST.",
+  nav: { home: "Home", quote: "Price", track: "Track", customs: "Customs", stores: "Bazaar", market: "Compare", move: "Move", contact: "Contact" },
+  footerBlurb: "One corridor. Europe, Kurdistan, and Iraq.",
+  footerNote: "© 2026 R&L. Rates on this page are planning figures, confirmed before collection.",
   hubsTitle: "Desks",
   hubs: [
     { name: "Erbil gateway", detail: "Kurdistan Region" },
@@ -29,9 +29,9 @@ const en = {
     "London · Mon–Fri · 09:00–17:00",
   ],
   hero: {
-    kicker: "Europe — Kurdistan",
+    kicker: "EUROPE ↔ KURDISTAN ↔ IRAQ",
     title: "From a European door to a Kurdish one.",
-    lede: "Rega moves parcels and commercial cargo on a single corridor. You see the chargeable weight, the euro and the dinar, and every scan — before anything leaves.",
+    lede: "R&L moves parcels and commercial cargo on a single corridor. You see the chargeable weight, the euro and the dinar, and every scan — before anything leaves.",
     fullQuote: "Price the real box",
     track: "Track a sample",
   },
@@ -51,7 +51,7 @@ const en = {
   ],
   gapKicker: "The missing piece",
   gapTitle: "The corridor was either a shop, or a brochure.",
-  gapLede: "Shopping apps sell the product. Brochure forwarders sell a phone call. Rega sells the movement, with the number on the page.",
+  gapLede: "Shopping apps sell the product. Brochure forwarders sell a phone call. R&L sells the movement, with the number on the page.",
   columns: [
     {
       title: "Shopping apps",
@@ -62,7 +62,7 @@ const en = {
       items: ["“Request a quote”, then a wait", "Tracking means calling the office", "Kurdish is a flag, not the product"],
     },
     {
-      title: "Rega",
+      title: "R&L",
       items: [
         "Euro and dinar on the same screen",
         "Chargeable weight explained, not buried",
@@ -105,7 +105,7 @@ const en = {
   faq: [
     {
       q: "Do you buy the goods for me?",
-      a: "No. Shopping apps already do that, mixed in with the freight. Rega collects what you bought, or your company’s cargo, and moves it.",
+      a: "No. Shopping apps already do that, mixed in with the freight. R&L collects what you bought, or your company’s cargo, and moves it.",
     },
     {
       q: "Why is the price higher than the kilos on my scale?",
@@ -246,10 +246,10 @@ const ckb = {
   skip: "بازدان بۆ ناوەڕۆک",
   menuOpen: "کردنەوەی مێنیو",
   menuClose: "داخستنی مێنیو",
-  brandSub: "ڕێگا کارگۆ",
-  nav: { home: "سەرەتا", quote: "نرخ", track: "شوێنپێکردن", customs: "گومرگ", contact: "پەیوەندی" },
-  footerBlurb: "ڕێگا واتە ڕێگاکە. ئێمە یەکێکیان دەبەین: لە ئەوروپاوە بۆ کوردستان.",
-  footerNote: "© 2026 ڕێگا کارگۆ. نرخەکانی ئەم پەڕەیە بۆ پلاندانانن و پێش کۆکردنەوە پشتڕاست دەکرێنەوە.",
+  brandSub: "MOVE SMART. DELIVER FAST.",
+  nav: { home: "سەرەتا", quote: "نرخ", track: "شوێنپێکردن", customs: "گومرگ", stores: "بازاڕ", market: "بەراورد", move: "گەیاندن", contact: "پەیوەندی" },
+  footerBlurb: "یەک ڕێڕەو. ئەوروپا، کوردستان و عێراق.",
+  footerNote: "© 2026 R&L. نرخەکانی ئەم پەڕەیە بۆ پلاندانانن و پێش کۆکردنەوە پشتڕاست دەکرێنەوە.",
   hubsTitle: "مێزەکان",
   hubs: [
     { name: "دەروازەی هەولێر", detail: "هەرێمی کوردستان" },
@@ -263,9 +263,9 @@ const ckb = {
     "لەندەن · دووشەممە–هەینی · 09:00–17:00",
   ],
   hero: {
-    kicker: "ئەوروپا — کوردستان",
+    kicker: "EUROPE ↔ KURDISTAN ↔ IRAQ",
     title: "لە دەرگایەکی ئەوروپییەوە بۆ دەرگایەکی کوردی.",
-    lede: "ڕێگا پاکەت و باری بازرگانی لەسەر یەک ڕێڕەو دەگوازێتەوە. کێشی حیسابکراو، یۆرۆ و دینار، و هەر سکانێک دەبینیت — پێش ئەوەی هیچ شتێک بڕوات.",
+    lede: "R&L پاکەت و باری بازرگانی لەسەر یەک ڕێڕەو دەگوازێتەوە. کێشی حیسابکراو، یۆرۆ و دینار، و هەر سکانێک دەبینیت — پێش ئەوەی هیچ شتێک بڕوات.",
     fullQuote: "نرخی سندووقە ڕاستەقینەکە",
     track: "نموونەیەک شوێن بکە",
   },
@@ -285,7 +285,7 @@ const ckb = {
   ],
   gapKicker: "ئەوەی کەمە",
   gapTitle: "ڕێڕەوەکە یان فرۆشگا بوو، یان بروشور.",
-  gapLede: "ئەپەکانی کڕین کاڵا دەفرۆشن. کۆمپانیای بروشور پەیوەندییەک دەفرۆشێت. ڕێگا خودی جووڵەکە دەفرۆشێت، بە ژمارەکەوە لەسەر پەڕەکە.",
+  gapLede: "ئەپەکانی کڕین کاڵا دەفرۆشن. کۆمپانیای بروشور پەیوەندییەک دەفرۆشێت. R&L خودی جووڵەکە دەفرۆشێت، بە ژمارەکەوە لەسەر پەڕەکە.",
   columns: [
     {
       title: "ئەپەکانی کڕین",
@@ -296,7 +296,7 @@ const ckb = {
       items: ["«داوای نرخ»، پاشان چاوەڕوانی", "شوێنپێکردن واتە پەیوەندی بە ئۆفیس", "کوردی ئاڵایەکە، نەک خودی بەرهەمەکە"],
     },
     {
-      title: "ڕێگا",
+      title: "R&L",
       items: [
         "یۆرۆ و دینار لە یەک شاشە",
         "کێشی حیسابکراو ڕوون دەکرێتەوە، ناشاردرێتەوە",
@@ -339,7 +339,7 @@ const ckb = {
   faq: [
     {
       q: "ئایا کاڵاکەم بۆ دەکڕن؟",
-      a: "نەخێر. ئەپەکانی کڕین ئەو کارە دەکەن، بەڵام لەگەڵ گواستنەوە تێکەڵی دەکەن. ڕێگا ئەوە دەگوازێتەوە کە خۆت کڕیوتە، یان باری کۆمپانیاکەت.",
+      a: "نەخێر. ئەپەکانی کڕین ئەو کارە دەکەن، بەڵام لەگەڵ گواستنەوە تێکەڵی دەکەن. R&L ئەوە دەگوازێتەوە کە خۆت کڕیوتە، یان باری کۆمپانیاکەت.",
     },
     {
       q: "بۆچی نرخەکە لە کیلۆکانی تەرازوو بەرزترە؟",
@@ -504,7 +504,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const meta = langMeta(lang);
     document.documentElement.lang = meta.html;
-    document.documentElement.dir = meta.dir;
+    document.documentElement.dir = "ltr";
+    document.documentElement.dataset.textdir = meta.dir;
     if (ready) window.localStorage.setItem("rega-lang", lang);
   }, [lang, ready]);
 

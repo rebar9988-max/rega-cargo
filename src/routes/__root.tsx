@@ -9,16 +9,16 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ڕێگا کارگۆ · Rega Cargo" },
+      { title: "R&L · MOVE SMART. DELIVER FAST." },
       {
         name: "description",
         content:
-          "Rega Cargo — Europe to Kurdistan. Chargeable-weight prices in euro and dinar, hub records, and door delivery.",
+          "R&L — Move smart. Deliver fast. Europe, Kurdistan, and Iraq. Chargeable-weight prices in euro and dinar.",
       },
-      { name: "theme-color", content: "#db0100" },
+      { name: "theme-color", content: "#f4f4f4" },
     ],
     links: [
-      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "icon", type: "image/png", href: "/favicon.png?v=6" },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
@@ -31,7 +31,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: () => (
-    <html lang="ckb" dir="rtl" suppressHydrationWarning>
+    <html lang="ckb" dir="ltr" data-textdir="rtl" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

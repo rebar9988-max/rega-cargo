@@ -1,6 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HomePage } from "@/components/home-page";
+import { BazaarPage } from "@/components/bazaar-page";
 
 export const Route = createFileRoute("/")({
-  component: HomePage,
+  head: () => ({
+    meta: [
+      { title: "بازاڕ · R&L" },
+      { name: "description", content: "فرۆشگا فەرمییەکانی ئەوروپا. وێنەکان ببینە و داوا بکە. هیچ شتێک ناکڕدرێت تا نرخەکە پشتڕاست بکەیتەوە." },
+    ],
+  }),
+  component: BazaarPage,
 });

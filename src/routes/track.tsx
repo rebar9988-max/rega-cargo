@@ -12,7 +12,7 @@ export const Route = createFileRoute("/track")({
     id: typeof search.id === "string" && search.id ? search.id : undefined,
   }),
   head: () => ({
-    meta: [{ title: "شوێنپێکردن · Rega Cargo" }],
+    meta: [{ title: "شوێنپێکردن · R&L" }],
   }),
   component: TrackPage,
 });

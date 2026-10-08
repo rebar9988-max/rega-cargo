@@ -24,7 +24,7 @@ type RequestRow = {
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
-    meta: [{ title: "پەیوەندی · Rega Cargo" }],
+    meta: [{ title: "پەیوەندی · R&L" }],
   }),
   component: ContactPage,
 });

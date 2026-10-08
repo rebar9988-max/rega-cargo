@@ -4,10 +4,10 @@ export const de = {
   skip: "Zum Inhalt",
   menuOpen: "Menü öffnen",
   menuClose: "Menü schließen",
-  brandSub: "Cargo",
-  nav: { home: "Start", quote: "Preis", track: "Sendung", customs: "Zoll", contact: "Kontakt" },
-  footerBlurb: "Rega ist das kurdische Wort für den Weg. Wir fahren einen: von Europa nach Kurdistan.",
-  footerNote: "© 2026 Rega Cargo. Die Preise sind Planungswerte und werden vor der Abholung bestätigt.",
+  brandSub: "MOVE SMART. DELIVER FAST.",
+  nav: { home: "Start", quote: "Preis", track: "Sendung", customs: "Zoll", stores: "Basar", market: "Vergleich", move: "Transport", contact: "Kontakt" },
+  footerBlurb: "Ein Korridor. Europa, Kurdistan und Irak.",
+  footerNote: "© 2026 R&L. Die Preise sind Planungswerte und werden vor der Abholung bestätigt.",
   hubsTitle: "Schalter",
   hubs: [
     { name: "Gateway Erbil", detail: "Region Kurdistan" },
@@ -23,7 +23,7 @@ export const de = {
   hero: {
     kicker: "Europa — Kurdistan",
     title: "Von einer europäischen Tür zu einer kurdischen.",
-    lede: "Rega bewegt Pakete und Handelsfracht auf einem Korridor. Verrechnungsgewicht, Euro und Dinar, jeder Scan — bevor etwas losfährt.",
+    lede: "R&L bewegt Pakete und Handelsfracht auf einem Korridor. Verrechnungsgewicht, Euro und Dinar, jeder Scan — bevor etwas losfährt.",
     fullQuote: "Den echten Karton rechnen",
     track: "Eine Probe verfolgen",
   },
@@ -43,7 +43,7 @@ export const de = {
   ],
   gapKicker: "Was fehlte",
   gapTitle: "Der Korridor war entweder ein Shop oder eine Broschüre.",
-  gapLede: "Shopping-Apps verkaufen die Ware. Broschüren-Spediteure verkaufen einen Anruf. Rega verkauft die Bewegung, mit der Zahl auf der Seite.",
+  gapLede: "Shopping-Apps verkaufen die Ware. Broschüren-Spediteure verkaufen einen Anruf. R&L verkauft die Bewegung, mit der Zahl auf der Seite.",
   columns: [
     {
       title: "Shopping-Apps",
@@ -54,7 +54,7 @@ export const de = {
       items: ["«Angebot anfragen», dann warten", "Tracking heißt: im Büro anrufen", "Kurdisch ist eine Fahne, nicht das Produkt"],
     },
     {
-      title: "Rega",
+      title: "R&L",
       items: [
         "Euro und Dinar auf einem Bildschirm",
         "Verrechnungsgewicht erklärt, nicht versteckt",
@@ -97,7 +97,7 @@ export const de = {
   faq: [
     {
       q: "Kaufen Sie die Ware für mich?",
-      a: "Nein. Shopping-Apps tun das und vermischen es mit der Fracht. Rega bewegt, was Sie gekauft haben, oder die Fracht Ihrer Firma.",
+      a: "Nein. Shopping-Apps tun das und vermischen es mit der Fracht. R&L bewegt, was Sie gekauft haben, oder die Fracht Ihrer Firma.",
     },
     {
       q: "Warum ist der Preis höher als die Kilos auf der Waage?",

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { QuotePanel } from "@/components/quote-panel";
-import { Eur } from "@/components/field";
+import { Eur, btnGhost, btnPrimary } from "@/components/field";
 import { Shell } from "@/components/shell";
 import {
   DESTS,
@@ -45,27 +45,24 @@ export function HomePage() {
 
   return (
     <Shell>
-      <section className="bg-pine text-pine-ink">
-        <div className="mx-auto grid max-w-6xl items-start gap-10 px-5 py-12 md:grid-cols-2 md:gap-12 md:py-16">
+      <section className="bg-paper">
+        <div className="mx-auto grid max-w-6xl items-start gap-8 px-5 py-8 md:grid-cols-2 md:gap-16 md:py-20">
           <div className="min-w-0">
-            <p className="text-sm font-medium text-pine-ink/80">{t.hero.kicker}</p>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-balance text-pine-ink md:text-6xl md:leading-tight">
+            <p className="font-sans text-xs font-semibold tracking-wide text-ink">MOVE SMART. DELIVER FAST.</p>
+            <p className="mt-2 font-sans text-sm font-medium tracking-wide text-pine">EUROPE ↔ KURDISTAN ↔ IRAQ</p>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance text-ink md:mt-4 md:text-5xl md:leading-tight">
               {t.hero.title}
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-pine-ink/80 md:text-lg">{t.hero.lede}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">{t.hero.lede}</p>
+            <div className="mt-6 flex flex-wrap gap-3 md:mt-8">
               <Link
                 to="/quote"
                 search={{ from: undefined, to: undefined, kg: undefined }}
-                className="inline-flex h-12 items-center justify-center rounded-full bg-pine-ink px-5 text-sm font-medium text-pine"
+                className={btnPrimary}
               >
                 {t.hero.fullQuote}
               </Link>
-              <Link
-                to="/track"
-                search={{ id: "RG-48291" }}
-                className="inline-flex h-12 items-center justify-center rounded-full border border-pine-ink/40 px-5 text-sm font-medium text-pine-ink"
-              >
+              <Link to="/track" search={{ id: "RG-48291" }} className={btnGhost}>
                 {t.hero.track}
               </Link>
             </div>
@@ -223,23 +220,15 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-pine text-pine-ink">
-        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-16 md:py-24">
-          <h2 className="max-w-2xl text-3xl font-semibold tracking-tight md:text-5xl">{t.closeTitle}</h2>
-          <p className="max-w-xl text-base leading-relaxed text-pine-ink/80">{t.closeLede}</p>
+      <section className="border-t border-line bg-surface">
+        <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 py-14 md:py-20">
+          <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-ink md:text-4xl">{t.closeTitle}</h2>
+          <p className="max-w-xl text-base leading-relaxed text-muted">{t.closeLede}</p>
           <div className="flex flex-wrap gap-3">
-            <Link
-              to="/quote"
-              search={{ from: undefined, to: undefined, kg: undefined }}
-              className="inline-flex h-12 items-center justify-center rounded-full bg-pine-ink px-5 text-sm font-medium text-pine"
-            >
+            <Link to="/quote" search={{ from: undefined, to: undefined, kg: undefined }} className={btnPrimary}>
               {t.hero.fullQuote}
             </Link>
-            <Link
-              to="/track"
-              search={{ id: "RG-48291" }}
-              className="inline-flex h-12 items-center justify-center rounded-full border border-pine-ink/40 px-5 text-sm font-medium text-pine-ink"
-            >
+            <Link to="/track" search={{ id: "RG-48291" }} className={btnGhost}>
               {t.hero.track}
             </Link>
           </div>

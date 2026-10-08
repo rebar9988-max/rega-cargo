@@ -10,7 +10,7 @@ export const Route = createFileRoute("/quote")({
     kg: typeof search.kg === "string" && search.kg ? search.kg : undefined,
   }),
   head: () => ({
-    meta: [{ title: "نرخ · Rega Cargo" }],
+    meta: [{ title: "نرخ · R&L" }],
   }),
   component: QuotePage,
 });

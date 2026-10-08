@@ -4,10 +4,10 @@ export const ku = {
   skip: "Derbasî naverokê bibe",
   menuOpen: "Menuyê veke",
   menuClose: "Menuyê bigire",
-  brandSub: "Rega Kargo",
-  nav: { home: "Destpêk", quote: "Biha", track: "Şop", customs: "Gumrik", contact: "Têkilî" },
-  footerBlurb: "Rega bi kurdî yanî rê. Em yek rê dibin: ji Ewropayê heta Kurdistanê.",
-  footerNote: "© 2026 Rega Cargo. Bihayên vê rûpelê ji bo planê ne û berî berhevkirinê tên pejirandin.",
+  brandSub: "MOVE SMART. DELIVER FAST.",
+  nav: { home: "Destpêk", quote: "Biha", track: "Şop", customs: "Gumrik", stores: "Bazar", market: "Berawird", move: "Veguhestin", contact: "Têkilî" },
+  footerBlurb: "Yek rêç. Ewropa, Kurdistan û Iraq.",
+  footerNote: "© 2026 R&L. Bihayên vê rûpelê ji bo planê ne û berî berhevkirinê tên pejirandin.",
   hubsTitle: "Mase",
   hubs: [
     { name: "Deriyê Hewlêrê", detail: "Herêma Kurdistanê" },
@@ -23,7 +23,7 @@ export const ku = {
   hero: {
     kicker: "Ewropa — Kurdistan",
     title: "Ji deriyekî Ewropî ber bi deriyekî Kurdî.",
-    lede: "Rega pakêt û barê bazirganî li ser yek rêçê dibe. Giraniya hesabkirî, euro û dînar, û her scan — berî ku tiştek here.",
+    lede: "R&L pakêt û barê bazirganî li ser yek rêçê dibe. Giraniya hesabkirî, euro û dînar, û her scan — berî ku tiştek here.",
     fullQuote: "Biha ya qutiya rast",
     track: "Nimûneyekê bişopîne",
   },
@@ -43,7 +43,7 @@ export const ku = {
   ],
   gapKicker: "Ya kêm",
   gapTitle: "Rêç an dikan bû, an broşûr.",
-  gapLede: "Sepanên kirînê mal difroşin. Kompaniyên broşûrê telefonê difroşin. Rega bi xwe tevgerê difiroşe, bi hejmarê li ser rûpelê.",
+  gapLede: "Sepanên kirînê mal difroşin. Kompaniyên broşûrê telefonê difroşin. R&L bi xwe tevgerê difiroşe, bi hejmarê li ser rûpelê.",
   columns: [
     {
       title: "Sepanên kirînê",
@@ -54,7 +54,7 @@ export const ku = {
       items: ["«Biha bixwaze», paşê li bendê bimîne", "Şopandin yanî gazî ofîsê bike", "Kurdî ala ye, ne bi xwe berhem e"],
     },
     {
-      title: "Rega",
+      title: "R&L",
       items: [
         "Euro û dînar li yek ekranê",
         "Giraniya hesabkirî tê şirovekirin, nayê veşartin",
@@ -97,7 +97,7 @@ export const ku = {
   faq: [
     {
       q: "Hûn malê ji bo min dikirin?",
-      a: "Na. Sepanên kirînê vê dikin, lê bi barkirinê re tevlihev dikin. Rega ya ku te bi xwe kiriye, an barê kompaniya te, dibe.",
+      a: "Na. Sepanên kirînê vê dikin, lê bi barkirinê re tevlihev dikin. R&L ya ku te bi xwe kiriye, an barê kompaniya te, dibe.",
     },
     {
       q: "Çima biha ji kiloyên terazûyê bilindtir e?",
