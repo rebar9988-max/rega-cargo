@@ -37,13 +37,15 @@ test("staging is flattened: own name/vars/bindings, inherited main/assets/compat
   assert.equal("env" in staging, false);
 });
 
-test("repo config: production keeps AI off; staging is a separate worker with no routes", () => {
+test("repo config: production has AI on with cap; staging is a separate worker with no routes", () => {
   const src = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
   const json = JSON.parse(src.replace(/^\s*\/\/.*$/gm, ""));
   const { production, environments } = splitEnvironments(json);
   assert.equal(production.name, "rega-cargo");
-  assert.equal(production.vars.RL_AI_ENABLED, "false");
-  assert.equal("ai" in production, false);
+  assert.equal(production.vars.RL_AI_ENABLED, "true");
+  assert.equal(production.vars.RL_AI_DAILY_CAP, "200");
+  assert.deepEqual(production.ai, { binding: "AI" });
+  assert.equal(production.durable_objects.bindings[0].class_name, "RlAiUsage");
   assert.equal(environments.staging.name, "rega-cargo-staging");
   assert.deepEqual(environments.staging.routes, []);
   assert.equal(environments.staging.workers_dev, true);
