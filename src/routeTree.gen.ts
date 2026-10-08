@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AiRouteImport } from './routes/ai'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CustomsRouteImport } from './routes/customs'
 import { Route as MarketRouteImport } from './routes/market'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiRoute = AiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -98,6 +104,7 @@ const StoresRequestRoute = StoresRequestRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
   '/market': typeof MarketRouteWithChildren
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
   '/move': typeof MoveRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
   '/market': typeof MarketRouteWithChildren
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/ai'
     | '/contact'
     | '/customs'
     | '/market'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/ai'
     | '/contact'
     | '/customs'
     | '/move'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/ai'
     | '/contact'
     | '/customs'
     | '/market'
@@ -194,6 +206,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AiRoute: typeof AiRoute
   ContactRoute: typeof ContactRoute
   CustomsRoute: typeof CustomsRoute
   MarketRoute: typeof MarketRouteWithChildren
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai': {
+      id: '/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -337,6 +357,7 @@ const StoresRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AiRoute: AiRoute,
   ContactRoute: ContactRoute,
   CustomsRoute: CustomsRoute,
   MarketRoute: MarketRouteWithChildren,
