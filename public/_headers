@@ -1,0 +1,21 @@
+# Cloudflare Workers static-assets headers (merged with the /assets/* rule
+# Nitro generates). Image URLs are not content-hashed, so changed artwork must
+# ship under a new file name (e.g. *-640.webp, rega-logo-168.webp).
+/bazaar/*
+  cache-control: public, max-age=2592000, stale-while-revalidate=604800
+/rega-logo-168.webp
+  cache-control: public, max-age=2592000, stale-while-revalidate=604800
+/favicon.png
+  cache-control: public, max-age=86400, stale-while-revalidate=604800
+/favicon.svg
+  cache-control: public, max-age=86400, stale-while-revalidate=604800
+/apple-touch-icon.png
+  cache-control: public, max-age=86400, stale-while-revalidate=604800
+/icon-192.png
+  cache-control: public, max-age=86400, stale-while-revalidate=604800
+/icon-512.png
+  cache-control: public, max-age=86400, stale-while-revalidate=604800
+/__grok/icon-180.png
+  cache-control: public, max-age=86400, stale-while-revalidate=604800
+/og.jpg
+  cache-control: public, max-age=86400, stale-while-revalidate=604800
