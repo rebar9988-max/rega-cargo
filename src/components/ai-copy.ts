@@ -2,6 +2,8 @@ import type { Lang } from "@/lib/langs";
 
 export type AiCopy = {
   kicker: string;
+  /** Header pill label (full width screens). */
+  navLabel: string;
   title: string;
   lede: string;
   consent: string;
@@ -51,6 +53,7 @@ export type AiCopy = {
 
 const en: AiCopy = {
   kicker: "R&L AI",
+  navLabel: "R&L Assistant",
   title: "Photograph a product. See what it is.",
   lede: "Upload or take a photo: R&L AI suggests the product category, brand and printed text. It never shows prices or shops.",
   consent:
@@ -102,6 +105,7 @@ const en: AiCopy = {
 
 const ckb: AiCopy = {
   kicker: "R&L AI",
+  navLabel: "یاریدەدەری R&L",
   title: "وێنەی کاڵایەک بگرە، بزانە چییە.",
   lede: "وێنەیەک بنێرە یان بیگرە؛ R&L AI جۆری کاڵا، براند و نووسینی سەر کاڵاکە پێشنیار دەکات. هەرگیز نرخ یان فرۆشگا پیشان نادات.",
   consent:
@@ -153,6 +157,7 @@ const ckb: AiCopy = {
 
 const ku: AiCopy = {
   kicker: "R&L AI",
+  navLabel: "Alîkarê R&L",
   title: "Wêneyê berhemekê bigire. Bizane ew çi ye.",
   lede: "Wêneyekî bişîne an bigire: R&L AI cureyê berhemê, marka û nivîsa li ser wê pêşniyar dike. Ew qet biha an firoşgehan nîşan nade.",
   consent:
@@ -205,6 +210,7 @@ const ku: AiCopy = {
 
 const ar: AiCopy = {
   kicker: "R&L AI",
+  navLabel: "مساعد R&L",
   title: "صوّر منتجًا. اعرف ما هو.",
   lede: "ارفع صورة أو التقطها؛ يقترح R&L AI فئة المنتج والعلامة التجارية والنص المطبوع عليه. لا يعرض أسعارًا أو متاجر أبدًا.",
   consent:
@@ -254,6 +260,7 @@ const ar: AiCopy = {
 
 const fa: AiCopy = {
   kicker: "R&L AI",
+  navLabel: "دستیار R&L",
   title: "از کالا عکس بگیرید. ببینید چیست.",
   lede: "عکسی بارگذاری کنید یا بگیرید؛ R&L AI دسته‌بندی کالا، برند و متن چاپ‌شده روی آن را پیشنهاد می‌دهد. هرگز قیمت یا فروشگاه نشان نمی‌دهد.",
   consent:
@@ -305,6 +312,7 @@ const fa: AiCopy = {
 
 const tr: AiCopy = {
   kicker: "R&L AI",
+  navLabel: "R&L Asistan",
   title: "Ürünün fotoğrafını çekin. Ne olduğunu görün.",
   lede: "Bir fotoğraf yükleyin veya çekin: R&L AI ürün kategorisini, markayı ve üzerindeki yazıyı önerir. Asla fiyat veya mağaza göstermez.",
   consent:
@@ -357,6 +365,7 @@ const tr: AiCopy = {
 
 const de: AiCopy = {
   kicker: "R&L AI",
+  navLabel: "R&L Assistent",
   title: "Produkt fotografieren. Erfahren, was es ist.",
   lede: "Foto hochladen oder aufnehmen – R&L AI schlägt Produktkategorie, Marke und aufgedruckten Text vor. Preise oder Shops zeigt es nie.",
   consent:

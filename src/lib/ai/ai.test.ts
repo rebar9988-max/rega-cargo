@@ -320,3 +320,19 @@ test("landed-cost estimate = item + corridor shipping + duty estimate", () => {
   assert.equal(landedEstimate({ priceEur: Number.NaN, weightKg: 1 }), null);
   assert.equal(landedEstimate({ priceEur: 10, weightKg: 0 }), null);
 });
+
+test("header flag: on only with RL_AI_ENABLED=true and an AI binding", async () => {
+  const { rlAiEnabled } = await import("./flag.ts");
+  const g = globalThis as { __env__?: Record<string, unknown> };
+  const saved = g.__env__;
+  try {
+    g.__env__ = { RL_AI_ENABLED: "false", AI: {} };
+    assert.equal(rlAiEnabled(), false);
+    g.__env__ = { RL_AI_ENABLED: "true" };
+    assert.equal(rlAiEnabled(), false);
+    g.__env__ = { RL_AI_ENABLED: "true", AI: {} };
+    assert.equal(rlAiEnabled(), true);
+  } finally {
+    g.__env__ = saved;
+  }
+});

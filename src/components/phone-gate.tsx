@@ -196,9 +196,9 @@ export function PhoneButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-10 max-w-28 items-center truncate rounded-full border border-line px-3 text-sm"
+        className="inline-flex h-10 w-24 shrink-0 items-center justify-center rounded-full border border-line px-3 text-sm"
       >
-        {me ? me.name : t.in}
+        <span className="truncate">{me ? me.name : t.in}</span>
       </button>
       {open ? (
         <PhoneDialog

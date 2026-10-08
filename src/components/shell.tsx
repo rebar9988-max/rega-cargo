@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Check, ChevronDown, House, LayoutGrid, Menu, Store, Tag, X } from "lucide-react";
+import { Check, ChevronDown, House, LayoutGrid, Menu, Sparkles, Store, Tag, X } from "lucide-react";
+import { AI_COPY } from "@/components/ai-copy";
 import { PhoneButton } from "@/components/phone-gate";
+import { rlAiEnabled } from "@/lib/ai/flag";
 import { useI18n } from "@/lib/i18n";
 import { LANGS, langMeta, type Lang } from "@/lib/langs";
 
@@ -30,6 +32,24 @@ function isOn(path: string, to: string, exact: boolean) {
 
 export function Mark({ className = "size-14" }: { className?: string }) {
   return <img src="/rega-logo-168.webp" alt="R&L" width={56} height={56} decoding="async" className={`${className} shrink-0 rounded-xl`} />;
+}
+
+/** R&L AI entry: same pill as the sign-in button; shown only where RL_AI_ENABLED is on. */
+function AiPill({ lang, on }: { lang: Lang; on: boolean }) {
+  const label = AI_COPY[lang].navLabel;
+  return (
+    <Link
+      to="/ai"
+      aria-label={label}
+      aria-current={on ? "page" : undefined}
+      style={{ direction: "ltr" }}
+      className={`inline-flex h-10 w-[5.75rem] shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 min-[430px]:w-36 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
+    >
+      <Sparkles className="size-4 shrink-0 text-pine" aria-hidden="true" />
+      <span className="max-[429px]:hidden" dir="auto">{label}</span>
+      <span className="min-[430px]:hidden" dir="ltr">R&amp;L AI</span>
+    </Link>
+  );
 }
 
 export function PageHeader({ kicker, title, lede }: { kicker: string; title: string; lede: string }) {
@@ -90,6 +110,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <div className="hidden lg:block">
               <LangSwitch key={path} lang={lang} setLang={setLang} />
             </div>
+            {rlAiEnabled() ? <AiPill lang={lang} on={isOn(path, "/ai", false)} /> : null}
             <PhoneButton />
             <button
               type="button"
