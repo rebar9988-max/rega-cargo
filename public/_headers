@@ -25,3 +25,7 @@
   cache-control: public, max-age=2592000, stale-while-revalidate=604800
 /favicon.ico
   cache-control: public, max-age=86400, stale-while-revalidate=604800
+/sw.js
+  cache-control: no-cache
+/offline.html
+  cache-control: public, max-age=3600

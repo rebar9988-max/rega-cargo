@@ -3,6 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { I18nProvider } from "@/lib/i18n";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { rlAiEnabled } from "@/lib/ai/flag";
+import { ServiceWorkerSetup } from "@/components/sw-setup";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -18,9 +19,15 @@ export const Route = createRootRoute({
       },
       { name: "theme-color", content: "#f4f4f4" },
     ],
+    scripts: [
+      {
+        // Preload Vazirmatn only for Arabic-script languages (ckb is the default).
+        children:
+          '(function(){try{var l=localStorage.getItem("rega-lang");if(!l||l==="ckb"||l==="ar"||l==="fa"){var k=document.createElement("link");k.rel="preload";k.as="font";k.type="font/woff2";k.crossOrigin="anonymous";k.href="/fonts/vazirmatn-nl-v33.003.woff2";document.head.appendChild(k)}}catch(e){}})()',
+      },
+    ],
     links: [
       { rel: "icon", type: "image/png", href: "/favicon.png?v=6" },
-      { rel: "preload", href: "/fonts/vazirmatn-nl-v33.003.woff2", as: "font", type: "font/woff2", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
@@ -33,6 +40,7 @@ export const Route = createRootRoute({
       </head>
       <body>
         <PreviewHostBridge />
+        <ServiceWorkerSetup />
         <AuthProvider>
           <I18nProvider>
             <Outlet />

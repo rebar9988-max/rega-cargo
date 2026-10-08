@@ -1,9 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { ar } from "@/lib/messages/ar";
-import { de } from "@/lib/messages/de";
-import { fa } from "@/lib/messages/fa";
-import { ku } from "@/lib/messages/ku";
-import { tr } from "@/lib/messages/tr";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { isLang, langMeta, type Lang } from "@/lib/langs";
 
 export type { Lang };
@@ -482,15 +477,42 @@ const ckb = {
 
 export type Copy = typeof en;
 
-const catalog: Record<Lang, Copy> = { ckb, ku, de, en, ar, fa, tr };
+// ckb (default) and en ship in the main bundle; the other languages load on
+// demand so first paint on slow networks does not carry all 7 catalogs.
+const catalog: Partial<Record<Lang, Copy>> = { ckb, en };
+const loaders: Record<Exclude<Lang, "ckb" | "en">, () => Promise<Copy>> = {
+  ku: () => import("@/lib/messages/ku").then((m) => m.ku),
+  de: () => import("@/lib/messages/de").then((m) => m.de),
+  ar: () => import("@/lib/messages/ar").then((m) => m.ar),
+  fa: () => import("@/lib/messages/fa").then((m) => m.fa),
+  tr: () => import("@/lib/messages/tr").then((m) => m.tr),
+};
+
+async function loadCopy(lang: Lang): Promise<Copy> {
+  const have = catalog[lang];
+  if (have) return have;
+  const copy = await loaders[lang as Exclude<Lang, "ckb" | "en">]();
+  catalog[lang] = copy;
+  return copy;
+}
 
 type Ctx = { lang: Lang; t: Copy; setLang: (lang: Lang) => void };
 
 const I18nContext = createContext<Ctx | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("ckb");
+  const [lang, setLangState] = useState<Lang>("ckb");
   const [ready, setReady] = useState(false);
+  const setLang = useCallback((next: Lang) => {
+    if (catalog[next]) {
+      setLangState(next);
+      return;
+    }
+    loadCopy(next).then(
+      () => setLangState(next),
+      () => undefined,
+    );
+  }, []);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("rega-lang");
@@ -503,7 +525,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem("rega-lang-v3", "1");
     setLang(next);
     setReady(true);
-  }, []);
+  }, [setLang]);
 
   useEffect(() => {
     const meta = langMeta(lang);
@@ -513,7 +535,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     if (ready) window.localStorage.setItem("rega-lang", lang);
   }, [lang, ready]);
 
-  const value = useMemo<Ctx>(() => ({ lang, t: catalog[lang], setLang }), [lang]);
+  const value = useMemo<Ctx>(() => ({ lang, t: catalog[lang] ?? ckb, setLang }), [lang, setLang]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
