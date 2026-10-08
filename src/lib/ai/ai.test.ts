@@ -336,3 +336,13 @@ test("header flag: on only with RL_AI_ENABLED=true and an AI binding", async () 
     g.__env__ = saved;
   }
 });
+
+test("rate-limit key: IPv4 as is, IPv6 grouped by /64", async () => {
+  const { ipKey } = await import("./usage.ts");
+  assert.equal(ipKey("203.0.113.7"), "203.0.113.7");
+  assert.equal(ipKey("2a09:bac5:27b0:db9::15e:ed"), "2a09:bac5:27b0:db9::/64");
+  assert.equal(ipKey("2a09:bac5:27b0:0db9:1:2:3:4"), "2a09:bac5:27b0:db9::/64");
+  assert.equal(ipKey("2001:db8::1"), "2001:db8:0:0::/64");
+  assert.equal(ipKey("::1"), "0:0:0:0::/64");
+  assert.equal(ipKey("2001:DB8:0:0:ffff::"), "2001:db8:0:0::/64");
+});
