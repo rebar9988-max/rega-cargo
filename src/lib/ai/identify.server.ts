@@ -7,6 +7,7 @@ import {
 } from "./schema.ts";
 import {
   consumeUsage,
+  ipKey,
   parseCap,
   visitorId,
   type UsageDecision,
@@ -132,7 +133,7 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
   const now = (deps.now ?? (() => new Date()))();
   const iso = now.toISOString();
   const day = iso.slice(0, 10);
-  const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
+  const ip = ipKey(request.headers.get("cf-connecting-ip") ?? "unknown");
   const decision = await deps.usage.consume({
     day,
     hour: iso.slice(0, 13),

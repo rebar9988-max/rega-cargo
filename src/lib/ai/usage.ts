@@ -53,6 +53,22 @@ export function parseCap(value: unknown, fallback: number): number {
   return Number.isFinite(n) && n >= 0 ? Math.min(Math.floor(n), 10_000) : fallback;
 }
 
+/**
+ * Rate-limit key for an address: IPv4 as is, IPv6 reduced to its /64 prefix
+ * (clients rotate privacy addresses inside their /64, so a full IPv6 address
+ * would give every request a fresh budget).
+ */
+export function ipKey(ip: string): string {
+  const raw = ip.trim().toLowerCase();
+  if (!raw.includes(":")) return raw;
+  const [head, tail = ""] = raw.split("::");
+  const left = head ? head.split(":") : [];
+  const right = tail ? tail.split(":") : [];
+  const fill = raw.includes("::") ? Array(Math.max(0, 8 - left.length - right.length)).fill("0") : [];
+  const groups = [...left, ...fill, ...right].map((g) => (g || "0").replace(/^0+(?=.)/, ""));
+  return `${groups.slice(0, 4).join(":")}::/64`;
+}
+
 /** Visitor ids are salted daily hashes, so no raw IP address is ever stored. */
 export async function visitorId(ip: string, day: string): Promise<string> {
   const digest = await crypto.subtle.digest(
