@@ -49,6 +49,7 @@ export type StoreCopy = {
   wrongHost: string;
   sentTitle: string;
   sentBody: string;
+  serviceLater: string;
   back: string;
 };
 
@@ -147,6 +148,7 @@ const en: StoreCopy = {
     "This link is not on that store's official site. Staff will still see it, but it is not confirmed.",
   sentTitle: "Order saved on this device",
   sentBody: "No purchase was made and no price was confirmed.",
+  serviceLater: "This service is not available yet. Email 2233rega@gmail.com.",
   back: "Back to the bazaar",
 };
 
@@ -239,6 +241,7 @@ const ckb: StoreCopy = {
   wrongHost: "ئەم لینکە لە ماڵپەڕی فەرمیی ئەو فرۆشگایە نییە.",
   sentTitle: "داواکارییەکە لەم ئامێرەدا پاشەکەوت کرا",
   sentBody: "هیچ کڕینێک نەکرا و هیچ نرخێک پشتڕاست نەکرایەوە.",
+  serviceLater: "ئەم خزمەتگوزارییە هێشتا ئامادە نییە. ئیمەیڵ 2233rega@gmail.com.",
   back: "گەڕانەوە بۆ بازاڕ",
 };
 
@@ -332,6 +335,7 @@ const ar: StoreCopy = {
   wrongHost: "هذا الرابط ليس على الموقع الرسمي لذلك المتجر.",
   sentTitle: "حُفظ الطلب على هذا الجهاز",
   sentBody: "لم يتم شراء ولم يُؤكد أي سعر.",
+  serviceLater: "هذه الخدمة غير متاحة بعد. راسل 2233rega@gmail.com.",
   back: "العودة إلى البازار",
 };
 
@@ -427,6 +431,7 @@ const de: StoreCopy = {
   wrongHost: "Dieser Link liegt nicht auf der offiziellen Seite dieses Ladens.",
   sentTitle: "Bestellung auf diesem Gerät gespeichert",
   sentBody: "Es wurde nichts gekauft und kein Preis bestätigt.",
+  serviceLater: "Dieser Dienst ist noch nicht verfügbar. E-Mail 2233rega@gmail.com.",
   back: "Zurück zum Basar",
 };
 
@@ -466,6 +471,7 @@ const ku: StoreCopy = {
   back: "Vegere bazarê",
   sentTitle: "Siparîş li ser vî amûrî hate tomarkirin",
   sentBody: "Tu kirîn nehat kirin û tu biha nehat piştrastkirin.",
+  serviceLater: "Ev xizmet hê ne amade ye. E-name 2233rega@gmail.com.",
 };
 
 const fa: StoreCopy = {
@@ -561,6 +567,7 @@ const fa: StoreCopy = {
   wrongHost: "این لینک روی سایت رسمی آن فروشگاه نیست. کارکنان آن را می‌بینند، اما تأیید نشده است.",
   sentTitle: "سفارش روی این دستگاه ذخیره شد",
   sentBody: "خریدی انجام نشد و قیمتی تأیید نشد.",
+  serviceLater: "این خدمات هنوز آماده نیست. ایمیل 2233rega@gmail.com.",
   back: "بازگشت به بازار",
 };
 
@@ -600,6 +607,7 @@ const tr: StoreCopy = {
   back: "Pazara dön",
   sentTitle: "Sipariş bu cihazda saklandı",
   sentBody: "Satın alma yapılmadı ve fiyat onaylanmadı.",
+  serviceLater: "Bu hizmet henüz yok. E-posta 2233rega@gmail.com.",
 };
 
 const ALL: Record<Lang, StoreCopy> = { en, ckb, ar, de, ku, fa, tr };
