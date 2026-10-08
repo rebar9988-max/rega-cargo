@@ -1,10 +1,31 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Check, ChevronDown, House, LayoutGrid, Mail, Menu, Sparkles, Store, Tag, Warehouse, X } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import {
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Heart,
+  House,
+  LayoutGrid,
+  Mail,
+  MapPin,
+  Menu,
+  Search,
+  ShoppingBag,
+  Sparkles,
+  Store,
+  Tag,
+  Truck,
+  UserRound,
+  Warehouse,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { AI_COPY } from "@/components/ai-copy";
 import { PhoneButton } from "@/components/phone-gate";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { CONTACT_EMAIL } from "@/lib/contact";
+import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 import { LANGS, langMeta, type Lang } from "@/lib/langs";
 
@@ -25,13 +46,106 @@ const TABS = [
   { to: "/market", key: "market", exact: false, icon: LayoutGrid },
 ] as const;
 
+const MENU = [
+  { to: "/quote", key: "quote", icon: Tag },
+  { to: "/track", key: "track", icon: MapPin },
+  { to: "/stores", key: "stores", icon: Store },
+  { to: "/market", key: "market", icon: LayoutGrid },
+  { to: "/move", key: "move", icon: Truck },
+  { to: "/ai", key: "ai", icon: Sparkles },
+] as const;
+
+const iconBtn =
+  "inline-flex size-8 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper";
+
+function MenuRow({
+  to,
+  icon: Icon,
+  label,
+  sub,
+  on,
+}: {
+  to: string;
+  icon: LucideIcon;
+  label: string;
+  sub?: string;
+  on: boolean;
+}) {
+  return (
+    <Link
+      to={to}
+      className="flex min-h-16 items-center gap-3 border-b border-line px-4 py-3 last:border-b-0"
+      style={{ direction: "ltr" }}
+    >
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-paper text-ink">
+        <Icon className="size-5" aria-hidden="true" />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col items-start">
+        <span dir="auto" className={`text-base ${on ? "font-semibold text-pine" : "text-ink"}`}>
+          {label}
+        </span>
+        {sub ? (
+          <bdi dir="ltr" className="text-sm text-muted">
+            {sub}
+          </bdi>
+        ) : null}
+      </span>
+      <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden="true" />
+    </Link>
+  );
+}
+
+function SearchStrip({ search, label }: { search?: ShellSearch; label: string }) {
+  const navigate = useNavigate();
+  const [local, setLocal] = useState("");
+  const value = search ? search.q : local;
+  return (
+    <form
+      role="search"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!search) void navigate({ to: "/stores", search: { q: local.trim() || undefined } });
+      }}
+      className="border-b border-line bg-paper"
+    >
+      <label
+        className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 md:px-5"
+        style={{ direction: "ltr" }}
+      >
+        <Search className="size-5 shrink-0 text-muted" aria-hidden="true" />
+        <input
+          type="search"
+          dir="auto"
+          value={value}
+          onChange={(event) =>
+            search ? search.setQ(event.target.value) : setLocal(event.target.value)
+          }
+          placeholder={label}
+          aria-label={label}
+          enterKeyHint="search"
+          className="h-full min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-muted"
+        />
+      </label>
+    </form>
+  );
+}
+
 function isOn(path: string, to: string, exact: boolean) {
   if (exact) return path === to;
   return path === to || path.startsWith(`${to}/`);
 }
 
 export function Mark({ className = "size-14" }: { className?: string }) {
-  return <img src="/rega-logo-168.webp" alt="R&L" width={56} height={56} decoding="async" className={`${className} shrink-0 rounded-xl`} />;
+  return (
+    <img
+      src="/rega-logo-168.webp"
+      alt="R&L"
+      width={56}
+      height={56}
+      decoding="async"
+      className={`${className} shrink-0 rounded-xl`}
+    />
+  );
 }
 
 /** R&L AI entry: same pill as the sign-in button; shown only where RL_AI_ENABLED is on. */
@@ -43,16 +157,28 @@ function AiPill({ lang, on }: { lang: Lang; on: boolean }) {
       aria-label={label}
       aria-current={on ? "page" : undefined}
       style={{ direction: "ltr" }}
-      className={`inline-flex h-10 w-[5.75rem] shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 min-[430px]:w-36 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
+      className={`inline-flex h-10 w-16 shrink-0 items-center justify-center gap-1.5 rounded-full border px-2 sm:w-36 lg:w-16 xl:w-36 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
     >
       <Sparkles className="size-4 shrink-0 text-pine" aria-hidden="true" />
-      <span className="max-[429px]:hidden" dir="auto">{label}</span>
-      <span className="min-[430px]:hidden" dir="ltr">R&amp;L AI</span>
+      <span className="hidden sm:inline lg:hidden xl:inline" dir="auto">
+        {label}
+      </span>
+      <span className="sm:hidden lg:inline xl:hidden" dir="ltr">
+        AI
+      </span>
     </Link>
   );
 }
 
-export function PageHeader({ kicker, title, lede }: { kicker: string; title: string; lede: string }) {
+export function PageHeader({
+  kicker,
+  title,
+  lede,
+}: {
+  kicker: string;
+  title: string;
+  lede: string;
+}) {
   return (
     <header className="border-b border-line bg-surface">
       <div className="mx-auto max-w-6xl px-5 py-10 md:py-16">
@@ -66,14 +192,27 @@ export function PageHeader({ kicker, title, lede }: { kicker: string; title: str
   );
 }
 
-export function Shell({ children }: { children: ReactNode }) {
+export type ShellSearch = { q: string; setQ: (value: string) => void };
+
+export function Shell({ children, search }: { children: ReactNode; search?: ShellSearch }) {
   const { t, lang, setLang } = useI18n();
+  const d = DESIGN_COPY[lang];
+  const ai = rlAiEnabled();
   const path = useRouterState({ select: (state) => state.location.pathname });
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setOpen(false);
   }, [path]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
@@ -83,12 +222,14 @@ export function Shell({ children }: { children: ReactNode }) {
       >
         {t.skip}
       </a>
-      <header className="sticky top-0 z-20 border-b border-line bg-surface text-ink">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-5">
-          <Link to="/" className="flex min-w-0 items-center gap-3">
+      <header className="sticky top-0 z-30 border-b-2 border-pine bg-surface text-ink">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 md:px-5">
+          <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="R&L">
             <Mark className="size-11 md:size-12" />
             <span className="hidden min-w-0 flex-col leading-none xl:flex">
-              <span className="font-sans text-xs font-semibold tracking-wide text-ink">MOVE SMART. DELIVER FAST.</span>
+              <span className="font-sans text-xs font-semibold tracking-wide text-ink">
+                MOVE SMART. DELIVER FAST.
+              </span>
               <span className="mt-1 font-sans text-xs text-muted">EUROPE ↔ KURDISTAN ↔ IRAQ</span>
             </span>
           </Link>
@@ -99,22 +240,36 @@ export function Shell({ children }: { children: ReactNode }) {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`text-sm ${on ? "font-medium text-pine" : "text-muted hover:text-ink"}`}
+                  className={`text-sm ${on ? "font-semibold text-pine" : "text-muted hover:text-ink"}`}
                 >
                   {t.nav[link.key]}
                 </Link>
               );
             })}
           </nav>
-          <div className="ms-auto flex shrink-0 items-center gap-1 md:ms-4">
+          <div className="ms-auto flex shrink-0 items-center gap-1 lg:ms-4">
             <div className="hidden lg:block">
               <LangSwitch key={path} lang={lang} setLang={setLang} />
             </div>
-            {rlAiEnabled() ? <AiPill lang={lang} on={isOn(path, "/ai", false)} /> : null}
+            {ai ? <AiPill lang={lang} on={isOn(path, "/ai", false)} /> : null}
+            <Link to="/stores" search={{ fav: "1" }} aria-label={d.wishlist} className={iconBtn}>
+              <Heart className="size-5" aria-hidden="true" />
+            </Link>
+            <Link
+              to="/stores/request"
+              search={{ store: undefined, item: undefined, intent: "buy" }}
+              aria-label={d.cart}
+              className={iconBtn}
+            >
+              <ShoppingBag className="size-5" aria-hidden="true" />
+            </Link>
+            <span className="contents max-[389px]:hidden">
+              <PhoneButton variant="icon" label={d.account} />
+            </span>
             <PhoneButton />
             <button
               type="button"
-              className="inline-flex size-12 items-center justify-center rounded-full border border-line text-ink lg:hidden"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-line text-ink lg:hidden"
               aria-expanded={open}
               aria-label={open ? t.menuClose : t.menuOpen}
               onClick={() => setOpen((value) => !value)}
@@ -123,26 +278,51 @@ export function Shell({ children }: { children: ReactNode }) {
             </button>
           </div>
         </div>
-        {open ? (
-          <nav className="flex flex-col border-t border-line bg-surface px-5 py-2 lg:hidden">
-            {LINKS.map((link) => {
-              const on = isOn(path, link.to, link.exact);
-              return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={`flex h-12 items-center text-base ${on ? "font-medium text-pine" : "text-ink"}`}
-                >
-                  {t.nav[link.key]}
-                </Link>
-              );
-            })}
-            <div className="border-t border-line py-3">
+      </header>
+      {open ? (
+        <div className="fixed inset-x-0 top-[66px] bottom-0 z-20 overflow-y-auto bg-paper px-4 pt-4 pb-28 lg:hidden">
+          <div className="mx-auto flex max-w-lg flex-col gap-3">
+            <section className="flex flex-col items-center rounded-3xl border border-line bg-surface p-5 text-center">
+              <span className="grid size-16 place-items-center rounded-full bg-paper text-muted">
+                <UserRound className="size-7" aria-hidden="true" />
+              </span>
+              <p className="mt-3 text-base font-semibold">{d.account}</p>
+              <p className="mt-1 text-sm text-muted">{d.accountHint}</p>
+              <div className="mt-4 w-full">
+                <PhoneButton variant="block" />
+              </div>
+            </section>
+            <nav className="overflow-hidden rounded-3xl border border-line bg-surface">
+              {MENU.filter((item) => ai || item.to !== "/ai").map((item) => (
+                <MenuRow
+                  key={item.to}
+                  to={item.to}
+                  icon={item.icon}
+                  label={
+                    item.to === "/ai"
+                      ? AI_COPY[lang].navLabel
+                      : t.nav[item.key as keyof typeof t.nav]
+                  }
+                  on={isOn(path, item.to, false)}
+                />
+              ))}
+            </nav>
+            <div className="overflow-hidden rounded-3xl border border-line bg-surface">
+              <MenuRow
+                to="/contact"
+                icon={Mail}
+                label={t.nav.contact}
+                sub={CONTACT_EMAIL}
+                on={isOn(path, "/contact", false)}
+              />
+            </div>
+            <div className="rounded-3xl border border-line bg-surface px-4 py-3">
               <LangSwitch key={`${path}-menu`} lang={lang} setLang={setLang} />
             </div>
-          </nav>
-        ) : null}
-      </header>
+          </div>
+        </div>
+      ) : null}
+      <SearchStrip search={search} label={d.search} />
       <main id="content" className="flex-1 pb-20 lg:pb-0">
         {children}
       </main>
@@ -152,8 +332,12 @@ export function Shell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-3">
               <Mark />
               <div className="leading-none">
-                <p dir="ltr" className="font-sans text-xs font-semibold tracking-wide text-paper">MOVE SMART. DELIVER FAST.</p>
-                <p dir="ltr" className="mt-1 font-sans text-xs text-paper/70">EUROPE ↔ KURDISTAN ↔ IRAQ</p>
+                <p dir="ltr" className="font-sans text-xs font-semibold tracking-wide text-paper">
+                  MOVE SMART. DELIVER FAST.
+                </p>
+                <p dir="ltr" className="mt-1 font-sans text-xs text-paper/70">
+                  EUROPE ↔ KURDISTAN ↔ IRAQ
+                </p>
               </div>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-paper/70">{t.footerBlurb}</p>
@@ -163,7 +347,10 @@ export function Shell({ children }: { children: ReactNode }) {
               <Warehouse className="size-4 shrink-0" aria-hidden="true" />
               <span dir="auto">{t.warehouse}</span>
             </div>
-            <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 text-sm font-medium text-paper hover:underline">
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="flex items-center gap-2 text-sm font-medium text-paper hover:underline"
+            >
               <Mail className="size-4 shrink-0" aria-hidden="true" />
               <bdi dir="ltr">{CONTACT_EMAIL}</bdi>
             </a>
@@ -182,13 +369,17 @@ export function Shell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </footer>
-      <nav className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-4 rounded-3xl border border-line bg-surface/95 px-1 py-1 shadow-lg backdrop-blur lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
         {TABS.map((tab) => {
           const on = isOn(path, tab.to, tab.exact);
           const Icon = tab.icon;
           return (
-            <Link key={tab.to} to={tab.to} className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-[11px] ${on ? "bg-ink text-pine-ink" : "text-muted"}`}>
-              <Icon className="size-5" />
+            <Link
+              key={tab.to}
+              to={tab.to}
+              className={`flex h-16 flex-col items-center justify-center gap-1 text-[11px] ${on ? "font-semibold text-pine" : "text-muted"}`}
+            >
+              <Icon className="size-5" aria-hidden="true" />
               {t.nav[tab.key]}
             </Link>
           );
@@ -230,7 +421,9 @@ function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (lang: Lang) => vo
         className="inline-flex h-12 items-center gap-1 rounded-full px-1 text-sm text-ink"
       >
         <span className={current.dir === "rtl" ? "font-ar" : "font-sans"}>{current.short}</span>
-        <ChevronDown className={`size-4 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`size-4 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
       </button>
       {open ? (
         <div
@@ -254,11 +447,19 @@ function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (lang: Lang) => vo
                   on ? "bg-pine/25 text-pine" : "text-paper hover:bg-paper/5"
                 }`}
               >
-                <span className="flex justify-center">{on ? <Check className="size-4" strokeWidth={2.5} /> : null}</span>
-                <span className={`truncate text-center font-medium ${item.dir === "rtl" ? "font-ar" : "font-sans"}`}>
+                <span className="flex justify-center">
+                  {on ? <Check className="size-4" strokeWidth={2.5} /> : null}
+                </span>
+                <span
+                  className={`truncate text-center font-medium ${item.dir === "rtl" ? "font-ar" : "font-sans"}`}
+                >
                   {item.name}
                 </span>
-                <span className={`text-end text-xs tracking-wide ${on ? "text-pine" : "text-paper/45"}`}>{item.code}</span>
+                <span
+                  className={`text-end text-xs tracking-wide ${on ? "text-pine" : "text-paper/45"}`}
+                >
+                  {item.code}
+                </span>
               </button>
             );
           })}
