@@ -1,0 +1,52 @@
+import type { ReactNode } from "react";
+
+export const controlClass =
+  "h-12 w-full rounded-xl border border-line bg-paper px-3 text-base text-ink md:text-sm";
+
+export const btnPrimary =
+  "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pine px-5 text-sm font-medium text-pine-ink transition-opacity duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40";
+
+export const btnGhost =
+  "inline-flex h-12 items-center justify-center gap-2 rounded-full border border-line bg-surface px-5 text-sm font-medium text-ink transition-colors duration-200 hover:border-pine disabled:cursor-not-allowed disabled:opacity-40";
+
+export function Field({
+  label,
+  children,
+  hint,
+}: {
+  label: string;
+  children: ReactNode;
+  hint?: string;
+}) {
+  return (
+    <label className="flex min-w-0 flex-col gap-2 text-sm">
+      <span className="font-medium text-ink">{label}</span>
+      {children}
+      {hint ? <span className="text-muted">{hint}</span> : null}
+    </label>
+  );
+}
+
+export function Eur({ value }: { value: number }) {
+  const text = new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+  return (
+    <bdi dir="ltr" className="tabular-nums">
+      {text}
+    </bdi>
+  );
+}
+
+export function Iqd({ eur }: { eur: number }) {
+  const iqd = Math.round(eur * 1520);
+  const text = `${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(iqd)} IQD`;
+  return (
+    <bdi dir="ltr" className="tabular-nums">
+      {text}
+    </bdi>
+  );
+}

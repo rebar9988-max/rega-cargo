@@ -1,0 +1,23 @@
+export const LANGS = [
+  { id: "ckb", code: "CKB", name: "کوردیی ناوەندی", short: "کوردی", dir: "rtl", html: "ckb" },
+  { id: "ku", code: "KU", name: "Kurmancî (Badînî)", short: "Kurmancî", dir: "ltr", html: "ku" },
+  { id: "de", code: "DE", name: "Deutsch", short: "Deutsch", dir: "ltr", html: "de" },
+  { id: "en", code: "EN", name: "English", short: "English", dir: "ltr", html: "en" },
+  { id: "ar", code: "AR", name: "العربية", short: "العربية", dir: "rtl", html: "ar" },
+  { id: "fa", code: "FA", name: "فارسی", short: "فارسی", dir: "rtl", html: "fa" },
+  { id: "tr", code: "TR", name: "Türkçe", short: "Türkçe", dir: "ltr", html: "tr" },
+] as const;
+
+export type Lang = (typeof LANGS)[number]["id"];
+
+export function isLang(value: string | null | undefined): value is Lang {
+  return LANGS.some((item) => item.id === value);
+}
+
+export function langMeta(id: Lang) {
+  return LANGS.find((item) => item.id === id) ?? LANGS[0];
+}
+
+export function isRtl(id: Lang) {
+  return langMeta(id).dir === "rtl";
+}

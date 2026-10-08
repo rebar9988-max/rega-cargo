@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #ffffff;
+  --color-surface: #ffffff;
+  --color-ink: #161616;
+  --color-muted: #5e5e5e;
+  --color-line: #e6e6e6;
+  --color-pine: #db0100;
+  --color-pine-ink: #ffffff;
+  --color-clay: #8a1c1c;
+  --font-sans: "Outfit", "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-ar: "Noto Sans Arabic", "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
+  }
+
+  html[lang="ckb"] body,
+  html[lang="ar"] body,
+  html[lang="fa"] body {
+    font-family: var(--font-ar);
+  }
+
+  ::selection {
+    background: var(--color-pine);
+    color: var(--color-pine-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 2px;
+  }
+
+  input[type="range"] {
+    accent-color: var(--color-pine);
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@layer components {
+  .ticket {
+    box-shadow: 0 22px 50px -32px rgb(22 22 22 / 0.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
