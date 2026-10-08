@@ -116,6 +116,7 @@ export function BazaarPage() {
                     width={640}
                     height={640}
                     loading={index < 2 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : undefined}
                     decoding="async"
                     className="aspect-[3/4] w-full object-cover"
                   />
