@@ -1,12 +1,23 @@
 import { responsiveImage } from "@/lib/images";
-import { Link } from "@tanstack/react-router";
-import { Heart, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { ChevronRight, Heart } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { QuotePanel } from "@/components/quote-panel";
 import { Shell } from "@/components/shell";
+import type { BazaarSearch } from "@/lib/bazaar-search";
+import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
-import { GOODS, readFavs, STORE_CATEGORIES, STORES, storeById, storeLogo, writeFavs, type StoreCategory } from "@/lib/stores";
+import {
+  GOODS,
+  readFavs,
+  STORE_CATEGORIES,
+  STORES,
+  storeById,
+  storeLogo,
+  writeFavs,
+  type StoreCategory,
+} from "@/lib/stores";
 
 const BRANDS: { name: string; category: StoreCategory }[] = [
   { name: "NIVEA", category: "beauty" },
@@ -22,35 +33,93 @@ const BRANDS: { name: string; category: StoreCategory }[] = [
   { name: "DECATHLON", category: "sports" },
 ];
 
+type Audience = "women" | "men" | "kids";
+const AUDIENCES: Audience[] = ["women", "men", "kids"];
+/** Real catalogue items and store categories per audience tab (no invented products). */
+const AUDIENCE_GOODS: Record<Audience, string[]> = {
+  women: ["perfume", "cream", "dress"],
+  men: ["sneakers", "earbuds", "ball"],
+  kids: ["baby", "ball"],
+};
+const AUDIENCE_CATEGORIES: Record<Audience, StoreCategory[]> = {
+  women: ["beauty", "fashion"],
+  men: ["fashion", "electronics", "sports"],
+  kids: ["baby", "sports"],
+};
+const COLLECTION_ORDER = [
+  "sneakers",
+  "earbuds",
+  "perfume",
+  "dress",
+  "cream",
+  "kettle",
+  "baby",
+  "ball",
+];
+const isAudience = (value: unknown): value is Audience => AUDIENCES.includes(value as Audience);
+const isCategory = (value: unknown): value is StoreCategory =>
+  STORE_CATEGORIES.includes(value as StoreCategory);
+
 export function BazaarPage() {
   const { lang } = useI18n();
   const t = storeCopy(lang);
-  const [q, setQ] = useState("");
-  const [category, setCategory] = useState<StoreCategory | "all">("all");
+  const d = DESIGN_COPY[lang];
+  const params = useRouterState({ select: (state) => state.location.search as BazaarSearch });
+  const [q, setQ] = useState(params.q ?? "");
+  const [category, setCategory] = useState<StoreCategory | "all">(
+    isCategory(params.cat) ? params.cat : "all",
+  );
+  const [audience, setAudience] = useState<Audience | null>(
+    isAudience(params.who) ? params.who : null,
+  );
   const [brandName, setBrandName] = useState<string | null>(null);
   const [country, setCountry] = useState<"all" | "DE" | "INT">("all");
-  const [onlyFav, setOnlyFav] = useState(false);
+  const [onlyFav, setOnlyFav] = useState(params.fav === "1");
   const [favs, setFavs] = useState<string[]>(() => readFavs());
   const query = q.trim().toLowerCase();
 
+  // Follow URL changes (header search, heart icon, collection cards) while mounted.
+  useEffect(() => {
+    setQ(params.q ?? "");
+    if (isCategory(params.cat)) setCategory(params.cat);
+    if (isAudience(params.who)) setAudience(params.who);
+    setOnlyFav(params.fav === "1");
+  }, [params.q, params.cat, params.who, params.fav]);
+
+  const collection = useMemo(
+    () =>
+      (audience ? GOODS.filter((good) => AUDIENCE_GOODS[audience].includes(good.id)) : GOODS)
+        .slice()
+        .sort((a, b) => COLLECTION_ORDER.indexOf(a.id) - COLLECTION_ORDER.indexOf(b.id)),
+    [audience],
+  );
+
   const goods = useMemo(() => {
     return GOODS.filter((good) => {
+      if (audience && !AUDIENCE_GOODS[audience].includes(good.id)) return false;
       if (category !== "all" && good.category !== category) return false;
       if (!query) return true;
       const shop = storeById(good.storeId);
-      return `${t.goods[good.id]} ${shop?.name ?? ""} ${shop?.host ?? ""}`.toLowerCase().includes(query);
+      return `${t.goods[good.id]} ${shop?.name ?? ""} ${shop?.host ?? ""}`
+        .toLowerCase()
+        .includes(query);
     });
-  }, [category, query, t]);
+  }, [category, query, t, audience]);
 
   const list = useMemo(() => {
     return STORES.filter((store) => {
       if (onlyFav && !favs.includes(store.id)) return false;
+      if (
+        audience &&
+        !store.categories.some((item) => AUDIENCE_CATEGORIES[audience].includes(item))
+      )
+        return false;
       if (category !== "all" && !store.categories.includes(category)) return false;
       if (country !== "all" && store.country !== country) return false;
       if (!query) return true;
       return `${store.name} ${store.host}`.toLowerCase().includes(query);
     });
-  }, [query, category, country, onlyFav, favs]);
+  }, [query, category, country, onlyFav, favs, audience]);
 
   function toggle(id: string) {
     const next = favs.includes(id) ? favs.filter((item) => item !== id) : [...favs, id];
@@ -59,53 +128,148 @@ export function BazaarPage() {
   }
 
   return (
-    <Shell>
-      <section className="border-b border-line bg-paper">
-        <div className="mx-auto grid max-w-6xl items-start gap-6 px-5 py-6 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:py-14">
-          <div>
-            <p className="font-sans text-xs font-semibold tracking-[0.16em] text-pine">EUROPE ↔ KURDISTAN ↔ IRAQ</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink md:text-5xl">{t.title}</h1>
-            <div className="mt-4">
-              <p className="hidden max-w-xl text-base leading-relaxed text-muted md:block">{t.lede}</p>
-              <SearchBox q={q} setQ={setQ} label={t.search} />
-              <p className="mt-3 text-xs text-muted">{t.notPartner}</p>
-            </div>
-            <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
-              {BRANDS.map((brand) => {
-                const on = brandName === brand.name;
-                return (
-                  <button
-                    key={brand.name}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => {
-                      setBrandName(brand.name);
-                      setCategory(brand.category);
-                    }}
-                    className={`h-11 shrink-0 rounded-full border px-4 font-sans text-sm ${on ? "border-ink bg-ink text-pine-ink" : "border-line bg-surface text-ink"}`}
-                  >
-                    <bdi dir="ltr">{brand.name}</bdi>
-                  </button>
-                );
-              })}
-            </div>
+    <Shell search={{ q, setQ }}>
+      <div className="border-b border-line bg-surface">
+        <div
+          className="mx-auto grid max-w-6xl grid-cols-3"
+          role="tablist"
+          style={{ direction: "ltr" }}
+        >
+          {AUDIENCES.map((item) => {
+            const on = audience === item;
+            return (
+              <button
+                key={item}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => setAudience(on ? null : item)}
+                className={`relative h-12 text-sm ${on ? "font-semibold text-ink" : "text-muted"}`}
+              >
+                {d.audience[item]}
+                <span
+                  className={`absolute inset-x-6 bottom-0 h-0.5 ${on ? "bg-ink" : "bg-transparent"}`}
+                  aria-hidden="true"
+                />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <section className="bg-ink text-paper">
+        <div className="mx-auto max-w-6xl px-5 py-10 md:py-16">
+          <p dir="ltr" className="text-end font-sans text-[11px] tracking-[0.2em] text-paper/60">
+            R&amp;L
+          </p>
+          <h1 className="mt-4 text-3xl leading-snug font-bold tracking-tight text-balance text-paper md:text-5xl md:leading-tight">
+            {d.tagline}
+          </h1>
+          <p className="mt-5 text-sm text-paper/60">{d.route}</p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-5 pt-8 md:pt-12">
+        <div className="flex items-center justify-between gap-3" style={{ direction: "ltr" }}>
+          <h2 className="text-2xl font-bold tracking-tight">{d.newCollection}</h2>
+          <Link
+            to="/stores"
+            search={audience ? { who: audience } : {}}
+            aria-label={d.seeAll}
+            className="inline-flex size-10 items-center justify-center rounded-full text-ink hover:bg-surface"
+          >
+            <ChevronRight className="size-5" aria-hidden="true" />
+          </Link>
+        </div>
+        <ul
+          className="-mx-5 mt-4 flex snap-x scroll-px-5 gap-3 overflow-x-auto px-5 pb-2"
+          style={{ direction: "ltr" }}
+        >
+          {collection.map((good, index) => (
+            <li
+              key={good.id}
+              className={`shrink-0 snap-start ${index === 0 ? "w-[46%] md:w-64" : "w-[38%] md:w-52"}`}
+            >
+              <Link to="/stores" search={{ cat: good.category }} className="block">
+                <span className="block overflow-hidden rounded-sm bg-[#ececea]">
+                  <img
+                    {...responsiveImage(good.image, "(min-width: 768px) 256px, 46vw")}
+                    alt=""
+                    width={640}
+                    height={640}
+                    loading={index < 2 ? "eager" : "lazy"}
+                    decoding="async"
+                    className={`w-full object-cover ${index === 0 ? "aspect-[3/4]" : "aspect-square"}`}
+                  />
+                </span>
+                <span dir="auto" className="mt-2 block text-sm text-ink">
+                  {t.goods[good.id]}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mx-auto grid max-w-6xl items-start gap-6 px-5 pt-8 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:pt-12">
+        <div className="min-w-0">
+          <h2 className="text-2xl font-bold tracking-tight">{t.title}</h2>
+          <p className="mt-2 hidden max-w-xl text-base leading-relaxed text-muted md:block">
+            {t.lede}
+          </p>
+          <p className="mt-2 text-xs text-muted">{t.notPartner}</p>
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+            {BRANDS.map((brand) => {
+              const on = brandName === brand.name;
+              return (
+                <button
+                  key={brand.name}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => {
+                    setBrandName(brand.name);
+                    setCategory(brand.category);
+                  }}
+                  className={`h-10 shrink-0 rounded-full border px-4 font-sans text-sm ${on ? "border-ink bg-ink text-pine-ink" : "border-line bg-surface text-ink"}`}
+                >
+                  <bdi dir="ltr">{brand.name}</bdi>
+                </button>
+              );
+            })}
           </div>
-          <div className="hidden md:block">
-            <QuotePanel variant="compact" />
-          </div>
+        </div>
+        <div className="hidden md:block">
+          <QuotePanel variant="compact" />
         </div>
       </section>
 
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-6 md:py-12">
         <div className="flex gap-2 overflow-x-auto pb-1">
-          <Chip on={category === "all" && !brandName} onClick={() => { setBrandName(null); setCategory("all"); }}>{t.allCategories}</Chip>
+          <Chip
+            on={category === "all" && !brandName}
+            onClick={() => {
+              setBrandName(null);
+              setCategory("all");
+            }}
+          >
+            {t.allCategories}
+          </Chip>
           {STORE_CATEGORIES.filter((item) => item !== "general").map((item) => (
-            <Chip key={item} on={category === item && !brandName} onClick={() => { setBrandName(null); setCategory(item); }}>{t.categories[item]}</Chip>
+            <Chip
+              key={item}
+              on={category === item && !brandName}
+              onClick={() => {
+                setBrandName(null);
+                setCategory(item);
+              }}
+            >
+              {t.categories[item]}
+            </Chip>
           ))}
         </div>
 
         <ul className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-4 md:gap-x-5">
-          {goods.map((good, index) => {
+          {goods.map((good) => {
             const shop = storeById(good.storeId);
             return (
               <li key={good.id} className="flex flex-col">
@@ -115,14 +279,17 @@ export function BazaarPage() {
                     alt={t.goods[good.id]}
                     width={640}
                     height={640}
-                    loading={index < 2 ? "eager" : "lazy"}
-                    fetchPriority={index === 0 ? "high" : undefined}
+                    loading="lazy"
                     decoding="async"
                     className="aspect-[3/4] w-full object-cover"
                   />
                 </div>
                 <div className="flex flex-1 flex-col gap-1 px-1 pt-3">
-                  {shop ? <p className="font-sans text-[10px] font-semibold tracking-[0.16em] text-muted"><bdi dir="ltr">{shop.name}</bdi></p> : null}
+                  {shop ? (
+                    <p className="font-sans text-[10px] font-semibold tracking-[0.16em] text-muted">
+                      <bdi dir="ltr">{shop.name}</bdi>
+                    </p>
+                  ) : null}
                   <h2 className="text-sm font-medium leading-snug">{t.goods[good.id]}</h2>
                   <p className="text-xs text-muted">{t.awaiting}</p>
                   <Link
@@ -168,7 +335,10 @@ export function BazaarPage() {
           {list.map((store) => {
             const loved = favs.includes(store.id);
             return (
-              <li key={store.id} className="flex flex-col rounded-3xl border border-line bg-surface p-5">
+              <li
+                key={store.id}
+                className="flex flex-col rounded-3xl border border-line bg-surface p-5"
+              >
                 <div className="flex items-start gap-3">
                   <span className="grid h-16 min-w-0 flex-1 place-items-center rounded-2xl border border-line bg-white px-4">
                     <img
@@ -188,7 +358,10 @@ export function BazaarPage() {
                     onClick={() => toggle(store.id)}
                     className="inline-flex size-10 items-center justify-center rounded-full border border-line"
                   >
-                    <Heart className={`size-4 ${loved ? "text-pine" : "text-muted"}`} fill={loved ? "currentColor" : "none"} />
+                    <Heart
+                      className={`size-4 ${loved ? "text-pine" : "text-muted"}`}
+                      fill={loved ? "currentColor" : "none"}
+                    />
                   </button>
                 </div>
                 <h3 className="mt-4 font-sans text-lg font-semibold tracking-tight">
@@ -199,7 +372,9 @@ export function BazaarPage() {
                   {" · "}
                   <bdi dir="ltr">{store.host}</bdi>
                 </p>
-                <p className="mt-4 text-sm text-muted">{store.categories.map((item) => t.categories[item]).join(" · ")}</p>
+                <p className="mt-4 text-sm text-muted">
+                  {store.categories.map((item) => t.categories[item]).join(" · ")}
+                </p>
                 <a
                   href={store.url}
                   target="_blank"
@@ -209,10 +384,18 @@ export function BazaarPage() {
                   {t.open}
                 </a>
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                  <Link to="/stores/request" search={{ store: store.id, intent: "buy", item: undefined }} className="text-ink underline-offset-4 hover:underline">
+                  <Link
+                    to="/stores/request"
+                    search={{ store: store.id, intent: "buy", item: undefined }}
+                    className="text-ink underline-offset-4 hover:underline"
+                  >
                     {t.assist}
                   </Link>
-                  <Link to="/stores/request" search={{ store: store.id, intent: "ship", item: undefined }} className="text-muted underline-offset-4 hover:underline">
+                  <Link
+                    to="/stores/request"
+                    search={{ store: store.id, intent: "ship", item: undefined }}
+                    className="text-muted underline-offset-4 hover:underline"
+                  >
                     {t.shipOwn}
                   </Link>
                 </div>
@@ -233,21 +416,6 @@ export function BazaarPage() {
         </ul>
       </div>
     </Shell>
-  );
-}
-
-function SearchBox({ q, setQ, label }: { q: string; setQ: (value: string) => void; label: string }) {
-  return (
-    <label className="mt-4 flex h-14 max-w-xl items-center gap-3 rounded-full border border-line bg-surface px-4">
-      <Search className="size-4 shrink-0 text-muted" />
-      <input
-        value={q}
-        onChange={(event) => setQ(event.target.value)}
-        placeholder={label}
-        aria-label={label}
-        className="h-full w-full bg-transparent text-base text-ink outline-none"
-      />
-    </label>
   );
 }
 

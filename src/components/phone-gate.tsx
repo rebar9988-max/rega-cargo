@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { UserRound, X } from "lucide-react";
 import { btnPrimary, controlClass } from "@/components/field";
 import { useI18n } from "@/lib/i18n";
 import { phoneBegin, phoneCheck, phoneLeave, phoneStatus, phoneWho } from "@/lib/phone/api";
@@ -181,7 +181,10 @@ const copy = {
 
 type PhoneCopy = { [K in keyof typeof copy.en]: string };
 
-export function PhoneButton() {
+export function PhoneButton({
+  variant = "pill",
+  label,
+}: { variant?: "pill" | "icon" | "block"; label?: string } = {}) {
   const { lang } = useI18n();
   const t: PhoneCopy = copy[lang] ?? copy.en;
   const [open, setOpen] = useState(false);
@@ -193,13 +196,32 @@ export function PhoneButton() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex h-10 w-24 shrink-0 items-center justify-center rounded-full border border-line px-3 text-sm"
-      >
-        <span className="truncate">{me ? me.name : t.in}</span>
-      </button>
+      {variant === "icon" ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={label ?? t.in}
+          className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper max-[389px]:hidden"
+        >
+          <UserRound className="size-5" aria-hidden="true" />
+        </button>
+      ) : variant === "block" ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="inline-flex h-12 w-full items-center justify-center rounded-2xl bg-pine px-4 text-sm font-semibold text-pine-ink"
+        >
+          <span className="truncate">{me ? me.name : t.in}</span>
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="inline-flex h-10 w-[5.25rem] shrink-0 items-center justify-center rounded-full border border-line px-2 text-sm"
+        >
+          <span className="truncate">{me ? me.name : t.in}</span>
+        </button>
+      )}
       {open ? (
         <PhoneDialog
           t={t}
