@@ -32,7 +32,12 @@ async function rate(userId: string) {
 
 export async function submitRequest(userId: string, kind: "quote" | "store", payload: Record<string, unknown>, estimateEur: number | null) {
   try {
-    const me = await phoneMe();
+    let me: { name?: string; phone?: string } | null = null;
+    try {
+      me = await phoneMe();
+    } catch {
+      me = null;
+    }
     const name = cleanText(me?.name ?? payload.name, 80);
     const phone = cleanText(me?.phone ?? payload.phone, 20);
     await rate(userId);

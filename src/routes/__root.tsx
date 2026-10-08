@@ -1,7 +1,6 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { I18nProvider } from "@/lib/i18n";
-import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { ServiceWorkerSetup } from "@/components/sw-setup";
 import appCss from "../styles.css?url";
@@ -18,6 +17,11 @@ export const Route = createRootRoute({
           "R&L — Move smart. Deliver fast. Europe, Kurdistan, and Iraq. Chargeable-weight prices in euro and dinar.",
       },
       { name: "theme-color", content: "#f4f4f4" },
+      { property: "og:title", content: "R&L" },
+      { property: "og:description", content: "MOVE SMART. DELIVER FAST." },
+      { property: "og:image", content: "/og.jpg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "apple-mobile-web-app-title", content: "R&L" },
     ],
     scripts: [
       {
@@ -29,8 +33,8 @@ export const Route = createRootRoute({
     links: [
       { rel: "icon", type: "image/png", href: "/favicon.png?v=6" },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
   }),
   component: () => (
@@ -39,7 +43,6 @@ export const Route = createRootRoute({
         <HeadContent />
       </head>
       <body>
-        <PreviewHostBridge />
         <ServiceWorkerSetup />
         <AuthProvider>
           <I18nProvider>

@@ -8,7 +8,6 @@ import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
 import { hostAllowed, storeById, goodById } from "@/lib/stores";
 import { orderStore } from "@/lib/orders/api";
-import { CONTACT_EMAIL } from "@/lib/contact";
 
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -69,11 +68,15 @@ function RequestPage() {
         setSaved(String(result.id));
         return;
       }
+      if (result && "error" in result && result.error === "unavailable") {
+        setError(t.serviceLater);
+        return;
+      }
     } catch {
-      /* signed out or no database */
+      /* signed out */
     }
     setSaved(null);
-    setError(CONTACT_EMAIL);
+    setError(t.serviceLater);
   }
 
   return (

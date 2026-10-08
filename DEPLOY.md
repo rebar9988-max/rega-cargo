@@ -13,7 +13,7 @@ records, or its database. **Never point this app at REGA's database.**
 | Nitro preset | `cloudflare-module` (`vite.config.ts`; override with `NITRO_PRESET`) |
 | Worker config | `wrangler.jsonc` → merged by the build into `.output/server/wrangler.json` |
 | Static assets | `.output/public`, served via the `ASSETS` binding |
-| Server middleware | `server/middleware/grok-pwa.ts` (manifest, `?install=1`, head tags) |
+| Server middleware | security headers, HTML cache, and `server/middleware/rl-og.ts` (absolute `og:image`). Manifest is `public/manifest.webmanifest`. The Grok `/?install=1` page is not served. |
 | Database | Postgres via `pg`. On Workers: Hyperdrive binding `HYPERDRIVE` (preferred) or `DATABASE_URL` secret |
 | Migrations | `migrations/*.sql` (plain Postgres SQL), applied by `scripts/migrate.mjs` |
 
