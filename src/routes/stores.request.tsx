@@ -1,3 +1,4 @@
+import { responsiveImage } from "@/lib/images";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Field, controlClass, btnPrimary } from "@/components/field";
@@ -98,7 +99,7 @@ function RequestPage() {
           <form onSubmit={submit} className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-6">
             {good ? (
               <div className="flex items-center gap-3">
-                <img src={good.image} alt="" className="size-16 rounded-xl object-cover" />
+                <img {...responsiveImage(good.image, "64px")} alt="" width={64} height={64} decoding="async" className="size-16 rounded-xl object-cover" />
                 <div>
                   <p className="font-semibold">{t.goods[good.id]}</p>
                   <p className="text-sm text-muted">{t.sample}</p>
