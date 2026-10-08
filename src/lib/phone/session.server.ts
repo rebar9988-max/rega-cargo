@@ -2,7 +2,7 @@ import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypt
 import { getCookie, getRequest, setCookie } from "@tanstack/react-start/server";
 import { getSql } from "@/lib/db";
 import { cleanPin, toE164 } from "@/lib/phone/format";
-import { deliverCode } from "@/lib/phone/send.server";
+import { deliverCode, messageLines } from "@/lib/phone/send.server";
 
 const COOKIE = "rl_phone";
 const MONTH = 60 * 60 * 24 * 30;
@@ -61,11 +61,38 @@ export async function phoneMe() {
   const id = await currentPhoneUserId();
   if (!id) return null;
   const sql = await getSql();
-  const rows = await sql<{ name: string; phone: string }>`select name, phone from phone_users where id = ${id}`;
+  const rows = await sql<{
+    name: string;
+    phone: string;
+  }>`select name, phone from phone_users where id = ${id}`;
   return rows[0] ? { name: rows[0].name, phone: rows[0].phone } : null;
 }
 
+/** True only when a real code can be sent (WhatsApp or Twilio is configured). */
+export function phoneDeliveryConfigured() {
+  const lines = messageLines();
+  return lines.whatsapp || lines.sms;
+}
+
+/**
+ * Match the caller's PIN against the code we actually delivered, then delete it.
+ * Returns false (and never opens a session) when nothing was sent or the PIN is wrong.
+ */
+async function consumeDeliveredCode(phone: string, pin: string) {
+  const sql = await getSql();
+  const codes = await sql<{ code_hash: string; code_salt: string; attempts: number }>`
+    select code_hash, code_salt, attempts from phone_codes where phone = ${phone} and expires_at > now()`;
+  const row = codes[0];
+  if (!row || Number(row.attempts) >= 5 || !pinsMatch(pin, row.code_salt, row.code_hash)) {
+    await sql`update phone_codes set attempts = attempts + 1 where phone = ${phone}`;
+    return false;
+  }
+  await sql`delete from phone_codes where phone = ${phone}`;
+  return true;
+}
+
 export async function phoneStart(dial: unknown, national: unknown) {
+  if (!phoneDeliveryConfigured()) return { error: "unavailable" as const };
   const phone = toE164(String(dial ?? ""), String(national ?? ""));
   if (!phone) return { error: "phone" as const };
   if (await limited(`look:${phone}`)) return { error: "rate" as const };
@@ -73,35 +100,46 @@ export async function phoneStart(dial: unknown, national: unknown) {
   const rows = await sql`select id from phone_users where phone = ${phone}`;
   const code = String(Math.floor(1000 + Math.random() * 9000));
   const sent = await deliverCode(phone, code);
-  if (!sent.whatsapp && !sent.sms) return { phone, exists: rows.length > 0, sent: false as const, whatsapp: false, sms: false };
+  // Nothing was delivered, so nothing can be verified: refuse instead of letting the caller pick a code.
+  if (!sent.whatsapp && !sent.sms) return { error: "unavailable" as const };
   const salt = randomBytes(16).toString("hex");
   await sql`
     insert into phone_codes (phone, code_hash, code_salt, expires_at, attempts)
     values (${phone}, ${hashPin(code, salt)}, ${salt}, now() + interval '10 minutes', 0)
     on conflict (phone) do update set code_hash = excluded.code_hash, code_salt = excluded.code_salt, expires_at = excluded.expires_at, attempts = 0`;
-  return { phone, exists: rows.length > 0, sent: true as const, whatsapp: sent.whatsapp, sms: sent.sms };
+  return {
+    phone,
+    exists: rows.length > 0,
+    sent: true as const,
+    whatsapp: sent.whatsapp,
+    sms: sent.sms,
+  };
 }
 
-export async function phoneConfirm(input: { dial?: unknown; national?: unknown; pin?: unknown; name?: unknown }) {
+export async function phoneConfirm(input: {
+  dial?: unknown;
+  national?: unknown;
+  pin?: unknown;
+  name?: unknown;
+}) {
+  if (!phoneDeliveryConfigured()) return { error: "unavailable" as const };
   const phone = toE164(String(input.dial ?? ""), String(input.national ?? ""));
   const pin = cleanPin(String(input.pin ?? ""));
   if (!phone || !pin) return { error: "invalid" as const };
   if (await limited(`pin:${phone}`)) return { error: "rate" as const };
+  if (!(await consumeDeliveredCode(phone, pin))) return { error: "wrong" as const };
   const sql = await getSql();
-  const codes = await sql<{ code_hash: string; code_salt: string; attempts: number }>`
-    select code_hash, code_salt, attempts from phone_codes where phone = ${phone} and expires_at > now()`;
-  const row = codes[0];
-  if (!row || Number(row.attempts) >= 5 || !pinsMatch(pin, row.code_salt, row.code_hash)) {
-    await sql`update phone_codes set attempts = attempts + 1 where phone = ${phone}`;
-    return { error: "wrong" as const };
-  }
-  await sql`delete from phone_codes where phone = ${phone}`;
-  const users = await sql<{ id: string; name: string }>`select id, name from phone_users where phone = ${phone}`;
+  const users = await sql<{
+    id: string;
+    name: string;
+  }>`select id, name from phone_users where phone = ${phone}`;
   if (users[0]) {
     await openSession(users[0].id);
     return { name: users[0].name, phone };
   }
-  const name = String(input.name ?? "").trim().replace(/\s+/g, " ");
+  const name = String(input.name ?? "")
+    .trim()
+    .replace(/\s+/g, " ");
   if (name.length < 2 || name.length > 40) return { error: "invalid" as const };
   const id = `ph_${crypto.randomUUID()}`;
   const salt = randomBytes(16).toString("hex");
@@ -125,20 +163,30 @@ async function openSession(userId: string) {
   writeCookie(token);
 }
 
-export async function phoneRegister(input: { dial?: unknown; national?: unknown; name?: unknown; pin?: unknown }) {
+export async function phoneRegister(input: {
+  dial?: unknown;
+  national?: unknown;
+  name?: unknown;
+  pin?: unknown;
+}) {
+  if (!phoneDeliveryConfigured()) return { error: "unavailable" as const };
   const phone = toE164(String(input.dial ?? ""), String(input.national ?? ""));
   const pin = cleanPin(String(input.pin ?? ""));
-  const name = String(input.name ?? "").trim().replace(/\s+/g, " ");
+  const name = String(input.name ?? "")
+    .trim()
+    .replace(/\s+/g, " ");
   if (!phone || !pin || name.length < 2 || name.length > 40) return { error: "invalid" as const };
   if (await limited(`reg:${phone}`)) return { error: "rate" as const };
   const sql = await getSql();
   const existing = await sql`select id from phone_users where phone = ${phone}`;
   if (existing.length) return { error: "exists" as const };
+  // The caller's PIN is only accepted when it matches a code we delivered.
+  if (!(await consumeDeliveredCode(phone, pin))) return { error: "wrong" as const };
   const id = `ph_${crypto.randomUUID()}`;
   const salt = randomBytes(16).toString("hex");
   await sql`
     insert into phone_users (id, phone, name, pin_hash, pin_salt)
-    values (${id}, ${phone}, ${name}, ${hashPin(pin, salt)}, ${salt})`;
+    values (${id}, ${phone}, ${name}, ${hashPin(randomBytes(8).toString("hex"), salt)}, ${salt})`;
   await sql`
     insert into user_roles (user_id, role, status, display_name, phone)
     values (${id}, 'buyer', 'approved', ${name}, ${phone})
@@ -148,15 +196,17 @@ export async function phoneRegister(input: { dial?: unknown; national?: unknown;
 }
 
 export async function phoneLogin(input: { dial?: unknown; national?: unknown; pin?: unknown }) {
+  if (!phoneDeliveryConfigured()) return { error: "unavailable" as const };
   const phone = toE164(String(input.dial ?? ""), String(input.national ?? ""));
   const pin = cleanPin(String(input.pin ?? ""));
   if (!phone || !pin) return { error: "invalid" as const };
   if (await limited(`pin:${phone}`)) return { error: "rate" as const };
   const sql = await getSql();
-  const rows = await sql<{ id: string; name: string; pin_hash: string; pin_salt: string }>`
-    select id, name, pin_hash, pin_salt from phone_users where phone = ${phone}`;
+  const rows = await sql<{ id: string; name: string }>`
+    select id, name from phone_users where phone = ${phone}`;
   const user = rows[0];
-  if (!user || !pinsMatch(pin, user.pin_salt, user.pin_hash)) return { error: "wrong" as const };
+  // A stored PIN is not enough: sign-in needs the code that was delivered.
+  if (!user || !(await consumeDeliveredCode(phone, pin))) return { error: "wrong" as const };
   await openSession(user.id);
   return { name: user.name, phone };
 }

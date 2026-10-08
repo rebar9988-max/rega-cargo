@@ -11,6 +11,12 @@ export const phoneWho = createServerFn({ method: "GET" }).handler(async () => {
   return phoneMe();
 });
 
+export const phoneStatus = createServerFn({ method: "GET" }).handler(async () => {
+  await guard();
+  const { phoneDeliveryConfigured } = await import("./session.server");
+  return { available: phoneDeliveryConfigured() };
+});
+
 export const phoneBegin = createServerFn({ method: "POST" })
   .validator((input: { dial: string; national: string }) => input)
   .handler(async ({ data }) => {
