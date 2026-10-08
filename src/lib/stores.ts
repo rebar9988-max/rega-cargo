@@ -117,7 +117,22 @@ export const STORES: StoreEntry[] = [
     note: "shein",
     caution: [],
   },
+  {
+    id: "idealo",
+    name: "idealo",
+    host: "idealo.de",
+    url: "https://www.idealo.de/",
+    country: "DE",
+    categories: ["general", "electronics", "home", "beauty", "fashion", "sports", "baby"],
+    note: "link",
+    caution: [],
+  },
 ];
+
+/** Self-hosted official logo (Wikimedia Commons; see public/store-logos/LOGOS.md). */
+export function storeLogo(id: string): string {
+  return `/store-logos/${id}.svg`;
+}
 
 export const STORE_CATEGORIES: StoreCategory[] = [
   "beauty",

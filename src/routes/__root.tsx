@@ -20,6 +20,7 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/favicon.png?v=6" },
+      { rel: "preload", href: "/fonts/vazirmatn-nl-v33.003.woff2", as: "font", type: "font/woff2", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },

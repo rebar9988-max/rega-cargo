@@ -3,7 +3,16 @@
    third-party stylesheet and no visitor IPs sent to Google. Variable fonts,
    split by unicode-range so only the scripts a page uses are downloaded. */
 @import "@fontsource-variable/outfit/wght.css";
-@import "@fontsource-variable/noto-sans-arabic/wght.css";
+/* Vazirmatn v33.003 (OFL, rastikerdar/vazirmatn), official Non-Latin variable build:
+   Arabic-script glyphs only, so Latin text and brand names stay in Outfit. */
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/vazirmatn-nl-v33.003.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F, U+2010-2011, U+204F, U+2E41;
+}
 
 @theme {
   --color-paper: #f6f5f3;
@@ -11,11 +20,11 @@
   --color-ink: #111111;
   --color-muted: #6b6b6b;
   --color-line: #eceae6;
-  --color-pine: #e10600;
+  --color-pine: #db0100;
   --color-pine-ink: #ffffff;
   --color-clay: #8a1c1c;
-  --font-sans: "Outfit Variable", "Noto Sans Arabic Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-ar: "Noto Sans Arabic Variable", "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Outfit Variable", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+  --font-ar: "Vazirmatn", "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {

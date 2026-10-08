@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Check, ChevronDown, House, LayoutGrid, Menu, Sparkles, Store, Tag, X } from "lucide-react";
+import { Check, ChevronDown, House, LayoutGrid, Mail, Menu, Sparkles, Store, Tag, Warehouse, X } from "lucide-react";
 import { AI_COPY } from "@/components/ai-copy";
 import { PhoneButton } from "@/components/phone-gate";
 import { rlAiEnabled } from "@/lib/ai/flag";
+import { CONTACT_EMAIL } from "@/lib/contact";
 import { useI18n } from "@/lib/i18n";
 import { LANGS, langMeta, type Lang } from "@/lib/langs";
 
@@ -11,7 +12,6 @@ const LINKS = [
   { to: "/", key: "home", exact: true },
   { to: "/quote", key: "quote", exact: false },
   { to: "/track", key: "track", exact: false },
-  { to: "/customs", key: "customs", exact: false },
   { to: "/stores", key: "stores", exact: false },
   { to: "/market", key: "market", exact: false },
   { to: "/move", key: "move", exact: false },
@@ -152,42 +152,29 @@ export function Shell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-3">
               <Mark />
               <div className="leading-none">
-                <p className="font-sans text-xs font-semibold tracking-wide text-paper">MOVE SMART. DELIVER FAST.</p>
-                <p className="mt-1 font-sans text-xs text-paper/70">EUROPE ↔ KURDISTAN ↔ IRAQ</p>
+                <p dir="ltr" className="font-sans text-xs font-semibold tracking-wide text-paper">MOVE SMART. DELIVER FAST.</p>
+                <p dir="ltr" className="mt-1 font-sans text-xs text-paper/70">EUROPE ↔ KURDISTAN ↔ IRAQ</p>
               </div>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-paper/70">{t.footerBlurb}</p>
           </div>
-          <div>
-            <p className="text-sm font-medium">{t.hubsTitle}</p>
-            <ul className="mt-4 flex flex-col gap-3">
-              {t.hubs.map((hub) => (
-                <li key={hub.name}>
-                  <p className="text-sm font-medium">{hub.name}</p>
-                  <p className="text-sm text-paper/70">{hub.detail}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="text-sm font-medium">{t.hoursTitle}</p>
-            <ul className="mt-4 flex flex-col gap-2">
-              {t.hours.map((row) => (
-                <li key={row}>
-                  <bdi dir="ltr" className="text-sm text-paper/70">
-                    {row}
-                  </bdi>
-                </li>
-              ))}
-            </ul>
+          <div className="flex flex-col gap-3 md:col-span-2 md:items-end">
+            <div className="flex items-center gap-2 text-sm text-paper/80">
+              <Warehouse className="size-4 shrink-0" aria-hidden="true" />
+              <span dir="auto">{t.warehouse}</span>
+            </div>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-2 text-sm font-medium text-paper hover:underline">
+              <Mail className="size-4 shrink-0" aria-hidden="true" />
+              <bdi dir="ltr">{CONTACT_EMAIL}</bdi>
+            </a>
           </div>
         </div>
         <div className="border-t border-paper/15">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
             <p className="text-xs leading-relaxed text-paper/60">{t.footerNote}</p>
             <a
-              href="/rega-cargo.pdf"
-              download="rega-cargo.pdf"
+              href="/rl-cargo.pdf"
+              download="rl-cargo.pdf"
               className="inline-flex h-10 shrink-0 items-center rounded-full border border-paper/25 px-4 text-xs font-medium text-paper"
             >
               PDF
