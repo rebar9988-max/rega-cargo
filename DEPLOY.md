@@ -129,5 +129,3 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
    build/dev tooling (`nitro → env-runner → miniflare`, `wrangler →
    miniflare`). They are not in the Worker bundle. Fixing needs a breaking
    Nitro beta upgrade.
-5. `vercel.json` and `startup.sh` are leftovers from the previous host /
-   app-builder sandbox and are not used on Cloudflare.
