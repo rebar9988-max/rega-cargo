@@ -170,7 +170,15 @@ export default defineConfig(({ command, isPreview }) => ({
     ...(command === "build" || isPreview
       ? [
           nitro({
-            preset: "vercel",
+            // Cloudflare Workers (ES module worker + static assets binding).
+            // Override with NITRO_PRESET=<preset> for another target.
+            preset: process.env.NITRO_PRESET || "cloudflare-module",
+            cloudflare: {
+              // Emit .output/server/wrangler.json merged from ./wrangler.jsonc
+              // and point `wrangler deploy` at it via .wrangler/deploy/config.json.
+              deployConfig: true,
+              nodeCompat: true,
+            },
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.

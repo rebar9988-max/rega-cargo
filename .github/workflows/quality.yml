@@ -27,3 +27,5 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: ''
+      - name: Cloudflare Worker bundle check (wrangler dry-run, no deploy)
+        run: npm run cf:dry-run
