@@ -6,3 +6,6 @@ dist
 .env
 .env.*
 *.log
+.vercel
+.wrangler
+.dev.vars

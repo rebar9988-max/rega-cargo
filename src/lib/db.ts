@@ -1,14 +1,14 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
+import { isWorkersRuntime, resolveDatabaseUrl } from "./db-config.server";
 
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite";
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
-const rawDatabaseUrl =
-  typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
-const databaseUrl =
-  rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
+// On Cloudflare Workers this is the Hyperdrive binding (or a DATABASE_URL
+// secret) — see db-config.server.ts.
+const databaseUrl = resolveDatabaseUrl();
 
 /**
  * Active backend: real **Neon** when `DATABASE_URL` is set (deployed / configured
@@ -85,7 +85,42 @@ function toSql(run: Run): Sql {
   return sql;
 }
 
+/**
+ * Workers: one short-lived pg client per query. A socket opened while serving
+ * one request cannot be used by another request in workerd ("Cannot perform
+ * I/O on behalf of a different request"), so a process-wide Pool is unsafe
+ * there. Hyperdrive keeps the real connection pool at the edge, which makes a
+ * connect-per-query cheap.
+ */
+function createWorkersSql(): Promise<Sql> {
+  globalRef.__pgSqlPromise__ ??= (async () => {
+    const { Client, types } = await import("pg");
+    const typeParsers = {
+      getTypeParser: ((oid: number, format?: "text" | "binary") => {
+        if (oid === OID_INT8) return Number;
+        if (oid === OID_DATE || oid === OID_INTERVAL) return identity;
+        return types.getTypeParser(oid, format as "text");
+      }) as typeof types.getTypeParser,
+    };
+    return toSql(async <T>(text: string, params: unknown[]) => {
+      const client = new Client({ connectionString: databaseUrl, types: typeParsers });
+      await client.connect();
+      try {
+        const res = await client.query(text, params);
+        return res.rows as T[];
+      } finally {
+        await client.end().catch(() => undefined);
+      }
+    });
+  })().catch((err) => {
+    globalRef.__pgSqlPromise__ = undefined;
+    throw err;
+  });
+  return globalRef.__pgSqlPromise__;
+}
+
 function createNeonSql(): Promise<Sql> {
+  if (isWorkersRuntime()) return createWorkersSql();
   globalRef.__pgSqlPromise__ ??= (async () => {
     // Regular Postgres driver: node-postgres (`pg`) — works directly with Neon's
     // pooled endpoint. One pool per process; warm serverless instances reuse it.
@@ -176,6 +211,14 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
+  if (dbSource === "pglite" && isWorkersRuntime()) {
+    // PGLite needs its WASM + data files from the filesystem; neither exists in
+    // a Worker, and an in-memory DB would not persist anyway.
+    throw new Error(
+      "Database not configured: bind a Hyperdrive config as HYPERDRIVE (or set the " +
+        "DATABASE_URL secret) for the rega-cargo Worker — see DEPLOY.md.",
+    );
+  }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
 
@@ -220,7 +263,7 @@ export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite
  * module kick it off immediately (see bottom of file).
  */
 export function ensureDbReady(): Promise<void> {
-  if (dbSource !== "pglite") return Promise.resolve();
+  if (dbSource !== "pglite" || isWorkersRuntime()) return Promise.resolve();
   return getSql().then(() => undefined);
 }
 
@@ -229,7 +272,7 @@ export function ensureDbReady(): Promise<void> {
 const globalBoot = globalThis as typeof globalThis & {
   __pgBootstrapPromise__?: Promise<void>;
 };
-if (typeof window === "undefined" && dbSource === "pglite") {
+if (typeof window === "undefined" && dbSource === "pglite" && !isWorkersRuntime()) {
   globalBoot.__pgBootstrapPromise__ ??= ensureDbReady().catch((err) => {
     globalBoot.__pgBootstrapPromise__ = undefined;
     console.error("[db] PGLite bootstrap failed:", err);

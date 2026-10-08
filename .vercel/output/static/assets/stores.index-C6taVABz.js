@@ -1,0 +1,1 @@
+import{t as e}from"./bazaar-page-DIiAntll.js";var t=e;export{t as component};

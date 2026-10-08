@@ -1,0 +1,620 @@
+//#region node_modules/.nitro/vite/services/ssr/assets/format-BNUSC0Sf.js
+var COUNTRIES = [
+	{
+		iso: "IQ",
+		dial: "964",
+		name: "Iraq",
+		local: "عێراق"
+	},
+	{
+		iso: "DE",
+		dial: "49",
+		name: "Germany",
+		local: "ئەڵمانیا"
+	},
+	{
+		iso: "TR",
+		dial: "90",
+		name: "Turkey",
+		local: "تورکیا"
+	},
+	{
+		iso: "GB",
+		dial: "44",
+		name: "United Kingdom",
+		local: "بەریتانیا"
+	},
+	{
+		iso: "US",
+		dial: "1",
+		name: "United States",
+		local: "ئەمریکا"
+	},
+	{
+		iso: "CA",
+		dial: "1",
+		name: "Canada",
+		local: "کەنەدا"
+	},
+	{
+		iso: "AE",
+		dial: "971",
+		name: "United Arab Emirates",
+		local: "ئیمارات"
+	},
+	{
+		iso: "IR",
+		dial: "98",
+		name: "Iran",
+		local: "ئێران"
+	},
+	{
+		iso: "SY",
+		dial: "963",
+		name: "Syria",
+		local: "سووریا"
+	},
+	{
+		iso: "JO",
+		dial: "962",
+		name: "Jordan",
+		local: "ئوردن"
+	},
+	{
+		iso: "LB",
+		dial: "961",
+		name: "Lebanon",
+		local: "لوبنان"
+	},
+	{
+		iso: "SA",
+		dial: "966",
+		name: "Saudi Arabia",
+		local: "سعودیە"
+	},
+	{
+		iso: "KW",
+		dial: "965",
+		name: "Kuwait",
+		local: "کوەیت"
+	},
+	{
+		iso: "QA",
+		dial: "974",
+		name: "Qatar",
+		local: "قەتەر"
+	},
+	{
+		iso: "BH",
+		dial: "973",
+		name: "Bahrain",
+		local: "بەحرەین"
+	},
+	{
+		iso: "OM",
+		dial: "968",
+		name: "Oman",
+		local: "عومان"
+	},
+	{
+		iso: "YE",
+		dial: "967",
+		name: "Yemen",
+		local: "یەمەن"
+	},
+	{
+		iso: "EG",
+		dial: "20",
+		name: "Egypt",
+		local: "میسر"
+	},
+	{
+		iso: "PS",
+		dial: "970",
+		name: "Palestine",
+		local: "فەلەستین"
+	},
+	{
+		iso: "SE",
+		dial: "46",
+		name: "Sweden",
+		local: "سوید"
+	},
+	{
+		iso: "NO",
+		dial: "47",
+		name: "Norway",
+		local: "نەرویج"
+	},
+	{
+		iso: "DK",
+		dial: "45",
+		name: "Denmark",
+		local: "دانمارک"
+	},
+	{
+		iso: "FI",
+		dial: "358",
+		name: "Finland",
+		local: "فینلاند"
+	},
+	{
+		iso: "NL",
+		dial: "31",
+		name: "Netherlands",
+		local: "هۆڵەندا"
+	},
+	{
+		iso: "BE",
+		dial: "32",
+		name: "Belgium",
+		local: "بەلجیکا"
+	},
+	{
+		iso: "FR",
+		dial: "33",
+		name: "France",
+		local: "فەڕەنسا"
+	},
+	{
+		iso: "AT",
+		dial: "43",
+		name: "Austria",
+		local: "نەمسا"
+	},
+	{
+		iso: "CH",
+		dial: "41",
+		name: "Switzerland",
+		local: "سویسرا"
+	},
+	{
+		iso: "IT",
+		dial: "39",
+		name: "Italy",
+		local: "ئیتاڵیا"
+	},
+	{
+		iso: "ES",
+		dial: "34",
+		name: "Spain",
+		local: "ئیسپانیا"
+	},
+	{
+		iso: "PT",
+		dial: "351",
+		name: "Portugal",
+		local: "پورتوگال"
+	},
+	{
+		iso: "GR",
+		dial: "30",
+		name: "Greece",
+		local: "یۆنان"
+	},
+	{
+		iso: "PL",
+		dial: "48",
+		name: "Poland",
+		local: "پۆڵەندا"
+	},
+	{
+		iso: "CZ",
+		dial: "420",
+		name: "Czechia",
+		local: "چیک"
+	},
+	{
+		iso: "HU",
+		dial: "36",
+		name: "Hungary",
+		local: "مەجارستان"
+	},
+	{
+		iso: "RO",
+		dial: "40",
+		name: "Romania",
+		local: "ڕۆمانیا"
+	},
+	{
+		iso: "BG",
+		dial: "359",
+		name: "Bulgaria",
+		local: "بولگاریا"
+	},
+	{
+		iso: "UA",
+		dial: "380",
+		name: "Ukraine",
+		local: "ئۆکراین"
+	},
+	{
+		iso: "RU",
+		dial: "7",
+		name: "Russia",
+		local: "ڕووسیا"
+	},
+	{
+		iso: "IE",
+		dial: "353",
+		name: "Ireland",
+		local: "ئیرلەندا"
+	},
+	{
+		iso: "AU",
+		dial: "61",
+		name: "Australia",
+		local: "ئوسترالیا"
+	},
+	{
+		iso: "NZ",
+		dial: "64",
+		name: "New Zealand",
+		local: "نیوزیلاند"
+	},
+	{
+		iso: "CN",
+		dial: "86",
+		name: "China",
+		local: "چین"
+	},
+	{
+		iso: "JP",
+		dial: "81",
+		name: "Japan",
+		local: "ژاپۆن"
+	},
+	{
+		iso: "KR",
+		dial: "82",
+		name: "South Korea",
+		local: "کۆریای باشوور"
+	},
+	{
+		iso: "IN",
+		dial: "91",
+		name: "India",
+		local: "هیندستان"
+	},
+	{
+		iso: "PK",
+		dial: "92",
+		name: "Pakistan",
+		local: "پاکستان"
+	},
+	{
+		iso: "AF",
+		dial: "93",
+		name: "Afghanistan",
+		local: "ئەفغانستان"
+	},
+	{
+		iso: "AZ",
+		dial: "994",
+		name: "Azerbaijan",
+		local: "ئازەربایجان"
+	},
+	{
+		iso: "AM",
+		dial: "374",
+		name: "Armenia",
+		local: "ئەرمەنستان"
+	},
+	{
+		iso: "GE",
+		dial: "995",
+		name: "Georgia",
+		local: "گورجستان"
+	},
+	{
+		iso: "KZ",
+		dial: "7",
+		name: "Kazakhstan",
+		local: "کازاخستان"
+	},
+	{
+		iso: "UZ",
+		dial: "998",
+		name: "Uzbekistan",
+		local: "ئوزبەکستان"
+	},
+	{
+		iso: "MY",
+		dial: "60",
+		name: "Malaysia",
+		local: "مالیزیا"
+	},
+	{
+		iso: "SG",
+		dial: "65",
+		name: "Singapore",
+		local: "سینگاپوور"
+	},
+	{
+		iso: "TH",
+		dial: "66",
+		name: "Thailand",
+		local: "تایلەند"
+	},
+	{
+		iso: "ID",
+		dial: "62",
+		name: "Indonesia",
+		local: "ئیندۆنیزیا"
+	},
+	{
+		iso: "PH",
+		dial: "63",
+		name: "Philippines",
+		local: "فلیپین"
+	},
+	{
+		iso: "VN",
+		dial: "84",
+		name: "Vietnam",
+		local: "ڤیەتنام"
+	},
+	{
+		iso: "BR",
+		dial: "55",
+		name: "Brazil",
+		local: "بەڕازیل"
+	},
+	{
+		iso: "MX",
+		dial: "52",
+		name: "Mexico",
+		local: "مەکسیک"
+	},
+	{
+		iso: "AR",
+		dial: "54",
+		name: "Argentina",
+		local: "ئەرژەنتین"
+	},
+	{
+		iso: "ZA",
+		dial: "27",
+		name: "South Africa",
+		local: "ئەفریقای باشوور"
+	},
+	{
+		iso: "NG",
+		dial: "234",
+		name: "Nigeria",
+		local: "نایجیریا"
+	},
+	{
+		iso: "KE",
+		dial: "254",
+		name: "Kenya",
+		local: "کینیا"
+	},
+	{
+		iso: "MA",
+		dial: "212",
+		name: "Morocco",
+		local: "مەغریب"
+	},
+	{
+		iso: "DZ",
+		dial: "213",
+		name: "Algeria",
+		local: "جەزائیر"
+	},
+	{
+		iso: "TN",
+		dial: "216",
+		name: "Tunisia",
+		local: "توونس"
+	},
+	{
+		iso: "LY",
+		dial: "218",
+		name: "Libya",
+		local: "لیبیا"
+	},
+	{
+		iso: "SD",
+		dial: "249",
+		name: "Sudan",
+		local: "سوودان"
+	},
+	{
+		iso: "ET",
+		dial: "251",
+		name: "Ethiopia",
+		local: "ئەسیوپیا"
+	},
+	{
+		iso: "GH",
+		dial: "233",
+		name: "Ghana",
+		local: "غانا"
+	},
+	{
+		iso: "TZ",
+		dial: "255",
+		name: "Tanzania",
+		local: "تانزانیا"
+	},
+	{
+		iso: "UG",
+		dial: "256",
+		name: "Uganda",
+		local: "ئوگاندا"
+	},
+	{
+		iso: "IL",
+		dial: "972",
+		name: "Israel",
+		local: "ئیسرائیل"
+	},
+	{
+		iso: "CY",
+		dial: "357",
+		name: "Cyprus",
+		local: "قوبرس"
+	},
+	{
+		iso: "LU",
+		dial: "352",
+		name: "Luxembourg",
+		local: "لوکسەمبورگ"
+	},
+	{
+		iso: "IS",
+		dial: "354",
+		name: "Iceland",
+		local: "ئایسلەند"
+	},
+	{
+		iso: "HR",
+		dial: "385",
+		name: "Croatia",
+		local: "کرۆواتیا"
+	},
+	{
+		iso: "RS",
+		dial: "381",
+		name: "Serbia",
+		local: "سربیا"
+	},
+	{
+		iso: "BA",
+		dial: "387",
+		name: "Bosnia",
+		local: "بۆسنە"
+	},
+	{
+		iso: "AL",
+		dial: "355",
+		name: "Albania",
+		local: "ئەلبانیا"
+	},
+	{
+		iso: "SK",
+		dial: "421",
+		name: "Slovakia",
+		local: "سلۆڤاکیا"
+	},
+	{
+		iso: "SI",
+		dial: "386",
+		name: "Slovenia",
+		local: "سلۆڤینیا"
+	},
+	{
+		iso: "EE",
+		dial: "372",
+		name: "Estonia",
+		local: "ئیستۆنیا"
+	},
+	{
+		iso: "LV",
+		dial: "371",
+		name: "Latvia",
+		local: "لاتڤیا"
+	},
+	{
+		iso: "LT",
+		dial: "370",
+		name: "Lithuania",
+		local: "لیتوانیا"
+	},
+	{
+		iso: "BY",
+		dial: "375",
+		name: "Belarus",
+		local: "بیلاڕووس"
+	},
+	{
+		iso: "MD",
+		dial: "373",
+		name: "Moldova",
+		local: "مۆلدۆڤا"
+	},
+	{
+		iso: "HK",
+		dial: "852",
+		name: "Hong Kong",
+		local: "هۆنگ کۆنگ"
+	},
+	{
+		iso: "TW",
+		dial: "886",
+		name: "Taiwan",
+		local: "تایوان"
+	},
+	{
+		iso: "BD",
+		dial: "880",
+		name: "Bangladesh",
+		local: "بەنگلادیش"
+	},
+	{
+		iso: "LK",
+		dial: "94",
+		name: "Sri Lanka",
+		local: "سریلانکا"
+	},
+	{
+		iso: "NP",
+		dial: "977",
+		name: "Nepal",
+		local: "نیپاڵ"
+	},
+	{
+		iso: "MM",
+		dial: "95",
+		name: "Myanmar",
+		local: "میانمار"
+	},
+	{
+		iso: "KH",
+		dial: "855",
+		name: "Cambodia",
+		local: "کەمبۆدیا"
+	},
+	{
+		iso: "CL",
+		dial: "56",
+		name: "Chile",
+		local: "چیلی"
+	},
+	{
+		iso: "CO",
+		dial: "57",
+		name: "Colombia",
+		local: "کۆڵۆمبیا"
+	},
+	{
+		iso: "PE",
+		dial: "51",
+		name: "Peru",
+		local: "پیرو"
+	},
+	{
+		iso: "VE",
+		dial: "58",
+		name: "Venezuela",
+		local: "ڤەنزوێلا"
+	}
+];
+function flag(iso) {
+	return iso.toUpperCase().replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+}
+function toE164(dial, national) {
+	const code = dial.replace(/\D/g, "");
+	const rest = national.replace(/\D/g, "").replace(/^0+/, "");
+	if (!/^[1-9]\d{0,3}$/.test(code) || rest.length < 6 || rest.length > 12) return null;
+	const phone = `+${code}${rest}`;
+	if (phone.length < 8 || phone.length > 16) return null;
+	return phone;
+}
+function cleanPin(value) {
+	const pin = value.replace(/\D/g, "");
+	return pin.length === 4 ? pin : null;
+}
+//#endregion
+export { toE164 as i, cleanPin as n, flag as r, COUNTRIES as t };

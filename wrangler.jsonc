@@ -1,0 +1,30 @@
+{
+  // Rega Cargo — its own Worker, fully separate from the live REGA site
+  // (worker `rega-platform`). Never point this config at that worker.
+  //
+  // `npm run build` (Nitro preset cloudflare-module) merges this file into
+  // .output/server/wrangler.json and writes .wrangler/deploy/config.json, so
+  // `npx wrangler deploy` from the repo root deploys the built output.
+  // `main` and `assets` are set by Nitro (assets binding: ASSETS).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rega-cargo",
+  "account_id": "ee07860dbb8e61ff6915758785baf89a",
+  "compatibility_date": "2025-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "workers_dev": true,
+
+  // Database (Postgres). Create a Hyperdrive config pointing at the production
+  // Postgres and uncomment — see DEPLOY.md. Until then DB-backed pages (market,
+  // move, admin, phone sign-in) return a "Database not configured" error.
+  // "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "<hyperdrive-config-id>" }],
+
+  // Plain (non-secret) runtime vars. Secrets are set with `wrangler secret put`
+  // (see DEPLOY.md) and must NEVER be added here.
+  "vars": {
+    "BETTER_AUTH_URL": "https://cargo.regaplatform.com",
+    // Don't inject the Grok app-builder extensions script (grok.com) into
+    // production HTML — this app is no longer hosted on that platform.
+    "VITE_GROK_EXTENSIONS": "0"
+  }
+}

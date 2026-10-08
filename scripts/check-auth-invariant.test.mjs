@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdtempSync, symlinkSync } from "node:fs";
+import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -12,7 +12,7 @@ import {
   compareAuthInvariant,
   probeDevAuthEnabled,
 } from "./check-auth-invariant.mjs";
-import { projectRoot } from "./with-app-env.mjs";
+import { APP_ENV_REL_PATH, projectRoot } from "./with-app-env.mjs";
 
 /**
  * The JSON body `/__app-env` would serve. Do not start a real Vite server —
@@ -90,9 +90,18 @@ test("only a divergence warns the smoke verdict", () => {
   }
 });
 
-test("the build side resolves the template's shipped app-env", () => {
-  assert.equal(buildAuthEnabled(projectRoot(), {}), false);
-  assert.equal(buildAuthEnabled(projectRoot(), { VITE_AUTH_ENABLED: "true" }), true);
+test("the build side resolves a workspace's app-env", () => {
+  // Fixture workspaces rather than projectRoot(): this repo does not ship
+  // `.grok/app-env.json`, and the check must not depend on local state.
+  const off = mkdtempSync(join(tmpdir(), "auth-invariant-off-"));
+  mkdirSync(join(off, ".grok"), { recursive: true });
+  writeFileSync(join(off, APP_ENV_REL_PATH), '{"VITE_AUTH_ENABLED":"false"}');
+  assert.equal(buildAuthEnabled(off, {}), false);
+  assert.equal(buildAuthEnabled(off, { VITE_AUTH_ENABLED: "true" }), true);
+  // No app-env file at all: auth defaults on unless the env says otherwise.
+  const bare = mkdtempSync(join(tmpdir(), "auth-invariant-bare-"));
+  assert.equal(buildAuthEnabled(bare, {}), true);
+  assert.equal(buildAuthEnabled(bare, { VITE_AUTH_ENABLED: "false" }), false);
 });
 
 test("the CLI reports rather than silently passing when run via a symlink", async () => {
