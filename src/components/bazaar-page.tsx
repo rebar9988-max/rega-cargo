@@ -6,7 +6,7 @@ import { QuotePanel } from "@/components/quote-panel";
 import { Shell } from "@/components/shell";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
-import { GOODS, readFavs, STORE_CATEGORIES, STORES, storeById, writeFavs, type StoreCategory } from "@/lib/stores";
+import { GOODS, readFavs, STORE_CATEGORIES, STORES, storeById, storeLogo, writeFavs, type StoreCategory } from "@/lib/stores";
 
 const BRANDS: { name: string; category: StoreCategory }[] = [
   { name: "NIVEA", category: "beauty" },
@@ -163,35 +163,41 @@ export function BazaarPage() {
         </div>
 
         {list.length === 0 ? <p className="text-sm text-muted">{t.empty}</p> : null}
-        <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {list.map((store) => {
             const loved = favs.includes(store.id);
             return (
               <li key={store.id} className="flex flex-col rounded-3xl border border-line bg-surface p-5">
-                <div className="flex items-start gap-4">
-                  <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-ink font-sans text-lg font-semibold text-pine-ink">
-                    {store.name.slice(0, 1)}
+                <div className="flex items-start gap-3">
+                  <span className="grid h-16 min-w-0 flex-1 place-items-center rounded-2xl border border-line bg-white px-4">
+                    <img
+                      src={storeLogo(store.id)}
+                      alt={store.name}
+                      width={128}
+                      height={32}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-8 w-full max-w-32 object-contain"
+                    />
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-sans text-xl font-semibold tracking-tight">{store.name}</h3>
-                      <button
-                        type="button"
-                        aria-pressed={loved}
-                        aria-label={t.favorites}
-                        onClick={() => toggle(store.id)}
-                        className="inline-flex size-10 items-center justify-center rounded-full border border-line"
-                      >
-                        <Heart className={`size-4 ${loved ? "text-pine" : "text-muted"}`} fill={loved ? "currentColor" : "none"} />
-                      </button>
-                    </div>
-                    <p className="mt-1 text-sm text-muted">
-                      {store.country === "DE" ? t.germany : t.international}
-                      {" · "}
-                      <bdi dir="ltr">{store.host}</bdi>
-                    </p>
-                  </div>
+                  <button
+                    type="button"
+                    aria-pressed={loved}
+                    aria-label={t.favorites}
+                    onClick={() => toggle(store.id)}
+                    className="inline-flex size-10 items-center justify-center rounded-full border border-line"
+                  >
+                    <Heart className={`size-4 ${loved ? "text-pine" : "text-muted"}`} fill={loved ? "currentColor" : "none"} />
+                  </button>
                 </div>
+                <h3 className="mt-4 font-sans text-lg font-semibold tracking-tight">
+                  <bdi dir="ltr">{store.name}</bdi>
+                </h3>
+                <p className="mt-1 text-sm text-muted">
+                  {store.country === "DE" ? t.germany : t.international}
+                  {" · "}
+                  <bdi dir="ltr">{store.host}</bdi>
+                </p>
                 <p className="mt-4 text-sm text-muted">{store.categories.map((item) => t.categories[item]).join(" · ")}</p>
                 <a
                   href={store.url}

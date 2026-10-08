@@ -19,3 +19,9 @@
   cache-control: public, max-age=86400, stale-while-revalidate=604800
 /og.jpg
   cache-control: public, max-age=86400, stale-while-revalidate=604800
+/fonts/*
+  cache-control: public, max-age=31536000, immutable
+/store-logos/*
+  cache-control: public, max-age=2592000, stale-while-revalidate=604800
+/favicon.ico
+  cache-control: public, max-age=86400, stale-while-revalidate=604800
