@@ -60,6 +60,31 @@ function injectHeadStreaming(response: Response, host: string): Response {
   });
 }
 
+/**
+ * R&L branding over the template manifest (which only knows `*.grok.me`
+ * names and a placeholder icon), so "Add to Home Screen" installs as R&L.
+ */
+const BRAND_ICONS = [
+  { src: "/__grok/icon-180.png", sizes: "180x180", type: "image/png" },
+  { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+  { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+];
+
+function brandManifest(json: string): string {
+  return JSON.stringify(
+    {
+      ...JSON.parse(json),
+      name: "R&L Cargo",
+      short_name: "R&L",
+      background_color: "#f6f5f3",
+      theme_color: "#f4f4f4",
+      icons: BRAND_ICONS,
+    },
+    null,
+    2,
+  );
+}
+
 export default async function grokPwaMiddleware(
   event: GrokPwaEvent,
   next: () => unknown | Promise<unknown>,
@@ -71,7 +96,7 @@ export default async function grokPwaMiddleware(
   const urlWithQuery = path + event.url.search;
 
   if (path === "/__grok/manifest.webmanifest" || path === "/__grok/manifest.json") {
-    return new Response(renderWebManifest(requestHost(event)), {
+    return new Response(brandManifest(renderWebManifest(requestHost(event))), {
       headers: {
         "content-type": "application/manifest+json; charset=utf-8",
         "cache-control": "no-cache",
