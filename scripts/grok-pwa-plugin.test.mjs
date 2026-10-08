@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -521,22 +521,21 @@ test("renders the manifest with the per-app name", () => {
   assert.equal(manifest.icons[0].src, "/__grok/icon-180.png");
 });
 
-// Tripwires: the deployed-app path only works if Nitro scans server/ — an
-// accidental edit that drops serverDir or the middleware file would otherwise
-// fail silently (published apps would just render the app for ?install=1).
+// The Grok install tutorial is not mounted. Nitro still scans server/ so the
+// R&L Open Graph middleware runs, and the manifest is a static R&L file.
 test("vite config keeps the nitro serverDir wiring", () => {
   const viteConfig = readFileSync(join(TEMPLATE_ROOT, "vite.config.ts"), "utf8");
   assert.match(viteConfig, /serverDir:\s*"\.\/server"/);
-  assert.match(viteConfig, /grokPwaPlugin\(\)/);
+  assert.doesNotMatch(viteConfig, /grokPwaPlugin\(\)/);
+  assert.doesNotMatch(viteConfig, /authPopupPlugin\(\)/);
 });
 
 test("nitro middleware and its bundled assets exist", () => {
-  const middleware = readFileSync(join(TEMPLATE_ROOT, "server/middleware/grok-pwa.ts"), "utf8");
-  assert.match(middleware, /install-page\.html\?raw/);
-  assert.match(middleware, /virtual:grok-og-identity/);
-  readFileSync(join(TEMPLATE_ROOT, "scripts/install-page.html"));
-  readFileSync(join(TEMPLATE_ROOT, "public/__grok/icon-180.png"));
-  readFileSync(join(TEMPLATE_ROOT, "public/__grok/install/styles.css"));
+  const middleware = readFileSync(join(TEMPLATE_ROOT, "server/middleware/rl-og.ts"), "utf8");
+  assert.match(middleware, /og:image/);
+  const manifest = JSON.parse(readFileSync(join(TEMPLATE_ROOT, "public/manifest.webmanifest"), "utf8"));
+  assert.equal(manifest.short_name, "R&L");
+  assert.equal(existsSync(join(TEMPLATE_ROOT, "server/middleware/grok-pwa.ts")), false);
 });
 
 test("vite plugin bakes og identity as a virtual module", () => {
