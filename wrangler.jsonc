@@ -25,6 +25,34 @@
     "BETTER_AUTH_URL": "https://cargo.regaplatform.com",
     // Don't inject the Grok app-builder extensions script (grok.com) into
     // production HTML — this app is no longer hosted on that platform.
-    "VITE_GROK_EXTENSIONS": "0"
+    "VITE_GROK_EXTENSIONS": "0",
+    // R&L AI (/ai, /api/ai/*) stays off in production until approved.
+    "RL_AI_ENABLED": "false"
+  },
+
+  // Staging: separate Worker `rega-cargo-staging` on workers.dev only (no
+  // routes, no custom domain, no database, its own secrets). Deploy with
+  // `npm run deploy:staging`. Bindings and vars are not inherited from the
+  // top level, so everything staging needs is listed here.
+  "env": {
+    "staging": {
+      "name": "rega-cargo-staging",
+      "workers_dev": true,
+      "routes": [],
+      // Only accepted on Workers Paid; deploying this verifies the plan.
+      "limits": { "cpu_ms": 30000 },
+      "vars": {
+        "BETTER_AUTH_URL": "https://rega-cargo-staging.rebar9988.workers.dev",
+        "VITE_GROK_EXTENSIONS": "0",
+        "RL_AI_ENABLED": "true",
+        // Hard daily cap on AI identifications (all visitors together).
+        "RL_AI_DAILY_CAP": "200"
+      },
+      "ai": { "binding": "AI" },
+      "durable_objects": {
+        "bindings": [{ "name": "RL_AI_USAGE", "class_name": "RlAiUsage" }]
+      },
+      "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RlAiUsage"] }]
+    }
   }
 }
