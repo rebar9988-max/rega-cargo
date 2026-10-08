@@ -99,7 +99,7 @@ export function AiPage() {
 
   const busy = phase.kind === "busy";
   const pickClass =
-    "inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-5 text-sm font-medium transition-opacity duration-200";
+    "inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-3 text-center text-sm leading-tight font-medium transition-opacity duration-200";
 
   return (
     <Shell>
@@ -128,7 +128,7 @@ export function AiPage() {
               <ShieldCheck className="size-4 shrink-0" aria-hidden />
               <p className="min-w-0 flex-1">{t.privacyLine}</p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="grid max-w-md grid-cols-2 gap-3">
               <label
                 style={{ direction: "ltr" }}
                 className={`${pickClass} bg-pine text-pine-ink ${!consent || busy || !enabled ? "pointer-events-none opacity-40" : "hover:opacity-90"}`}
