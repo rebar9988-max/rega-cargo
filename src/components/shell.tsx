@@ -29,7 +29,7 @@ function isOn(path: string, to: string, exact: boolean) {
 }
 
 export function Mark({ className = "size-14" }: { className?: string }) {
-  return <img src="/rega-logo.jpg?v=7" alt="R&L" width={56} height={56} className={`${className} shrink-0 rounded-xl`} />;
+  return <img src="/rega-logo-168.webp" alt="R&L" width={56} height={56} decoding="async" className={`${className} shrink-0 rounded-xl`} />;
 }
 
 export function PageHeader({ kicker, title, lede }: { kicker: string; title: string; lede: string }) {

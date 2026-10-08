@@ -1,3 +1,4 @@
+import { responsiveImage } from "@/lib/images";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageHeader, Shell } from "@/components/shell";
 import { controlClass } from "@/components/field";
@@ -103,7 +104,7 @@ function MarketHome() {
           {data.items.map((item) => (
             <li key={item.slug} className="overflow-hidden rounded-2xl border border-line bg-surface">
               <Link to="/market/$slug" params={{ slug: item.slug }} className="flex h-full flex-col">
-                {item.image ? <img src={item.image} alt="" className="aspect-square w-full object-cover" /> : <span className="aspect-square bg-paper" />}
+                {item.image ? <img {...responsiveImage(item.image, "(min-width: 768px) 270px, 50vw")} alt="" width={640} height={640} loading="lazy" decoding="async" className="aspect-square w-full object-cover" /> : <span className="aspect-square bg-paper" />}
                 <span className="flex flex-1 flex-col gap-1 p-3">
                   <span className="font-semibold">{lang === "ckb" ? item.nameKu : item.nameEn}</span>
                   <span className="font-sans text-xs text-muted"><bdi dir="ltr">{item.brand}</bdi></span>

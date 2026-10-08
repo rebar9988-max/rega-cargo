@@ -1,3 +1,4 @@
+import { responsiveImage } from "@/lib/images";
 import { Link } from "@tanstack/react-router";
 import { Heart, Search } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -104,12 +105,20 @@ export function BazaarPage() {
         </div>
 
         <ul className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-4 md:gap-x-5">
-          {goods.map((good) => {
+          {goods.map((good, index) => {
             const shop = storeById(good.storeId);
             return (
               <li key={good.id} className="flex flex-col">
                 <div className="overflow-hidden rounded-2xl bg-surface">
-                  <img src={good.image} alt={t.goods[good.id]} className="aspect-[3/4] w-full object-cover" />
+                  <img
+                    {...responsiveImage(good.image, "(min-width: 768px) 270px, 50vw")}
+                    alt={t.goods[good.id]}
+                    width={640}
+                    height={640}
+                    loading={index < 2 ? "eager" : "lazy"}
+                    decoding="async"
+                    className="aspect-[3/4] w-full object-cover"
+                  />
                 </div>
                 <div className="flex flex-1 flex-col gap-1 px-1 pt-3">
                   {shop ? <p className="font-sans text-[10px] font-semibold tracking-[0.16em] text-muted"><bdi dir="ltr">{shop.name}</bdi></p> : null}
