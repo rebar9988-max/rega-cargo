@@ -9,6 +9,7 @@ import {
   cleanOptional,
   cleanStock,
   cleanText,
+  areaOnly,
   likePattern,
   offerTotal,
   pageWindow,
@@ -50,8 +51,10 @@ async function notify(sql: Sql, userId: string, bodyKu: string, bodyEn: string) 
 }
 
 async function notifyAdmins(sql: Sql, bodyKu: string, bodyEn: string) {
-  const admins = await sql<{ user_id: string }>`select user_id from user_roles where role = 'admin' and status = 'approved'`;
-  for (const admin of admins) await notify(sql, admin.user_id, bodyKu, bodyEn);
+  await sql`
+    insert into notifications (id, user_id, body_ku, body_en)
+    select md5(user_id || clock_timestamp()::text || random()::text), user_id, ${bodyKu}, ${bodyEn}
+    from user_roles where role = 'admin' and status = 'approved'`;
 }
 
 function log(action: string, userId: string) {
@@ -60,7 +63,6 @@ function log(action: string, userId: string) {
 
 export async function getMe(userId: string) {
   const sql = await sqlOf();
-  await ensureBuyer(sql, userId);
   const mine = await roles(sql, userId);
   const notes = await sql<{ id: string; body_ku: string; body_en: string; created_at: string }>`
     select id, body_ku, body_en, created_at from notifications
@@ -90,14 +92,25 @@ export async function requestRole(userId: string, input: { role?: unknown; displ
   const name = cleanText(input.displayName, 80);
   const city = cleanText(input.city, 40);
   const phone = cleanOptional(input.phone, 30);
-  await sql`
+  const rows = await sql<{ status: string }>`
     insert into user_roles (user_id, role, status, display_name, city, phone)
     values (${userId}, ${input.role}, 'pending', ${name}, ${city}, ${phone})
     on conflict (user_id, role) do update set
-      display_name = excluded.display_name,
-      city = excluded.city,
-      phone = excluded.phone,
-      status = case when user_roles.status = 'approved' then 'approved' else 'pending' end`;
+      display_name = case when user_roles.status = 'removed' then user_roles.display_name else excluded.display_name end,
+      city = case when user_roles.status = 'removed' then user_roles.city else excluded.city end,
+      phone = case when user_roles.status = 'removed' then user_roles.phone else excluded.phone end,
+      status = case
+        when user_roles.status = 'removed' then 'removed'
+        when user_roles.status = 'approved' and (
+          user_roles.display_name is distinct from excluded.display_name
+          or user_roles.city is distinct from excluded.city
+          or user_roles.phone is distinct from excluded.phone
+        ) then 'pending'
+        when user_roles.status = 'approved' then 'approved'
+        else 'pending'
+      end
+    returning status`;
+  if (rows[0]?.status === "removed") throw new MarketError("forbidden");
   await notifyAdmins(sql, "داواکاریی ڕۆڵی نوێ", "New role request");
   log("role", userId);
   return { ok: true };
@@ -212,7 +225,10 @@ export async function getProduct(slug: string, userId: string | null) {
         select price_iqd, shipping_iqd, recorded_at from price_history where offer_id = ${best.id} order by recorded_at`
     : [];
   const reviewRows = await sql<{ rating: number; body: string; created_at: string }>`
-    select rating, body, created_at from reviews where product_id = ${product.id} order by created_at desc limit 12`;
+    select rating, body, created_at from reviews
+    where product_id = ${product.id} and status = 'approved' order by created_at desc limit 12`;
+  const avgRows = await sql<{ avg: number | null }>`
+    select avg(rating) as avg from reviews where product_id = ${product.id} and status = 'approved'`;
   let favorite = false;
   let alert: number | null = null;
   if (userId) {
@@ -221,7 +237,7 @@ export async function getProduct(slug: string, userId: string | null) {
     const alerts = await sql<{ target_iqd: number }>`select target_iqd from price_alerts where user_id = ${userId} and product_id = ${product.id}`;
     alert = alerts[0] ? Number(alerts[0].target_iqd) : null;
   }
-  const avg = reviewRows.length ? reviewRows.reduce((sum, row) => sum + Number(row.rating), 0) / reviewRows.length : null;
+  const avg = avgRows[0]?.avg == null ? null : Number(avgRows[0].avg);
   return {
     slug: String(product.slug),
     nameKu: String(product.name_ku),
@@ -246,18 +262,29 @@ export async function getProduct(slug: string, userId: string | null) {
 }
 
 async function checkAlerts(sql: Sql, productId: string) {
-  const live = await sql<{ total: number }>`
-    select min(o.price_iqd + o.shipping_iqd) as total
-    from offers o
-    join user_roles r on r.user_id = o.seller_id and r.role = 'seller' and r.status = 'approved'
-    where o.product_id = ${productId} and o.status = 'approved' and o.stock <> 'out'`;
-  const lowest = live[0]?.total == null ? null : Number(live[0].total);
-  if (lowest == null) return;
-  const hits = await sql<{ user_id: string; target_iqd: number }>`
-    select user_id, target_iqd from price_alerts where product_id = ${productId} and target_iqd >= ${lowest}`;
-  for (const hit of hits) {
-    await notify(sql, hit.user_id, `نرخ کەوتە ژێر ${hit.target_iqd}`, `A price fell under ${hit.target_iqd}`);
-  }
+  await sql`
+    with live as (
+      select min(o.price_iqd + o.shipping_iqd) as total
+      from offers o
+      join user_roles r on r.user_id = o.seller_id and r.role = 'seller' and r.status = 'approved'
+      where o.product_id = ${productId} and o.status = 'approved' and o.stock <> 'out'
+    ), reset as (
+      update price_alerts set notified = false
+      where product_id = ${productId} and notified = true
+        and target_iqd < (select total from live)
+        and (select total from live) is not null
+      returning 1
+    ), hits as (
+      update price_alerts set notified = true
+      where product_id = ${productId} and notified = false
+        and (select total from live) is not null
+        and target_iqd >= (select total from live)
+      returning user_id, target_iqd
+    )
+    insert into notifications (id, user_id, body_ku, body_en)
+    select md5(user_id || target_iqd::text || clock_timestamp()::text), user_id,
+           'نرخ کەوتە ژێر ' || target_iqd::text, 'A price fell under ' || target_iqd::text
+    from hits`;
 }
 
 export async function saveProduct(
@@ -293,17 +320,32 @@ export async function saveProduct(
   const contact = cleanContact(input.contact);
   const cats = await sql`select id from categories where id = ${category}`;
   if (!cats.length) throw new MarketError("invalid");
-  const id = crypto.randomUUID();
-  const slug = slugify(nameEn);
-  const offerId = crypto.randomUUID();
-  await sql`
-    insert into products (id, slug, owner_id, category_id, name_ku, name_en, description_ku, brand, specs, image, status)
-    values (${id}, ${slug}, ${userId}, ${category}, ${nameKu}, ${nameEn}, ${description}, ${brand}, ${specs}, ${image}, 'pending')`;
-  await sql`
-    insert into offers (id, product_id, seller_id, price_iqd, shipping_iqd, stock, contact, status)
-    values (${offerId}, ${id}, ${userId}, ${price}, ${shipping}, ${stock}, ${contact}, 'pending')`;
-  await sql`
-    insert into price_history (id, offer_id, price_iqd, shipping_iqd) values (${crypto.randomUUID()}, ${offerId}, ${price}, ${shipping})`;
+  let slug = "";
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const id = crypto.randomUUID();
+    slug = slugify(nameEn);
+    const offerId = crypto.randomUUID();
+    const historyId = crypto.randomUUID();
+    try {
+      await sql`
+        with product as (
+          insert into products (id, slug, owner_id, category_id, name_ku, name_en, description_ku, brand, specs, image, status)
+          values (${id}, ${slug}, ${userId}, ${category}, ${nameKu}, ${nameEn}, ${description}, ${brand}, ${specs}, ${image}, 'pending')
+          returning id
+        ), offer as (
+          insert into offers (id, product_id, seller_id, price_iqd, shipping_iqd, stock, contact, status)
+          select ${offerId}, product.id, ${userId}, ${price}, ${shipping}, ${stock}, ${contact}, 'pending' from product
+          returning id
+        )
+        insert into price_history (id, offer_id, price_iqd, shipping_iqd)
+        select ${historyId}, offer.id, ${price}, ${shipping} from offer`;
+      break;
+    } catch (err) {
+      const code = (err as { code?: string }).code;
+      if (code === "23505" && attempt < 2) continue;
+      throw err;
+    }
+  }
   await notifyAdmins(sql, "کاڵای نوێ چاوەڕوانی پەسەندە", "A new product is waiting");
   log("product", userId);
   return { slug };
@@ -325,24 +367,42 @@ export async function saveOffer(
   const products = await sql<{ id: string; status: string }>`select id, status from products where slug = ${slug} and status <> 'removed'`;
   const product = products[0];
   if (!product) throw new MarketError("notfound");
-  const existing = await sql<{ id: string; price_iqd: number; shipping_iqd: number; status: string }>`
-    select id, price_iqd, shipping_iqd, status from offers where product_id = ${product.id} and seller_id = ${userId}`;
+  const existing = await sql<{ id: string; price_iqd: number; shipping_iqd: number; status: string; contact: string; stock: string }>`
+    select id, price_iqd, shipping_iqd, status, contact, stock from offers where product_id = ${product.id} and seller_id = ${userId}`;
   if (!existing[0]) {
     const offerId = crypto.randomUUID();
+    const historyId = crypto.randomUUID();
     await sql`
-      insert into offers (id, product_id, seller_id, price_iqd, shipping_iqd, stock, contact, status)
-      values (${offerId}, ${product.id}, ${userId}, ${price}, ${shipping}, ${stock}, ${contact}, 'pending')`;
-    await sql`insert into price_history (id, offer_id, price_iqd, shipping_iqd) values (${crypto.randomUUID()}, ${offerId}, ${price}, ${shipping})`;
+      with offer as (
+        insert into offers (id, product_id, seller_id, price_iqd, shipping_iqd, stock, contact, status)
+        values (${offerId}, ${product.id}, ${userId}, ${price}, ${shipping}, ${stock}, ${contact}, 'pending')
+        returning id
+      )
+      insert into price_history (id, offer_id, price_iqd, shipping_iqd)
+      select ${historyId}, offer.id, ${price}, ${shipping} from offer`;
     await notifyAdmins(sql, "ئۆفەری نوێ چاوەڕوانی پەسەندە", "A new offer is waiting");
   } else {
     const offer = existing[0];
     if (offer.status === "removed") throw new MarketError("forbidden");
+    const priceOnly = offer.contact === contact && offer.stock === stock;
+    const nextStatus = offer.status === "approved" && !priceOnly ? "pending" : offer.status;
+    const historyId = crypto.randomUUID();
+    const changed = Number(offer.price_iqd) !== price || Number(offer.shipping_iqd) !== shipping;
     await sql`
-      update offers set price_iqd = ${price}, shipping_iqd = ${shipping}, stock = ${stock}, contact = ${contact}, updated_at = now()
-      where id = ${offer.id}`;
-    if (Number(offer.price_iqd) !== price || Number(offer.shipping_iqd) !== shipping) {
-      await sql`insert into price_history (id, offer_id, price_iqd, shipping_iqd) values (${crypto.randomUUID()}, ${offer.id}, ${price}, ${shipping})`;
-      if (offer.status === "approved" && product.status === "approved") await checkAlerts(sql, product.id);
+      with upd as (
+        update offers set price_iqd = ${price}, shipping_iqd = ${shipping}, stock = ${stock}, contact = ${contact},
+          status = ${nextStatus}, updated_at = now()
+        where id = ${offer.id} and status <> 'removed'
+        returning id
+      )
+      insert into price_history (id, offer_id, price_iqd, shipping_iqd)
+      select ${historyId}, upd.id, ${price}, ${shipping} from upd where ${changed}`;
+    if (changed && offer.status === "approved" && priceOnly) {
+      await notifyAdmins(sql, "نرخی ئۆفەرێک گۆڕا", "An offer price changed");
+      if (product.status === "approved") await checkAlerts(sql, product.id);
+    }
+    if (!priceOnly && offer.status === "approved") {
+      await notifyAdmins(sql, "ئۆفەرێک چاوەڕوانی پێداچوونەوەیە", "An offer needs review");
     }
   }
   log("offer", userId);
@@ -390,9 +450,9 @@ export async function setAlert(userId: string, slug: string, target: unknown) {
   const products = await sql<{ id: string }>`select id from products where slug = ${slug} and status = 'approved'`;
   if (!products[0]) throw new MarketError("notfound");
   await sql`
-    insert into price_alerts (id, user_id, product_id, target_iqd)
-    values (${crypto.randomUUID()}, ${userId}, ${products[0].id}, ${money})
-    on conflict (user_id, product_id) do update set target_iqd = excluded.target_iqd`;
+    insert into price_alerts (id, user_id, product_id, target_iqd, notified)
+    values (${crypto.randomUUID()}, ${userId}, ${products[0].id}, ${money}, false)
+    on conflict (user_id, product_id) do update set target_iqd = excluded.target_iqd, notified = false`;
   await checkAlerts(sql, products[0].id);
   return { ok: true };
 }
@@ -403,12 +463,15 @@ export async function addReview(userId: string, slug: string, rating: unknown, b
   await limit(sql, userId, "review");
   const score = cleanMoney(rating, 5, false);
   const text = cleanOptional(body, 500);
-  const products = await sql<{ id: string }>`select id from products where slug = ${slug} and status = 'approved'`;
+  const products = await sql<{ id: string; owner_id: string }>`select id, owner_id from products where slug = ${slug} and status = 'approved'`;
   if (!products[0]) throw new MarketError("notfound");
+  if (products[0].owner_id === userId) throw new MarketError("forbidden");
+  const selling = await sql`select 1 as ok from offers where product_id = ${products[0].id} and seller_id = ${userId}`;
+  if (selling.length) throw new MarketError("forbidden");
   await sql`
-    insert into reviews (id, user_id, product_id, rating, body)
-    values (${crypto.randomUUID()}, ${userId}, ${products[0].id}, ${score}, ${text})
-    on conflict (user_id, product_id) where product_id is not null do update set rating = excluded.rating, body = excluded.body`;
+    insert into reviews (id, user_id, product_id, rating, body, status)
+    values (${crypto.randomUUID()}, ${userId}, ${products[0].id}, ${score}, ${text}, 'pending')
+    on conflict (user_id, product_id) where product_id is not null do update set rating = excluded.rating, body = excluded.body, status = 'pending'`;
   return { ok: true };
 }
 
@@ -428,11 +491,12 @@ export async function adminQueue(userId: string) {
   const sql = await sqlOf();
   const mine = await roles(sql, userId);
   if (!approved(mine, "admin")) throw new MarketError("forbidden");
-  const [pendingRoles, pendingProducts, pendingOffers, openReports] = await Promise.all([
+  const [pendingRoles, pendingProducts, pendingOffers, openReports, pendingReviews] = await Promise.all([
     sql<Record<string, unknown>>`select user_id, role, display_name, city, phone from user_roles where status = 'pending' order by created_at`,
     sql<Record<string, unknown>>`select slug, name_ku, name_en, brand, owner_id from products where status = 'pending' order by created_at`,
     sql<Record<string, unknown>>`select o.id, p.slug, p.name_ku, o.seller_id, o.price_iqd, o.shipping_iqd from offers o join products p on p.id = o.product_id where o.status = 'pending' order by o.created_at`,
     sql<Record<string, unknown>>`select id, subject, body, created_at from reports order by created_at desc limit 20`,
+    sql<Record<string, unknown>>`select id, rating, body from reviews where status = 'pending' and product_id is not null order by created_at limit 20`,
   ]);
   return {
     pendingRoles: pendingRoles.map((row) => ({
@@ -459,6 +523,11 @@ export async function adminQueue(userId: string) {
       subject: String(row.subject),
       body: String(row.body),
     })),
+    pendingReviews: pendingReviews.map((row) => ({
+      id: String(row.id),
+      rating: Number(row.rating),
+      body: String(row.body ?? ""),
+    })),
   };
 }
 
@@ -471,14 +540,21 @@ export async function adminSet(userId: string, input: { kind?: unknown; id?: unk
   if (!status) throw new MarketError("invalid");
   if (input.kind === "role") {
     const role = cleanText(input.role, 20);
-    await sql`update user_roles set status = ${status} where user_id = ${id} and role = ${role}`;
+    const rows = await sql<{ user_id: string }>`
+      update user_roles set status = ${status} where user_id = ${id} and role = ${role} and status <> ${status} returning user_id`;
+    if (!rows[0]) throw new MarketError("notfound");
     await notify(sql, id, status === "approved" ? "ڕۆڵەکەت پەسەند کرا" : "ڕۆڵەکەت لابرا", status === "approved" ? "Your role was approved" : "Your role was removed");
   } else if (input.kind === "product") {
-    await sql`update products set status = ${status} where slug = ${id}`;
+    const rows = await sql`update products set status = ${status} where slug = ${id} and status <> ${status} returning id`;
+    if (!rows[0]) throw new MarketError("notfound");
   } else if (input.kind === "offer") {
-    await sql`update offers set status = ${status} where id = ${id}`;
-    const rows = await sql<{ product_id: string }>`select product_id from offers where id = ${id}`;
-    if (rows[0] && status === "approved") await checkAlerts(sql, rows[0].product_id);
+    const rows = await sql<{ product_id: string }>`
+      update offers set status = ${status} where id = ${id} and status <> ${status} returning product_id`;
+    if (!rows[0]) throw new MarketError("notfound");
+    if (status === "approved") await checkAlerts(sql, rows[0].product_id);
+  } else if (input.kind === "review") {
+    const rows = await sql`update reviews set status = ${status} where id = ${id} and product_id is not null returning id`;
+    if (!rows[0]) throw new MarketError("notfound");
   } else throw new MarketError("invalid");
   log("admin", userId);
   return { ok: true };
@@ -576,14 +652,14 @@ export async function listJobs(userId: string) {
     transports: transports.map(mapTransport),
     openDeliveries: openDeliveries.map((row) => ({
       id: String(row.id),
-      pickup: String(row.pickup),
-      dropoff: String(row.dropoff),
+      pickup: areaOnly(String(row.pickup)),
+      dropoff: areaOnly(String(row.dropoff)),
       item: String(row.item_desc),
     })),
     openTransports: openTransports.map((row) => ({
       id: String(row.id),
-      origin: String(row.origin),
-      destination: String(row.destination),
+      origin: areaOnly(String(row.origin)),
+      destination: areaOnly(String(row.destination)),
       load: String(row.load_desc),
     })),
     bids: bids.map((row) => ({
@@ -624,10 +700,30 @@ export async function chooseCourier(userId: string, kind: JobKind, jobId: string
   const bids = await sql<{ courier_id: string }>`
     select courier_id from job_offers where job_kind = ${kind} and job_id = ${jobId} and courier_id = ${courierId} and status = 'offered'`;
   if (!bids[0]) throw new MarketError("notfound");
-  await sql.query(`update ${table} set status = 'accepted', courier_id = $1 where id = $2`, [courierId, jobId]);
-  await sql`update job_offers set status = 'declined' where job_kind = ${kind} and job_id = ${jobId}`;
-  await sql`update job_offers set status = 'chosen' where job_kind = ${kind} and job_id = ${jobId} and courier_id = ${courierId}`;
-  await sql`insert into job_status (id, job_kind, job_id, status, actor_id) values (${crypto.randomUUID()}, ${kind}, ${jobId}, 'accepted', ${userId})`;
+  const logId = crypto.randomUUID();
+  const chosen = await sql.query<{ id: string }>(
+    `with job as (
+       update ${table} set status = 'accepted', courier_id = $1
+       where id = $2 and user_id = $3 and status = 'requested'
+         and exists (
+           select 1 from job_offers where job_kind = $4 and job_id = $2 and courier_id = $1 and status = 'offered'
+         )
+       returning id
+     ), decline as (
+       update job_offers set status = 'declined'
+       where job_kind = $4 and job_id = $2 and exists (select 1 from job)
+       returning id
+     ), pick as (
+       update job_offers set status = 'chosen'
+       where job_kind = $4 and job_id = $2 and courier_id = $1 and exists (select 1 from job)
+       returning id
+     )
+     insert into job_status (id, job_kind, job_id, status, actor_id)
+     select $5, $4, $2, 'accepted', $3 from job
+     returning id`,
+    [courierId, jobId, userId, kind, logId],
+  );
+  if (!chosen[0]) throw new MarketError("forbidden");
   await notify(sql, courierId, "کارەکەت هەڵبژێردرا", "You were chosen for a job");
   return { ok: true };
 }
@@ -643,8 +739,26 @@ export async function setJobStatus(userId: string, kind: JobKind, jobId: string,
   if (!job) throw new MarketError("notfound");
   const who = job.user_id === userId ? "requester" : job.courier_id === userId ? "courier" : null;
   if (!who || !canSetJobStatus(job.status, next, who)) throw new MarketError("forbidden");
-  await sql.query(`update ${table} set status = $1 where id = $2`, [next, jobId]);
-  await sql`insert into job_status (id, job_kind, job_id, status, actor_id) values (${crypto.randomUUID()}, ${kind}, ${jobId}, ${next}, ${userId})`;
+  const logId = crypto.randomUUID();
+  const updated = await sql.query<{ id: string }>(
+    `with upd as (
+       update ${table} set status = $1
+       where id = $2 and status = $3 and (
+         ($1 = 'cancelled' and user_id = $4 and status in ('requested', 'accepted', 'picked_up', 'on_the_way'))
+         or (courier_id = $4 and (
+           (status = 'accepted' and $1 = 'picked_up')
+           or (status = 'picked_up' and $1 = 'on_the_way')
+           or (status = 'on_the_way' and $1 = 'delivered')
+         ))
+       )
+       returning id
+     )
+     insert into job_status (id, job_kind, job_id, status, actor_id)
+     select $5, $6, upd.id, $1, $4 from upd
+     returning id`,
+    [next, jobId, job.status, userId, logId, kind],
+  );
+  if (!updated[0]) throw new MarketError("forbidden");
   const other = who === "requester" ? job.courier_id : job.user_id;
   if (other) await notify(sql, other, `دۆخ: ${next}`, `Status: ${next}`);
   return { ok: true };
@@ -666,5 +780,16 @@ export async function rateJob(userId: string, kind: JobKind, jobId: string, rati
     insert into reviews (id, user_id, job_kind, job_id, target_user_id, rating, body)
     values (${crypto.randomUUID()}, ${userId}, ${kind}, ${jobId}, ${job.courier_id}, ${score}, ${text})
     on conflict (user_id, job_kind, job_id) where job_id is not null do update set rating = excluded.rating, body = excluded.body`;
+  return { ok: true };
+}
+
+export async function markNotificationsRead(userId: string, ids: unknown) {
+  const sql = await sqlOf();
+  const list = Array.isArray(ids) ? ids.filter((id) => typeof id === "string").slice(0, 50) : [];
+  if (!list.length) {
+    await sql`update notifications set read_at = now() where user_id = ${userId} and read_at is null`;
+  } else {
+    await sql`update notifications set read_at = now() where user_id = ${userId} and id = any(${list}) and read_at is null`;
+  }
   return { ok: true };
 }

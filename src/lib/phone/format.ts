@@ -118,5 +118,5 @@ export function toE164(dial: string, national: string) {
 
 export function cleanPin(value: string) {
   const pin = value.replace(/\D/g, "");
-  return pin.length === 4 ? pin : null;
+  return pin.length === 6 ? pin : null;
 }

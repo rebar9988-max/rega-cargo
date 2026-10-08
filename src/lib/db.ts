@@ -189,6 +189,24 @@ async function createPgliteSql(): Promise<Sql> {
         await tx.query("insert into _migrations (name) values ($1)", [name]);
       });
     }
+    // Dev-only sample rows. Never part of migrations/*.sql, so production
+    // `scripts/migrate.mjs` cannot apply them. Tracked separately.
+    const seeds = import.meta.glob("/migrations/dev/*.sql", {
+      query: "?raw",
+      import: "default",
+      eager: true,
+    }) as Record<string, string>;
+    const seeded = new Set(done);
+    const again = await pg.query<{ name: string }>("select name from _migrations");
+    for (const row of again.rows) seeded.add(row.name);
+    for (const [path, sqlText] of Object.entries(seeds).sort(([a], [b]) => a.localeCompare(b))) {
+      const name = `dev:${path.split("/").pop()}`;
+      if (seeded.has(name)) continue;
+      await pg.transaction(async (tx) => {
+        await tx.exec(sqlText);
+        await tx.query("insert into _migrations (name) values ($1)", [name]);
+      });
+    }
   };
   const pass = (globalRef.__pgliteMigrateChain__ ?? Promise.resolve())
     .catch(() => undefined) // an earlier failed pass must not wedge the chain

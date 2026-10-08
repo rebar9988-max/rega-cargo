@@ -10,14 +10,14 @@
  * takes over immediately; pages stay network first, so nobody gets stuck.
  * Kill switch: replace this file with one that calls self.registration.unregister().
  */
-const VERSION = "rl-sw-v4";
+const VERSION = "rl-sw-v5";
 const PAGES = `${VERSION}-pages`;
 const ASSETS = `${VERSION}-assets`;
 const STATIC = `${VERSION}-static`;
 const NAV_TIMEOUT_MS = 3500;
 const OFFLINE = "/offline"; // assets serve /offline.html at /offline (307 otherwise)
 const PRECACHE = ["/", OFFLINE, "/rega-logo-168.webp", "/favicon.png?v=6"];
-const PUBLIC_PAGES = /^\/(?:|quote|track|stores|market|contact|customs|ai)\/?$/;
+const PUBLIC_PAGES = /^\/(?:|quote|track|stores|contact|customs|ai)\/?$/;
 const NEVER = /^\/(?:api|_serverFn|admin|move|__grok\/(?!icon|manifest))(?:\/|$)/;
 const STATIC_RE = /\.(?:png|jpe?g|webp|avif|svg|ico|woff2?)$/i;
 
@@ -59,19 +59,28 @@ async function trim(cacheName, max) {
   for (let i = 0; i < keys.length - max; i++) await cache.delete(keys[i]);
 }
 
+function pageKey(url) {
+  if (!PUBLIC_PAGES.test(url.pathname)) return null;
+  if (url.pathname === "/market" || url.pathname.startsWith("/market/")) return null;
+  const params = new URLSearchParams(url.search);
+  if (params.has("saved")) return null;
+  return url.pathname + url.search;
+}
+
 async function page(event, url) {
   const cache = await caches.open(PAGES);
+  const key = pageKey(url);
   let saved = Promise.resolve();
   const network = (async () => {
     const preload = await event.preloadResponse;
     const response = preload || (await fetch(event.request));
-    if (cacheable(response) && PUBLIC_PAGES.test(url.pathname)) {
-      saved = cache.put(url.pathname, response.clone()).catch(() => undefined);
+    if (key && cacheable(response)) {
+      saved = cache.put(key, response.clone()).catch(() => undefined);
     }
     return response;
   })();
   event.waitUntil(network.then(() => saved, () => undefined));
-  const cached = PUBLIC_PAGES.test(url.pathname) ? await clean(await cache.match(url.pathname)) : undefined;
+  const cached = key ? await clean(await cache.match(key)) : undefined;
   if (!cached) {
     try {
       return await network;
@@ -111,6 +120,12 @@ async function staleWhileRevalidate(event, cacheName) {
   }
   return refresh;
 }
+
+self.addEventListener("message", (event) => {
+  if (event.data === "rl-sign-out") {
+    event.waitUntil(caches.delete(PAGES));
+  }
+});
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;

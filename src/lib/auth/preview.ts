@@ -17,8 +17,9 @@
  * broker env var and this constant together.
  */
 export const PREVIEW_CLIENT_ID = "grok_preview";
-export const PREVIEW_CLIENT_SECRET =
-  "8bcdb7fc5a33874ad933ca568918d5790388a0795e44c4d1dea691f801b17ec5";
+// The preview client secret used to be hardcoded here. It has been removed.
+// Set GROK_AUTH_CLIENT_SECRET in the environment if this broker client is still
+// used, and rotate the old secret at the broker — it was committed to git.
 
 /** The shared auth broker issuer (OIDC discovery lives under it). */
 export const GROK_ISSUER_DEFAULT = "https://auth.grok.me";

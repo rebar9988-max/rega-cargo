@@ -5,6 +5,7 @@ import { btnGhost, btnPrimary, controlClass, Field } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
 import { useI18n } from "@/lib/i18n";
 import { iqd, marketCopy } from "@/lib/market-copy";
+import { contactHref } from "@/lib/market";
 import { marketAlert, marketFavorite, marketProduct, marketReport, marketReview } from "@/lib/market/api";
 
 export const Route = createFileRoute("/market/$slug")({
@@ -66,7 +67,7 @@ function ProductPage() {
           <ul className="flex flex-col gap-3">
             {data.offers.map((offer) => {
               const best = offer.id === data.cheapestId;
-              const external = offer.contact.startsWith("https://");
+              const href = contactHref(offer.contact);
               return (
                 <li key={offer.id} className={`rounded-2xl border p-4 ${best ? "border-pine bg-paper" : "border-line bg-surface"}`}>
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -75,8 +76,8 @@ function ProductPage() {
                   </div>
                   <p className="mt-1 text-sm text-muted">{offer.city} · {t.price} <bdi dir="ltr">{iqd(offer.price)}</bdi> · {t.shipping} <bdi dir="ltr">{iqd(offer.shipping)}</bdi></p>
                   <p className="mt-1 text-sm">{offer.stock === "in" ? t.inStock : offer.stock === "low" ? "کەم ماوە" : "نەماوە"}</p>
-                  {external ? (
-                    <a href={offer.contact} target="_blank" rel="noreferrer" className={`${btnPrimary} mt-3`}>{t.visit}</a>
+                  {href ? (
+                    <a href={href} target="_blank" rel="noreferrer" className={`${btnPrimary} mt-3`}>{t.visit}</a>
                   ) : (
                     <p className="mt-3 text-sm"><bdi dir="ltr">{offer.contact}</bdi></p>
                   )}

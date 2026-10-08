@@ -15,11 +15,13 @@ export type HtmlCacheOptions = {
   ttlMs: number;
   maxEntries: number;
   now?: () => number;
+  /** When set, only these hosts are cached. Client-supplied forwarded hosts must not be passed in. */
+  hosts?: readonly string[];
 };
 
 type Entry = { body: string; headers: [string, string][]; at: number };
 
-export function createHtmlCache({ paths, ttlMs, maxEntries, now = Date.now }: HtmlCacheOptions) {
+export function createHtmlCache({ paths, ttlMs, maxEntries, now = Date.now, hosts }: HtmlCacheOptions) {
   const allowed = new Set(paths);
   const entries = new Map<string, Entry>();
 
@@ -31,6 +33,7 @@ export function createHtmlCache({ paths, ttlMs, maxEntries, now = Date.now }: Ht
     ): Promise<unknown> {
       if (req.method.toUpperCase() !== "GET" || req.url.search || !allowed.has(req.url.pathname))
         return next();
+      if (hosts && !hosts.includes(req.host.toLowerCase().replace(/:\d+$/, ""))) return next();
       const key = `${req.host}${req.url.pathname}`;
       const hit = entries.get(key);
       if (hit && now() - hit.at < ttlMs) {

@@ -10,6 +10,10 @@ export type UsageInput = {
   visitor: string;
   dailyCap: number;
   perVisitorHourly: number;
+  /** Hard per-visitor cap for the UTC day. Omit in tests that only check the hourly limit. */
+  perVisitorDaily?: number;
+  /** Last N daily slots are kept for visitors who have not used the service today. */
+  reserve?: number;
 };
 export type UsageDecision =
   { ok: true; used: number } | { ok: false; reason: "daily_cap" | "rate_limited" };
@@ -22,12 +26,41 @@ export interface UsageStore {
 export async function consumeUsage(store: UsageStore, input: UsageInput): Promise<UsageDecision> {
   const dayKey = `day:${input.day}`;
   const visitorKey = `ip:${input.hour}:${input.visitor}`;
+  const dayVisitorKey = `ipday:${input.day}:${input.visitor}`;
   const visitorCount = (await store.get(visitorKey)) ?? 0;
   if (visitorCount >= input.perVisitorHourly) return { ok: false, reason: "rate_limited" };
+  const visitorDay = (await store.get(dayVisitorKey)) ?? 0;
+  const perDay = input.perVisitorDaily ?? Number.POSITIVE_INFINITY;
+  if (visitorDay >= perDay) return { ok: false, reason: "rate_limited" };
   const dayCount = (await store.get(dayKey)) ?? 0;
-  if (dayCount >= input.dailyCap) return { ok: false, reason: "daily_cap" };
-  await store.put({ [dayKey]: dayCount + 1, [visitorKey]: visitorCount + 1 });
+  const reserve = input.reserve ?? 0;
+  const ceiling = visitorDay === 0 ? input.dailyCap : Math.max(0, input.dailyCap - reserve);
+  if (dayCount >= ceiling) return { ok: false, reason: "daily_cap" };
+  await store.put({
+    [dayKey]: dayCount + 1,
+    [visitorKey]: visitorCount + 1,
+    [dayVisitorKey]: visitorDay + 1,
+  });
   return { ok: true, used: dayCount + 1 };
+}
+
+export async function refundUsage(
+  store: UsageStore,
+  input: { day: string; hour: string; visitor: string },
+): Promise<void> {
+  const dayKey = `day:${input.day}`;
+  const visitorKey = `ip:${input.hour}:${input.visitor}`;
+  const dayVisitorKey = `ipday:${input.day}:${input.visitor}`;
+  const [day, hour, dayVisitor] = await Promise.all([
+    store.get(dayKey),
+    store.get(visitorKey),
+    store.get(dayVisitorKey),
+  ]);
+  await store.put({
+    [dayKey]: Math.max(0, (day ?? 0) - 1),
+    [visitorKey]: Math.max(0, (hour ?? 0) - 1),
+    [dayVisitorKey]: Math.max(0, (dayVisitor ?? 0) - 1),
+  });
 }
 
 export function memoryUsageStore(): UsageStore & { data: Map<string, number> } {

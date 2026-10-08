@@ -7,6 +7,8 @@ import { getDest, getOrigin, placeName } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
 import { localizedTrack } from "@/lib/track-copy";
 import { SHIPMENTS, currentEvent, findShipment } from "@/lib/shipments";
+import { orderTrack } from "@/lib/orders/api";
+import { CONTACT_EMAIL } from "@/lib/contact";
 
 export const Route = createFileRoute("/track")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -23,13 +25,32 @@ function TrackPage() {
   const { id } = Route.useSearch();
   const navigate = useNavigate();
   const [draft, setDraft] = useState(id ?? "");
+  const [live, setLive] = useState<{ error?: string; id?: string; status?: string; events?: { title: string; titleKu: string; phase: string }[] } | null>(null);
 
   useEffect(() => {
     setDraft(id ?? "");
   }, [id]);
+  useEffect(() => {
+    if (!id) {
+      setLive(null);
+      return;
+    }
+    let on = true;
+    orderTrack({ data: { id } })
+      .then((result) => {
+        if (on) setLive(result as typeof live);
+      })
+      .catch(() => {
+        if (on) setLive({ error: "unavailable" });
+      });
+    return () => {
+      on = false;
+    };
+  }, [id]);
 
-  const shipment = id ? findShipment(id) : undefined;
-  const missing = Boolean(id) && !shipment;
+  const demo = import.meta.env.DEV && id && live?.error === "notfound" ? findShipment(id) : undefined;
+  const shipment = demo;
+  const missing = Boolean(id) && live?.error === "notfound" && !shipment;
 
   return (
     <Shell>
@@ -62,7 +83,7 @@ function TrackPage() {
         <div>
           <p className="text-sm font-medium">{t.samples}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {SHIPMENTS.map((item) => (
+            {(import.meta.env.DEV ? SHIPMENTS : []).map((item) => (
               <button
                 key={item.id}
                 type="button"
@@ -76,6 +97,18 @@ function TrackPage() {
         </div>
 
         {missing ? <p className="text-sm text-clay">{t.notFound}</p> : null}
+        {live?.error === "unavailable" ? (
+          <p className="text-sm text-clay">
+            <a href={`mailto:${CONTACT_EMAIL}`}><bdi dir="ltr">{CONTACT_EMAIL}</bdi></a>
+          </p>
+        ) : null}
+        {live && !live.error && live.events ? (
+          <ol className="flex flex-col gap-2 text-sm">
+            {live.events.map((event) => (
+              <li key={event.title + event.phase}>{lang === "ckb" ? event.titleKu : event.title}</li>
+            ))}
+          </ol>
+        ) : null}
 
         {shipment ? (
           <article className="grid gap-8 lg:grid-cols-3">

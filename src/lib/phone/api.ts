@@ -18,11 +18,11 @@ export const phoneStatus = createServerFn({ method: "GET" }).handler(async () =>
 });
 
 export const phoneBegin = createServerFn({ method: "POST" })
-  .validator((input: { dial: string; national: string }) => input)
+  .validator((input: { dial: string; national: string; turnstile?: string }) => input)
   .handler(async ({ data }) => {
     await guard();
     const { phoneStart } = await import("./session.server");
-    return phoneStart(data.dial, data.national);
+    return phoneStart(data.dial, data.national, data.turnstile);
   });
 
 export const phoneJoin = createServerFn({ method: "POST" })

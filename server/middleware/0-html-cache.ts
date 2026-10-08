@@ -5,10 +5,17 @@
  */
 import { createHtmlCache } from "../../src/lib/html-cache";
 
+const ALLOWED_HOSTS = [
+  "cargo.regaplatform.com",
+  "rega-cargo.rebar9988.workers.dev",
+  "rega-cargo-staging.rebar9988.workers.dev",
+];
+
 const cache = createHtmlCache({
   paths: ["/", "/stores", "/quote", "/track", "/customs", "/contact"],
   ttlMs: 60_000,
   maxEntries: 32,
+  hosts: ALLOWED_HOSTS,
 });
 
 interface HtmlCacheEvent {
@@ -20,7 +27,7 @@ export default function htmlCacheMiddleware(
   event: HtmlCacheEvent,
   next: () => unknown | Promise<unknown>,
 ) {
-  const host =
-    event.req.headers.get("x-forwarded-host") ?? event.req.headers.get("host") ?? event.url.host;
+  // Key on the Worker's own URL host only. Ignore x-forwarded-host (client-controlled).
+  const host = event.url.host;
   return cache.handle({ method: event.req.method ?? "GET", url: event.url, host }, next);
 }

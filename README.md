@@ -12,3 +12,8 @@ npm run dev
 ```
 
 پەڕەکان: سەرەتا، نرخ، شوێنپێکردن، گومرگ، پەیوەندی. دیزاین، لۆگۆ و زمانەکان هەر وەک خۆیانن.
+
+
+## Deploy
+
+See DEPLOY.md for the Worker, env vars (`PHONE_CODE_SECRET`, `TURNSTILE_SECRET`, `DATABASE_URL`, WhatsApp/Twilio) and migration order. Phone sign-in is off until a real provider is configured. R&L AI stays on.
