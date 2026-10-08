@@ -282,7 +282,19 @@ const ar: StoreCopy = {
     sports: "رياضة",
     general: "عام",
   },
-  notes: en.notes,
+  notes: {
+    amazon:
+      "تتيح Amazon Creators API البحث في الكتالوج وإنشاء روابط تسويق بالعمولة بعد حساب Associates ومبيعات مؤهلة. لا تُتمّ الشراء. نحن غير مسجلين.",
+    ebay: "تحتاج واجهات eBay للتصفح والدفع إلى موافقة شراكة. لم نحصل على موافقة. يبقى الموقع الرسمي هو البديل.",
+    otto: "واجهة البائعين في OTTO مخصصة للتجار. برنامج التسويق بالعمولة عبر Awin للروابط المتتبَّعة، لا لتقديم الطلبات. لم ننضم.",
+    zalando:
+      "واجهة zDirect من Zalando مخصصة للعلامات التي تبيع على Zalando. ليست كتالوجًا نستطيع الشراء منه. لا توجد تغذية للمستهلك متصلة.",
+    shein:
+      "منصة SHEIN Open Platform مخصصة للبائعين وشركاء الخدمات اللوجستية، لا لتصفح العملاء. صفحة التسويق بالعمولة التي وجدناها ليست موافقة نملكها.",
+    sephora:
+      "لدى Sephora DE برنامج تسويق بالعمولة عبر Awin لروابط الترويج. لا يسمح لنا بالشراء. لسنا أعضاء.",
+    link: "لم نجد واجهة منتجات معتمدة. لن نجمع بيانات الموقع آليًا. نقدم الرابط الرسمي وطلبًا يدويًا فقط.",
+  },
   cautions: {
     perfume: "قد يُرفض العطر في الشحن الجوي.",
     aerosol: "البخاخات المضغوطة ممنوعة غالبًا على الطائرة.",
@@ -363,7 +375,19 @@ const de: StoreCopy = {
     sports: "Sport",
     general: "Allgemein",
   },
-  notes: en.notes,
+  notes: {
+    amazon:
+      "Die Amazon Creators API kann nach einem Associates-Konto und qualifizierten Verkäufen den Katalog durchsuchen und Affiliate-Links erstellen. Sie kauft nicht ein. Wir sind nicht angemeldet.",
+    ebay: "Die Browse- und Checkout-APIs von eBay brauchen eine Partnerfreigabe. Wir sind nicht freigegeben. Die offizielle Website bleibt der Ausweg.",
+    otto: "Die Händler-API von OTTO ist für Händler. Das Affiliate-Programm über Awin ist für getrackte Links, nicht für Bestellungen. Wir sind nicht beigetreten.",
+    zalando:
+      "Die zDirect-API von Zalando ist für Marken, die auf Zalando verkaufen. Sie ist kein Katalog, in dem wir einkaufen können. Kein Kunden-Feed ist verbunden.",
+    shein:
+      "Die SHEIN Open Platform ist für Verkäufer und Logistikpartner, nicht zum Stöbern als Kunde. Die gefundene Affiliate-Seite ist keine Freigabe, die wir haben.",
+    sephora:
+      "Sephora DE hat ein Awin-Affiliate-Programm für Werbelinks. Es erlaubt uns keine Käufe. Wir sind keine Mitglieder.",
+    link: "Keine freigegebene Produkt-API gefunden. Wir lesen die Website nicht automatisiert aus. Angeboten werden nur der offizielle Link und eine manuelle Anfrage.",
+  },
   cautions: {
     perfume: "Parfüm kann in Luftfracht abgelehnt werden.",
     aerosol: "Druckgas ist im Flugzeug oft verboten.",
@@ -423,6 +447,19 @@ const ku: StoreCopy = {
     kettle: "Çaydankê elektrîkê",
     baby: "Kincên zarokan",
     ball: "Topa gogê",
+  },
+  notes: {
+    amazon:
+      "Amazon Creators API piştî hesabekî Associates û firotinên guncav dikare li katalogê bigere û lînkên affiliate çêke. Kirînê temam nake. Em ne endam in.",
+    ebay: "APIyên Browse û checkouta eBayê pejirandina hevkariyê dixwazin. Em nehatine pejirandin. Malpera fermî rêya din dimîne.",
+    otto: "APIya firoşkaran a OTTOyê ji bo bazirganan e. Bernameya wê ya affiliate bi rêya Awin ji bo lînkên şopandî ye, ne ji bo siparîşê. Em beşdar nebûne.",
+    zalando:
+      "APIya zDirect a Zalandoyê ji bo brandên ku li Zalandoyê difiroşin e. Ne katalogek e ku em jê bikirin. Tu feeda xerîdaran girêdayî nîne.",
+    shein:
+      "SHEIN Open Platform ji bo firoşkar û hevkarên lojîstîkê ye, ne ji bo gerîna xerîdaran. Rûpela affiliate ya ku me dît ne pejirandinek e ku me heye.",
+    sephora:
+      "Sephora DE bernameyeke affiliate ya Awin ji bo lînkên reklamê heye. Destûrê nade em bikirin. Em ne endam in.",
+    link: "Tu APIya berhemê ya pejirandî nehat dîtin. Em malperê bi otomatîkî naxwînin. Tenê lînka fermî û daxwazek bi destan tê pêşkêşkirin.",
   },
   buyTitle: "Siparîşa kirînê",
   submit: "Siparîşê bişîne",
@@ -544,6 +581,19 @@ const tr: StoreCopy = {
     kettle: "Elektrikli kettle",
     baby: "Bebek kıyafeti",
     ball: "Futbol topu",
+  },
+  notes: {
+    amazon:
+      "Amazon Creators API, Associates hesabı ve uygun satışlardan sonra katalogda arama yapıp ortaklık bağlantısı oluşturabilir. Ödeme yapmaz. Kayıtlı değiliz.",
+    ebay: "eBay Browse ve ödeme API'leri iş ortaklığı onayı gerektirir. Onaylı değiliz. Resmi site yedek yol olarak kalır.",
+    otto: "OTTO'nun satıcı API'si tüccarlar içindir. Awin üzerinden ortaklık programı sipariş vermek için değil, izlenen bağlantılar içindir. Katılmadık.",
+    zalando:
+      "Zalando'nun zDirect API'si Zalando'da satış yapan markalar içindir. Alışveriş yapabileceğimiz bir katalog değildir. Bağlı bir tüketici akışı yok.",
+    shein:
+      "SHEIN Open Platform satıcılar ve lojistik ortakları içindir, müşteri olarak gezinmek için değil. Bulduğumuz ortaklık sayfası sahip olduğumuz bir onay değildir.",
+    sephora:
+      "Sephora DE'nin tanıtım bağlantıları için bir Awin ortaklık programı var. Satın almamıza izin vermez. Üye değiliz.",
+    link: "Onaylı bir ürün API'si bulunamadı. Siteden otomatik veri çekmeyiz. Yalnızca resmi bağlantı ve elle talep sunulur.",
   },
   buyTitle: "Satın alma siparişi",
   submit: "Siparişi gönder",
