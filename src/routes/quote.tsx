@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { QuotePanel } from "@/components/quote-panel";
 import { PageHeader, Shell } from "@/components/shell";
+import { DeliveryTabs } from "@/components/delivery-hub";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/quote")({
@@ -20,6 +21,7 @@ function QuotePage() {
   const { from, to, kg } = Route.useSearch();
   return (
     <Shell>
+      <DeliveryTabs active="/quote" />
       <PageHeader kicker={t.quoteKicker} title={t.quoteTitle} lede={t.quoteLede} />
       <div className="mx-auto max-w-6xl px-5 py-12 md:py-16">
         <QuotePanel variant="full" initial={{ from, to, kg }} />

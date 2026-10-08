@@ -14,5 +14,9 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: BazaarPage,
+  component: HomePage,
 });
+
+function HomePage() {
+  return <BazaarPage home />;
+}

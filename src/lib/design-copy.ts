@@ -12,6 +12,17 @@ export type DesignCopy = {
   cart: string;
   account: string;
   accountHint: string;
+  services: string;
+  bazaar: string;
+  bazaarSub: string;
+  delivery: string;
+  deliverySub: string;
+  deliveryTitle: string;
+  quoteCard: string;
+  quoteGo: string;
+  trackCard: string;
+  moveSend: string;
+  moveSub: string;
 };
 
 export const DESIGN_COPY: Record<Lang, DesignCopy> = {
@@ -26,6 +37,17 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     cart: "داواکاری کڕین",
     account: "هەژمار",
     accountHint: "بە ژمارەی تەلەفۆن بچۆ ژوورەوە",
+    services: "خزمەتگوزارییەکان",
+    bazaar: "بازاڕ",
+    bazaarSub: "لە ئەوروپاوە بکڕە",
+    delivery: "گەیاندن",
+    deliverySub: "ناردن و شوێنپێکردنی بار",
+    deliveryTitle: "بنێرە. شوێنی بکەوە.",
+    quoteCard: "نرخی ناردن",
+    quoteGo: "نرخ ببینە",
+    trackCard: "شوێنپێکردن بە کۆد",
+    moveSend: "گواستنەوە و ناردن",
+    moveSub: "شۆفێر پێشنیار دەکات، تۆ هەڵدەبژێریت",
   },
   en: {
     search: "What are you looking for?",
@@ -38,6 +60,17 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     cart: "Purchase request",
     account: "Account",
     accountHint: "Sign in with your phone number",
+    services: "Services",
+    bazaar: "Bazaar",
+    bazaarSub: "Shop from Europe",
+    delivery: "Delivery",
+    deliverySub: "Send & track parcels",
+    deliveryTitle: "Send it. Track it.",
+    quoteCard: "Shipping price",
+    quoteGo: "See price",
+    trackCard: "Track by code",
+    moveSend: "Move & send",
+    moveSub: "Drivers offer, you choose",
   },
   ku: {
     search: "Tu li çi digerî?",
@@ -50,6 +83,17 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     cart: "Daxwaza kirînê",
     account: "Hesab",
     accountHint: "Bi hejmara telefonê têkeve",
+    services: "Xizmet",
+    bazaar: "Bazar",
+    bazaarSub: "Ji Ewropayê bikire",
+    delivery: "Gihandin",
+    deliverySub: "Pakêtan bişîne û bişopîne",
+    deliveryTitle: "Bişîne. Bişopîne.",
+    quoteCard: "Bihayê şandinê",
+    quoteGo: "Bihayê bibîne",
+    trackCard: "Bi kodê bişopîne",
+    moveSend: "Barkirin û şandin",
+    moveSub: "Ajokar pêşniyar dikin, tu hildibijêrî",
   },
   ar: {
     search: "عمّ تبحث؟",
@@ -62,6 +106,17 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     cart: "طلب شراء",
     account: "الحساب",
     accountHint: "سجّل الدخول برقم الهاتف",
+    services: "الخدمات",
+    bazaar: "البازار",
+    bazaarSub: "تسوّق من أوروبا",
+    delivery: "التوصيل",
+    deliverySub: "أرسل الطرود وتتبّعها",
+    deliveryTitle: "أرسل. وتتبّع.",
+    quoteCard: "سعر الشحن",
+    quoteGo: "اعرض السعر",
+    trackCard: "التتبّع بالرمز",
+    moveSend: "النقل والإرسال",
+    moveSub: "السائقون يعرضون وأنت تختار",
   },
   fa: {
     search: "دنبال چه می‌گردید؟",
@@ -74,6 +129,17 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     cart: "درخواست خرید",
     account: "حساب",
     accountHint: "با شماره تلفن وارد شوید",
+    services: "خدمات",
+    bazaar: "بازار",
+    bazaarSub: "از اروپا خرید کنید",
+    delivery: "ارسال",
+    deliverySub: "ارسال و پیگیری بسته",
+    deliveryTitle: "بفرست. پیگیری کن.",
+    quoteCard: "هزینهٔ ارسال",
+    quoteGo: "دیدن قیمت",
+    trackCard: "پیگیری با کد",
+    moveSend: "جابه‌جایی و ارسال",
+    moveSub: "رانندگان پیشنهاد می‌دهند، شما انتخاب می‌کنید",
   },
   tr: {
     search: "Ne arıyorsunuz?",
@@ -86,6 +152,17 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     cart: "Satın alma talebi",
     account: "Hesap",
     accountHint: "Telefon numaranızla giriş yapın",
+    services: "Hizmetler",
+    bazaar: "Pazar",
+    bazaarSub: "Avrupa'dan alışveriş",
+    delivery: "Teslimat",
+    deliverySub: "Paket gönder ve takip et",
+    deliveryTitle: "Gönder. Takip et.",
+    quoteCard: "Gönderim fiyatı",
+    quoteGo: "Fiyatı gör",
+    trackCard: "Kodla takip",
+    moveSend: "Taşıma ve gönderim",
+    moveSub: "Sürücüler teklif verir, sen seçersin",
   },
   de: {
     search: "Wonach suchen Sie?",
@@ -98,5 +175,16 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     cart: "Kaufanfrage",
     account: "Konto",
     accountHint: "Mit Telefonnummer anmelden",
+    services: "Dienste",
+    bazaar: "Basar",
+    bazaarSub: "Aus Europa einkaufen",
+    delivery: "Versand",
+    deliverySub: "Pakete senden & verfolgen",
+    deliveryTitle: "Senden. Verfolgen.",
+    quoteCard: "Versandpreis",
+    quoteGo: "Preis ansehen",
+    trackCard: "Mit Code verfolgen",
+    moveSend: "Umzug & Versand",
+    moveSub: "Fahrer bieten an, du wählst",
   },
 };

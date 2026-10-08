@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Report } from "@/routes/market.$slug";
 import { btnGhost, btnPrimary, controlClass, Field } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
+import { DeliveryTabs } from "@/components/delivery-hub";
 import { useI18n } from "@/lib/i18n";
 import { marketCopy } from "@/lib/market-copy";
 import { marketRole, moveChoose, moveCreateDelivery, moveCreateTransport, moveJobs, moveOffer, moveRate, moveStatus } from "@/lib/market/api";
@@ -38,6 +39,7 @@ function MovePage() {
   }
   return (
     <Shell>
+      <DeliveryTabs active="/move" />
       <PageHeader kicker={t.moveKicker} title={t.moveTitle} lede={t.moveLede} />
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-2">
         <form
