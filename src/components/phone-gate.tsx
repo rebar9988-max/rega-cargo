@@ -2,14 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { btnPrimary, controlClass } from "@/components/field";
 import { useI18n } from "@/lib/i18n";
-import {
-  phoneBegin,
-  phoneCheck,
-  phoneEnter,
-  phoneJoin,
-  phoneLeave,
-  phoneWho,
-} from "@/lib/phone/api";
+import { phoneBegin, phoneCheck, phoneLeave, phoneStatus, phoneWho } from "@/lib/phone/api";
 import { COUNTRIES, flag, type PhoneCountry } from "@/lib/phone/format";
 
 const copy = {
@@ -21,7 +14,7 @@ const copy = {
     both: "کۆدەکە بۆ واتسئەپ و بۆ سیمەکەت نێردرا.",
     waOnly: "تەنها واتسئەپ گەیشت. کورتەنامەکە نەچوو.",
     smsOnly: "تەنها کورتەنامە بۆ سیمەکەت چوو. واتسئەپ نەگەیشت.",
-    offline: "هێڵی واتسئەپ و کورتەنامە هێشتا نەبەستراون، بۆیە کۆدەکە خۆت دادەنێیت.",
+    unavailable: "چوونەژوورەوە بە ژمارەی تەلەفۆن ئێستا بەردەست نییە. تکایە دواتر هەوڵ بدەرەوە.",
     country: "وڵات",
     search: "گەڕان بە وڵات یان کۆد",
     number: "ژمارە",
@@ -45,7 +38,7 @@ const copy = {
     both: "کد از طریق واتس‌اپ و پیامک به سیم‌کارتت فرستاده شد.",
     waOnly: "فقط واتس‌اپ رسید. پیامک نرفت.",
     smsOnly: "فقط پیامک به سیم‌کارت رفت. واتس‌اپ نرسید.",
-    offline: "واتس‌اپ و پیامک هنوز وصل نشده‌اند، پس کد را خودت انتخاب می‌کنی.",
+    unavailable: "ورود با تلفن موقتاً در دسترس نیست. لطفاً بعداً دوباره امتحان کن.",
     country: "کشور",
     search: "جستجوی کشور یا کد",
     number: "شماره",
@@ -71,7 +64,7 @@ const copy = {
     both: "Kod bi WhatsAppê û bo SIMa te hate şandin.",
     waOnly: "Tenê WhatsApp gihîşt. Peyam neçû.",
     smsOnly: "Tenê peyama SIMê çû. WhatsApp negihîşt.",
-    offline: "WhatsApp û SMS hêj nehatine girêdan, loma tu bi xwe kodê hildibijêrî.",
+    unavailable: "Têketina bi telefonê niha ne berdest e. Ji kerema xwe paşê dîsa biceribîne.",
     country: "Welat",
     search: "Li welatekî an kodekê bigere",
     number: "Hejmar",
@@ -95,7 +88,8 @@ const copy = {
     both: "Der Code wurde per WhatsApp und als SMS an die SIM gesendet.",
     waOnly: "Nur WhatsApp ist angekommen. Die SMS nicht.",
     smsOnly: "Nur die SMS an die SIM ist angekommen. WhatsApp nicht.",
-    offline: "WhatsApp und SMS sind noch nicht verbunden, daher wählen Sie den Code selbst.",
+    unavailable:
+      "Die Anmeldung per Telefon ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
     country: "Land",
     search: "Land oder Vorwahl suchen",
     number: "Nummer",
@@ -119,7 +113,7 @@ const copy = {
     both: "أُرسل الرمز عبر واتساب وإلى شريحتك.",
     waOnly: "وصل واتساب فقط. لم تصل الرسالة النصية.",
     smsOnly: "وصلت الرسالة النصية إلى الشريحة فقط. لم يصل واتساب.",
-    offline: "واتساب والرسائل النصية غير متصلة بعد، لذلك تختار الرمز بنفسك.",
+    unavailable: "تسجيل الدخول بالهاتف غير متاح مؤقتًا. يرجى المحاولة لاحقًا.",
     country: "البلد",
     search: "ابحث عن بلد أو رمز",
     number: "الرقم",
@@ -143,7 +137,7 @@ const copy = {
     both: "Kod WhatsApp'tan ve SIM'ine gönderildi.",
     waOnly: "Yalnızca WhatsApp ulaştı. SMS gitmedi.",
     smsOnly: "Yalnızca SIM'e SMS gitti. WhatsApp ulaşmadı.",
-    offline: "WhatsApp ve SMS henüz bağlı değil, bu yüzden kodu kendin seçiyorsun.",
+    unavailable: "Telefonla giriş geçici olarak kullanılamıyor. Lütfen daha sonra tekrar dene.",
     country: "Ülke",
     search: "Ülke veya kod ara",
     number: "Numara",
@@ -167,7 +161,7 @@ const copy = {
     both: "The code was sent on WhatsApp and to the SIM.",
     waOnly: "Only WhatsApp went through. The text did not.",
     smsOnly: "Only the SIM text went through. WhatsApp did not.",
-    offline: "WhatsApp and SMS are not connected yet, so you choose the code yourself.",
+    unavailable: "Phone sign-in is temporarily unavailable. Please try again later.",
     country: "Country",
     search: "Search a country or code",
     number: "Number",
@@ -242,6 +236,20 @@ function PhoneDialog({
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [available, setAvailable] = useState<boolean | null>(null);
+  useEffect(() => {
+    let live = true;
+    phoneStatus()
+      .then((status) => {
+        if (live) setAvailable(status.available);
+      })
+      .catch(() => {
+        if (live) setAvailable(false);
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return COUNTRIES;
@@ -256,23 +264,30 @@ function PhoneDialog({
     const result = await phoneBegin({ data: { dial: country.dial, national } });
     setBusy(false);
     if ("error" in result && result.error) {
-      setError(t[result.error as "phone"] ?? t.phone);
+      setError(
+        result.error === "unavailable" ? t.unavailable : (t[result.error as "phone"] ?? t.phone),
+      );
       return;
     }
     if ("exists" in result) {
+      if (!result.sent) {
+        setError(t.unavailable);
+        return;
+      }
       setExists(result.exists);
-      setChannels(result.sent ? { whatsapp: result.whatsapp, sms: result.sms } : null);
+      setChannels({ whatsapp: result.whatsapp, sms: result.sms });
     }
   }
 
   async function finish() {
     setBusy(true);
     setError("");
-    const result = channels
-      ? await phoneCheck({ data: { dial: country.dial, national, pin, name } })
-      : exists
-        ? await phoneEnter({ data: { dial: country.dial, national, pin } })
-        : await phoneJoin({ data: { dial: country.dial, national, name, pin } });
+    if (!channels) {
+      setBusy(false);
+      setError(t.unavailable);
+      return;
+    }
+    const result = await phoneCheck({ data: { dial: country.dial, national, pin, name } });
     setBusy(false);
     if ("error" in result && result.error) {
       setError(t[result.error as "wrong"] ?? t.invalid);
@@ -315,6 +330,10 @@ function PhoneDialog({
           >
             {t.out}
           </button>
+        ) : available === false ? (
+          <p role="status" className="px-5 py-6 text-sm leading-relaxed text-clay">
+            {t.unavailable}
+          </p>
         ) : picking ? (
           <div className="mt-4 flex min-h-0 flex-1 flex-col border-t border-line">
             <input
@@ -345,7 +364,7 @@ function PhoneDialog({
               ))}
             </ul>
           </div>
-        ) : exists == null ? (
+        ) : exists == null || !channels ? (
           <div className="flex flex-col gap-4 px-5 py-6">
             <label className="flex h-14 items-center rounded-2xl border border-line">
               <button
@@ -388,13 +407,11 @@ function PhoneDialog({
             }}
           >
             <p className="text-sm text-muted">
-              {channels
-                ? channels.whatsapp && channels.sms
-                  ? t.both
-                  : channels.whatsapp
-                    ? t.waOnly
-                    : t.smsOnly
-                : t.offline}
+              {channels.whatsapp && channels.sms
+                ? t.both
+                : channels.whatsapp
+                  ? t.waOnly
+                  : t.smsOnly}
             </p>
             {!exists ? (
               <input
@@ -411,7 +428,7 @@ function PhoneDialog({
               onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 4))}
               inputMode="numeric"
               dir="ltr"
-              autoComplete={exists ? "current-password" : "new-password"}
+              autoComplete="one-time-code"
               placeholder={t.pin}
               aria-label={t.pin}
               className={`${controlClass} text-center font-sans text-2xl tracking-[0.4em]`}
