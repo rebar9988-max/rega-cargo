@@ -10,12 +10,13 @@
  * takes over immediately; pages stay network first, so nobody gets stuck.
  * Kill switch: replace this file with one that calls self.registration.unregister().
  */
-const VERSION = "rl-sw-v1";
+const VERSION = "rl-sw-v2";
 const PAGES = `${VERSION}-pages`;
 const ASSETS = `${VERSION}-assets`;
 const STATIC = `${VERSION}-static`;
 const NAV_TIMEOUT_MS = 3500;
-const PRECACHE = ["/", "/offline.html", "/rega-logo-168.webp", "/favicon.png?v=6"];
+const OFFLINE = "/offline"; // assets serve /offline.html at /offline (307 otherwise)
+const PRECACHE = ["/", OFFLINE, "/rega-logo-168.webp", "/favicon.png?v=6"];
 const PUBLIC_PAGES = /^\/(?:|quote|track|stores|market|contact|customs|ai)\/?$/;
 const NEVER = /^\/(?:api|_serverFn|admin|move|__grok\/(?!icon|manifest))(?:\/|$)/;
 const STATIC_RE = /\.(?:png|jpe?g|webp|avif|svg|ico|woff2?)$/i;
@@ -39,6 +40,12 @@ self.addEventListener("activate", (event) => {
     })(),
   );
 });
+
+/** Navigations cannot be answered with a redirected response: rebuild it. */
+async function clean(response) {
+  if (!response || !response.redirected) return response;
+  return new Response(await response.blob(), { status: response.status, statusText: response.statusText, headers: response.headers });
+}
 
 function cacheable(response) {
   if (!response || response.status !== 200 || response.type !== "basic") return false;
@@ -64,12 +71,12 @@ async function page(event, url) {
     return response;
   })();
   event.waitUntil(network.then(() => saved, () => undefined));
-  const cached = PUBLIC_PAGES.test(url.pathname) ? await cache.match(url.pathname) : undefined;
+  const cached = PUBLIC_PAGES.test(url.pathname) ? await clean(await cache.match(url.pathname)) : undefined;
   if (!cached) {
     try {
       return await network;
     } catch {
-      return (await cache.match("/offline.html")) || Response.error();
+      return (await clean(await cache.match(OFFLINE))) || Response.error();
     }
   }
   const timeout = new Promise((resolve) => setTimeout(() => resolve(cached), NAV_TIMEOUT_MS));
