@@ -57,9 +57,17 @@ test("non-.sql entries are dropped (readdir also yields the auth/ directory)", (
 });
 
 test("the auth schema ships outside the globbed directory", () => {
+  // App migrations (0002_market.sql, …) live in migrations/ by design, so the
+  // globbed set is not empty. The invariant is that the opt-in Better Auth
+  // schema's source stays in auth/ (out of both appliers' non-recursive reads);
+  // a copied-up 0001_auth.sql is checked against it by the next test.
   const migrationsDir = join(projectRoot(), "migrations");
-  assert.deepEqual(pendingMigrations(readdirSync(migrationsDir), []), []);
-  assert.ok(readdirSync(join(migrationsDir, "auth")).includes("0001_auth.sql"));
+  assert.ok(readdirSync(join(migrationsDir, "auth")).includes(AUTH_MIGRATION));
+  const globbed = pendingMigrations(readdirSync(migrationsDir), []).map((m) => m.name);
+  assert.ok(
+    globbed.every((name) => name !== "auth"),
+    "readdir's auth/ entry must not be applied",
+  );
 });
 
 test("this workspace's auth schema copy is byte-identical to its source", () => {

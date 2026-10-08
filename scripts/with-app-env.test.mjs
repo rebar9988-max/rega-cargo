@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import { promisify } from "node:util";
 import {
@@ -14,7 +15,24 @@ import {
 } from "./with-app-env.mjs";
 
 const execFileAsync = promisify(execFile);
-const WRAPPER = join(projectRoot(), "scripts/with-app-env.mjs");
+
+/**
+ * A throwaway workspace holding a copy of the wrapper plus an app-env that
+ * turns auth off. The wrapper resolves its root from its own location, so the
+ * copy reads the fixture's `.grok/app-env.json` — never this repo's local state
+ * (the exported repo does not ship `.grok/`).
+ */
+function makeWrapperWorkspace() {
+  const root = makeWorkspace('{"VITE_AUTH_ENABLED":"false"}');
+  mkdirSync(join(root, "scripts"), { recursive: true });
+  copyFileSync(
+    join(projectRoot(), "scripts/with-app-env.mjs"),
+    join(root, "scripts/with-app-env.mjs"),
+  );
+  return root;
+}
+const WRAPPER_ROOT = makeWrapperWorkspace();
+const WRAPPER = join(WRAPPER_ROOT, "scripts/with-app-env.mjs");
 const PRINT_FLAG = "process.stdout.write(String(process.env.VITE_AUTH_ENABLED));";
 
 function makeWorkspace(appEnvJson) {
@@ -59,8 +77,11 @@ test("an explicit process-env override wins over the file", () => {
   assert.equal(merged.PATH, "/usr/bin");
 });
 
-test("the template ships auth off", () => {
-  assert.deepEqual(readAppEnv(projectRoot()), { VITE_AUTH_ENABLED: "false" });
+test("the wrapper's project root is the directory above scripts/", () => {
+  assert.equal(
+    join(projectRoot(), "scripts", "with-app-env.mjs"),
+    fileURLToPath(new URL("./with-app-env.mjs", import.meta.url)),
+  );
 });
 
 test("vite loadEnv resolves the wrapped value", () => {
@@ -117,7 +138,7 @@ test("the CLI still runs when invoked through a symlinked path", async () => {
   // node realpaths import.meta.url but not process.argv[1], so a raw comparison
   // turns the wrapper into a no-op that exits 0 without starting anything.
   const link = join(mkdtempSync(join(tmpdir(), "app-env-link-")), "scripts");
-  symlinkSync(join(projectRoot(), "scripts"), link);
+  symlinkSync(join(WRAPPER_ROOT, "scripts"), link);
   const { stdout } = await execFileAsync(process.execPath, [
     join(link, "with-app-env.mjs"),
     process.execPath,
