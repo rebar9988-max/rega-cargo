@@ -2,6 +2,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import { AuthProvider } from "@/lib/auth/provider";
 import { I18nProvider } from "@/lib/i18n";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
+import { rlAiEnabled } from "@/lib/ai/flag";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -25,7 +26,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: () => (
-    <html lang="ckb" dir="ltr" data-textdir="rtl" suppressHydrationWarning>
+    <html lang="ckb" dir="ltr" data-textdir="rtl" data-rl-ai={rlAiEnabled() ? "1" : undefined} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
