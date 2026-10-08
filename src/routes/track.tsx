@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageHeader, Shell } from "@/components/shell";
+import { DeliveryTabs } from "@/components/delivery-hub";
 import { btnPrimary, controlClass } from "@/components/field";
 import { getDest, getOrigin, placeName } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
@@ -32,6 +33,7 @@ function TrackPage() {
 
   return (
     <Shell>
+      <DeliveryTabs active="/track" />
       <PageHeader kicker={t.trackKicker} title={t.trackTitle} lede={t.trackLede} />
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-12 md:py-16">
         <form
@@ -90,7 +92,8 @@ function TrackPage() {
                 </bdi>
                 {" · "}
                 <bdi dir="ltr">
-                  {placeName(getOrigin(shipment.fromId), lang)} → {placeName(getDest(shipment.toId), lang)}
+                  {placeName(getOrigin(shipment.fromId), lang)} →{" "}
+                  {placeName(getDest(shipment.toId), lang)}
                 </bdi>
                 {" · "}
                 {t.modes[shipment.mode].name}
@@ -99,7 +102,10 @@ function TrackPage() {
               </p>
               <ol className="mt-8">
                 {shipment.events.map((event, index) => (
-                  <li key={`${event.title}-${index}`} className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-4">
+                  <li
+                    key={`${event.title}-${index}`}
+                    className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-4"
+                  >
                     <div className="flex flex-col items-center">
                       <span
                         className={
@@ -110,19 +116,27 @@ function TrackPage() {
                               : "size-3 rounded-full border-2 border-line bg-paper"
                         }
                       />
-                      {index < shipment.events.length - 1 ? <span className="w-px flex-1 bg-line" /> : null}
+                      {index < shipment.events.length - 1 ? (
+                        <span className="w-px flex-1 bg-line" />
+                      ) : null}
                     </div>
                     <div className="pb-6">
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <p className={`font-medium ${event.phase === "next" ? "text-muted" : "text-ink"}`}>
+                        <p
+                          className={`font-medium ${event.phase === "next" ? "text-muted" : "text-ink"}`}
+                        >
                           {localizedTrack(lang, event.title, event.titleKu)}
                         </p>
                         <p className="text-sm text-muted">
                           <bdi dir="ltr">{localizedTrack(lang, event.at, event.atKu)}</bdi>
                         </p>
                       </div>
-                      <p className="text-sm text-muted">{localizedTrack(lang, event.place, event.placeKu)}</p>
-                      {event.phase === "next" ? <p className="text-xs text-muted">{t.expected}</p> : null}
+                      <p className="text-sm text-muted">
+                        {localizedTrack(lang, event.place, event.placeKu)}
+                      </p>
+                      {event.phase === "next" ? (
+                        <p className="text-xs text-muted">{t.expected}</p>
+                      ) : null}
                     </div>
                   </li>
                 ))}
@@ -155,11 +169,15 @@ function TrackPage() {
                 </div>
                 <div>
                   <dt className="text-muted">{t.hubsTitle}</dt>
-                  <dd className="mt-1 font-medium">{localizedTrack(lang, shipment.hub, shipment.hubKu)}</dd>
+                  <dd className="mt-1 font-medium">
+                    {localizedTrack(lang, shipment.hub, shipment.hubKu)}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-muted">{t.photoOnFile}</dt>
-                  <dd className="mt-1 font-medium text-pine">{shipment.photo ? t.photoOnFile : "—"}</dd>
+                  <dd className="mt-1 font-medium text-pine">
+                    {shipment.photo ? t.photoOnFile : "—"}
+                  </dd>
                 </div>
               </dl>
             </aside>

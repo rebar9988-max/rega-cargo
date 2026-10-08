@@ -42,17 +42,20 @@ const LINKS = [
 const TABS = [
   { to: "/", key: "home", exact: true, icon: House },
   { to: "/stores", key: "stores", exact: false, icon: Store },
-  { to: "/quote", key: "quote", exact: false, icon: Tag },
+  { to: "/quote", key: "delivery", exact: false, icon: Truck },
   { to: "/market", key: "market", exact: false, icon: LayoutGrid },
 ] as const;
+const DELIVERY_PATHS = ["/quote", "/track", "/move"];
 
-const MENU = [
-  { to: "/quote", key: "quote", icon: Tag },
-  { to: "/track", key: "track", icon: MapPin },
+const MENU_BAZAAR = [
   { to: "/stores", key: "stores", icon: Store },
   { to: "/market", key: "market", icon: LayoutGrid },
-  { to: "/move", key: "move", icon: Truck },
   { to: "/ai", key: "ai", icon: Sparkles },
+] as const;
+const MENU_DELIVERY = [
+  { to: "/quote", key: "quote", icon: Tag },
+  { to: "/track", key: "track", icon: MapPin },
+  { to: "/move", key: "move", icon: Truck },
 ] as const;
 
 const iconBtn =
@@ -292,21 +295,41 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
                 <PhoneButton variant="block" />
               </div>
             </section>
-            <nav className="overflow-hidden rounded-3xl border border-line bg-surface">
-              {MENU.filter((item) => ai || item.to !== "/ai").map((item) => (
-                <MenuRow
-                  key={item.to}
-                  to={item.to}
-                  icon={item.icon}
-                  label={
-                    item.to === "/ai"
-                      ? AI_COPY[lang].navLabel
-                      : t.nav[item.key as keyof typeof t.nav]
-                  }
-                  on={isOn(path, item.to, false)}
-                />
-              ))}
-            </nav>
+            {(
+              [
+                { title: d.bazaar, icon: ShoppingBag, rows: MENU_BAZAAR },
+                { title: d.delivery, icon: Truck, rows: MENU_DELIVERY },
+              ] as const
+            ).map((group) => (
+              <section key={group.title} className="flex flex-col gap-2">
+                <h2
+                  className="flex items-center gap-2 px-2 pt-2 text-sm font-bold text-ink"
+                  style={{ direction: "ltr" }}
+                >
+                  <group.icon className="size-4 text-pine" aria-hidden="true" />
+                  <span dir="auto">{group.title}</span>
+                </h2>
+                <nav className="overflow-hidden rounded-3xl border border-line bg-surface">
+                  {group.rows
+                    .filter((item) => ai || item.to !== "/ai")
+                    .map((item) => (
+                      <MenuRow
+                        key={item.to}
+                        to={item.to}
+                        icon={item.icon}
+                        label={
+                          item.to === "/ai"
+                            ? AI_COPY[lang].navLabel
+                            : item.to === "/move"
+                              ? d.moveSend
+                              : t.nav[item.key as keyof typeof t.nav]
+                        }
+                        on={isOn(path, item.to, false)}
+                      />
+                    ))}
+                </nav>
+              </section>
+            ))}
             <div className="overflow-hidden rounded-3xl border border-line bg-surface">
               <MenuRow
                 to="/contact"
@@ -371,7 +394,10 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
       </footer>
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
         {TABS.map((tab) => {
-          const on = isOn(path, tab.to, tab.exact);
+          const on =
+            tab.key === "delivery"
+              ? DELIVERY_PATHS.some((item) => isOn(path, item, false))
+              : isOn(path, tab.to, tab.exact);
           const Icon = tab.icon;
           return (
             <Link
@@ -380,7 +406,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
               className={`flex h-16 flex-col items-center justify-center gap-1 text-[11px] ${on ? "font-semibold text-pine" : "text-muted"}`}
             >
               <Icon className="size-5" aria-hidden="true" />
-              {t.nav[tab.key]}
+              {tab.key === "delivery" ? d.delivery : t.nav[tab.key]}
             </Link>
           );
         })}
