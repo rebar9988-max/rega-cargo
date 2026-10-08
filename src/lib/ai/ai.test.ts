@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { checkImage, MAX_IMAGE_BYTES, readDimensions, sniffKind } from "./image.ts";
 import { cleanText, extractModelContent, parseIdentifyOutput } from "./schema.ts";
-import { consumeUsage, memoryUsageStore, parseCap, visitorId } from "./usage.ts";
+import { consumeUsage, memoryUsageStore, parseCap, refundUsage, visitorId } from "./usage.ts";
 import {
   AI_MODEL,
   handleIdentify,
@@ -189,7 +189,7 @@ const on: IdentifyEnv = { RL_AI_ENABLED: "true", RL_AI_DAILY_CAP: "2" };
 test("feature flag off (production default) hides the endpoint and status", async () => {
   const res = await handleIdentify(upload({ consent: "1" }), {
     env: { AI: mockAi({}) },
-    usage: storeLimiter(memoryUsageStore()),
+    skipGate: true, usage: storeLimiter(memoryUsageStore()),
   });
   assert.equal(res.status, 404);
   assert.deepEqual(await handleStatus({ RL_AI_ENABLED: "false", AI: mockAi({}) }).json(), {
@@ -202,7 +202,7 @@ test("feature flag off (production default) hides the endpoint and status", asyn
 
 test("consent, origin and image validation happen before any inference", async () => {
   const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
-  const deps = { env: { ...on, AI: mockAi({}, calls) }, usage: storeLimiter(memoryUsageStore()) };
+  const deps = { env: { ...on, AI: mockAi({}, calls) }, skipGate: true, usage: storeLimiter(memoryUsageStore()) };
   assert.equal((await handleIdentify(upload({}), deps)).status, 400);
   assert.equal(
     (await handleIdentify(upload({ consent: "1", origin: "https://evil.test" }), deps)).status,
@@ -233,7 +233,7 @@ test("valid photo → strict JSON result from the mocked model; no prices or lin
   };
   const res = await handleIdentify(upload({ consent: "1" }), {
     env: { ...on, AI: mockAi(reply, calls) },
-    usage: storeLimiter(memoryUsageStore()),
+    skipGate: true, usage: storeLimiter(memoryUsageStore()),
   });
   assert.equal(res.status, 200);
   assert.equal(res.headers.get("cache-control"), "no-store");
@@ -259,7 +259,7 @@ test("valid photo → strict JSON result from the mocked model; no prices or lin
 test("daily cap, per-visitor limit, timeout and bad output map to clear errors", async () => {
   const usage = storeLimiter(memoryUsageStore());
   const ok = { choices: [{ message: { content: JSON.stringify(good) } }] };
-  const deps = { env: { ...on, AI: mockAi(ok) }, usage };
+  const deps = { env: { ...on, AI: mockAi(ok) }, skipGate: true, usage };
   assert.equal((await handleIdentify(upload({ consent: "1" }), deps)).status, 200);
   assert.equal((await handleIdentify(upload({ consent: "1" }), deps)).status, 200);
   const capped = await handleIdentify(upload({ consent: "1" }), deps);
@@ -271,7 +271,7 @@ test("daily cap, per-visitor limit, timeout and bad output map to clear errors",
   };
   const timedOut = await handleIdentify(upload({ consent: "1" }), {
     env: { ...on, RL_AI_DAILY_CAP: "100", AI: slow },
-    usage: storeLimiter(memoryUsageStore()),
+    skipGate: true, usage: storeLimiter(memoryUsageStore()),
     timeoutMs: 20,
   });
   assert.equal(timedOut.status, 504);
@@ -282,7 +282,7 @@ test("daily cap, per-visitor limit, timeout and bad output map to clear errors",
       RL_AI_DAILY_CAP: "100",
       AI: mockAi({ choices: [{ message: { content: "sorry, no JSON" } }] }),
     },
-    usage: storeLimiter(memoryUsageStore()),
+    skipGate: true, usage: storeLimiter(memoryUsageStore()),
   });
   assert.equal(garbage.status, 502);
   assert.equal(((await garbage.json()) as { error: string }).error, "invalid_output");
@@ -345,4 +345,19 @@ test("rate-limit key: IPv4 as is, IPv6 grouped by /64", async () => {
   assert.equal(ipKey("2001:db8::1"), "2001:db8:0:0::/64");
   assert.equal(ipKey("::1"), "0:0:0:0::/64");
   assert.equal(ipKey("2001:DB8:0:0:ffff::"), "2001:db8:0:0::/64");
+});
+
+test("per-visitor daily limit, reserved share for new visitors, and refund", async () => {
+  const store = memoryUsageStore();
+  const base = { day: "2026-10-08", hour: "2026-10-08T21", dailyCap: 100, perVisitorHourly: 10, perVisitorDaily: 5, reserve: 20 };
+  for (let i = 0; i < 5; i++) assert.equal((await consumeUsage(store, { ...base, visitor: "a" })).ok, true);
+  assert.equal((await consumeUsage(store, { ...base, visitor: "a" })).ok, false);
+  const near = memoryUsageStore();
+  near.data.set("day:2026-10-08", 80);
+  near.data.set("ipday:2026-10-08:old", 1);
+  assert.equal((await consumeUsage(near, { ...base, visitor: "old" })).ok, false);
+  near.data.set("ipday:2026-10-08:new", 0);
+  assert.equal((await consumeUsage(near, { ...base, visitor: "fresh" })).ok, true);
+  await refundUsage(near, { day: "2026-10-08", hour: "2026-10-08T21", visitor: "fresh" });
+  assert.equal(near.data.get("day:2026-10-08"), 80);
 });

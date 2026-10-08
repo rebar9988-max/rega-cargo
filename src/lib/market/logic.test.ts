@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { canSetJobStatus, cheapest, cleanContact, cleanMoney, offerTotal, rankOffers } from "../market.ts";
+import { areaOnly, canSetJobStatus, cheapest, cleanContact, cleanImage, cleanMoney, contactHref, offerTotal, rankOffers, slugify } from "../market.ts";
 import { MarketError } from "../market.ts";
 
 describe("marketplace offers", () => {
@@ -33,5 +33,24 @@ describe("delivery status", () => {
     assert.equal(canSetJobStatus("requested", "accepted", "courier"), false);
     assert.equal(canSetJobStatus("picked_up", "cancelled", "requester"), true);
     assert.equal(canSetJobStatus("delivered", "cancelled", "requester"), false);
+  });
+});
+
+describe("contacts, images and slugs", () => {
+  it("allows only https, tel and mailto", () => {
+    assert.equal(cleanContact("mailto:2233rega@gmail.com"), "mailto:2233rega@gmail.com");
+    assert.equal(cleanContact("tel:+9647500000000"), "tel:+9647500000000");
+    assert.equal(contactHref("https://shop.example/a"), "https://shop.example/a");
+    assert.equal(contactHref("not a link"), null);
+    assert.throws(() => cleanContact("javascript:alert(1)"), MarketError);
+    assert.throws(() => cleanContact("data:text/html,hi"), MarketError);
+    assert.throws(() => cleanContact("call me"), MarketError);
+  });
+  it("allows bazaar paths only, and hides street addresses from open jobs", () => {
+    assert.equal(cleanImage("/bazaar/kettle.jpg"), "/bazaar/kettle.jpg");
+    assert.throws(() => cleanImage("https://evil.example/a.jpg"), MarketError);
+    assert.throws(() => cleanImage("/bazaar/../secret"), MarketError);
+    assert.equal(areaOnly("Erbil, 12 Main Street"), "Erbil");
+    assert.match(slugify("Electric kettle"), /^electric-kettle-[a-f0-9]{8}$/);
   });
 });

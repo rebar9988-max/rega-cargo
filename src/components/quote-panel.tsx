@@ -20,6 +20,7 @@ import {
   type ModeId,
 } from "@/lib/corridor";
 import { dayRange, useI18n } from "@/lib/i18n";
+import { orderQuote } from "@/lib/orders/api";
 import { Eur, Field, Iqd, btnGhost, btnPrimary, controlClass } from "@/components/field";
 
 function readHeld(): HeldQuote[] {
@@ -102,8 +103,17 @@ export function QuotePanel({
     return draft;
   }
 
-  function book(modeId: ModeId, total: number, chargeable: number) {
+  async function book(modeId: ModeId, total: number, chargeable: number) {
     const draft = persist(modeId, total, chargeable);
+    try {
+      const result = await orderQuote({ data: { ...draft, estimateEur: total } });
+      if (result && "id" in result && result.id) {
+        setNotice(String(result.id));
+        return;
+      }
+    } catch {
+      /* not signed in, or the database is not configured */
+    }
     window.sessionStorage.setItem(BOOKING_KEY, JSON.stringify(draft));
     void navigate({ to: "/contact" });
   }

@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { randomBytes, scryptSync } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { register } from "node:module";
 import { after, describe, it } from "node:test";
@@ -55,8 +54,9 @@ const { phoneConfirm, phoneDeliveryConfigured, phoneLogin, phoneRegister, phoneS
 
 const DIAL = "964";
 const NATIONAL = "7501234567";
-const PHONE = "+9647501234567";
-const PIN = "4481";
+const PIN = "448190";
+process.env.NODE_ENV = "test";
+process.env.PHONE_CODE_SECRET = "test-phone-secret";
 
 function clearDeliveryEnv() {
   delete process.env.WHATSAPP_TOKEN;
@@ -66,21 +66,7 @@ function clearDeliveryEnv() {
   delete process.env.TWILIO_FROM;
 }
 
-function configureDeliveryEnv() {
-  process.env.WHATSAPP_TOKEN = "test-token";
-  process.env.WHATSAPP_PHONE_ID = "test-phone-id";
-}
 
-/** Plant the same hash phoneStart would store after a real delivery. No network call. */
-async function plantDeliveredCode(phone: string, pin: string) {
-  const sql = await getSql();
-  const salt = randomBytes(16).toString("hex");
-  const hash = scryptSync(pin, salt, 32).toString("hex");
-  await sql`
-    insert into phone_codes (phone, code_hash, code_salt, expires_at, attempts)
-    values (${phone}, ${hash}, ${salt}, now() + interval '10 minutes', 0)
-    on conflict (phone) do update set code_hash = excluded.code_hash, code_salt = excluded.code_salt, expires_at = excluded.expires_at, attempts = 0`;
-}
 
 async function counts() {
   const sql = await getSql();
@@ -121,7 +107,7 @@ describe("phone sign-in without WhatsApp or Twilio", () => {
 
 describe("phone sign-in when a delivery channel is configured", () => {
   it("still refuses a caller-chosen PIN that was never delivered", async () => {
-    configureDeliveryEnv();
+    process.env.RL_PHONE_TEST_SINK = "1";
     assert.equal(phoneDeliveryConfigured(), true);
     const before = await counts();
     assert.deepEqual(
@@ -143,15 +129,20 @@ describe("phone sign-in when a delivery channel is configured", () => {
   });
 
   it("accepts register and sign-in only when the PIN matches the delivered code", async () => {
-    configureDeliveryEnv();
-    await plantDeliveredCode(PHONE, PIN);
+    process.env.RL_PHONE_TEST_SINK = "1";
+    const started = await phoneStart(DIAL, NATIONAL);
+    assert.equal(started.sent, true);
+    assert.equal("exists" in started, false);
+    const delivered = (globalThis as { __rlLastCode?: string }).__rlLastCode;
+    assert.equal(delivered, PIN.length === 6 ? delivered : undefined);
+    assert.equal(delivered?.length, 6);
     let registered: { name?: string; error?: string };
     try {
       registered = await phoneRegister({
         dial: DIAL,
         national: NATIONAL,
         name: "Test User",
-        pin: PIN,
+        pin: delivered,
       });
     } catch (error) {
       // A verified code opens the session, then the cookie write needs a request context
@@ -170,9 +161,11 @@ describe("phone sign-in when a delivery channel is configured", () => {
     });
     assert.equal((await counts()).sessions, 1);
 
-    await plantDeliveredCode(PHONE, PIN);
+    const again = await phoneStart(DIAL, NATIONAL);
+    assert.equal(again.sent, true);
+    const second = (globalThis as { __rlLastCode?: string }).__rlLastCode;
     try {
-      const signedIn = await phoneLogin({ dial: DIAL, national: NATIONAL, pin: PIN });
+      const signedIn = await phoneLogin({ dial: DIAL, national: NATIONAL, pin: second });
       assert.equal(signedIn.name, "Test User");
     } catch (error) {
       assert.match(String(error), /StartEvent/);

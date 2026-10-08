@@ -89,3 +89,18 @@ test("cache size is bounded", async () => {
   await s.get("/");
   assert.equal(s.renders(), 4);
 });
+
+test("a host outside the allow-list is never cached", async () => {
+  let renders = 0;
+  const cache = createHtmlCache({ paths: ["/"], ttlMs: 1000, maxEntries: 4, hosts: ["cargo.regaplatform.com"] });
+  const get = (host: string) =>
+    cache.handle({ method: "GET", url: new URL("https://cargo.regaplatform.com/"), host }, () => {
+      renders += 1;
+      return html("ok");
+    });
+  await get("evil.example");
+  await get("evil.example");
+  await get("cargo.regaplatform.com");
+  await get("cargo.regaplatform.com");
+  assert.equal(renders, 3);
+});

@@ -20,14 +20,14 @@ const copy = {
     number: "ژمارە",
     next: "بەردەوامبە",
     name: "ناو",
-    pin: "کۆدی چوار ژمارە",
+    pin: "کۆدی شەش ژمارە",
     join: "تۆمارکردن",
     enter: "هاتنەژوورەوە",
     back: "گەڕانەوە",
     phone: "ئەم ژمارەیە دروست نییە.",
     rate: "زۆر هەوڵدرا. کەمێک بوەستە.",
     wrong: "کۆدەکە هەڵەیە.",
-    invalid: "ناو و کۆدی چوار ژمارە پێویستە.",
+    invalid: "ناو و کۆدی شەش ژمارە پێویستە.",
     exists: "ئەم ژمارەیە تۆمارکراوە.",
   },
   fa: {
@@ -44,14 +44,14 @@ const copy = {
     number: "شماره",
     next: "ادامه",
     name: "نام",
-    pin: "کد چهار رقمی",
+    pin: "کد شش رقمی",
     join: "ساختن حساب",
     enter: "ورود",
     back: "بازگشت",
     phone: "این شماره معتبر نیست.",
     rate: "تلاش‌ها زیاد بود. کمی صبر کن.",
     wrong: "کد اشتباه است.",
-    invalid: "نام و کد چهار رقمی لازم است.",
+    invalid: "نام و کد شش رقمی لازم است.",
     exists: "این شماره قبلاً ثبت شده است.",
   },
   // "ku" is Kurmancî (Badînî), Latin script — matching src/lib/messages/ku.ts and langs.ts.
@@ -70,7 +70,7 @@ const copy = {
     number: "Hejmar",
     next: "Berdewam bike",
     name: "Nav",
-    pin: "Koda çar reqemî",
+    pin: "Koda şeş reqemî",
     join: "Hesabekî çêke",
     enter: "Têkeve",
     back: "Vegere",
@@ -95,7 +95,7 @@ const copy = {
     number: "Nummer",
     next: "Weiter",
     name: "Name",
-    pin: "Vierstelliger Code",
+    pin: "Sechsstelliger Code",
     join: "Konto erstellen",
     enter: "Anmelden",
     back: "Zurück",
@@ -119,14 +119,14 @@ const copy = {
     number: "الرقم",
     next: "متابعة",
     name: "الاسم",
-    pin: "رمز من أربعة أرقام",
+    pin: "رمز من ستة أرقام",
     join: "إنشاء حساب",
     enter: "دخول",
     back: "رجوع",
     phone: "هذا الرقم غير صالح.",
     rate: "محاولات كثيرة. انتظر قليلًا.",
     wrong: "الرمز غير صحيح.",
-    invalid: "الاسم ورمز من أربعة أرقام مطلوبان.",
+    invalid: "الاسم ورمز من ستة أرقام مطلوبان.",
     exists: "هذا الرقم مسجل بالفعل.",
   },
   tr: {
@@ -143,7 +143,7 @@ const copy = {
     number: "Numara",
     next: "Devam",
     name: "Ad",
-    pin: "Dört haneli kod",
+    pin: "Altı haneli kod",
     join: "Hesap oluştur",
     enter: "Giriş",
     back: "Geri",
@@ -167,7 +167,7 @@ const copy = {
     number: "Number",
     next: "Continue",
     name: "Name",
-    pin: "Four-digit code",
+    pin: "Six-digit code",
     join: "Create account",
     enter: "Enter",
     back: "Back",
@@ -252,7 +252,7 @@ function PhoneDialog({
   const [picking, setPicking] = useState(false);
   const [query, setQuery] = useState("");
   const [national, setNational] = useState("");
-  const [exists, setExists] = useState<boolean | null>(null);
+  const [sent, setSent] = useState(false);
   const [channels, setChannels] = useState<{ whatsapp: boolean; sms: boolean } | null>(null);
   const [name, setName] = useState("");
   const [pin, setPin] = useState("");
@@ -291,13 +291,11 @@ function PhoneDialog({
       );
       return;
     }
-    if ("exists" in result) {
-      if (!result.sent) {
-        setError(t.unavailable);
-        return;
-      }
-      setExists(result.exists);
-      setChannels({ whatsapp: result.whatsapp, sms: result.sms });
+    if ("sent" in result && result.sent) {
+      setSent(true);
+      setChannels({ whatsapp: Boolean(result.whatsapp), sms: Boolean(result.sms) });
+    } else {
+      setError(t.unavailable);
     }
   }
 
@@ -347,6 +345,7 @@ function PhoneDialog({
             className={`${btnPrimary} mt-6 w-full`}
             onClick={async () => {
               await phoneLeave();
+              navigator.serviceWorker?.controller?.postMessage("rl-sign-out");
               onUser(null);
             }}
           >
@@ -386,7 +385,7 @@ function PhoneDialog({
               ))}
             </ul>
           </div>
-        ) : exists == null || !channels ? (
+        ) : !sent || !channels ? (
           <div className="flex flex-col gap-4 px-5 py-6">
             <label className="flex h-14 items-center rounded-2xl border border-line">
               <button
@@ -435,19 +434,16 @@ function PhoneDialog({
                   ? t.waOnly
                   : t.smsOnly}
             </p>
-            {!exists ? (
-              <input
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                required
-                placeholder={t.name}
-                aria-label={t.name}
-                className={controlClass}
-              />
-            ) : null}
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder={t.name}
+              aria-label={t.name}
+              className={controlClass}
+            />
             <input
               value={pin}
-              onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 4))}
+              onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 6))}
               inputMode="numeric"
               dir="ltr"
               autoComplete="one-time-code"
@@ -457,13 +453,13 @@ function PhoneDialog({
             />
             {error ? <p className="text-sm text-clay">{error}</p> : null}
             <button type="submit" disabled={busy} className={`${btnPrimary} w-full`}>
-              {exists ? t.enter : t.join}
+              {t.next}
             </button>
             <button
               type="button"
               className="text-sm text-muted"
               onClick={() => {
-                setExists(null);
+                setSent(false);
                 setChannels(null);
                 setError("");
               }}

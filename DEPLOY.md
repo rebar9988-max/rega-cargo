@@ -106,26 +106,49 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
   production; restore from it to roll back. Never drop production tables.
 * **Code:** revert the merge commit on `main` and redeploy.
 
-## Known gaps and risks (read before go-live)
+## Phone sessions
 
-1. **Workers Free CPU limit (10 ms/request).** SSR of these React pages and
-   especially phone sign-in exceed that: `scryptSync` alone costs ~35 ms CPU
-   per call (measured in Node), and phone sign-in calls it 1–2 times. On Free,
-   such requests can fail with Cloudflare error 1102 (the same issue
-   `rega-platform` has). The Workers Paid plan (USD 5/month, 30 s CPU)
-   removes this; lowering scrypt cost is a security trade-off that needs a
-   decision.
-2. **Signed-in actions need a fix.** Market writes, `/move`, `/admin`, seller
-   pages use `authMiddleware`, which only accepts a Better Auth / Grok gate
-   session. Off the Grok platform neither exists (there is no Better Auth
-   sign-in UI or `/api/auth` route; the Grok broker won't accept
-   `cargo.regaplatform.com`), so these return `Unauthorized` even for users
-   signed in with phone. The phone session (`rl_phone` cookie) is only
-   consulted *after* the middleware. Fix: let `authMiddleware` accept the
-   phone session first (security-sensitive — needs review).
-3. **Tracking data is static demo data** (`src/lib/shipments.ts`), not a
-   backend.
-4. **`npm audit`:** 5 high advisories in `undici`/`sharp`, pulled in only by
-   build/dev tooling (`nitro → env-runner → miniflare`, `wrangler →
-   miniflare`). They are not in the Worker bundle. Fixing needs a breaking
-   Nitro beta upgrade.
+Signed-in market, move and admin server functions use `phoneOrAuthMiddleware`
+(`src/lib/auth/middleware.ts`). It accepts a valid `rl_phone` session first,
+then a Better Auth session. A phone session is only created after a code was
+delivered and checked. Without `WHATSAPP_*` or `TWILIO_*`, every phone function
+returns `unavailable` and no session is created.
+
+## Environment
+
+Secrets (`npx wrangler secret put`, never committed):
+
+| Name | Purpose |
+| --- | --- |
+| `BETTER_AUTH_SECRET` | Signs Better Auth cookies when that path is on |
+| `PHONE_CODE_SECRET` | HMAC key for phone codes |
+| `DATABASE_URL` or Hyperdrive `HYPERDRIVE` | Postgres. Without it the Worker has no database |
+| `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`, `WHATSAPP_TEMPLATE`, `WHATSAPP_TEMPLATE_LANG` | WhatsApp codes |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | SMS codes |
+| `TURNSTILE_SECRET` | Server Turnstile check (phone send + AI, when set) |
+| `TURNSTILE_SITE_KEY` | Public Turnstile site key |
+| `AI_TOKEN_SECRET` | Optional HMAC for the AI page token. If unset, the usage Durable Object holds the key |
+| `GROK_AUTH_CLIENT_ID`, `GROK_AUTH_CLIENT_SECRET` | Only if Grok broker sign-in is ever turned on. There is no secret in the repo. **Rotate the old preview client secret** that used to be hardcoded |
+| `IQD_PER_EUR` | Optional dinar-per-euro override. Default 1520 in `src/lib/corridor.ts` |
+
+`RL_AI_ENABLED=true` stays on in production.
+
+## Migrations
+
+Apply in filename order with `DATABASE_URL=… npm run db:migrate`:
+
+1. `0002_market.sql` schema and categories only (no sample rows)
+2. `0003_delivery.sql`, `0004_phone.sql`, `0005_phone_codes.sql`
+3. `0006_phone_limits.sql`, `0007_trust.sql`
+4. `0008_remove_seed.sql` deletes `dev-user` / `seed-*` rows if a previous install had them. Does not drop tables. Safe on an empty database
+5. `0009_orders.sql` quote, store-purchase and tracking tables
+
+`migrations/dev/seed.sql` is applied only by the local PGLite fallback, never by `db:migrate`.
+
+## Known gaps
+
+1. **No production Postgres yet.** Quote, store requests, tracking, market and phone sign-in return a clear unavailable state (quotes fall back to the contact email) until Hyperdrive or `DATABASE_URL` is set.
+2. **Phone sign-in stays closed** until WhatsApp or Twilio credentials exist. Turnstile is required in production once a provider is configured.
+3. **Nitro is still `3.0.260610-beta`.** `npm audit` reports high advisories in `undici` / `sharp` via miniflare (build tooling only, not the Worker bundle). Upgrading Nitro to clear them is a breaking beta bump and was not done.
+4. **The Grok preview OAuth secret was removed from the source.** Rotate it at the broker. The rest of the template auth stack stays because the build still imports it; federated sign-in is off unless `GROK_AUTH_CLIENT_SECRET` is set.
+

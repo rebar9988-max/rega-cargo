@@ -5,10 +5,13 @@ import {
   parseIdentifyOutput,
   type IdentifyResult,
 } from "./schema.ts";
+import { verifyAiToken } from "./challenge.ts";
+import { verifyTurnstile } from "../phone/codes.ts";
 import {
   consumeUsage,
   ipKey,
   parseCap,
+  refundUsage,
   visitorId,
   type UsageDecision,
   type UsageInput,
@@ -25,6 +28,8 @@ import {
 export const AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 export const DEFAULT_DAILY_CAP = 200;
 export const PER_VISITOR_HOURLY = 10;
+export const PER_VISITOR_DAILY = 5;
+export const NEW_VISITOR_RESERVE = 20;
 export const INFERENCE_TIMEOUT_MS = 25_000;
 
 export interface AiBinding {
@@ -33,6 +38,7 @@ export interface AiBinding {
 
 export interface UsageLimiter {
   consume(input: UsageInput): Promise<UsageDecision>;
+  refund?(input: UsageInput): Promise<void>;
 }
 
 export type IdentifyEnv = {
@@ -46,6 +52,11 @@ export type IdentifyDeps = {
   usage?: UsageLimiter;
   now?: () => Date;
   timeoutMs?: number;
+  /** Unit tests that are not about the gate. Production never sets this. */
+  skipGate?: boolean;
+  tokenSecret?: string;
+  turnstileSecret?: string;
+  verifyToken?: (token: string, now: number) => Promise<boolean>;
 };
 
 export type IdentifyResponse =
@@ -102,7 +113,35 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 export function storeLimiter(store: UsageStore): UsageLimiter {
-  return { consume: (input) => consumeUsage(store, input) };
+  return {
+    consume: (input) => consumeUsage(store, input),
+    refund: (input) => refundUsage(store, input),
+  };
+}
+
+async function readCapped(request: Request, max: number) {
+  const reader = request.body?.getReader();
+  if (!reader) return new Uint8Array();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel().catch(() => undefined);
+      return null;
+    }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return out;
 }
 
 export async function handleIdentify(request: Request, deps: IdentifyDeps): Promise<Response> {
@@ -112,14 +151,37 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
   if (!sameOrigin(request)) return json({ ok: false, error: "forbidden" }, 403);
   if (!env.AI || !deps.usage) return json({ ok: false, error: "unavailable" }, 503);
 
+  const cap = MAX_IMAGE_BYTES + 64_000;
   const declared = Number(request.headers.get("content-length") ?? "0");
-  if (declared > MAX_IMAGE_BYTES + 64_000) return json({ ok: false, error: "too_large" }, 413);
+  if (declared > cap) return json({ ok: false, error: "too_large" }, 413);
+  const bytesIn = await readCapped(request, cap);
+  if (!bytesIn) return json({ ok: false, error: "too_large" }, 413);
 
   let form: FormData;
   try {
-    form = await request.formData();
+    const headers = new Headers();
+    const type = request.headers.get("content-type");
+    if (type) headers.set("content-type", type);
+    form = await new Request(request.url, { method: "POST", headers, body: bytesIn }).formData();
   } catch {
     return json({ ok: false, error: "bad_request" }, 400);
+  }
+  if (!deps.skipGate) {
+    const turnstile = deps.turnstileSecret?.trim();
+    if (turnstile) {
+      const ok = await verifyTurnstile(turnstile, String(form.get("turnstile") ?? ""), ipKey(request.headers.get("cf-connecting-ip") ?? ""));
+      if (!ok) return json({ ok: false, error: "forbidden" }, 403);
+    } else if (deps.verifyToken) {
+      const nowMs = (deps.now ?? (() => new Date()))().getTime();
+      const ok = await deps.verifyToken(String(form.get("token") ?? ""), nowMs);
+      if (!ok) return json({ ok: false, error: "forbidden" }, 403);
+    } else if (deps.tokenSecret) {
+      const nowMs = (deps.now ?? (() => new Date()))().getTime();
+      const ok = await verifyAiToken(deps.tokenSecret, String(form.get("token") ?? ""), nowMs);
+      if (!ok) return json({ ok: false, error: "forbidden" }, 403);
+    } else {
+      return json({ ok: false, error: "forbidden" }, 403);
+    }
   }
   if (form.get("consent") !== "1") return json({ ok: false, error: "consent_required" }, 400);
   const file = form.get("image");
@@ -134,14 +196,20 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
   const iso = now.toISOString();
   const day = iso.slice(0, 10);
   const ip = ipKey(request.headers.get("cf-connecting-ip") ?? "unknown");
-  const decision = await deps.usage.consume({
+  const visitor = await visitorId(ip, day);
+  const dailyCap = parseCap(env.RL_AI_DAILY_CAP, DEFAULT_DAILY_CAP);
+  const usageInput = {
     day,
     hour: iso.slice(0, 13),
-    visitor: await visitorId(ip, day),
-    dailyCap: parseCap(env.RL_AI_DAILY_CAP, DEFAULT_DAILY_CAP),
+    visitor,
+    dailyCap,
     perVisitorHourly: PER_VISITOR_HOURLY,
-  });
+    perVisitorDaily: PER_VISITOR_DAILY,
+    reserve: dailyCap > NEW_VISITOR_RESERVE ? NEW_VISITOR_RESERVE : 0,
+  };
+  const decision = await deps.usage.consume(usageInput);
   if (!decision.ok) return json({ ok: false, error: decision.reason }, 429);
+  const refund = () => deps.usage?.refund?.(usageInput);
 
   const started = Date.now();
   let reply: unknown;
@@ -173,6 +241,7 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
       deps.timeoutMs ?? INFERENCE_TIMEOUT_MS,
     );
   } catch (error) {
+    await refund();
     const timedOut = error instanceof Error && error.message === "timeout";
     return json({ ok: false, error: timedOut ? "timeout" : "model_error" }, timedOut ? 504 : 502);
   }
@@ -182,6 +251,7 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
     // Diagnostics only (no image data, no model text): why the output was unusable.
     const finish = (reply as { choices?: Array<{ finish_reason?: unknown }> })?.choices?.[0]?.finish_reason;
     const detail = content == null || content === "" ? "empty" : finish === "length" ? "truncated" : "schema";
+    await refund();
     return json({ ok: false, error: "invalid_output", detail }, 502);
   }
   return json({ ok: true, result, model: AI_MODEL, ms: Date.now() - started }, 200);

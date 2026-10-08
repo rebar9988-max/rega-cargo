@@ -34,17 +34,56 @@ export function cleanMoney(value: unknown, max: number, allowZero: boolean) {
   return n;
 }
 
+/** HTTPS hosts allowed for product images. Local /bazaar/ paths are always allowed. */
+export const IMAGE_HOSTS: readonly string[] = [];
+
 export function cleanContact(value: unknown) {
   const text = cleanText(value, 200);
-  if (text.includes("://") && !text.startsWith("https://")) throw new MarketError("invalid");
+  let url: URL;
+  try {
+    url = new URL(text);
+  } catch {
+    throw new MarketError("invalid");
+  }
+  if (url.protocol !== "https:" && url.protocol !== "tel:" && url.protocol !== "mailto:") {
+    throw new MarketError("invalid");
+  }
+  if (url.protocol === "https:" && !url.hostname) throw new MarketError("invalid");
   return text;
+}
+
+/** Link only when the contact is https, tel or mailto. Everything else is plain text. */
+export function contactHref(value: string) {
+  try {
+    const url = new URL(value);
+    if (url.protocol === "https:" || url.protocol === "tel:" || url.protocol === "mailto:") return value;
+  } catch {
+    /* plain text */
+  }
+  return null;
 }
 
 export function cleanImage(value: unknown) {
   if (value == null || value === "") return null;
-  const text = cleanText(value, 200);
-  if (text.startsWith("/bazaar/") || text.startsWith("https://")) return text;
+  const text = cleanText(value, 300);
+  if (text.includes("..") || /\s/.test(text) || text.includes("\\")) throw new MarketError("invalid");
+  if (text.startsWith("/bazaar/") && !text.includes("//")) return text;
+  if (text.startsWith("https://")) {
+    let url: URL;
+    try {
+      url = new URL(text);
+    } catch {
+      throw new MarketError("invalid");
+    }
+    if (url.protocol === "https:" && IMAGE_HOSTS.includes(url.hostname)) return url.href;
+  }
   throw new MarketError("invalid");
+}
+
+/** City or area only — the part before the first comma — for open courier jobs. */
+export function areaOnly(address: string) {
+  const part = address.split(",")[0]?.trim() || address.trim();
+  return part.slice(0, 60);
 }
 
 export function cleanStock(value: unknown): Stock {
@@ -76,7 +115,7 @@ export function slugify(name: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 48);
-  const suffix = Math.random().toString(36).slice(2, 6);
+  const suffix = crypto.randomUUID().replace(/-/g, "").slice(0, 8);
   return `${base || "item"}-${suffix}`;
 }
 

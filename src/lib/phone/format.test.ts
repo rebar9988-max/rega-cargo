@@ -9,9 +9,10 @@ describe("world phone numbers", () => {
     assert.equal(toE164("1", "2025550143"), "+12025550143");
   });
 
-  it("rejects a short number and a pin that is not four digits", () => {
+  it("rejects a short number and a pin that is not six digits", () => {
     assert.equal(toE164("964", "123"), null);
     assert.equal(cleanPin("12ab"), null);
-    assert.equal(cleanPin("4481"), "4481");
+    assert.equal(cleanPin("448190"), "448190");
+    assert.equal(cleanPin("4481"), null);
   });
 });

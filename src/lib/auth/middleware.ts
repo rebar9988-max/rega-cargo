@@ -45,3 +45,20 @@ export const authMiddleware = createMiddleware({ type: "function" })
     const userId = await requireUserId(context.bearerToken);
     return next({ context: { userId } });
   });
+
+/**
+ * Phone session first, then Better Auth. Phone users never hit requireUserId,
+ * which only understands a Better Auth / Grok session.
+ */
+export const phoneOrAuthMiddleware = createMiddleware({ type: "function" }).server(
+  async ({ next }) => {
+    const { assertSameSiteRequest } = await import("./isolation.server");
+    assertSameSiteRequest();
+    const { currentPhoneUserId } = await import("@/lib/phone/session.server");
+    const phoneUserId = await currentPhoneUserId();
+    if (phoneUserId) return next({ context: { userId: phoneUserId } });
+    const { requireUserId } = await import("./verify.server");
+    const userId = await requireUserId();
+    return next({ context: { userId } });
+  },
+);

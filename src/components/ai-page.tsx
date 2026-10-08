@@ -47,6 +47,31 @@ function errorText(t: AiCopy, code: string | undefined) {
   return code && code in t.errors ? t.errors[code as keyof AiCopy["errors"]] : t.errors.generic;
 }
 
+
+function turnstileToken(siteKey: string) {
+  return new Promise<string | null>((resolve) => {
+    const w = window as Window & { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => void } };
+    const run = () => {
+      const el = document.createElement("div");
+      document.body.appendChild(el);
+      w.turnstile?.render(el, {
+        sitekey: siteKey,
+        callback: (token: string) => resolve(token),
+        "error-callback": () => resolve(null),
+      });
+    };
+    if (w.turnstile) run();
+    else {
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.async = true;
+      script.onload = run;
+      script.onerror = () => resolve(null);
+      document.head.appendChild(script);
+    }
+  });
+}
+
 export function AiPage() {
   const { lang } = useI18n();
   const t: AiCopy = AI_COPY[lang] ?? AI_COPY.en;
@@ -84,6 +109,14 @@ export function AiPage() {
       const form = new FormData();
       form.set("consent", "1");
       form.set("image", small, "photo.jpg");
+      const gate = await fetch("/api/ai/challenge", { headers: { accept: "application/json" } })
+        .then((res) => res.json() as Promise<{ mode?: string; token?: string; siteKey?: string }>)
+        .catch(() => null);
+      if (gate?.mode === "token" && gate.token) form.set("token", gate.token);
+      if (gate?.mode === "turnstile" && gate.siteKey) {
+        const token = await turnstileToken(gate.siteKey);
+        if (token) form.set("turnstile", token);
+      }
       const res = await fetch("/api/ai/identify", { method: "POST", body: form });
       const body = (await res.json().catch(() => ({}))) as {
         ok?: boolean;

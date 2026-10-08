@@ -7,6 +7,8 @@ import { DESTS, placeName } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
 import { hostAllowed, storeById, goodById } from "@/lib/stores";
+import { orderStore } from "@/lib/orders/api";
+import { CONTACT_EMAIL } from "@/lib/contact";
 
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -17,8 +19,6 @@ export const Route = createFileRoute("/stores/request")({
   head: () => ({ meta: [{ title: "لینکی کاڵا · R&L" }] }),
   component: RequestPage,
 });
-
-const REQUEST_KEY = "rl-buy-requests";
 
 function RequestPage() {
   const { lang } = useI18n();
@@ -36,7 +36,7 @@ function RequestPage() {
   const [warn, setWarn] = useState("");
   const [saved, setSaved] = useState<string | null>(null);
 
-  function submit(event: React.FormEvent) {
+  async function submit(event: React.FormEvent) {
     event.preventDefault();
     let href = "";
     const trimmed = url.trim();
@@ -61,23 +61,19 @@ function RequestPage() {
       setWarn("");
     }
     setError("");
-    const id = `RL-${Date.now().toString(36).toUpperCase()}`;
-    const row = {
-      id,
-      at: new Date().toISOString(),
-      intent,
-      storeId: store?.id ?? null,
-      item: good?.id ?? null,
-      url: href,
-      size,
-      color,
-      qty,
-      dest,
-      notes,
-    };
-    const prev = JSON.parse(window.localStorage.getItem(REQUEST_KEY) ?? "[]");
-    window.localStorage.setItem(REQUEST_KEY, JSON.stringify([row, ...(Array.isArray(prev) ? prev : [])].slice(0, 20)));
-    setSaved(id);
+    try {
+      const result = await orderStore({
+        data: { intent, storeId: store?.id ?? null, item: good?.id ?? null, url: href, size, color, qty, dest, notes },
+      });
+      if (result && "id" in result && result.id) {
+        setSaved(String(result.id));
+        return;
+      }
+    } catch {
+      /* signed out or no database */
+    }
+    setSaved(null);
+    setError(CONTACT_EMAIL);
   }
 
   return (
