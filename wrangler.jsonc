@@ -26,9 +26,19 @@
     // Don't inject the Grok app-builder extensions script (grok.com) into
     // production HTML — this app is no longer hosted on that platform.
     "VITE_GROK_EXTENSIONS": "0",
-    // R&L AI (/ai, /api/ai/*) stays off in production until approved.
-    "RL_AI_ENABLED": "false"
+    // R&L AI (/ai, /api/ai/*): enabled in production (user-approved 2026-10-08).
+    // Hard daily cap of identifications across all visitors.
+    "RL_AI_ENABLED": "true",
+    "RL_AI_DAILY_CAP": "200"
   },
+
+  // R&L AI: Workers AI binding + strongly consistent usage counter (daily cap and
+  // per-visitor hourly limit) in a SQLite Durable Object (class in exports.cloudflare.ts).
+  "ai": { "binding": "AI" },
+  "durable_objects": {
+    "bindings": [{ "name": "RL_AI_USAGE", "class_name": "RlAiUsage" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RlAiUsage"] }],
 
   // Staging: separate Worker `rega-cargo-staging` on workers.dev only (no
   // routes, no custom domain, no database, its own secrets). Deploy with
