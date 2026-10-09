@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, MapPin, ShoppingBag, Tag, Truck, type LucideIcon } from "lucide-react";
-import { BrandHero, IconBadge, TrustRow } from "@/components/brand";
+import { BrandHero, GUTTER, IconBadge, TrustRow } from "@/components/brand";
 import { Field, btnPrimary, controlClass } from "@/components/field";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { DESTS, ORIGINS, SAMPLE_BOX, getDest, getOrigin, placeName } from "@/lib/corridor";
@@ -43,7 +43,7 @@ export function ServiceSwitch({
               onClick={() => onChange(item.id)}
               className={`flex min-h-20 min-w-0 items-center gap-3 rounded-2xl border bg-surface p-3 text-start transition-[border-color,box-shadow] ${on ? "rl-soft border-pine ring-1 ring-pine" : "border-line"}`}
             >
-              <IconBadge icon={Icon} />
+              <IconBadge icon={Icon} tone={on ? "solid" : "soft"} />
               <span className="flex min-w-0 flex-col">
                 <span
                   dir="auto"
@@ -66,8 +66,8 @@ export function ServiceSwitch({
 function CardHead({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
   return (
     <div className="flex items-center gap-3" style={{ direction: "ltr" }}>
-      <IconBadge icon={Icon} size="sm" />
-      <h2 dir="auto" className="text-lg font-bold">
+      <IconBadge icon={Icon} size="sm" tone="soft" />
+      <h2 dir="auto" className="text-base font-bold">
         {title}
       </h2>
     </div>
@@ -88,9 +88,9 @@ export function DeliveryHub() {
     <>
       <BrandHero title={d.deliveryTitle} route={d.route} />
       <TrustRow />
-      <div className="mx-auto grid max-w-6xl items-start gap-3 px-4 py-6 md:grid-cols-3 md:gap-5 md:px-5 md:py-10">
+      <div className={`mx-auto grid max-w-6xl items-start gap-3 ${GUTTER} pt-8 pb-12 md:grid-cols-3 md:gap-5 md:pt-12`}>
         <form
-          className="flex flex-col gap-4 rl-soft rounded-3xl border border-line bg-surface p-5"
+          className="flex flex-col gap-4 rl-soft rounded-2xl border border-line bg-surface p-5"
           onSubmit={(event) => {
             event.preventDefault();
             void navigate({ to: "/quote", search: { from, to, kg: parseKg(kg) } });
@@ -132,7 +132,7 @@ export function DeliveryHub() {
           </button>
         </form>
         <form
-          className="flex flex-col gap-4 rl-soft rounded-3xl border border-line bg-surface p-5"
+          className="flex flex-col gap-4 rl-soft rounded-2xl border border-line bg-surface p-5"
           onSubmit={(event) => {
             event.preventDefault();
             const id = code.trim().toUpperCase();
@@ -156,14 +156,12 @@ export function DeliveryHub() {
         </form>
         <Link
           to={"/move" as string}
-          className="flex items-center gap-3 rl-soft rounded-3xl border border-line bg-surface p-5"
+          className="flex items-center gap-3 rl-soft rounded-2xl border border-line bg-surface p-5"
           style={{ direction: "ltr" }}
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-paper text-ink">
-            <Truck className="size-5" aria-hidden="true" />
-          </span>
+          <IconBadge icon={Truck} size="sm" tone="soft" />
           <span className="flex min-w-0 flex-1 flex-col items-start">
-            <span dir="auto" className="text-lg font-bold">
+            <span dir="auto" className="text-base font-bold">
               {d.moveSend}
             </span>
             <span dir="auto" className="text-sm text-muted">
