@@ -12,10 +12,16 @@
   "compatibility_date": "2025-09-15",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  // Production lives on its custom domain. workers.dev stays enabled only so
+  // the old URL rega-cargo.<subdomain>.workers.dev can 301 visitors (and
+  // installed PWAs, via a self-unregistering /sw.js) to cargo.regaplatform.com
+  // — see scripts/legacy-host.mjs; it never serves the app. Version preview
+  // URLs are off for production. Staging below keeps workers.dev.
   "workers_dev": true,
+  "preview_urls": false,
   // Production custom domain (attached 2026-10-09). Only this hostname — the
   // apex and www.regaplatform.com belong to the REGA worker `rega-platform`
-  // and must never be listed here. workers.dev stays on during the transition.
+  // and must never be listed here.
   "routes": [{ "pattern": "cargo.regaplatform.com", "custom_domain": true }],
 
   // Database (Postgres). Create a Hyperdrive config pointing at the production
@@ -58,6 +64,8 @@
     "staging": {
       "name": "rega-cargo-staging",
       "workers_dev": true,
+      // Explicit, so staging doesn't inherit production's `false`.
+      "preview_urls": true,
       "routes": [],
       // Only accepted on Workers Paid; deploying this verifies the plan.
       "limits": { "cpu_ms": 30000 },

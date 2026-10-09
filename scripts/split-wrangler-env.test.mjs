@@ -42,6 +42,12 @@ test("repo config: production has AI on with cap; staging is a separate worker w
   const json = JSON.parse(src.replace(/^\s*\/\/.*$/gm, ""));
   const { production, environments } = splitEnvironments(json);
   assert.equal(production.name, "rega-cargo");
+  // Production lives on its custom domain; staging keeps workers.dev.
+  // workers.dev stays on only for the legacy-host 301 (scripts/legacy-host.mjs).
+  assert.equal(production.workers_dev, true);
+  assert.equal(production.preview_urls, false);
+  assert.deepEqual(production.routes, [{ pattern: "cargo.regaplatform.com", custom_domain: true }]);
+  assert.equal(production.vars.SITE_URL, "https://cargo.regaplatform.com");
   assert.equal(production.vars.RL_AI_ENABLED, "true");
   assert.equal(production.vars.RL_AI_DAILY_CAP, "200");
   assert.deepEqual(production.ai, { binding: "AI" });
@@ -49,6 +55,7 @@ test("repo config: production has AI on with cap; staging is a separate worker w
   assert.equal(environments.staging.name, "rega-cargo-staging");
   assert.deepEqual(environments.staging.routes, []);
   assert.equal(environments.staging.workers_dev, true);
+  assert.equal(environments.staging.preview_urls, true);
   assert.equal(environments.staging.vars.RL_AI_ENABLED, "true");
   assert.ok(!("hyperdrive" in environments.staging));
 });

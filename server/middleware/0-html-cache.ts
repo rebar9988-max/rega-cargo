@@ -8,7 +8,6 @@ import { serviceFromCookieHeader } from "../../src/lib/service-choice";
 
 const ALLOWED_HOSTS = [
   "cargo.regaplatform.com",
-  "rega-cargo.rebar9988.workers.dev",
   "rega-cargo-staging.rebar9988.workers.dev",
 ];
 
