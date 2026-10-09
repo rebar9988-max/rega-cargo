@@ -1,7 +1,15 @@
 import { BRANDS, idealoSearchUrl } from "../catalog.ts";
+import { findMatches, isProhibitedQuery } from "../compliance/check.ts";
 import { LANGS, type Lang } from "../langs.ts";
 import { storeCopy } from "../store-copy.ts";
-import { GOODS, STORE_CATEGORIES, STORES, storeLogo, type GoodId, type StoreCategory } from "../stores.ts";
+import {
+  GOODS,
+  STORE_CATEGORIES,
+  STORES,
+  storeLogo,
+  type GoodId,
+  type StoreCategory,
+} from "../stores.ts";
 import { editDistance, fold, foldWithMap, typoBudget } from "./normalize.ts";
 
 /** Extra spellings people type, in every app language and script. */
@@ -29,23 +37,161 @@ const BRAND_SYNONYMS: Record<string, string[]> = {
 };
 
 const CATEGORY_SYNONYMS: Record<StoreCategory, string[]> = {
-  beauty: ["beauty", "cosmetics", "makeup", "skincare", "care", "kosmetik", "pflege", "schminke", "جوانی", "مکیاج", "ماکیاج", "چاودێری پێست", "مكياج", "عناية بالبشرة", "آرایش", "لوازم آرایشی", "kozmetik", "makyaj", "bakım", "kozmetîk"],
-  fashion: ["clothes", "clothing", "apparel", "kleidung", "mode", "جل", "جلوبەرگ", "پۆشاک", "ملابس", "لباس", "پوشاک", "giyim", "moda", "kinc", "cil"],
-  electronics: ["electronic", "tech", "technik", "phone", "handy", "mobile", "ئەلیکترۆنیات", "مۆبایل", "موبايل", "هاتف", "گوشی", "telefon", "elektronîk"],
-  home: ["house", "household", "kitchen", "haushalt", "küche", "wohnen", "ناوماڵ", "چێشتخانە", "مطبخ", "آشپزخانه", "ev", "mutfak", "mal", "malê"],
-  baby: ["kids", "children", "child", "family", "kinder", "familie", "منداڵ", "کۆرپە", "أطفال", "رضيع", "بچه", "نوزاد", "bebek", "çocuk", "zarok"],
-  sports: ["sport", "fitness", "football", "fußball", "وەرزش", "یاری", "رياضة", "ورزش", "spor", "werzîş"],
+  beauty: [
+    "beauty",
+    "cosmetics",
+    "makeup",
+    "skincare",
+    "care",
+    "kosmetik",
+    "pflege",
+    "schminke",
+    "جوانی",
+    "مکیاج",
+    "ماکیاج",
+    "چاودێری پێست",
+    "مكياج",
+    "عناية بالبشرة",
+    "آرایش",
+    "لوازم آرایشی",
+    "kozmetik",
+    "makyaj",
+    "bakım",
+    "kozmetîk",
+  ],
+  fashion: [
+    "clothes",
+    "clothing",
+    "apparel",
+    "kleidung",
+    "mode",
+    "جل",
+    "جلوبەرگ",
+    "پۆشاک",
+    "ملابس",
+    "لباس",
+    "پوشاک",
+    "giyim",
+    "moda",
+    "kinc",
+    "cil",
+  ],
+  electronics: [
+    "electronic",
+    "tech",
+    "technik",
+    "phone",
+    "handy",
+    "mobile",
+    "ئەلیکترۆنیات",
+    "مۆبایل",
+    "موبايل",
+    "هاتف",
+    "گوشی",
+    "telefon",
+    "elektronîk",
+  ],
+  home: [
+    "house",
+    "household",
+    "kitchen",
+    "haushalt",
+    "küche",
+    "wohnen",
+    "ناوماڵ",
+    "چێشتخانە",
+    "مطبخ",
+    "آشپزخانه",
+    "ev",
+    "mutfak",
+    "mal",
+    "malê",
+  ],
+  baby: [
+    "kids",
+    "children",
+    "child",
+    "family",
+    "kinder",
+    "familie",
+    "منداڵ",
+    "کۆرپە",
+    "أطفال",
+    "رضيع",
+    "بچه",
+    "نوزاد",
+    "bebek",
+    "çocuk",
+    "zarok",
+  ],
+  sports: [
+    "sport",
+    "fitness",
+    "football",
+    "fußball",
+    "وەرزش",
+    "یاری",
+    "رياضة",
+    "ورزش",
+    "spor",
+    "werzîş",
+  ],
   general: [],
 };
 
 const ITEM_SYNONYMS: Record<GoodId, string[]> = {
-  perfume: ["perfume", "parfum", "parfüm", "fragrance", "duft", "عەتر", "بۆن", "عطر", "ادکلن", "bêhn"],
+  perfume: [
+    "perfume",
+    "parfum",
+    "parfüm",
+    "fragrance",
+    "duft",
+    "عەتر",
+    "بۆن",
+    "عطر",
+    "ادکلن",
+    "bêhn",
+  ],
   cream: ["cream", "creme", "crème", "face cream", "krem", "krema", "کرێم", "كريم", "کرم"],
-  sneakers: ["sneaker", "sneakers", "shoes", "schuhe", "turnschuhe", "پێڵاو", "پیلاو", "حذاء", "کفش", "ayakkabı", "pêlav"],
+  sneakers: [
+    "sneaker",
+    "sneakers",
+    "shoes",
+    "schuhe",
+    "turnschuhe",
+    "پێڵاو",
+    "پیلاو",
+    "حذاء",
+    "کفش",
+    "ayakkabı",
+    "pêlav",
+  ],
   dress: ["dress", "kleid", "کراس", "فستان", "پیراهن", "elbise", "kiras"],
-  earbuds: ["earbuds", "earphones", "headphones", "kopfhörer", "ohrhörer", "airpods", "هێدفۆن", "بیستۆک", "سماعات", "هدفون", "kulaklık", "guhdan"],
+  earbuds: [
+    "earbuds",
+    "earphones",
+    "headphones",
+    "kopfhörer",
+    "ohrhörer",
+    "airpods",
+    "هێدفۆن",
+    "بیستۆک",
+    "سماعات",
+    "هدفون",
+    "kulaklık",
+    "guhdan",
+  ],
   kettle: ["kettle", "wasserkocher", "کەتڵ", "کتری", "غلاية", "çaydanlık", "su ısıtıcı", "çaydank"],
-  baby: ["baby clothes", "babykleidung", "baby", "جلی منداڵ", "ملابس أطفال", "لباس بچه", "bebek", "kincên zarokan"],
+  baby: [
+    "baby clothes",
+    "babykleidung",
+    "baby",
+    "جلی منداڵ",
+    "ملابس أطفال",
+    "لباس بچه",
+    "bebek",
+    "kincên zarokan",
+  ],
   ball: ["ball", "football", "fußball", "soccer", "تۆپ", "كرة", "توپ", "top", "gog"],
 };
 
@@ -105,7 +251,12 @@ function buildEntries(): Entry[] {
     entries.push({
       kind: "store",
       id: store.id,
-      terms: uniqueFolded([store.name, store.host, store.host.split(".")[0], ...(STORE_SYNONYMS[store.id] ?? [])]),
+      terms: uniqueFolded([
+        store.name,
+        store.host,
+        store.host.split(".")[0],
+        ...(STORE_SYNONYMS[store.id] ?? []),
+      ]),
       label: () => store.name,
       dest: { type: "route", to: "/stores", search: { q: store.name } },
       logo: storeLogo(store.id),
@@ -118,7 +269,7 @@ function buildEntries(): Entry[] {
       id: brand.name,
       terms: uniqueFolded([brand.name, ...(BRAND_SYNONYMS[brand.name] ?? [])]),
       label: () => brand.name,
-      dest: { type: "external", href: idealoSearchUrl(brand.name) },
+      dest: { type: "external", href: idealoSearchUrl(brand.name) ?? "" },
       idealo: brand.name,
       related: brand.category,
     });
@@ -139,12 +290,29 @@ function buildEntries(): Entry[] {
       id: good.id,
       terms: uniqueFolded([...all.map((copy) => copy.goods[good.id]), ...ITEM_SYNONYMS[good.id]]),
       label: (lang) => storeCopy(lang).goods[good.id],
-      dest: { type: "external", href: idealoSearchUrl(ITEM_IDEALO[good.id]) },
+      dest: { type: "external", href: idealoSearchUrl(ITEM_IDEALO[good.id]) ?? "" },
       image: good.image,
       idealo: ITEM_IDEALO[good.id],
     });
   }
-  return entries;
+  return screen(entries);
+}
+
+/**
+ * Compliance: a prohibited synonym is dropped, and an entry whose name, link or idealo term is
+ * prohibited (or has no allowed link) is left out of the index entirely.
+ */
+export function screen(list: Entry[]): Entry[] {
+  return list
+    .filter((entry) => {
+      if (entry.dest.type === "external" && !entry.dest.href) return false;
+      const names = [entry.id, entry.idealo ?? "", ...LANGS.map((l) => entry.label(l.id))];
+      return names.every((name) => findMatches(name).length === 0);
+    })
+    .map((entry) => ({
+      ...entry,
+      terms: entry.terms.filter((term) => findMatches(term).length === 0),
+    }));
 }
 
 let cached: Entry[] | null = null;
@@ -169,7 +337,9 @@ function scoreTerm(q: string, tokens: string[], term: string): number {
         if (!budget) continue;
         const distance = Math.min(
           editDistance(token, word, budget),
-          word.length > token.length ? editDistance(token, word.slice(0, token.length), budget) : budget + 1,
+          word.length > token.length
+            ? editDistance(token, word.slice(0, token.length), budget)
+            : budget + 1,
         );
         if (distance <= budget) best = Math.max(best, 40 - distance * 8);
       }
@@ -202,8 +372,10 @@ export type Suggestions = {
   brands: Hit[];
   categories: Hit[];
   items: Hit[];
-  /** The term sent to idealo for the "search on idealo" row. */
+  /** The term sent to idealo for the "search on idealo" row ("" = no row). */
   idealoTerm: string;
+  /** The query contains a prohibited word: show a neutral "No results" and nothing else. */
+  blocked?: boolean;
 };
 
 const LIMITS: Record<Kind, number> = { store: 4, brand: 3, category: 3, item: 4 };
@@ -216,7 +388,15 @@ function byKey(): Map<string, Entry> {
 
 export function suggest(query: string, lang: Lang): Suggestions {
   const q = fold(query);
-  const empty: Suggestions = { stores: [], brands: [], categories: [], items: [], idealoTerm: query.trim() };
+  const empty: Suggestions = {
+    stores: [],
+    brands: [],
+    categories: [],
+    items: [],
+    idealoTerm: query.trim(),
+  };
+  // A prohibited query gets no hits, no corrections, no idealo row and no AI row.
+  if (isProhibitedQuery(query)) return { ...empty, idealoTerm: "", blocked: true };
   if (!q) return empty;
   const tokens = q.split(" ");
   const hits: Hit[] = [];
@@ -244,7 +424,15 @@ export function suggest(query: string, lang: Lang): Suggestions {
   const relatedId = topBrand && byKey().get(`brand:${topBrand.id}`)?.related;
   if (relatedId && !hits.some((hit) => hit.kind === "category" && hit.id === relatedId)) {
     const cat = byKey().get(`category:${relatedId}`);
-    if (cat) hits.push({ kind: "category", id: cat.id, label: cat.label(lang), mark: null, score: 1, dest: cat.dest });
+    if (cat)
+      hits.push({
+        kind: "category",
+        id: cat.id,
+        label: cat.label(lang),
+        mark: null,
+        score: 1,
+        dest: cat.dest,
+      });
   }
   const pick = (kind: Kind) => hits.filter((hit) => hit.kind === kind).slice(0, LIMITS[kind]);
   const result: Suggestions = {
@@ -257,8 +445,11 @@ export function suggest(query: string, lang: Lang): Suggestions {
   // idealo.de is German: Latin-script queries go as typed; Arabic-script ones
   // use the German term of a strong item/brand match when there is one.
   if (/[\u0600-\u06FF]/.test(query)) {
-    const strong = hits.find((hit) => (hit.kind === "item" || hit.kind === "brand") && hit.score >= 60);
+    const strong = hits.find(
+      (hit) => (hit.kind === "item" || hit.kind === "brand") && hit.score >= 60,
+    );
     if (strong?.idealo) result.idealoTerm = strong.idealo;
   }
+  if (!idealoSearchUrl(result.idealoTerm)) result.idealoTerm = "";
   return result;
 }

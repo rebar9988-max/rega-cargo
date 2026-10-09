@@ -42,7 +42,6 @@ const CATEGORY_ICON: Record<StoreCategory, LucideIcon> = {
   general: Search,
 };
 
-
 export type SuggestProps = {
   query: string;
   lang: Lang;
@@ -122,9 +121,20 @@ function Option({
   );
 }
 
-function Heading({ id, children, action }: { id: string; children: ReactNode; action?: ReactNode }) {
+function Heading({
+  id,
+  children,
+  action,
+}: {
+  id: string;
+  children: ReactNode;
+  action?: ReactNode;
+}) {
   return (
-    <div className="flex items-center justify-between gap-3 px-4 pt-5 pb-2" style={{ direction: "ltr" }}>
+    <div
+      className="flex items-center justify-between gap-3 px-4 pt-5 pb-2"
+      style={{ direction: "ltr" }}
+    >
       <h3 id={id} dir="auto" className="text-sm font-bold text-ink">
         {children}
       </h3>
@@ -135,7 +145,16 @@ function Heading({ id, children, action }: { id: string; children: ReactNode; ac
 
 const rowClass = "flex min-h-14 items-center gap-3 px-4 py-2";
 
-export default function SearchSuggest({ query, lang, activeId, recent, ai, onChoose, onSearch, onClearRecent }: SuggestProps) {
+export default function SearchSuggest({
+  query,
+  lang,
+  activeId,
+  recent,
+  ai,
+  onChoose,
+  onSearch,
+  onClearRecent,
+}: SuggestProps) {
   const c = SUGGEST_COPY[lang] ?? SUGGEST_COPY.en;
   const t = storeCopy(lang);
   const q = query.trim();
@@ -148,7 +167,13 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
     ? (() => {
         const id = nextId();
         return (
-          <Option id={id} active={opt(id)} dest={{ type: "route", to: "/ai" }} onChoose={onChoose} className={`${rowClass} border-t border-line`}>
+          <Option
+            id={id}
+            active={opt(id)}
+            dest={{ type: "route", to: "/ai" }}
+            onChoose={onChoose}
+            className={`${rowClass} border-t border-line`}
+          >
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-pine text-pine-ink">
               <Camera className="size-5" aria-hidden="true" />
             </span>
@@ -161,16 +186,45 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
       })()
     : null;
 
-  if (!results) {
-    const trending = [...GOODS].sort((a, b) => COLLECTION_ORDER.indexOf(a.id) - COLLECTION_ORDER.indexOf(b.id));
+  if (results?.blocked) {
     return (
-      <div id={LISTBOX_ID} role="listbox" aria-label={c.categories} className="pb-6" style={{ direction: "ltr" }}>
+      <div
+        id={LISTBOX_ID}
+        role="listbox"
+        aria-label={c.items}
+        className="pb-6"
+        style={{ direction: "ltr" }}
+      >
+        <p dir="auto" className="px-4 pt-5 text-sm text-muted">
+          {c.noResults}
+        </p>
+      </div>
+    );
+  }
+
+  if (!results) {
+    const trending = [...GOODS]
+      .filter((good) => idealoSearchUrl(ITEM_IDEALO[good.id]))
+      .sort((a, b) => COLLECTION_ORDER.indexOf(a.id) - COLLECTION_ORDER.indexOf(b.id));
+    return (
+      <div
+        id={LISTBOX_ID}
+        role="listbox"
+        aria-label={c.categories}
+        className="pb-6"
+        style={{ direction: "ltr" }}
+      >
         {recent.length > 0 ? (
           <div role="group" aria-labelledby="rl-g-recent">
             <Heading
               id="rl-g-recent"
               action={
-                <button type="button" onClick={onClearRecent} className="text-sm font-medium text-pine" dir="auto">
+                <button
+                  type="button"
+                  onClick={onClearRecent}
+                  className="text-sm font-medium text-pine"
+                  dir="auto"
+                >
                   {c.clear}
                 </button>
               }
@@ -217,7 +271,15 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
                   label={store.name}
                   className="grid h-16 w-28 shrink-0 place-items-center rounded-2xl border border-line bg-surface p-3"
                 >
-                  <img src={storeLogo(store.id)} alt="" width={96} height={32} loading="lazy" decoding="async" className="max-h-8 w-auto max-w-full object-contain" />
+                  <img
+                    src={storeLogo(store.id)}
+                    alt=""
+                    width={96}
+                    height={32}
+                    loading="lazy"
+                    decoding="async"
+                    className="max-h-8 w-auto max-w-full object-contain"
+                  />
                 </Option>
               );
             })}
@@ -255,7 +317,16 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
         <div role="group" aria-labelledby="rl-g-trend">
           <Heading
             id="rl-g-trend"
-            action={<img src={storeLogo("idealo")} alt="idealo" width={72} height={18} loading="lazy" className="h-4 w-auto" />}
+            action={
+              <img
+                src={storeLogo("idealo")}
+                alt="idealo"
+                width={72}
+                height={18}
+                loading="lazy"
+                className="h-4 w-auto"
+              />
+            }
           >
             {c.trending}
           </Heading>
@@ -270,7 +341,7 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
                   key={good.id}
                   id={id}
                   active={opt(id)}
-                  dest={{ type: "external", href: idealoSearchUrl(ITEM_IDEALO[good.id]) }}
+                  dest={{ type: "external", href: idealoSearchUrl(ITEM_IDEALO[good.id]) ?? "" }}
                   onChoose={onChoose}
                   label={`${t.goods[good.id]} · ${c.external}`}
                   className="flex w-24 shrink-0 flex-col gap-1 rounded-2xl p-1"
@@ -305,7 +376,13 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
   ];
   const anything = groups.some((group) => group.hits.length > 0);
   return (
-    <div id={LISTBOX_ID} role="listbox" aria-label={c.items} className="pb-6" style={{ direction: "ltr" }}>
+    <div
+      id={LISTBOX_ID}
+      role="listbox"
+      aria-label={c.items}
+      className="pb-6"
+      style={{ direction: "ltr" }}
+    >
       {groups
         .filter((group) => group.hits.length > 0)
         .map((group) => (
@@ -313,7 +390,8 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
             <Heading id={`rl-g-${group.key}`}>{group.title}</Heading>
             {group.hits.map((hit) => {
               const id = nextId();
-              const Icon = hit.kind === "category" ? CATEGORY_ICON[hit.id as StoreCategory] : Search;
+              const Icon =
+                hit.kind === "category" ? CATEGORY_ICON[hit.id as StoreCategory] : Search;
               return (
                 <Option
                   key={`${hit.kind}-${hit.id}`}
@@ -326,7 +404,14 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
                 >
                   {hit.logo ? (
                     <span className="grid h-10 w-14 shrink-0 place-items-center rounded-xl border border-line bg-surface p-1.5">
-                      <img src={hit.logo} alt="" width={48} height={20} loading="lazy" className="max-h-5 w-auto max-w-full object-contain" />
+                      <img
+                        src={hit.logo}
+                        alt=""
+                        width={48}
+                        height={20}
+                        loading="lazy"
+                        className="max-h-5 w-auto max-w-full object-contain"
+                      />
                     </span>
                   ) : hit.image ? (
                     <img
@@ -363,12 +448,14 @@ export default function SearchSuggest({ query, lang, activeId, recent, ai, onCho
       ) : null}
       <div className="mt-3 border-t border-line">
         {(() => {
+          const href = idealoSearchUrl(results.idealoTerm);
+          if (!href) return null;
           const id = nextId();
           return (
             <Option
               id={id}
               active={opt(id)}
-              dest={{ type: "external", href: idealoSearchUrl(results.idealoTerm) }}
+              dest={{ type: "external", href }}
               onChoose={onChoose}
               className={rowClass}
             >

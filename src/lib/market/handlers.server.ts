@@ -1,5 +1,6 @@
 import { getSql, type Sql } from "@/lib/db";
-import { auditLog, checkProductServer } from "@/lib/compliance/service.server";
+import { checkProduct, isProhibitedQuery } from "@/lib/compliance/check";
+import { auditLog, checkProductServer, complianceRules } from "@/lib/compliance/service.server";
 import {
   MarketError,
   canSetJobStatus,
@@ -152,6 +153,9 @@ export async function listProducts(input: ListInput) {
   const saved = input.saved === true || input.saved === "1";
   const pattern = q ? likePattern(q) : null;
   const offset = (page - 1) * PAGE;
+  const rules = await complianceRules(sql);
+  // Compliance: a query with a prohibited word returns nothing (no suggestion, no correction).
+  const blockedQuery = q !== "" && isProhibitedQuery(q, rules);
   const rows = await sql<Record<string, unknown>>`
     with live as (
       select o.product_id,
@@ -170,7 +174,7 @@ export async function listProducts(input: ListInput) {
     from products p
     join categories c on c.id = p.category_id
     left join live l on l.product_id = p.id
-    where p.status = 'approved'
+    where p.status = 'approved' and p.compliance_status = 'ok'
       and (${pattern}::text is null or p.name_ku ilike ${pattern} escape '\\' or p.name_en ilike ${pattern} escape '\\' or p.brand ilike ${pattern} escape '\\')
       and (${category} = '' or p.category_id = ${category})
       and (${brand} = '' or p.brand = ${brand})
@@ -181,17 +185,32 @@ export async function listProducts(input: ListInput) {
     order by case when ${sort} = 'new' then extract(epoch from p.created_at) end desc nulls last,
              l.lowest asc nulls last, p.name_en asc
     limit ${PAGE} offset ${offset}`;
+  // Defence in depth: rows that now clearly match a rule (e.g. written before a keyword was added) never show.
+  const visible = blockedQuery
+    ? []
+    : rows.filter(
+        (row) =>
+          checkProduct(
+            {
+              title: String(row.name_en),
+              titleKu: String(row.name_ku),
+              brand: String(row.brand),
+              category: String(row.category_id),
+            },
+            rules,
+          ).decision !== "block",
+      );
   const brands = await sql<{
     brand: string;
-  }>`select distinct brand from products where status = 'approved' order by brand`;
+  }>`select distinct brand from products where status = 'approved' and compliance_status = 'ok' order by brand`;
   const cats = await sql<{
     id: string;
     name_ku: string;
     name_en: string;
   }>`select id, name_ku, name_en from categories order by name_en`;
-  const total = Number(rows[0]?.total_count ?? 0);
+  const total = blockedQuery ? 0 : Number(rows[0]?.total_count ?? 0);
   return {
-    items: rows.map((row) => ({
+    items: visible.map((row) => ({
       slug: String(row.slug),
       nameKu: String(row.name_ku),
       nameEn: String(row.name_en),
@@ -203,7 +222,7 @@ export async function listProducts(input: ListInput) {
     })),
     page,
     pages: Math.max(1, Math.ceil(total / PAGE)),
-    brands: brands.map((row) => row.brand),
+    brands: brands.map((row) => row.brand).filter((name) => !isProhibitedQuery(name, rules)),
     categories: cats,
   };
 }
@@ -213,9 +232,19 @@ export async function getProduct(slug: string, userId: string | null) {
   const found = await sql<Record<string, unknown>>`
     select p.*, c.name_ku as category_ku, c.name_en as category_en
     from products p join categories c on c.id = p.category_id
-    where p.slug = ${slug} and p.status = 'approved'`;
+    where p.slug = ${slug} and p.status = 'approved' and p.compliance_status = 'ok'`;
   const product = found[0];
   if (!product) throw new MarketError("notfound");
+  const verdict = await checkProductServer(sql, {
+    title: String(product.name_en),
+    titleKu: String(product.name_ku),
+    brand: String(product.brand),
+    category: String(product.category_id),
+    description: String(product.description_ku ?? ""),
+    attributes: String(product.specs ?? ""),
+  });
+  // An admin may have cleared a review-level match; a clear match never shows.
+  if (verdict.decision === "block") throw new MarketError("notfound");
   const raw = await sql<Record<string, unknown>>`
     select o.id, o.price_iqd, o.shipping_iqd, o.stock, o.contact, o.seller_id, o.updated_at,
            coalesce(r.display_name, o.seller_id) as seller_name, r.city
@@ -494,7 +523,7 @@ export async function setFavorite(userId: string, slug: string, on: boolean) {
   await ensureBuyer(sql, userId);
   const products = await sql<{
     id: string;
-  }>`select id from products where slug = ${slug} and status = 'approved'`;
+  }>`select id from products where slug = ${slug} and status = 'approved' and compliance_status = 'ok'`;
   if (!products[0]) throw new MarketError("notfound");
   if (on) {
     await sql`insert into favorites (user_id, product_id) values (${userId}, ${products[0].id}) on conflict do nothing`;
@@ -511,7 +540,7 @@ export async function setAlert(userId: string, slug: string, target: unknown) {
   const money = cleanMoney(target, 50000000, false);
   const products = await sql<{
     id: string;
-  }>`select id from products where slug = ${slug} and status = 'approved'`;
+  }>`select id from products where slug = ${slug} and status = 'approved' and compliance_status = 'ok'`;
   if (!products[0]) throw new MarketError("notfound");
   await sql`
     insert into price_alerts (id, user_id, product_id, target_iqd, notified)
@@ -530,7 +559,7 @@ export async function addReview(userId: string, slug: string, rating: unknown, b
   const products = await sql<{
     id: string;
     owner_id: string;
-  }>`select id, owner_id from products where slug = ${slug} and status = 'approved'`;
+  }>`select id, owner_id from products where slug = ${slug} and status = 'approved' and compliance_status = 'ok'`;
   if (!products[0]) throw new MarketError("notfound");
   if (products[0].owner_id === userId) throw new MarketError("forbidden");
   const selling =

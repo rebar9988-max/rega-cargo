@@ -32,6 +32,7 @@ export type AiCopy = {
     | "rate_limited"
     | "daily_cap"
     | "timeout"
+    | "no_result"
     | "generic",
     string
   >;
@@ -83,6 +84,7 @@ const en: AiCopy = {
     rate_limited: "Too many photos — please try again in an hour.",
     daily_cap: "Today's AI limit is reached — please try again tomorrow.",
     timeout: "The AI took too long — please try again.",
+    no_result: "No results.",
     generic: "Something went wrong — please try again.",
   },
   estimateTitle: "Landed-cost estimate (optional)",
@@ -135,6 +137,7 @@ const ckb: AiCopy = {
     rate_limited: "وێنەی زۆرت ناردووە — دوای کاتژمێرێک هەوڵ بدەرەوە.",
     daily_cap: "سنووری ئەمڕۆی AI تەواو بوو — سبەی هەوڵ بدەرەوە.",
     timeout: "AI زۆری خایاند — دووبارە هەوڵ بدەرەوە.",
+    no_result: "هیچ ئەنجامێک نییە.",
     generic: "هەڵەیەک ڕوویدا — دووبارە هەوڵ بدەرەوە.",
   },
   estimateTitle: "خەمڵاندنی تێچووی گەیشتن (ئارەزوومەندانە)",
@@ -188,6 +191,7 @@ const ku: AiCopy = {
     rate_limited: "Te gelek wêne şandin — piştî saetekê dîsa biceribîne.",
     daily_cap: "Sînorê AI yê îro qediya — sibê dîsa biceribîne.",
     timeout: "AI pir dirêj kişand — dîsa biceribîne.",
+    no_result: "Encam tune.",
     generic: "Çewtiyek çêbû — dîsa biceribîne.",
   },
   estimateTitle: "Texmîna lêçûna gihandinê (bijarte)",
@@ -240,6 +244,7 @@ const ar: AiCopy = {
     rate_limited: "أرسلت صورًا كثيرة — حاول بعد ساعة.",
     daily_cap: "بلغ حدّ الذكاء الاصطناعي لهذا اليوم — حاول غدًا.",
     timeout: "استغرق الذكاء الاصطناعي وقتًا طويلًا — حاول مجددًا.",
+    no_result: "لا نتائج.",
     generic: "حدث خطأ — حاول مجددًا.",
   },
   estimateTitle: "تقدير التكلفة حتى الوصول (اختياري)",
@@ -290,6 +295,7 @@ const fa: AiCopy = {
     rate_limited: "عکس‌های زیادی فرستادید — یک ساعت دیگر دوباره امتحان کنید.",
     daily_cap: "سقف امروز هوش مصنوعی پر شد — فردا دوباره امتحان کنید.",
     timeout: "پاسخ هوش مصنوعی طول کشید — دوباره امتحان کنید.",
+    no_result: "نتیجه‌ای نیست.",
     generic: "خطایی رخ داد — دوباره امتحان کنید.",
   },
   estimateTitle: "برآورد هزینه تا مقصد (اختیاری)",
@@ -343,6 +349,7 @@ const tr: AiCopy = {
     rate_limited: "Çok fazla fotoğraf gönderdiniz — bir saat sonra tekrar deneyin.",
     daily_cap: "Bugünkü yapay zekâ sınırına ulaşıldı — yarın tekrar deneyin.",
     timeout: "Yapay zekâ çok uzun sürdü — tekrar deneyin.",
+    no_result: "Sonuç yok.",
     generic: "Bir hata oluştu — tekrar deneyin.",
   },
   estimateTitle: "Varış maliyeti tahmini (isteğe bağlı)",
@@ -396,6 +403,7 @@ const de: AiCopy = {
     rate_limited: "Zu viele Fotos – bitte in einer Stunde erneut versuchen.",
     daily_cap: "Das heutige KI-Limit ist erreicht – bitte morgen erneut versuchen.",
     timeout: "Die KI hat zu lange gebraucht – bitte erneut versuchen.",
+    no_result: "Keine Treffer.",
     generic: "Etwas ist schiefgelaufen – bitte erneut versuchen.",
   },
   estimateTitle: "Geschätzte Gesamtkosten bis zur Ankunft (optional)",

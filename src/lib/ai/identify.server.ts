@@ -6,6 +6,7 @@ import {
   type IdentifyResult,
 } from "./schema.ts";
 import { verifyAiToken } from "./challenge.ts";
+import { checkText } from "../compliance/check.ts";
 import { verifyTurnstile } from "../phone/codes.ts";
 import {
   consumeUsage,
@@ -62,7 +63,8 @@ export type IdentifyDeps = {
 };
 
 export type IdentifyResponse =
-  { ok: true; result: IdentifyResult; model: string; ms: number } | { ok: false; error: string; detail?: string };
+  | { ok: true; result: IdentifyResult; model: string; ms: number }
+  | { ok: false; error: string; detail?: string };
 
 const SYSTEM_PROMPT = [
   "You identify retail products in a single photo for a shipping company's customers.",
@@ -151,7 +153,10 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
   if (!aiEnabled(env)) return json({ ok: false, error: "disabled" }, 404);
   if (request.method !== "POST") return json({ ok: false, error: "method" }, 405);
   if (!sameOrigin(request)) return json({ ok: false, error: "forbidden" }, 403);
-  if (deps.limit && !(await deps.limit(ipKey(request.headers.get("cf-connecting-ip") ?? "unknown"))))
+  if (
+    deps.limit &&
+    !(await deps.limit(ipKey(request.headers.get("cf-connecting-ip") ?? "unknown")))
+  )
     return json({ ok: false, error: "rate_limited" }, 429);
   if (!env.AI || !deps.usage) return json({ ok: false, error: "unavailable" }, 503);
 
@@ -173,7 +178,11 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
   if (!deps.skipGate) {
     const turnstile = deps.turnstileSecret?.trim();
     if (turnstile) {
-      const ok = await verifyTurnstile(turnstile, String(form.get("turnstile") ?? ""), ipKey(request.headers.get("cf-connecting-ip") ?? ""));
+      const ok = await verifyTurnstile(
+        turnstile,
+        String(form.get("turnstile") ?? ""),
+        ipKey(request.headers.get("cf-connecting-ip") ?? ""),
+      );
       if (!ok) return json({ ok: false, error: "forbidden" }, 403);
     } else if (deps.verifyToken) {
       const nowMs = (deps.now ?? (() => new Date()))().getTime();
@@ -253,12 +262,27 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
   const result = parseIdentifyOutput(content);
   if (!result) {
     // Diagnostics only (no image data, no model text): why the output was unusable.
-    const finish = (reply as { choices?: Array<{ finish_reason?: unknown }> })?.choices?.[0]?.finish_reason;
-    const detail = content == null || content === "" ? "empty" : finish === "length" ? "truncated" : "schema";
+    const finish = (reply as { choices?: Array<{ finish_reason?: unknown }> })?.choices?.[0]
+      ?.finish_reason;
+    const detail =
+      content == null || content === "" ? "empty" : finish === "length" ? "truncated" : "schema";
     await refund();
     return json({ ok: false, error: "invalid_output", detail }, 502);
   }
+  // Compliance: a prohibited product gets a neutral "no result" (no name, no link, no search).
+  if (isProhibitedAiResult(result)) return json({ ok: false, error: "no_result" }, 200);
   return json({ ok: true, result, model: AI_MODEL, ms: Date.now() - started }, 200);
+}
+
+export function isProhibitedAiResult(result: IdentifyResult): boolean {
+  const text = [
+    result.brand ?? "",
+    result.model ?? "",
+    ...result.visibleText,
+    ...result.attributes,
+  ].join(" \n ");
+  // Block-level only: label text like "Alcohol Denat." on a perfume is a review word, not a reason to hide.
+  return checkText(text).decision === "block";
 }
 
 export function handleStatus(env: IdentifyEnv): Response {

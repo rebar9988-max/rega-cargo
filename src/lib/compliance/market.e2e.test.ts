@@ -174,3 +174,34 @@ describe("compliance: market writes", () => {
     assert.equal((await service.checkTextServer(null, "vodka")).decision, "block");
   });
 });
+
+describe("compliance: market search and detail", () => {
+  it("never lists prohibited or pending_review products, and a prohibited query returns nothing", async () => {
+    // legacy rows written before the check existed (approved, compliance 'ok' by default)
+    await sql`insert into products (id, slug, owner_id, category_id, name_ku, name_en, brand, status) values
+      ('legacy-1', 'legacy-vodka', ${seller}, 'home', 'x', 'Vodka set', 'Brand', 'approved'),
+      ('legacy-2', 'legacy-mug', ${seller}, 'home', 'x', 'Ginger mug', 'Brand', 'approved')`;
+    const r = await market.saveProduct(seller, { ...base, nameEn: "Gelatin dessert mix" });
+    await sql`update products set status = 'approved' where slug = ${r.slug}`; // the DB guard keeps it pending
+    const all = await market.listProducts({});
+    const slugs = all.items.map((i) => i.slug);
+    assert.ok(!slugs.includes("legacy-vodka"));
+    assert.ok(!slugs.includes(r.slug));
+    for (const q of ["vodka", "جگەرە", "sigara", "خمر", "Vodka set"]) {
+      const res = await market.listProducts({ q });
+      assert.equal(res.items.length, 0, q);
+    }
+    assert.deepEqual(
+      (await market.listProducts({ q: "ginger" })).items.map((i) => i.slug),
+      ["legacy-mug"],
+    );
+    await assert.rejects(
+      market.getProduct("legacy-vodka", null),
+      (e: Error & { code?: string }) => e.code === "notfound",
+    );
+    await assert.rejects(
+      market.getProduct(r.slug, null),
+      (e: Error & { code?: string }) => e.code === "notfound",
+    );
+  });
+});
