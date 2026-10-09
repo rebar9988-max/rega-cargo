@@ -155,8 +155,8 @@ export const tr = {
   dutyPlan: "Plan oranı, gümrük kararı değil.",
   footnote:
     "Bugünün plan fiyatları. Toplamadan önce onaylanır. Yakıt ve yoğun haftalar biraz oynatabilir. 1 euro ≈ 1.520 dinar, evde okunsun diye — banka kuru değil.",
-  weightError: "0,2 ile 300 kg arasında bir ağırlık yazın.",
-  dimError: "Ölçüler 0 ile 300 cm arasında olmalı. Kutuyu bilmiyorsanız 0 yazın.",
+  weightError: "0,1 ile 70 kg arasında bir ağırlık yazın.",
+  dimError: "Ölçüler 1 ile 200 cm arasında olmalı.",
   perPiece: "Fiyat toplam ağırlığı kapsar, her parçayı ayrı değil.",
   cm: "cm",
   kg: "kg",

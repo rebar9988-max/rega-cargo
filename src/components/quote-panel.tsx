@@ -1,3 +1,4 @@
+import { NUM_LOCALE } from "@/lib/numbers";
 import { QUOTE_LIMITS, dimInRange, kgInRange, parseKg } from "@/lib/quote-search";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { Link } from "@tanstack/react-router";
@@ -422,7 +423,7 @@ export function QuotePanel({
                   {contents === "documents" ? t.dutyDocs : safeValue > 0 && safeValue <= 200 && contents === "personal" ? t.dutyLow : t.dutyPlan}
                 </p>
                 <p className="mt-2 text-xs text-muted">
-                  {dc.iqdRate.replace("{rate}", IQD_PER_EUR.toLocaleString("en-GB")).replace("{date}", IQD_RATE_UPDATED)}
+                  {dc.iqdRate.replace("{rate}", IQD_PER_EUR.toLocaleString(NUM_LOCALE)).replace("{date}", IQD_RATE_UPDATED)}
                 </p>
               </div>
             ) : null}

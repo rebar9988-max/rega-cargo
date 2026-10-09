@@ -1,3 +1,4 @@
+import { NUM_LOCALE } from "@/lib/numbers";
 import { useEffect, useState } from "react";
 import { seo } from "@/lib/seo";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -251,7 +252,7 @@ function when(at: string | undefined) {
   if (!at) return null;
   const date = new Date(at);
   if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(date);
+  return new Intl.DateTimeFormat(NUM_LOCALE, { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
 
 /** Real tracking record: status, last update, next step (labelled as an estimate). Shows only what the server returned. */

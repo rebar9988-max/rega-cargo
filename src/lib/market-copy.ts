@@ -1,3 +1,4 @@
+import { NUM_LOCALE } from "./numbers.ts";
 import type { Lang } from "@/lib/langs";
 
 const en = {
@@ -312,5 +313,5 @@ export function marketCopy(lang: Lang) {
 }
 
 export function iqd(value: number) {
-  return `${new Intl.NumberFormat("en-GB").format(value)} IQD`;
+  return `${new Intl.NumberFormat(NUM_LOCALE).format(value)} IQD`;
 }
