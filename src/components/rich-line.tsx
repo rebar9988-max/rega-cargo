@@ -2,7 +2,8 @@ import { splitLeadIns } from "@/lib/lead-in";
 
 /** Leading code/email/ID token isolated as LTR; the rest flows in the page direction. */
 function Value({ text }: { text: string }) {
-  const match = text.match(/^([\x21-\x7e]+)([\s\S]*)$/);
+  // Isolate up to the last letter/digit so trailing punctuation follows the page direction.
+  const match = text.match(/^([\x21-\x7e]*[A-Za-z0-9])([\s\S]*)$/);
   if (!match || !/[a-z0-9]/i.test(match[1])) return <>{text}</>;
   return (
     <>
