@@ -25,4 +25,4 @@ export function seo(input: { path: string; title: string; description: string; n
 }
 
 /** Public, indexable pages for sitemap.xml. */
-export const SITEMAP_PATHS = ["/", "/stores", "/quote", "/market", "/customs", "/contact", "/impressum", "/privacy", "/terms"];
+export const SITEMAP_PATHS = ["/", "/stores", "/quote", "/market", "/customs", "/prohibited-items", "/contact", "/impressum", "/privacy", "/terms"];

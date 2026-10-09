@@ -27,6 +27,7 @@ import { UX_COPY } from "@/lib/ux-copy";
 import { ContactNote } from "@/components/contact-note";
 import { RichLine } from "@/components/rich-line";
 import { DECLARE_COPY } from "@/lib/declare-copy";
+import { ItemsLink } from "@/components/items-link";
 import { getJson, setJson } from "@/lib/storage";
 import { Eur, Field, Iqd, btnGhost, btnPrimary, controlClass } from "@/components/field";
 
@@ -330,6 +331,7 @@ export function QuotePanel({
                   />
                   <span>{dc.declare}</span>
                 </label>
+                <ItemsLink />
                 {rows.map((row) => {
                   const less = Math.round((rows[0].price.total - row.price.total) * 100) / 100;
                   return (

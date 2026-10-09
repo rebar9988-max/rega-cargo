@@ -1,5 +1,7 @@
 import { responsiveImage } from "@/lib/images";
 import { seo } from "@/lib/seo";
+import { DECLARE_COPY } from "@/lib/declare-copy";
+import { ItemsLink } from "@/components/items-link";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { Field, controlClass, btnPrimary } from "@/components/field";
@@ -52,6 +54,7 @@ function RequestPage() {
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
   const [failed, setFailed] = useState(false);
+  const [declared, setDeclared] = useState(false);
   const ux = UX_COPY[lang];
 
   async function submit(event: React.FormEvent) {
@@ -81,13 +84,17 @@ function RequestPage() {
       setError(rc.badPhone);
       return;
     }
+    if (!declared) {
+      setError(DECLARE_COPY[lang].mustDeclare);
+      return;
+    }
     setError("");
     inFlight.current = true;
     setBusy(true);
     try {
       const gate = await gateFields();
       const result = await orderStore({
-        data: { intent, storeId: store?.id ?? null, item: good?.id ?? null, url: href, size, color, qty: qty.trim(), dest, notes, phone: phone.trim(), ...gate },
+        data: { intent, storeId: store?.id ?? null, item: good?.id ?? null, url: href, size, color, qty: qty.trim(), dest, notes, phone: phone.trim(), declared: true, ...gate },
       });
       if (result && "id" in result && result.id) {
         setSaved(String(result.id));
@@ -103,6 +110,7 @@ function RequestPage() {
         rate: rc.rate,
         signin: rc.signin,
         prohibited: marketCopy(lang).prohibited,
+        declare: DECLARE_COPY[lang].mustDeclare,
       };
       if (code && message[code]) {
         setError(message[code]);
@@ -179,6 +187,11 @@ function RequestPage() {
             <Field label={rc.phone} hint={rc.phoneHint}>
               <input className={controlClass} dir="ltr" type="tel" inputMode="tel" autoComplete="tel" maxLength={24} value={phone} onChange={(event) => setPhone(event.target.value)} />
             </Field>
+            <label className="flex items-start gap-3 text-sm leading-relaxed">
+              <input type="checkbox" checked={declared} onChange={(event) => setDeclared(event.target.checked)} className="mt-0.5 size-6 shrink-0 accent-pine" />
+              <span>{DECLARE_COPY[lang].declare}</span>
+            </label>
+            <ItemsLink />
             <div aria-live="polite">
               {error ? (
                 <p role="alert" className="text-sm text-clay">

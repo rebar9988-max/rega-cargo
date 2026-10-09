@@ -19,6 +19,7 @@ import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as MoveRouteImport } from './routes/move'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProhibitedItemsRouteImport } from './routes/prohibited-items'
 import { Route as QuoteRouteImport } from './routes/quote'
 import { Route as RequestRouteImport } from './routes/request'
 import { Route as StoresRouteImport } from './routes/stores'
@@ -80,6 +81,11 @@ const MoveRoute = MoveRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProhibitedItemsRoute = ProhibitedItemsRouteImport.update({
+  id: '/prohibited-items',
+  path: '/prohibited-items',
   getParentRoute: () => rootRouteImport,
 } as any)
 const QuoteRoute = QuoteRouteImport.update({
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
   '/privacy': typeof PrivacyRoute
+  '/prohibited-items': typeof ProhibitedItemsRoute
   '/quote': typeof QuoteRoute
   '/request': typeof RequestRoute
   '/stores': typeof StoresRouteWithChildren
@@ -176,6 +183,7 @@ export interface FileRoutesByTo {
   '/impressum': typeof ImpressumRoute
   '/move': typeof MoveRoute
   '/privacy': typeof PrivacyRoute
+  '/prohibited-items': typeof ProhibitedItemsRoute
   '/quote': typeof QuoteRoute
   '/request': typeof RequestRoute
   '/terms': typeof TermsRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
   '/privacy': typeof PrivacyRoute
+  '/prohibited-items': typeof ProhibitedItemsRoute
   '/quote': typeof QuoteRoute
   '/request': typeof RequestRoute
   '/stores': typeof StoresRouteWithChildren
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/move'
     | '/privacy'
+    | '/prohibited-items'
     | '/quote'
     | '/request'
     | '/stores'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/move'
     | '/privacy'
+    | '/prohibited-items'
     | '/quote'
     | '/request'
     | '/terms'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/market'
     | '/move'
     | '/privacy'
+    | '/prohibited-items'
     | '/quote'
     | '/request'
     | '/stores'
@@ -296,6 +308,7 @@ export interface RootRouteChildren {
   MarketRoute: typeof MarketRouteWithChildren
   MoveRoute: typeof MoveRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProhibitedItemsRoute: typeof ProhibitedItemsRoute
   QuoteRoute: typeof QuoteRoute
   RequestRoute: typeof RequestRoute
   StoresRoute: typeof StoresRouteWithChildren
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prohibited-items': {
+      id: '/prohibited-items'
+      path: '/prohibited-items'
+      fullPath: '/prohibited-items'
+      preLoaderRoute: typeof ProhibitedItemsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/quote': {
@@ -514,6 +534,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketRoute: MarketRouteWithChildren,
   MoveRoute: MoveRoute,
   PrivacyRoute: PrivacyRoute,
+  ProhibitedItemsRoute: ProhibitedItemsRoute,
   QuoteRoute: QuoteRoute,
   RequestRoute: RequestRoute,
   StoresRoute: StoresRouteWithChildren,

@@ -7,6 +7,7 @@ import { SignInGate } from "@/components/sign-in-gate";
 import { IqdAmount, RequestHelp, StatusBadge } from "@/components/request-bits";
 import { when } from "@/lib/requests/format";
 import { StaffRequestTools } from "@/components/staff-requests";
+import { ItemsLink } from "@/components/items-link";
 import { useI18n } from "@/lib/i18n";
 import { viewerState } from "@/lib/viewer/api";
 import { DESTS, ORIGINS, placeName } from "@/lib/corridor";
@@ -188,6 +189,7 @@ function Detail({ request, t }: { request: Detail; t: RequestCopy }) {
                 {message}
               </p>
             ) : null}
+            <ItemsLink />
           </Box>
           {request.estimateEur != null ? (
             <Box title={t.estimate}>
