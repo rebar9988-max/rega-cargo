@@ -25,6 +25,7 @@ import { PhoneButton } from "@/components/phone-gate";
 import { SearchBox } from "@/components/search-box";
 import { LEGAL_COPY } from "@/lib/legal-copy";
 import { REQUEST_COPY } from "@/lib/requests/copy";
+import { ITEMS_COPY } from "@/lib/items-copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
@@ -395,6 +396,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
                 <Link to="/impressum" className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.impressum}</Link>
                 <Link to="/privacy" className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.privacy}</Link>
                 <Link to="/terms" className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.terms}</Link>
+                <Link to="/prohibited-items" className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline">{ITEMS_COPY[lang].link}</Link>
               </nav>
             </div>
             <a

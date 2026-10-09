@@ -76,6 +76,11 @@ export const orderStore = createServerFn({ method: "POST" })
       setResponseStatus(403);
       return { error: "forbidden" as const };
     }
+    // The contents declaration is mandatory, as for quote bookings and move requests.
+    if (data.declared !== true) {
+      setResponseStatus(400);
+      return { error: "declare" as const };
+    }
     // Reject bad input (links, quantity, destination) before touching auth or the database.
     const { validateStoreRequest } = await import("./store-request");
     const shape = validateStoreRequest(data, null, { requireContact: false });
@@ -102,7 +107,7 @@ export const orderStore = createServerFn({ method: "POST" })
       return { error: checked.error };
     }
     const { submitRequest } = await import("./handlers.server");
-    return submitRequest(userId, "store", checked.data, null);
+    return submitRequest(userId, "store", { ...checked.data, declared: true }, null);
   });
 
 export const orderTrack = createServerFn({ method: "GET" })

@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/i18n";
 import { viewerState } from "@/lib/viewer/api";
 import { marketCopy } from "@/lib/market-copy";
 import { DECLARE_COPY } from "@/lib/declare-copy";
+import { ItemsLink } from "@/components/items-link";
 import { marketRole, moveChoose, moveCreateDelivery, moveCreateTransport, moveJobs, moveOffer, moveRate, moveStatus } from "@/lib/market/api";
 
 export const Route = createFileRoute("/move")({
@@ -127,6 +128,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
             <input type="checkbox" name="declared" required className="mt-0.5 size-6 shrink-0 accent-pine" />
             <span>{DECLARE_COPY[lang].declare}</span>
           </label>
+          <ItemsLink />
           {sendButton("delivery", t.send)}
           {formStatus("delivery")}
         </form>
@@ -147,6 +149,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
             <input type="checkbox" name="declared" required className="mt-0.5 size-6 shrink-0 accent-pine" />
             <span>{DECLARE_COPY[lang].declare}</span>
           </label>
+          <ItemsLink />
           {sendButton("transport", t.send)}
           {formStatus("transport")}
         </form>

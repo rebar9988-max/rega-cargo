@@ -368,4 +368,13 @@ describe("customer requests on PGLite", () => {
     );
     assert.equal((await requests.requestDetail(aza, made.id as string)).quotes[0].expired, true);
   });
+
+  it("records the contents declaration for store orders too", async () => {
+    const sql = await getSql();
+    const aza = (await sql<{ id: string }>`select id from phone_users where phone = '+9647501110001'`)[0].id;
+    const made = await orders.submitRequest(aza, "store", { intent: "buy", url: "https://www.zalando.de/x", qty: 1, dest: "ebl", declared: true }, null);
+    assert.ok("id" in made);
+    const rows = await sql<{ kind: string }>`select d.kind from declarations d join shipment_requests r on r.id = d.ref_id where r.tracking_id = ${made.id}`;
+    assert.equal(rows[0]?.kind, "store");
+  });
 });

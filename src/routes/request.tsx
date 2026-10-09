@@ -5,6 +5,7 @@ import { btnGhost, btnPrimary, controlClass, Field } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
 import { SignInGate } from "@/components/sign-in-gate";
 import { RequestHelp } from "@/components/request-bits";
+import { ItemsLink } from "@/components/items-link";
 import { useI18n } from "@/lib/i18n";
 import { viewerState } from "@/lib/viewer/api";
 import { DESTS, ORIGINS, countryName, placeName } from "@/lib/corridor";
@@ -298,6 +299,7 @@ function RequestForm() {
               />
               <span>{declare.declare}</span>
             </label>
+            <ItemsLink />
             <div aria-live="polite">
               {error ? (
                 <p role="alert" className="text-sm text-clay">
