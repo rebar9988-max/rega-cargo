@@ -121,6 +121,10 @@ function AdminSignedIn({
           {orders && !("error" in orders)
             ? orders.orders.map((row) => (
               <Row key={row.id} label={`${row.trackingId} · ${row.kind === "store" ? t.storeKind : t.quoteKind} · ${statusLabel[row.status] ?? row.status}`}>
+                {"link" in row && row.link ? (
+                  // Product link: shown as plain text (never auto-opened or fetched); copy it to open it yourself.
+                  <code dir="ltr" className="block w-full select-all break-all text-xs text-muted">{row.link}</code>
+                ) : null}
                 {ORDER_STATUS.filter((status) => status !== row.status).map((status) => (
                   <button key={status} type="button" className={btnGhost} onClick={() => setStatus(row.id, status)}>{statusLabel[status]}</button>
                 ))}

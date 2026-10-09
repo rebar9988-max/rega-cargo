@@ -10,7 +10,7 @@
  * takes over immediately; pages stay network first, so nobody gets stuck.
  * Kill switch: replace this file with one that calls self.registration.unregister().
  */
-const VERSION = "rl-sw-v9";
+const VERSION = "rl-sw-v10";
 const PAGES = `${VERSION}-pages`;
 const ASSETS = `${VERSION}-assets`;
 const STATIC = `${VERSION}-static`;

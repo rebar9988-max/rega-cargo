@@ -7,6 +7,8 @@ export type DeclareCopy = {
   customs: string;
   expired: string;
   rate: string;
+  range: string;
+  iqdRate: string;
 };
 
 export const DECLARE_COPY: Record<Lang, DeclareCopy> = {
@@ -17,6 +19,8 @@ export const DECLARE_COPY: Record<Lang, DeclareCopy> = {
     customs: "گومرگ: لەناو نرخەکەدا نییە، پێش وەرگرتنی بارەکە پشتڕاست دەکرێتەوە",
     expired: "نرخەکە بەسەرچوو. تکایە دووبارە هەوڵ بدەوە.",
     rate: "داواکاری زۆرە. تکایە کەمێکی تر هەوڵ بدەوە.",
+    range: "کێش لە ٠٫١ تا ٧٠ کیلۆ، هەر لایەکی سندووق لە ١ تا ٢٠٠ سم.",
+    iqdRate: "دینار بە نرخی ١ € = {rate} IQD، دوایین نوێکردنەوە {date}.",
   },
   en: {
     declare:
@@ -25,6 +29,8 @@ export const DECLARE_COPY: Record<Lang, DeclareCopy> = {
     customs: "Customs: not included, confirmed before collection",
     expired: "This quote has expired. Please try again.",
     rate: "Too many requests. Please try again in a moment.",
+    range: "Weight 0.1–70 kg, each side of the box 1–200 cm.",
+    iqdRate: "IQD at 1 € = {rate} IQD, last updated {date}.",
   },
   ku: {
     declare:
@@ -33,6 +39,8 @@ export const DECLARE_COPY: Record<Lang, DeclareCopy> = {
     customs: "Gumrik: ne tê de ye, berî hilgirtinê tê piştrastkirin",
     expired: "Ev biha qediya. Ji kerema xwe dîsa biceribîne.",
     rate: "Gelek daxwaz. Ji kerema xwe piştî kêliyekê dîsa biceribîne.",
+    range: "Giranî 0,1–70 kg, her aliyê qutiyê 1–200 cm.",
+    iqdRate: "IQD bi 1 € = {rate} IQD, nûkirina dawî {date}.",
   },
   ar: {
     declare:
@@ -41,6 +49,8 @@ export const DECLARE_COPY: Record<Lang, DeclareCopy> = {
     customs: "الجمارك: غير مشمولة، وتُؤكَّد قبل الاستلام",
     expired: "انتهت صلاحية هذا السعر. يرجى المحاولة مرة أخرى.",
     rate: "طلبات كثيرة. يرجى المحاولة بعد قليل.",
+    range: "الوزن من 0.1 إلى 70 كغ، وكل ضلع للصندوق من 1 إلى 200 سم.",
+    iqdRate: "الدينار بسعر 1 € = {rate} IQD، آخر تحديث {date}.",
   },
   fa: {
     declare:
@@ -49,6 +59,8 @@ export const DECLARE_COPY: Record<Lang, DeclareCopy> = {
     customs: "گمرک: شامل نیست، پیش از تحویل گرفتن بار تأیید می‌شود",
     expired: "اعتبار این قیمت تمام شده است. لطفاً دوباره تلاش کنید.",
     rate: "درخواست‌ها زیاد است. لطفاً کمی بعد دوباره تلاش کنید.",
+    range: "وزن ۰٫۱ تا ۷۰ کیلوگرم، هر ضلع جعبه ۱ تا ۲۰۰ سانتی‌متر.",
+    iqdRate: "دینار با نرخ ۱ € = {rate} IQD، آخرین به‌روزرسانی {date}.",
   },
   tr: {
     declare:
@@ -57,6 +69,8 @@ export const DECLARE_COPY: Record<Lang, DeclareCopy> = {
     customs: "Gümrük: dahil değil, teslim almadan önce onaylanır",
     expired: "Bu teklifin süresi doldu. Lütfen tekrar deneyin.",
     rate: "Çok fazla istek. Lütfen biraz sonra tekrar deneyin.",
+    range: "Ağırlık 0,1–70 kg, kutunun her kenarı 1–200 cm.",
+    iqdRate: "IQD kuru 1 € = {rate} IQD, son güncelleme {date}.",
   },
   de: {
     declare:
@@ -65,5 +79,7 @@ export const DECLARE_COPY: Record<Lang, DeclareCopy> = {
     customs: "Zoll: nicht enthalten, wird vor der Abholung bestätigt",
     expired: "Dieses Angebot ist abgelaufen. Bitte versuchen Sie es erneut.",
     rate: "Zu viele Anfragen. Bitte versuchen Sie es gleich noch einmal.",
+    range: "Gewicht 0,1–70 kg, jede Kartonseite 1–200 cm.",
+    iqdRate: "IQD zum Kurs 1 € = {rate} IQD, zuletzt aktualisiert {date}.",
   },
 };

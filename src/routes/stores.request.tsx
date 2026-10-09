@@ -7,7 +7,10 @@ import { PageHeader, Shell } from "@/components/shell";
 import { DESTS, placeName } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
-import { hostAllowed, storeById, goodById } from "@/lib/stores";
+import { storeById, goodById } from "@/lib/stores";
+import { checkProductUrl, normalizePhone, QTY_MAX, QTY_MIN, TEXT_MAX, URL_MAX } from "@/lib/orders/store-request";
+import { REQUEST_COPY } from "@/lib/request-copy";
+import { gateFields } from "@/lib/ai/gate-client";
 import { orderStore } from "@/lib/orders/api";
 
 export const Route = createFileRoute("/stores/request")({
@@ -29,58 +32,72 @@ export const Route = createFileRoute("/stores/request")({
 function RequestPage() {
   const { lang } = useI18n();
   const t = storeCopy(lang);
+  const rc = REQUEST_COPY[lang];
   const { store: storeId, intent, item } = Route.useSearch();
-  const store = storeById(storeId);
   const good = goodById(item);
+  const store = storeById(storeId) ?? storeById(good?.storeId);
   const [url, setUrl] = useState("");
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
   const [qty, setQty] = useState("1");
   const [dest, setDest] = useState(DESTS[0].id);
   const [notes, setNotes] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [warn, setWarn] = useState("");
   const [saved, setSaved] = useState<string | null>(null);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    setWarn("");
+    // Same checks as the server (store-request.ts); the server re-validates everything.
     let href = "";
-    const trimmed = url.trim();
-    if (trimmed) {
-      let parsed: URL;
-      try {
-        parsed = new URL(trimmed);
-      } catch {
-        setError(t.invalidUrl);
+    if (url.trim()) {
+      const checked = checkProductUrl(url, store);
+      if (!checked.ok) {
+        setError(checked.error === "host" ? t.wrongHost : t.invalidUrl);
         return;
       }
-      if (parsed.protocol !== "https:") {
-        setError(t.invalidUrl);
-        return;
-      }
-      href = parsed.href;
-      setWarn(hostAllowed(store, href) ? "" : t.wrongHost);
+      href = checked.url;
     } else if (!good) {
       setError(t.invalidUrl);
       return;
-    } else {
-      setWarn("");
+    }
+    const count = Number(qty.trim());
+    if (!/^\d{1,2}$/.test(qty.trim()) || count < QTY_MIN || count > QTY_MAX) {
+      setError(rc.badQty);
+      return;
+    }
+    if (phone.trim() && !normalizePhone(phone)) {
+      setError(rc.badPhone);
+      return;
     }
     setError("");
     try {
+      const gate = await gateFields();
       const result = await orderStore({
-        data: { intent, storeId: store?.id ?? null, item: good?.id ?? null, url: href, size, color, qty, dest, notes },
+        data: { intent, storeId: store?.id ?? null, item: good?.id ?? null, url: href, size, color, qty: qty.trim(), dest, notes, phone: phone.trim(), ...gate },
       });
       if (result && "id" in result && result.id) {
         setSaved(String(result.id));
         return;
       }
-      if (result && "error" in result && result.error === "unavailable") {
-        setError(t.serviceLater);
+      const code = result && "error" in result ? result.error : "";
+      const message: Record<string, string> = {
+        url: t.invalidUrl,
+        host: t.wrongHost,
+        qty: rc.badQty,
+        dest: rc.badDest,
+        contact: rc.badPhone,
+        rate: rc.rate,
+        signin: rc.signin,
+      };
+      if (code && message[code]) {
+        setError(message[code]);
         return;
       }
     } catch {
-      /* signed out */
+      /* network error, or the service is not configured */
     }
     setSaved(null);
     setError(t.serviceLater);
@@ -118,17 +135,17 @@ function RequestPage() {
               </p>
             ) : null}
             <Field label={t.url} hint={t.urlHint}>
-              <input className={controlClass} dir="ltr" inputMode="url" value={url} onChange={(event) => setUrl(event.target.value)} required={!good} />
+              <input className={controlClass} dir="ltr" type="url" inputMode="url" maxLength={URL_MAX} value={url} onChange={(event) => setUrl(event.target.value)} required={!good} />
             </Field>
             <div className="grid gap-4 sm:grid-cols-3">
               <Field label={t.size}>
-                <input className={controlClass} value={size} onChange={(event) => setSize(event.target.value)} />
+                <input className={controlClass} maxLength={TEXT_MAX.size} value={size} onChange={(event) => setSize(event.target.value)} />
               </Field>
               <Field label={t.color}>
-                <input className={controlClass} value={color} onChange={(event) => setColor(event.target.value)} />
+                <input className={controlClass} maxLength={TEXT_MAX.color} value={color} onChange={(event) => setColor(event.target.value)} />
               </Field>
               <Field label={t.qty}>
-                <input className={controlClass} dir="ltr" inputMode="numeric" value={qty} onChange={(event) => setQty(event.target.value)} />
+                <input className={controlClass} dir="ltr" type="number" inputMode="numeric" min={QTY_MIN} max={QTY_MAX} step={1} value={qty} onChange={(event) => setQty(event.target.value)} />
               </Field>
             </div>
             <Field label={t.dest}>
@@ -141,7 +158,10 @@ function RequestPage() {
               </select>
             </Field>
             <Field label={t.notesLabel}>
-              <textarea className={`${controlClass} h-28 py-3`} value={notes} onChange={(event) => setNotes(event.target.value)} />
+              <textarea className={`${controlClass} h-28 py-3`} maxLength={TEXT_MAX.notes} value={notes} onChange={(event) => setNotes(event.target.value)} />
+            </Field>
+            <Field label={rc.phone} hint={rc.phoneHint}>
+              <input className={controlClass} dir="ltr" type="tel" inputMode="tel" autoComplete="tel" maxLength={24} value={phone} onChange={(event) => setPhone(event.target.value)} />
             </Field>
             {error ? <p className="text-sm text-clay">{error}</p> : null}
             {warn ? <p className="text-sm text-clay">{warn}</p> : null}

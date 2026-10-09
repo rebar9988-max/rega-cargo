@@ -1,3 +1,5 @@
+import { getJson, setJson } from "./storage.ts";
+
 export type StoreCategory = "beauty" | "fashion" | "electronics" | "home" | "baby" | "sports" | "general";
 
 export type StoreNote = "amazon" | "ebay" | "otto" | "zalando" | "shein" | "sephora" | "link";
@@ -144,20 +146,13 @@ export const STORE_CATEGORIES: StoreCategory[] = [
   "general",
 ];
 
-const FAV_KEY = "rl-store-favs";
-
 export function readFavs(): string[] {
   if (typeof window === "undefined") return [];
-  try {
-    const raw = JSON.parse(window.localStorage.getItem(FAV_KEY) ?? "[]");
-    return Array.isArray(raw) ? raw.filter((item) => typeof item === "string") : [];
-  } catch {
-    return [];
-  }
+  return getJson("favs", (value) => (Array.isArray(value) ? value.filter((item): item is string => typeof item === "string").slice(0, 100) : null), []);
 }
 
 export function writeFavs(ids: string[]) {
-  window.localStorage.setItem(FAV_KEY, JSON.stringify(ids));
+  setJson("favs", ids.slice(0, 100));
 }
 
 export function storeById(id: string | undefined) {

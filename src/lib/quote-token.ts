@@ -6,6 +6,7 @@
  * Pricing itself is `priceShipment` from corridor.ts, unchanged.
  */
 import { DESTS, MODES, ORIGINS, priceShipment, type ModeId } from "./corridor.ts";
+import { dimInRange, kgInRange } from "./quote-search.ts";
 
 export const QUOTE_TTL_MS = 30 * 60 * 1000;
 
@@ -56,8 +57,8 @@ export function priceQuote(raw: Record<string, unknown>): Omit<QuotePayload, "v"
   const kg = num(raw.kg);
   const [l, w, h] = [num(raw.l), num(raw.w), num(raw.h)];
   if (!origin || !dest || !mode) return null;
-  if (!(kg >= 0.2 && kg <= 300)) return null;
-  if (![l, w, h].every((n) => n >= 0 && n <= 300)) return null;
+  if (!kgInRange(kg)) return null;
+  if (![l, w, h].every(dimInRange)) return null;
   const price = priceShipment({ mode, origin, dest, weightKg: kg, l, w, h });
   return { fromId: origin.id, toId: dest.id, mode: mode.id, kg, l, w, h, total: price.total, chargeable: price.chargeable };
 }

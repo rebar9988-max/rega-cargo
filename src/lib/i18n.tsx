@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { isLang, langMeta, type Lang } from "@/lib/langs";
+import { getItem, rawGet, rawRemove, setItem } from "@/lib/storage";
 
 export type { Lang };
 
@@ -515,14 +516,20 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("rega-lang");
-    const settled = window.localStorage.getItem("rega-lang-v3") === "1";
+    const stored = getItem("lang");
     let next: Lang = "ckb";
-    if (settled && isLang(saved)) next = saved;
-    else if (saved === "en") next = "en";
-    else if (isLang(saved) && saved !== "ku") next = saved;
-    window.localStorage.setItem("rega-lang", next);
-    window.localStorage.setItem("rega-lang-v3", "1");
+    if (isLang(stored)) next = stored;
+    else {
+      // One-time migration from the old unversioned keys.
+      const saved = rawGet("rega-lang");
+      const settled = rawGet("rega-lang-v3") === "1";
+      if (settled && isLang(saved)) next = saved;
+      else if (saved === "en") next = "en";
+      else if (isLang(saved) && saved !== "ku") next = saved;
+    }
+    setItem("lang", next);
+    rawRemove("rega-lang");
+    rawRemove("rega-lang-v3");
     setLang(next);
     setReady(true);
   }, [setLang]);
@@ -532,7 +539,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = meta.html;
     document.documentElement.dir = "ltr";
     document.documentElement.dataset.textdir = meta.dir;
-    if (ready) window.localStorage.setItem("rega-lang", lang);
+    if (ready) setItem("lang", lang);
   }, [lang, ready]);
 
   const value = useMemo<Ctx>(() => ({ lang, t: catalog[lang] ?? ckb, setLang }), [lang, setLang]);

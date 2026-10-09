@@ -3,8 +3,9 @@ import {
   getDest,
   getMode,
   getOrigin,
-  IQD_PER_EUR,
+  iqdFromCents,
   priceShipment,
+  toCents,
   type Contents,
 } from "../corridor.ts";
 
@@ -44,15 +45,17 @@ export function landedEstimate(input: LandedInput): LandedEstimate | null {
     w: 0,
     h: 0,
   });
-  const itemEur = Math.round(priceEur * 100) / 100;
-  const dutyEur = dutyEstimate(input.contents ?? "personal", itemEur);
-  const totalEur = Math.round((itemEur + price.total + dutyEur) * 100) / 100;
+  // Integer cents throughout; IQD is converted once, from the final cent total.
+  const itemCents = toCents(priceEur);
+  const itemEur = itemCents / 100;
+  const dutyCents = toCents(dutyEstimate(input.contents ?? "personal", itemEur));
+  const totalCents = itemCents + price.totalCents + dutyCents;
   return {
     itemEur,
     shippingEur: price.total,
-    dutyEur,
-    totalEur,
-    totalIqd: Math.round(totalEur * IQD_PER_EUR),
+    dutyEur: dutyCents / 100,
+    totalEur: totalCents / 100,
+    totalIqd: iqdFromCents(totalCents),
     chargeableKg: price.chargeable,
   };
 }

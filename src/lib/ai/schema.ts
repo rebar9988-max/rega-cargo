@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { STORES } from "../stores.ts";
 
 /**
  * The only shape R&L AI output may take. Model text is untrusted: it is
@@ -44,6 +45,14 @@ export const identifyJsonSchema = {
 
 const URL_RE =
   /\b(?:https?:\/\/|www\.)\S+|\b[\w-]+\.(?:com|de|net|org|shop|store|io|co|uk|tr|iq)\b\S*/gi;
+// Store names and shop domains from the store list: the UI promises the AI never names a shop.
+const STORE_RE = new RegExp(
+  `(?<![\\p{L}\\p{N}])(?:${[...new Set(STORES.flatMap((store) => [store.name, store.host]))]
+    .sort((a, b) => b.length - a.length)
+    .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|")})(?![\\p{L}\\p{N}])`,
+  "giu",
+);
 const PRICE_RE = /(?:[€$£¥]\s?\d[\d.,]*|\d[\d.,]*\s?(?:€|eur|euro|usd|\$|iqd|dinar|tl|try|£))/gi;
 
 /** Plain text only: no tags, no control chars, no links, no prices. */
@@ -54,6 +63,7 @@ export function cleanText(value: unknown, max: number): string {
     .replace(/[<>]/g, " ")
     .replace(URL_RE, " ")
     .replace(PRICE_RE, " ")
+    .replace(STORE_RE, " ")
     // eslint-disable-next-line no-control-regex -- stripping control chars is the point
     .replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, " ")
     .replace(/\s+/g, " ")

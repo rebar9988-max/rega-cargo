@@ -222,7 +222,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
               <LangSwitch key={path} lang={lang} setLang={setLang} />
             </div>
             {ai ? <AiPill lang={lang} on={isOn(path, "/ai", false)} /> : null}
-            <Link to="/stores" search={{ fav: "1" }} aria-label={d.wishlist} className={iconBtn}>
+            <Link to="/stores" search={{ fav: 1 }} aria-label={d.wishlist} className={iconBtn}>
               <Heart className="size-5" aria-hidden="true" />
             </Link>
             <Link
