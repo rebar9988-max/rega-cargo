@@ -8,6 +8,7 @@ import { SignInGate } from "@/components/sign-in-gate";
 import { useI18n } from "@/lib/i18n";
 import { viewerState } from "@/lib/viewer/api";
 import { marketCopy } from "@/lib/market-copy";
+import { DECLARE_COPY } from "@/lib/declare-copy";
 import { marketRole, moveChoose, moveCreateDelivery, moveCreateTransport, moveJobs, moveOffer, moveRate, moveStatus } from "@/lib/market/api";
 
 export const Route = createFileRoute("/move")({
@@ -61,7 +62,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
             event.preventDefault();
             const form = new FormData(event.currentTarget);
             const result = await moveCreateDelivery({
-              data: { pickup: form.get("pickup"), dropoff: form.get("dropoff"), item: form.get("item"), size: form.get("size"), date: form.get("date"), product: product || undefined },
+              data: { pickup: form.get("pickup"), dropoff: form.get("dropoff"), item: form.get("item"), size: form.get("size"), date: form.get("date"), product: product || undefined, declared: form.get("declared") === "on" },
             });
             note(result);
             if (!("error" in result)) void refresh();
@@ -73,6 +74,10 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
           <Field label={t.item}><input name="item" required defaultValue={item} className={controlClass} /></Field>
           <Field label={t.size}><input name="size" className={controlClass} /></Field>
           <Field label={t.date}><input name="date" dir="ltr" className={controlClass} /></Field>
+          <label className="flex items-start gap-3 text-sm leading-relaxed">
+            <input type="checkbox" name="declared" required className="mt-1 size-4 shrink-0 accent-pine" />
+            <span>{DECLARE_COPY[lang].declare}</span>
+          </label>
           <button className={btnPrimary} type="submit">{t.send}</button>
         </form>
         <form
@@ -80,7 +85,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
           onSubmit={async (event) => {
             event.preventDefault();
             const form = new FormData(event.currentTarget);
-            const result = await moveCreateTransport({ data: { origin: form.get("origin"), destination: form.get("destination"), load: form.get("load"), date: form.get("date") } });
+            const result = await moveCreateTransport({ data: { origin: form.get("origin"), destination: form.get("destination"), load: form.get("load"), date: form.get("date"), declared: form.get("declared") === "on" } });
             note(result);
             if (!("error" in result)) void refresh();
           }}
@@ -90,6 +95,10 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
           <Field label={t.destination}><input name="destination" required className={controlClass} /></Field>
           <Field label={t.load}><input name="load" required className={controlClass} /></Field>
           <Field label={t.date}><input name="date" dir="ltr" className={controlClass} /></Field>
+          <label className="flex items-start gap-3 text-sm leading-relaxed">
+            <input type="checkbox" name="declared" required className="mt-1 size-4 shrink-0 accent-pine" />
+            <span>{DECLARE_COPY[lang].declare}</span>
+          </label>
           <button className={btnPrimary} type="submit">{t.send}</button>
         </form>
         {!jobs.courier ? (

@@ -9,6 +9,7 @@ import { localizedTrack } from "@/lib/track-copy";
 import { SHIPMENTS, currentEvent, findShipment } from "@/lib/shipments";
 import { orderTrack } from "@/lib/orders/api";
 import { CONTACT_EMAIL } from "@/lib/contact";
+import { DECLARE_COPY } from "@/lib/declare-copy";
 
 export const Route = createFileRoute("/track")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -97,6 +98,7 @@ function TrackPage() {
         </div>
 
         {missing ? <p className="text-sm text-clay">{t.notFound}</p> : null}
+        {live?.error === "rate" ? <p className="text-sm text-clay">{DECLARE_COPY[lang].rate}</p> : null}
         {live?.error === "unavailable" ? (
           <p className="text-sm text-clay">
             <a href={`mailto:${CONTACT_EMAIL}`}><bdi dir="ltr">{CONTACT_EMAIL}</bdi></a>

@@ -86,12 +86,20 @@ describe("phone user flow on PGLite", () => {
     const review = await market.addReview(buyer, "earbuds", 5, "باشە");
     assert.equal(review.ok, true);
 
+    // The restricted-items declaration is required and recorded.
+    await assert.rejects(
+      market.createDelivery(buyer, { pickup: "سلێمانی", dropoff: "هەولێر", item: "بیستۆک" }),
+      (err: { code?: string }) => err.code === "invalid",
+    );
     const move = await market.createDelivery(buyer, {
       pickup: "سلێمانی, گەڕەکی سەرچنار, ژمارە ١٢",
       dropoff: "هەولێر، گەڕەکی ئازادی",
       item: "بیستۆک",
+      declared: true,
     });
     assert.ok(move.id);
+    const declared = await sql<{ kind: string }>`select kind from declarations where ref_id = ${move.id}`;
+    assert.equal(declared[0]?.kind, "delivery");
 
     await market.requestRole(buyer, { role: "seller", displayName: "Aza Shop", city: "سلێمانی", phone: "+9647501111111" });
     await market.requestRole(courier, { role: "courier", displayName: "Driver", city: "هەولێر", phone: "+9647503333333" });
@@ -118,7 +126,7 @@ describe("phone user flow on PGLite", () => {
     const submitted = await orders.submitRequest(buyer, "store", { name: "Aza", phone: "+9647501111111", url: "https://example.com/item" }, null);
     if (!("id" in submitted)) throw new Error("store request was not saved");
     const tracking = submitted.id ?? "";
-    assert.equal(tracking.startsWith("RG-"), true);
+    assert.match(tracking, /^RG-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/);
     const listed = await orders.adminOrders(admin);
     const row = listed.find((item) => item.trackingId === tracking);
     assert.ok(row);
