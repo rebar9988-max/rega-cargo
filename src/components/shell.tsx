@@ -317,43 +317,43 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
       <main id="content" className="flex-1 pb-20 lg:pb-0">
         {children}
       </main>
-      <footer className="bg-ink pb-24 text-paper lg:pb-0">
+      <footer className="border-t border-line bg-surface pb-24 text-ink lg:pb-0">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-12 md:grid-cols-3">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <Mark />
               <div className="leading-none">
-                <p dir="ltr" className="font-sans text-xs font-semibold tracking-wide text-paper">
+                <p dir="ltr" className="font-sans text-xs font-semibold tracking-wide text-ink">
                   MOVE SMART. DELIVER FAST.
                 </p>
-                <p dir="ltr" className="mt-1 font-sans text-xs text-paper/70">
+                <p dir="ltr" className="mt-1 font-sans text-xs text-muted">
                   EUROPE ↔ KURDISTAN ↔ IRAQ
                 </p>
               </div>
             </div>
-            <p className="max-w-xs text-sm leading-relaxed text-paper/70">{t.footerBlurb}</p>
+            <p className="max-w-xs text-sm leading-relaxed text-muted">{t.footerBlurb}</p>
           </div>
           <div className="flex flex-col gap-3 md:col-span-2 md:items-end">
-            <div className="flex items-center gap-2 text-sm text-paper/80">
+            <div className="flex items-center gap-2 text-sm text-muted">
               <Warehouse className="size-4 shrink-0" aria-hidden="true" />
               <span dir="auto">{t.warehouse}</span>
             </div>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="flex items-center gap-2 text-sm font-medium text-paper hover:underline"
+              className="flex items-center gap-2 text-sm font-medium text-pine hover:underline"
             >
               <Mail className="size-4 shrink-0" aria-hidden="true" />
               <bdi dir="ltr">{CONTACT_EMAIL}</bdi>
             </a>
           </div>
         </div>
-        <div className="border-t border-paper/15">
+        <div className="border-t border-line bg-paper">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
-            <p className="text-xs leading-relaxed text-paper/60">{t.footerNote}</p>
+            <p className="text-xs leading-relaxed text-muted">{t.footerNote}</p>
             <a
               href="/rl-cargo.pdf"
               download="rl-cargo.pdf"
-              className="inline-flex h-10 shrink-0 items-center rounded-full border border-paper/25 px-4 text-xs font-medium text-paper"
+              className="inline-flex h-10 shrink-0 items-center rounded-full border border-silver bg-surface px-4 text-xs font-medium text-ink hover:border-pine"
             >
               PDF
             </a>
@@ -423,7 +423,7 @@ function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (lang: Lang) => vo
         <div
           role="listbox"
           aria-label={current.name}
-          className="absolute end-0 top-full z-30 mt-2 w-72 max-w-[calc(100vw-2.5rem)] rounded-2xl border border-paper/10 bg-ink p-1.5 shadow-2xl"
+          className="absolute end-0 top-full z-30 mt-2 w-72 max-w-[calc(100vw-2.5rem)] rounded-2xl border border-line bg-surface p-1.5 shadow-xl"
         >
           {LANGS.map((item) => {
             const on = item.id === lang;
@@ -438,7 +438,7 @@ function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (lang: Lang) => vo
                   setOpen(false);
                 }}
                 className={`grid h-11 w-full grid-cols-[1.25rem_minmax(0,1fr)_2.5rem] items-center gap-2 rounded-xl px-3 text-sm ${
-                  on ? "bg-pine/25 text-pine" : "text-paper hover:bg-paper/5"
+                  on ? "bg-pine/10 text-pine" : "text-ink hover:bg-paper"
                 }`}
               >
                 <span className="flex justify-center">
@@ -450,7 +450,7 @@ function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (lang: Lang) => vo
                   {item.name}
                 </span>
                 <span
-                  className={`text-end text-xs tracking-wide ${on ? "text-pine" : "text-paper/45"}`}
+                  className={`text-end text-xs tracking-wide ${on ? "text-pine" : "text-muted"}`}
                 >
                   {item.code}
                 </span>
