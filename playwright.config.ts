@@ -52,9 +52,9 @@ export default defineConfig<LayoutProjectUse>({
   timeout: 45_000,
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
   expect: {
+    // Tall full-page WebKit captures need more than the 5s default on CI runners.
+    timeout: 20_000,
     toHaveScreenshot: {
-      // Tall full-page WebKit captures need more than the 5s default on CI runners.
-      timeout: 20_000,
       animations: "disabled",
       caret: "hide",
       scale: "css",
