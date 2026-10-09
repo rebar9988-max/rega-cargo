@@ -210,7 +210,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`text-sm ${on ? "font-semibold text-pine" : "text-muted hover:text-ink"}`}
+                  className={`text-sm whitespace-nowrap ${on ? "font-semibold text-pine" : "text-muted hover:text-ink"}`}
                 >
                   {link.to === "/move" ? d.moveSend : t.nav[link.key]}
                 </Link>
