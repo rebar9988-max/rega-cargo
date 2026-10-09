@@ -40,6 +40,7 @@ For `npm run cf:dev`, put local-only values in `.output/server/.dev.vars`
 | Var | Value |
 | --- | --- |
 | `BETTER_AUTH_URL` | `https://cargo.regaplatform.com` |
+| `SITE_URL` | `https://cargo.regaplatform.com` — canonical links, sitemap.xml, robots.txt |
 | `VITE_GROK_EXTENSIONS` | `0` — no third-party grok.com script in production HTML |
 
 ### Secrets (`npx wrangler secret put <NAME>`; never commit them)
@@ -91,6 +92,12 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
    hostname only; existing records are untouched). Or add to `wrangler.jsonc`:
    `"routes": [{ "pattern": "cargo.regaplatform.com", "custom_domain": true }]`
    and redeploy. Requires a token with Zone DNS edit + Workers Routes edit.
+   **Status: done 2026-10-09** — `cargo.regaplatform.com` is attached to
+   `rega-cargo` (production only; staging has `routes: []`) and is listed in
+   `wrangler.jsonc`. `workers.dev` stays enabled during the transition; the next
+   step (after the owner confirms the new address) is a 301 from
+   `rega-cargo.rebar9988.workers.dev` to `cargo.regaplatform.com`, then
+   `workers_dev: false`.
 
 ## Rollback
 
