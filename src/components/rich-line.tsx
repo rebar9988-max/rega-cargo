@@ -21,9 +21,9 @@ export function RichLine({ text, className = "" }: { text: string; className?: s
   const { lead, items, rest } = splitLeadIns(text);
   if (items.length >= 2) {
     return (
-      <div className={`flex flex-col gap-2 ${className}`}>
+      <div className={`flex flex-col gap-2 wrap-anywhere ${className}`}>
         {lead ? <p>{lead}</p> : null}
-        <ul className="flex flex-col gap-1.5 ps-5 [list-style:disc] marker:text-pine">
+        <ul dir="auto" className="flex flex-col gap-1.5 ps-5 [list-style:disc] marker:text-pine">
           {items.map((item) => (
             <li key={item.label}>
               <strong className="font-bold text-ink">{item.label}:</strong> <Value text={item.text} />
@@ -37,7 +37,7 @@ export function RichLine({ text, className = "" }: { text: string; className?: s
   if (items.length === 1) {
     const [item] = items;
     return (
-      <p className={className}>
+      <p className={`wrap-anywhere ${className}`}>
         {lead ? `${lead} ` : null}
         <strong className="font-bold text-ink">{item.label}:</strong> <Value text={item.text} />
         {rest ? ` ${rest}` : null}

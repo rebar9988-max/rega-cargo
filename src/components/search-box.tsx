@@ -136,10 +136,10 @@ export function SearchBox({ label, closeLabel, lang, ai, search }: SearchBoxProp
     }
   }
 
-  const sheet = open ? "max-md:fixed max-md:inset-x-0 max-md:top-0 max-md:z-50 max-md:shadow-sm" : "";
+  const sheet = open ? "max-md:fixed max-md:inset-x-0 max-md:top-0 max-md:z-50 max-md:pt-[var(--safe-top)] max-md:shadow-sm" : "";
 
   return (
-    <div ref={boxRef} className="relative h-[57px] bg-paper">
+    <div ref={boxRef} className="search-bar relative bg-paper">
       <form
         role="search"
         onSubmit={(event) => {
@@ -148,7 +148,7 @@ export function SearchBox({ label, closeLabel, lang, ai, search }: SearchBoxProp
         }}
         className={`border-b border-line bg-paper ${sheet}`}
       >
-        <label className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 md:px-5" style={{ direction: "ltr" }}>
+        <label className="page flex h-[var(--search-h)] items-center gap-3" style={{ direction: "ltr" }}>
           {open ? (
             <button
               type="button"
@@ -189,8 +189,8 @@ export function SearchBox({ label, closeLabel, lang, ai, search }: SearchBoxProp
         </label>
       </form>
       {open ? (
-        <div className="max-md:fixed max-md:inset-x-0 max-md:top-14 max-md:bottom-0 max-md:z-50 max-md:overflow-y-auto max-md:overscroll-contain max-md:bg-paper md:absolute md:inset-x-0 md:top-full md:z-40">
-          <div className="md:mx-auto md:max-w-6xl md:px-5">
+        <div data-layout="sheet" className="max-md:fixed max-md:inset-x-0 max-md:top-[calc(var(--search-h)+var(--safe-top))] max-md:bottom-0 max-md:z-50 max-md:overflow-y-auto max-md:overscroll-contain max-md:bg-paper md:absolute md:inset-x-0 md:top-full md:z-40">
+          <div className="md:page">
             <div className="md:max-h-[70vh] md:overflow-y-auto md:rounded-b-3xl md:border md:border-t-0 md:border-line md:bg-paper md:shadow-xl">
               <Suspense fallback={<div className="h-40" aria-hidden="true" />}>
                 <SearchSuggest

@@ -110,7 +110,7 @@ export function AiPage() {
   return (
     <Shell>
       <PageHeader kicker={t.kicker} title={t.title} lede={t.lede} />
-      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-5 py-10 md:py-14">
+      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-[var(--gutter)] py-10 md:py-14">
         {enabled === false ? (
           <p className="rounded-2xl border border-line bg-surface p-6 text-sm">
             {t.errors.disabled}
@@ -210,8 +210,8 @@ export function AiPage() {
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 border-b border-line py-3 last:border-b-0 sm:flex-row sm:gap-6">
-      <dt className="shrink-0 sm:w-40 text-sm text-muted">
+    <div className="flex flex-col gap-1 border-b border-line py-3 last:border-b-0 md:flex-row md:gap-6">
+      <dt className="shrink-0 md:w-40 text-sm text-muted">
         <p>{label}</p>
       </dt>
       <dd className="min-w-0 flex-1 text-sm">
@@ -296,7 +296,7 @@ function EstimateCard({ t }: { t: AiCopy }) {
         <h2 className="text-2xl leading-tight font-bold tracking-tight">{t.estimateTitle}</h2>
         <p className="mt-1 text-sm text-muted">{t.estimateLede}</p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         <Field label={t.price}>
           <input
             inputMode="decimal"

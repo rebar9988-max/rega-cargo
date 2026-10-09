@@ -78,7 +78,7 @@ function AdminSignedIn({
   return (
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.admin} lede={t.freeSort} />
-      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-5 py-10">
+      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-[var(--gutter)] py-10">
         <Section title={t.reviews}>
           {market.pendingReviews.map((row) => (
             <Row key={row.id} label={`${row.rating} · ${row.body}`}>

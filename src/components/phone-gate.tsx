@@ -208,7 +208,7 @@ export function PhoneButton({
           type="button"
           onClick={() => setOpen(true)}
           aria-label={label ?? t.in}
-          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper max-[389px]:hidden lg:size-9"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper md:hidden"
         >
           <UserRound className="size-5" aria-hidden="true" />
         </button>
@@ -224,7 +224,7 @@ export function PhoneButton({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex h-10 w-[5.25rem] shrink-0 items-center justify-center rounded-full border border-line px-2 text-sm"
+          className="hidden h-10 w-21 shrink-0 items-center md:inline-flex justify-center rounded-full border border-line px-2 text-sm"
         >
           <span className="truncate">{me ? me.name : t.in}</span>
         </button>

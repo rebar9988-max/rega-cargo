@@ -9,7 +9,7 @@ export function NotFound() {
   return (
     <Shell>
       <PageHeader kicker="404" title={copy.notFoundTitle} lede={copy.notFoundBody} />
-      <div className="mx-auto max-w-6xl px-4 py-10 md:px-5">
+      <div className="page py-10">
         <Link to="/" className="rl-grad inline-flex h-11 items-center rounded-full px-5 text-sm font-medium">
           {copy.home}
         </Link>

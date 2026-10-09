@@ -161,13 +161,13 @@ function AiPill({ lang, on }: { lang: Lang; on: boolean }) {
       to="/ai"
       aria-current={on ? "page" : undefined}
       style={{ direction: "ltr" }}
-      className={`inline-flex h-10 w-16 shrink-0 items-center justify-center gap-1.5 rounded-full border px-2 sm:w-36 lg:w-16 2xl:w-36 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
+      className={`inline-flex h-10 w-16 shrink-0 items-center justify-center gap-1.5 rounded-full border px-2 md:w-36 lg:w-16 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
     >
       <Sparkles className="size-4 shrink-0 text-pine" aria-hidden="true" />
-      <span className="sm:hidden lg:inline 2xl:hidden" dir="ltr">
+      <span className="md:hidden lg:inline" dir="ltr">
         AI
       </span>
-      <span className="sr-only sm:not-sr-only lg:sr-only 2xl:not-sr-only" dir="auto">
+      <span className="sr-only md:not-sr-only lg:sr-only" dir="auto">
         {label.includes("AI") ? label : ` ${label}`}
       </span>
     </Link>
@@ -185,7 +185,7 @@ export function PageHeader({
 }) {
   return (
     <header className="border-b border-line bg-surface">
-      <div className="mx-auto max-w-6xl px-5 py-10 md:py-16">
+      <div className="page py-10 md:py-16">
         <p className="text-sm font-medium text-pine">{kicker}</p>
         <h1 className="mt-3 max-w-3xl text-4xl leading-tight font-bold tracking-tight text-balance text-ink md:text-5xl">
           {title}
@@ -228,16 +228,10 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
       >
         {t.skip}
       </a>
-      <header className="sticky top-0 z-30 border-b-2 border-pine bg-surface text-ink">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 md:px-5" style={{ direction: "ltr" }}>
-          <Link to="/" className="flex shrink-0 items-center gap-3">
-            <Mark className="size-11 md:size-12" />
-            <span lang="en" className="hidden min-w-0 flex-col leading-none xl:flex">
-              <span className="font-sans text-xs font-semibold tracking-wide text-ink">
-                MOVE SMART. DELIVER FAST.
-              </span>
-              <span className="mt-1 font-sans text-xs text-muted">EUROPE ↔ KURDISTAN ↔ IRAQ</span>
-            </span>
+      <header data-layout="header" className="app-header sticky top-0 z-30 border-b-2 border-pine bg-surface text-ink">
+        <div className="page flex h-full items-center justify-between gap-2" style={{ direction: "ltr" }}>
+          <Link to="/" className="flex shrink-0 items-center">
+            <Mark className="size-11" />
           </Link>
           <nav className="ms-auto hidden items-center gap-2 lg:flex">
             {LINKS.map((link) => {
@@ -269,12 +263,11 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
             >
               <ShoppingBag className="size-5" aria-hidden="true" />
             </Link>
-            <span className="contents max-[389px]:hidden">
-              <PhoneButton variant="icon" label={d.account} />
-            </span>
+            <PhoneButton variant="icon" label={d.account} />
             <PhoneButton />
             <button
               type="button"
+              data-layout="menu-button"
               className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-line text-ink lg:hidden"
               aria-expanded={open}
               aria-label={open ? t.menuClose : t.menuOpen}
@@ -286,7 +279,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
         </div>
       </header>
       {open ? (
-        <div className="fixed inset-x-0 top-[66px] bottom-0 z-20 overflow-y-auto bg-paper px-4 pt-4 pb-28 lg:hidden">
+        <div data-layout="sheet" className="below-header clear-bottom-bar fixed inset-x-0 bottom-0 z-20 overflow-y-auto bg-paper px-[var(--gutter)] pt-4 lg:hidden">
           <div className="mx-auto flex max-w-lg flex-col gap-3">
             <section className="flex flex-col items-center rounded-3xl border border-line bg-surface p-5 text-center">
               <span className="grid size-16 place-items-center rounded-full bg-paper text-muted">
@@ -351,11 +344,11 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
         </div>
       ) : null}
       <SearchBox search={search} label={d.search} closeLabel={t.menuClose} lang={lang} ai={ai} />
-      <main id="content" className="flex-1 pb-20 lg:pb-0">
+      <main id="content" className="flex-1">
         {children}
       </main>
-      <footer className="border-t border-line bg-surface pb-24 text-ink lg:pb-0">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-12 md:grid-cols-3">
+      <footer className="clear-bottom-bar border-t border-line bg-surface text-ink lg:pb-0">
+        <div className="page grid gap-10 py-12 md:grid-cols-3">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <Mark />
@@ -385,7 +378,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
           </div>
         </div>
         <div className="border-t border-line bg-paper">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
+          <div className="page flex flex-wrap items-center justify-between gap-3 py-4">
             <div className="flex flex-col gap-2">
               <p className="text-xs leading-relaxed text-muted">{t.footerNote}</p>
               <nav aria-label={LEGAL_COPY[lang].links.impressum} className="flex flex-wrap gap-x-4 text-xs">
@@ -404,7 +397,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
           </div>
         </div>
       </footer>
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
+      <nav data-layout="bottom-bar" className="app-bottom-bar fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-surface lg:hidden">
         {TABS.map((tab) => {
           const on =
             tab.key === "delivery"
@@ -415,10 +408,10 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
             <Link
               key={tab.to}
               to={tab.to}
-              className={`flex h-16 flex-col items-center justify-center gap-1 text-xs ${on ? "font-semibold text-pine" : "text-muted"}`}
+              className={`flex h-full min-w-0 flex-col items-center justify-center gap-1 px-1 text-xs ${on ? "font-semibold text-pine" : "text-muted"}`}
             >
               <Icon className="size-5" aria-hidden="true" />
-              {tab.key === "delivery" ? d.delivery : t.nav[tab.key]}
+              <span className="max-w-full truncate">{tab.key === "delivery" ? d.delivery : t.nav[tab.key]}</span>
             </Link>
           );
         })}

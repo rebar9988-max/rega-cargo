@@ -50,7 +50,7 @@ function SellSignedIn({
   return (
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.sell} lede={t.marketLede} />
-      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-5 py-10">
+      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-[var(--gutter)] py-10">
         {initial.me.notes.length > 0 ? (
           <ul className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-4 text-sm">
             {initial.me.notes.map((note) => (

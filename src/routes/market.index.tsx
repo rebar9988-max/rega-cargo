@@ -45,7 +45,7 @@ function MarketHome() {
     return (
       <Shell>
         <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
-        <div className="mx-auto flex max-w-6xl flex-col items-start gap-4 px-4 py-10 md:px-5" role="status">
+        <div className="page flex flex-col items-start gap-4 py-10" role="status">
           <p className="text-sm text-muted">{data.error === "unavailable" ? pc.unavailable : pc.errorBody}</p>
           <Link to="/stores" className={btnPrimary}>
             {DESIGN_COPY[lang].bazaarSub}
@@ -67,7 +67,7 @@ function MarketHome() {
   return (
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10">
+      <div className="page flex flex-col gap-6 py-10">
         <div className="flex flex-wrap gap-3 text-sm">
           <Link to="/market/sell" className="text-pine">{t.sell}</Link>
           <Link to="/admin" className="text-pine">{t.admin}</Link>
@@ -130,7 +130,7 @@ function MarketHome() {
             ) : null}
           </div>
         ) : null}
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <ul data-layout="card-grid" className="card-grid">
           {data.items.map((item) => (
             <li key={item.slug} className="overflow-hidden rounded-2xl border border-line bg-surface">
               <Link to="/market/$slug" params={{ slug: item.slug }} className="flex h-full flex-col">
@@ -165,11 +165,11 @@ function MarketLoading() {
   return (
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
-      <div className="mx-auto max-w-6xl px-4 py-10 md:px-5" role="status" aria-busy="true">
+      <div className="page py-10" role="status" aria-busy="true">
         <span className="sr-only">{PAGES_COPY[lang].loading}</span>
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-4" aria-hidden="true">
+        <ul data-layout="card-grid" className="card-grid" aria-hidden="true">
           {Array.from({ length: 8 }, (_, index) => (
-            <li key={index} className="aspect-[3/4] animate-pulse rounded-2xl bg-line" />
+            <li key={index} className="aspect-product animate-pulse rounded-2xl bg-line" />
           ))}
         </ul>
       </div>

@@ -184,7 +184,7 @@ export function QuotePanel({
             <bdi dir="ltr">EUR · IQD</bdi>
           </p>
         </div>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
           <Field label={t.from}>
             <select className={controlClass} value={fromId} onChange={(event) => setFromId(event.target.value)}>
               {ORIGINS.map((item) => (
@@ -230,7 +230,7 @@ export function QuotePanel({
             </p>
           </div>
         ) : (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
             <Field label={`${t.weight} (${t.kg})`}>
               <input
                 className={controlClass}
@@ -260,7 +260,7 @@ export function QuotePanel({
               <input className={controlClass} dir="ltr" inputMode="decimal" aria-invalid={!dimInRange(Number(height))} value={height} onChange={(e) => setHeight(e.target.value)} />
             </Field>
             {!valid ? (
-              <p role="alert" className="text-sm text-clay sm:col-span-2">
+              <p role="alert" className="text-sm text-clay md:col-span-2">
                 {dc.range}
               </p>
             ) : null}
@@ -309,7 +309,7 @@ export function QuotePanel({
                       </p>
                     </div>
                     <div className="text-end">
-                      <p className="font-semibold">
+                      <p className="text-base font-semibold">
                         <Eur value={row.price.total} />
                       </p>
                       <p className="text-xs text-muted">

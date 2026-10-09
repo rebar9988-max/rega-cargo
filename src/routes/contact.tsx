@@ -22,7 +22,7 @@ function ContactPage() {
   return (
     <Shell>
       <PageHeader kicker={t.contactKicker} title={t.contactTitle} lede={t.contactLede} />
-      <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-10 md:py-16">
+      <div className="page flex flex-col items-start gap-6 py-10 md:py-16">
         <a
           href={`mailto:${CONTACT_EMAIL}`}
           className="group flex max-w-xl items-center gap-4 rounded-3xl border border-line bg-surface p-5 transition-colors hover:border-pine md:p-6"

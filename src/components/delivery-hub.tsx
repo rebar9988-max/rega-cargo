@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, MapPin, ShoppingBag, Tag, Truck, type LucideIcon } from "lucide-react";
-import { BrandHero, GUTTER, IconBadge, TrustRow } from "@/components/brand";
+import { BrandHero, IconBadge, TrustRow } from "@/components/brand";
 import { Field, btnPrimary, controlClass } from "@/components/field";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { DESTS, ORIGINS, SAMPLE_BOX, getDest, getOrigin, placeName } from "@/lib/corridor";
@@ -26,7 +26,7 @@ export function ServiceSwitch({
   return (
     <div className="bg-paper">
       <div
-        className="mx-auto grid max-w-6xl grid-cols-2 gap-3 px-4 py-3 md:px-5"
+        className="page grid grid-cols-2 gap-3 py-3"
         role="tablist"
         aria-label={d.services}
         style={{ direction: "ltr" }}
@@ -88,7 +88,7 @@ export function DeliveryHub() {
     <>
       <BrandHero title={d.deliveryTitle} route={d.route} />
       <TrustRow />
-      <div className={`mx-auto grid max-w-6xl items-start gap-3 ${GUTTER} pt-8 pb-12 md:grid-cols-3 md:gap-5 md:pt-12`}>
+      <div className={`page grid items-start gap-3 pt-8 pb-12 md:grid-cols-3 md:gap-5 md:pt-12`}>
         <form
           className="flex flex-col gap-4 rl-soft rounded-2xl border border-line bg-surface p-5"
           onSubmit={(event) => {
@@ -188,7 +188,7 @@ export function DeliveryTabs({ active }: { active: "/quote" | "/track" | "/move"
   const label = { "/quote": t.nav.quote, "/track": t.nav.track, "/move": d.moveSend };
   return (
     <nav className="border-b border-line bg-surface" aria-label={d.delivery}>
-      <div className="mx-auto grid max-w-6xl grid-cols-3" style={{ direction: "ltr" }}>
+      <div className="page-bleed grid grid-cols-3" style={{ direction: "ltr" }}>
         {DELIVERY_LINKS.map((item) => {
           const on = item.to === active;
           const Icon = item.icon;
@@ -197,7 +197,7 @@ export function DeliveryTabs({ active }: { active: "/quote" | "/track" | "/move"
               key={item.to}
               to={item.to as string}
               aria-current={on ? "page" : undefined}
-              className={`relative flex h-12 items-center justify-center gap-1.5 px-1 text-xs sm:text-sm ${on ? "font-semibold text-pine" : "text-muted"}`}
+              className={`relative flex h-12 items-center justify-center gap-1.5 px-1 text-xs md:text-sm ${on ? "font-semibold text-pine" : "text-muted"}`}
             >
               <Icon className="size-4 shrink-0" aria-hidden="true" />
               <span dir="auto" className="line-clamp-2 min-w-0 text-center leading-tight">

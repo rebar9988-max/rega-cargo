@@ -120,7 +120,7 @@ function RequestPage() {
   return (
     <Shell>
       <PageHeader kicker={t.requestKicker} title={intent === "ship" ? t.shipTitle : t.buyTitle} lede={t.requestLede} />
-      <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 md:grid-cols-[minmax(0,1fr)_20rem] md:py-16">
+      <div className="page grid gap-8 py-12 md:grid-cols-[minmax(0,1fr)_20rem] md:py-16">
         {saved ? (
           <div className="rounded-2xl border border-line bg-surface p-6">
             <h2 className="text-2xl font-semibold">{t.sentTitle}</h2>
@@ -151,7 +151,7 @@ function RequestPage() {
             <Field label={t.url} hint={t.urlHint}>
               <input className={controlClass} dir="ltr" type="url" inputMode="url" maxLength={URL_MAX} value={url} onChange={(event) => setUrl(event.target.value)} required={!good} />
             </Field>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-3">
               <Field label={t.size}>
                 <input className={controlClass} maxLength={TEXT_MAX.size} value={size} onChange={(event) => setSize(event.target.value)} />
               </Field>

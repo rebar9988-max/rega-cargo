@@ -3,7 +3,7 @@ import { formatIqdFromEur } from "@/lib/corridor";
 import type { ReactNode } from "react";
 
 export const controlClass =
-  "h-12 w-full rounded-xl border border-silver bg-surface px-3 text-base text-ink md:text-sm";
+  "h-12 w-full rounded-xl border border-silver bg-surface px-3 text-base text-ink";
 
 export const btnPrimary =
   "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pine rl-grad px-5 text-sm font-medium text-pine-ink shadow-[0_8px_18px_-10px_rgb(168_0_0/0.65)] transition-opacity duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40";
