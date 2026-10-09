@@ -9,6 +9,8 @@ export type DesignCopy = {
   newCollection: string;
   seeAll: string;
   wishlist: string;
+  /** Accessible name / sheet title of the header language picker. */
+  language: string;
   cart: string;
   account: string;
   accountHint: string;
@@ -36,6 +38,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "کۆڵێکشنی نوێ",
     seeAll: "هەمووی ببینە",
     wishlist: "دڵخوازەکان",
+    language: "زمان",
     cart: "داواکاری کڕین",
     account: "هەژمار",
     accountHint: "بە ژمارەی تەلەفۆن بچۆ ژوورەوە",
@@ -61,6 +64,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "New collection",
     seeAll: "See all",
     wishlist: "Favourites",
+    language: "Language",
     cart: "Purchase request",
     account: "Account",
     accountHint: "Sign in with your phone number",
@@ -86,6 +90,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "Koleksiyona nû",
     seeAll: "Hemûyan bibîne",
     wishlist: "Bijare",
+    language: "Ziman",
     cart: "Daxwaza kirînê",
     account: "Hesab",
     accountHint: "Bi hejmara telefonê têkeve",
@@ -111,6 +116,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "تشكيلة جديدة",
     seeAll: "عرض الكل",
     wishlist: "المفضلة",
+    language: "اللغة",
     cart: "طلب شراء",
     account: "الحساب",
     accountHint: "سجّل الدخول برقم الهاتف",
@@ -136,6 +142,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "کالکشن جدید",
     seeAll: "مشاهده همه",
     wishlist: "علاقه‌مندی‌ها",
+    language: "زبان",
     cart: "درخواست خرید",
     account: "حساب",
     accountHint: "با شماره تلفن وارد شوید",
@@ -161,6 +168,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "Yeni koleksiyon",
     seeAll: "Tümünü gör",
     wishlist: "Favoriler",
+    language: "Dil",
     cart: "Satın alma talebi",
     account: "Hesap",
     accountHint: "Telefon numaranızla giriş yapın",
@@ -186,6 +194,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "Neue Kollektion",
     seeAll: "Alle ansehen",
     wishlist: "Favoriten",
+    language: "Sprache",
     cart: "Kaufanfrage",
     account: "Konto",
     accountHint: "Mit Telefonnummer anmelden",
