@@ -81,7 +81,8 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
    ```bash
    npm ci && npm run build && npx wrangler deploy
    ```
-6. **Verify on `https://rega-cargo.<account-subdomain>.workers.dev`:** home,
+6. **Verify on staging first (`https://rega-cargo-staging.<account-subdomain>.workers.dev`),
+   then on `https://cargo.regaplatform.com`** (production has no workers.dev URL): home,
    `/quote`, `/track`, `/customs`, `/contact`, `/stores`, `/market`,
    `/market/<slug>`; all 7 languages (ckb/ar/fa must be RTL); mobile viewport;
    phone sign-in end to end; `npx wrangler tail rega-cargo` shows no
@@ -94,10 +95,12 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
    and redeploy. Requires a token with Zone DNS edit + Workers Routes edit.
    **Status: done 2026-10-09** — `cargo.regaplatform.com` is attached to
    `rega-cargo` (production only; staging has `routes: []`) and is listed in
-   `wrangler.jsonc`. `workers.dev` stays enabled during the transition; the next
-   step (after the owner confirms the new address) is a 301 from
-   `rega-cargo.rebar9988.workers.dev` to `cargo.regaplatform.com`, then
-   `workers_dev: false`.
+   `wrangler.jsonc`. Since the owner confirmed the new address, production has
+   `workers_dev: false` and `preview_urls: false`: the old
+   `rega-cargo.<subdomain>.workers.dev` URL no longer serves the app.
+   Staging (`rega-cargo-staging`) stays on workers.dev. Note: rolling back code
+   (`wrangler rollback`) does not re-enable workers.dev; that needs
+   `workers_dev: true` + a deploy (or Dashboard → Domains & Routes).
 
 ## Rollback
 
