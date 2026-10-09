@@ -28,7 +28,7 @@ export const Route = createRootRoute({
       {
         // Preload Vazirmatn only for Arabic-script languages (ckb is the default).
         children:
-          '(function(){try{var l=localStorage.getItem("rl-lang-v4")||localStorage.getItem("rega-lang");if(!l||l==="ckb"||l==="ar"||l==="fa"){var k=document.createElement("link");k.rel="preload";k.as="font";k.type="font/woff2";k.crossOrigin="anonymous";k.href="/fonts/vazirmatn-nl-v33.003.woff2";document.head.appendChild(k)}}catch(e){}})()',
+          '(function(){try{var l=localStorage.getItem("rl-lang-v4")||localStorage.getItem("rega-lang");if(!l||l==="ckb"||l==="ar"||l==="fa"){var k=document.createElement("link");k.rel="preload";k.as="font";k.type="font/woff2";k.crossOrigin="anonymous";k.href="/fonts/noto-sans-arabic-v2.woff2";document.head.appendChild(k)}}catch(e){}})()',
       },
     ],
     links: [

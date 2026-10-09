@@ -2,7 +2,7 @@
  * Outermost security headers (sorts before 0-html-cache, so it sees the final
  * response, including cache hits) and a per-request nonce for inline scripts.
  */
-const FONT_HASH = "'sha256-IBFlRbLgBwm+fNvJ7e1DzAkKc1x5o6cv2B53+jVCQmo='";
+const FONT_HASH = "'sha256-0eF9vBcntrJxmoendoqGlSPcKEcH+MNgcyXsHJ2nDuk='";
 
 function csp(nonce: string) {
   return [
