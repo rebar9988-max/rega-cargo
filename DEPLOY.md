@@ -230,6 +230,13 @@ Apply in filename order with `DATABASE_URL=… npm run db:migrate`:
   row commits, a WARNING is raised). TRUNCATE **raises** (`compliance: truncate ...`). A trigger cannot
   both raise and keep a log row (no dblink / autonomous transactions), so a TRUNCATE is logged only by the
   app when it catches that error, or in the Postgres server log. The audit log itself is append-only.
-- Event triggers block DROP / ALTER / DISABLE TRIGGER on these tables where the role is allowed to create them
-  (superuser; works on PGLite). On a managed Postgres without that right the migration skips them with a notice.
+- Event triggers block DROP / ALTER / DISABLE TRIGGER on these tables, and replacing the six guard functions,
+  where the role is allowed to create them (superuser; works on PGLite). On a managed Postgres without that right
+  the migration skips them with a notice. 0011 and 0012 are safe to re-apply (every object is created only if missing).
   Limitation: a superuser or table owner can always drop event triggers or use `session_replication_role = replica`.
+- The app check (`src/lib/compliance/check.ts`) runs on product writes, user text and links, store/quote requests,
+  search, autocomplete, idealo links and AI results. Bundled rules always apply; DB rules are added on top.
+- `products.compliance_status` (ok | pending_review | blocked): only `ok` is ever public; a DB trigger keeps
+  non-ok products unpublished. Admins can clear `pending_review` items, never `blocked` ones.
+- Scan existing data: `/admin` → "Run compliance scan", or `npm run compliance:scan` (with `DATABASE_URL` it
+  applies the changes to that database). CI runs the bundled-data scan in `npm test`.

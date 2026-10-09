@@ -20,6 +20,9 @@ begin
   return new;
 end;
 $$;
-drop trigger if exists products_compliance_unpublish on products;
-create trigger products_compliance_unpublish before insert or update on products
-  for each row execute function products_compliance_unpublish();
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'products_compliance_unpublish' and tgrelid = 'products'::regclass) then
+    create trigger products_compliance_unpublish before insert or update on products
+      for each row execute function products_compliance_unpublish();
+  end if;
+end $$;

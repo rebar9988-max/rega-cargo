@@ -92,7 +92,12 @@ test("no false positives (decisions in progress.md)", () => {
     "Sextant",
   ])
     assert.equal(d(s), "allow", s);
-  // "Gin" as a word is blocked; inside names it is not.
+  // "Gin" as a word is blocked; inside names it is not (decision: a product literally called
+  // "Gin ..." is rejected, e.g. "Gin Lane bag", because a whole-word match cannot tell them apart).
+  for (const s of ["Ginny doll", "Gina dress", "Ginza bag", "Virginia tea", "Engineering kit"]) {
+    assert.equal(d(s), "allow", s);
+  }
+  assert.equal(d("Gin Lane bag"), "block");
   assert.equal(d("Gin Tonic"), "block");
   assert.equal(d("Gingko / Ginseng / Original"), "allow");
 });

@@ -38,21 +38,31 @@ create table if not exists compliance_audit_log (
   created_at timestamptz not null default now()
 );
 
-create or replace function compliance_log(p_action text, p_table text, p_details jsonb)
+do $do$ begin
+  if not exists (select 1 from pg_proc where proname = 'compliance_log') then
+    execute $fn$create function compliance_log(p_action text, p_table text, p_details jsonb)
 returns void language sql as $$
   insert into compliance_audit_log (action, table_name, details) values (p_action, p_table, p_details);
-$$;
+$$$fn$;
+  end if;
+end $do$;
 
 -- New rule rows are always locked.
-create or replace function compliance_lock_on_insert() returns trigger language plpgsql as $$
+do $do$ begin
+  if not exists (select 1 from pg_proc where proname = 'compliance_lock_on_insert') then
+    execute $fn$create function compliance_lock_on_insert() returns trigger language plpgsql as $$
 begin
   new.is_locked := true;
   return new;
 end;
-$$;
+$$$fn$;
+  end if;
+end $do$;
 
 -- Rule rows: DELETE and UPDATE of a locked row are skipped and logged.
-create or replace function compliance_guard_rule_row() returns trigger language plpgsql as $$
+do $do$ begin
+  if not exists (select 1 from pg_proc where proname = 'compliance_guard_rule_row') then
+    execute $fn$create function compliance_guard_rule_row() returns trigger language plpgsql as $$
 begin
   if tg_op = 'DELETE' then
     perform compliance_log('blocked_delete', tg_table_name, to_jsonb(old));
@@ -70,46 +80,82 @@ begin
   end if;
   return new;
 end;
-$$;
+$$$fn$;
+  end if;
+end $do$;
 
 -- Audit log: append-only.
-create or replace function compliance_guard_log_row() returns trigger language plpgsql as $$
+do $do$ begin
+  if not exists (select 1 from pg_proc where proname = 'compliance_guard_log_row') then
+    execute $fn$create function compliance_guard_log_row() returns trigger language plpgsql as $$
 begin
   perform compliance_log(case when tg_op = 'DELETE' then 'blocked_log_delete' else 'blocked_log_update' end,
     'compliance_audit_log', jsonb_build_object('id', old.id));
   raise warning 'compliance: % on compliance_audit_log blocked and logged', tg_op;
   return null;
 end;
-$$;
+$$$fn$;
+  end if;
+end $do$;
 
-create or replace function compliance_block_truncate() returns trigger language plpgsql as $$
+do $do$ begin
+  if not exists (select 1 from pg_proc where proname = 'compliance_block_truncate') then
+    execute $fn$create function compliance_block_truncate() returns trigger language plpgsql as $$
 begin
   raise exception 'compliance: truncate on % is not allowed', tg_table_name using errcode = 'P0001';
 end;
-$$;
+$$$fn$;
+  end if;
+end $do$;
 
-drop trigger if exists compliance_lock_insert on prohibited_categories;
-create trigger compliance_lock_insert before insert on prohibited_categories for each row execute function compliance_lock_on_insert();
-drop trigger if exists compliance_guard_row on prohibited_categories;
-create trigger compliance_guard_row before update or delete on prohibited_categories for each row execute function compliance_guard_rule_row();
-drop trigger if exists compliance_no_truncate on prohibited_categories;
-create trigger compliance_no_truncate before truncate on prohibited_categories for each statement execute function compliance_block_truncate();
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'compliance_lock_insert' and tgrelid = 'prohibited_categories'::regclass) then
+    create trigger compliance_lock_insert before insert on prohibited_categories for each row execute function compliance_lock_on_insert();
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'compliance_guard_row' and tgrelid = 'prohibited_categories'::regclass) then
+    create trigger compliance_guard_row before update or delete on prohibited_categories for each row execute function compliance_guard_rule_row();
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'compliance_no_truncate' and tgrelid = 'prohibited_categories'::regclass) then
+    create trigger compliance_no_truncate before truncate on prohibited_categories for each statement execute function compliance_block_truncate();
+  end if;
+end $$;
 
-drop trigger if exists compliance_lock_insert on prohibited_keywords;
-create trigger compliance_lock_insert before insert on prohibited_keywords for each row execute function compliance_lock_on_insert();
-drop trigger if exists compliance_guard_row on prohibited_keywords;
-create trigger compliance_guard_row before update or delete on prohibited_keywords for each row execute function compliance_guard_rule_row();
-drop trigger if exists compliance_no_truncate on prohibited_keywords;
-create trigger compliance_no_truncate before truncate on prohibited_keywords for each statement execute function compliance_block_truncate();
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'compliance_lock_insert' and tgrelid = 'prohibited_keywords'::regclass) then
+    create trigger compliance_lock_insert before insert on prohibited_keywords for each row execute function compliance_lock_on_insert();
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'compliance_guard_row' and tgrelid = 'prohibited_keywords'::regclass) then
+    create trigger compliance_guard_row before update or delete on prohibited_keywords for each row execute function compliance_guard_rule_row();
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'compliance_no_truncate' and tgrelid = 'prohibited_keywords'::regclass) then
+    create trigger compliance_no_truncate before truncate on prohibited_keywords for each statement execute function compliance_block_truncate();
+  end if;
+end $$;
 
-drop trigger if exists compliance_guard_row on compliance_audit_log;
-create trigger compliance_guard_row before update or delete on compliance_audit_log for each row execute function compliance_guard_log_row();
-drop trigger if exists compliance_no_truncate on compliance_audit_log;
-create trigger compliance_no_truncate before truncate on compliance_audit_log for each statement execute function compliance_block_truncate();
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'compliance_guard_row' and tgrelid = 'compliance_audit_log'::regclass) then
+    create trigger compliance_guard_row before update or delete on compliance_audit_log for each row execute function compliance_guard_log_row();
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'compliance_no_truncate' and tgrelid = 'compliance_audit_log'::regclass) then
+    create trigger compliance_no_truncate before truncate on compliance_audit_log for each statement execute function compliance_block_truncate();
+  end if;
+end $$;
 
 -- Best effort: stop DROP/ALTER of the rule tables, triggers and functions where the role may
 -- create event triggers (superuser). Skipped, with a notice, where it may not.
-create or replace function compliance_block_ddl() returns event_trigger language plpgsql as $$
+do $do$ begin
+  if not exists (select 1 from pg_proc where proname = 'compliance_block_ddl') then
+    execute $fn$create function compliance_block_ddl() returns event_trigger language plpgsql as $$
 declare
   obj record;
 begin
@@ -121,13 +167,17 @@ begin
     end loop;
   else
     for obj in select * from pg_event_trigger_ddl_commands() loop
-      if obj.object_identity ~ '(prohibited_categories|prohibited_keywords|compliance_audit_log)' then
+      if obj.object_identity ~ '(prohibited_categories|prohibited_keywords|compliance_audit_log)'
+         or (obj.object_type = 'function'
+             and obj.object_identity ~ 'compliance_(log|lock_on_insert|guard_rule_row|guard_log_row|block_truncate|block_ddl)\(') then
         raise exception 'compliance: altering % is not allowed', obj.object_identity using errcode = 'P0001';
       end if;
     end loop;
   end if;
 end;
-$$;
+$$$fn$;
+  end if;
+end $do$;
 
 do $$
 begin
@@ -135,7 +185,7 @@ begin
     create event trigger compliance_no_drop on sql_drop execute function compliance_block_ddl();
   end if;
   if not exists (select 1 from pg_event_trigger where evtname = 'compliance_no_alter') then
-    create event trigger compliance_no_alter on ddl_command_end when tag in ('ALTER TABLE', 'CREATE TRIGGER')
+    create event trigger compliance_no_alter on ddl_command_end when tag in ('ALTER TABLE', 'CREATE TRIGGER', 'CREATE FUNCTION', 'ALTER FUNCTION')
       execute function compliance_block_ddl();
   end if;
 exception when insufficient_privilege or feature_not_supported then

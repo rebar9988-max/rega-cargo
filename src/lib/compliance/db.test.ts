@@ -146,3 +146,33 @@ test("DROP / DISABLE TRIGGER / DROP TABLE are blocked where event triggers are a
   );
   assert.equal(await count("select count(*)::int n from prohibited_categories"), PROHIBITED.length);
 });
+
+test("rules survive redeploys: re-applying every migration changes nothing", async () => {
+  const pg = await pgP;
+  const before = await count("select count(*)::int n from prohibited_keywords");
+  for (const f of readdirSync(MIG)
+    .filter((n) => n.endsWith(".sql"))
+    .sort()) {
+    await pg.exec(readFileSync(new URL(f, MIG), "utf8"));
+  }
+  assert.equal(await count("select count(*)::int n from prohibited_keywords"), before);
+  assert.equal(
+    await count("select count(*)::int n from prohibited_keywords where not is_locked"),
+    0,
+  );
+  // protection still in place after the re-run
+  await pg.query("delete from prohibited_keywords where keyword = 'vodka'");
+  assert.ok(
+    (await count("select count(*)::int n from prohibited_keywords where keyword = 'vodka'")) > 0,
+  );
+});
+
+test("the guard functions cannot be replaced with a no-op", async () => {
+  const pg = await pgP;
+  await assert.rejects(
+    pg.exec(
+      "create or replace function compliance_guard_rule_row() returns trigger language plpgsql as $$ begin return new; end $$",
+    ),
+    /compliance:/,
+  );
+});
