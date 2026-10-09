@@ -3,7 +3,8 @@ import { seo } from "@/lib/seo";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { PAGES_COPY } from "@/lib/pages-copy";
 import { PageHeader, Shell } from "@/components/shell";
-import { controlClass } from "@/components/field";
+import { btnPrimary, controlClass } from "@/components/field";
+import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 import { marketHome } from "@/lib/market/api";
 import { iqd, marketCopy } from "@/lib/market-copy";
@@ -46,6 +47,9 @@ function MarketHome() {
         <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
         <div className="mx-auto flex max-w-6xl flex-col items-start gap-4 px-4 py-10 md:px-5" role="status">
           <p className="text-sm text-muted">{data.error === "unavailable" ? pc.unavailable : pc.errorBody}</p>
+          <Link to="/stores" className={btnPrimary}>
+            {DESIGN_COPY[lang].bazaarSub}
+          </Link>
           <button
             type="button"
             onClick={() => void router.invalidate()}
@@ -116,6 +120,9 @@ function MarketHome() {
         {data.items.length === 0 ? (
           <div className="flex flex-col items-start gap-3 rounded-2xl border border-line bg-surface p-5" role="status">
             <p className="text-sm text-muted">{t.none}</p>
+            <Link to="/stores" className={btnPrimary}>
+              {DESIGN_COPY[lang].bazaarSub}
+            </Link>
             {search.q || search.category || search.brand || search.min || search.max || search.stock || search.saved ? (
               <Link to="/market" search={{ sort: "price", page: 1, q: "", category: "", brand: "", min: "", max: "", stock: "", saved: "" }} className="text-sm font-medium text-pine">
                 {t.all}

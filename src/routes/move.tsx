@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { UX_COPY } from "@/lib/ux-copy";
+import { ContactNote } from "@/components/contact-note";
 import { Report } from "@/routes/market.$slug";
 import { btnGhost, btnPrimary, controlClass, Field } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
@@ -52,6 +54,54 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
     const error = "error" in result ? result.error : undefined;
     setMessage(error ? t[error as "invalid"] ?? t.invalid : t.saved);
   }
+  // One request at a time per page; the result is shown under the form that sent it.
+  const ux = UX_COPY[lang];
+  const [busy, setBusy] = useState<string | null>(null);
+  const inFlight = useRef(false);
+  const [status, setStatus] = useState<{ where: string; text?: string; failed?: boolean } | null>(null);
+  async function send(
+    where: string,
+    event: React.FormEvent<HTMLFormElement>,
+    call: (form: FormData) => Promise<{ error?: string } | { ok?: boolean } | { id?: string }>,
+    reload = true,
+  ) {
+    event.preventDefault();
+    if (inFlight.current) return;
+    const form = new FormData(event.currentTarget);
+    inFlight.current = true;
+    setBusy(where);
+    setStatus(null);
+    try {
+      const result = await call(form);
+      const error = "error" in result ? result.error : undefined;
+      setStatus({ where, text: error ? t[error as "invalid"] ?? t.invalid : t.saved });
+      if (!error && reload) void refresh();
+    } catch {
+      setStatus({ where, failed: true });
+    } finally {
+      inFlight.current = false;
+      setBusy(null);
+    }
+  }
+  function formStatus(where: string) {
+    return (
+      <div aria-live="polite">
+        {status?.where === where && status.failed ? <ContactNote pre={ux.failPre} post={ux.failPost} /> : null}
+        {status?.where === where && status.text ? (
+          <p role="alert" className="text-sm text-clay">
+            {status.text}
+          </p>
+        ) : null}
+      </div>
+    );
+  }
+  function sendButton(where: string, children: React.ReactNode, ghost = false) {
+    return (
+      <button className={`${ghost ? btnGhost : btnPrimary} disabled:opacity-60`} type="submit" disabled={busy !== null} aria-busy={busy === where}>
+        {busy === where ? ux.sending : children}
+      </button>
+    );
+  }
   return (
     <Shell>
       <DeliveryTabs active="/move" />
@@ -59,64 +109,60 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-2">
         <form
           className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4"
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const form = new FormData(event.currentTarget);
-            const result = await moveCreateDelivery({
-              data: { pickup: form.get("pickup"), dropoff: form.get("dropoff"), item: form.get("item"), size: form.get("size"), date: form.get("date"), product: product || undefined, declared: form.get("declared") === "on" },
-            });
-            note(result);
-            if (!("error" in result)) void refresh();
-          }}
+          onSubmit={(event) =>
+            send("delivery", event, (form) =>
+              moveCreateDelivery({
+                data: { pickup: form.get("pickup"), dropoff: form.get("dropoff"), item: form.get("item"), size: form.get("size"), date: form.get("date"), product: product || undefined, declared: form.get("declared") === "on" },
+              }),
+            )
+          }
         >
           <h2 className="text-xl font-semibold">{t.deliver}</h2>
           <Field label={t.pickup}><input name="pickup" required className={controlClass} /></Field>
           <Field label={t.dropoff}><input name="dropoff" required className={controlClass} /></Field>
           <Field label={t.item}><input name="item" required defaultValue={item} className={controlClass} /></Field>
           <Field label={t.size}><input name="size" className={controlClass} /></Field>
-          <Field label={t.date}><input name="date" dir="ltr" className={controlClass} /></Field>
+          <Field label={t.date}><input name="date" type="date" dir="ltr" className={controlClass} /></Field>
           <label className="flex items-start gap-3 text-sm leading-relaxed">
             <input type="checkbox" name="declared" required className="mt-1 size-4 shrink-0 accent-pine" />
             <span>{DECLARE_COPY[lang].declare}</span>
           </label>
-          <button className={btnPrimary} type="submit">{t.send}</button>
+          {sendButton("delivery", t.send)}
+          {formStatus("delivery")}
         </form>
         <form
           className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4"
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const form = new FormData(event.currentTarget);
-            const result = await moveCreateTransport({ data: { origin: form.get("origin"), destination: form.get("destination"), load: form.get("load"), date: form.get("date"), declared: form.get("declared") === "on" } });
-            note(result);
-            if (!("error" in result)) void refresh();
-          }}
+          onSubmit={(event) =>
+            send("transport", event, (form) =>
+              moveCreateTransport({ data: { origin: form.get("origin"), destination: form.get("destination"), load: form.get("load"), date: form.get("date"), declared: form.get("declared") === "on" } }),
+            )
+          }
         >
           <h2 className="text-xl font-semibold">{t.load}</h2>
           <Field label={t.origin}><input name="origin" required className={controlClass} /></Field>
           <Field label={t.destination}><input name="destination" required className={controlClass} /></Field>
           <Field label={t.load}><input name="load" required className={controlClass} /></Field>
-          <Field label={t.date}><input name="date" dir="ltr" className={controlClass} /></Field>
+          <Field label={t.date}><input name="date" type="date" dir="ltr" className={controlClass} /></Field>
           <label className="flex items-start gap-3 text-sm leading-relaxed">
             <input type="checkbox" name="declared" required className="mt-1 size-4 shrink-0 accent-pine" />
             <span>{DECLARE_COPY[lang].declare}</span>
           </label>
-          <button className={btnPrimary} type="submit">{t.send}</button>
+          {sendButton("transport", t.send)}
+          {formStatus("transport")}
         </form>
         {!jobs.courier ? (
           <form
             className="flex flex-col gap-3 md:col-span-2"
-            onSubmit={async (event) => {
-              event.preventDefault();
-              const form = new FormData(event.currentTarget);
-              const result = await marketRole({ data: { role: "courier", displayName: form.get("name"), city: form.get("city"), phone: form.get("phone") } });
-              note(result);
-            }}
+            onSubmit={(event) =>
+              send("courier", event, (form) => marketRole({ data: { role: "courier", displayName: form.get("name"), city: form.get("city"), phone: form.get("phone") } }), false)
+            }
           >
             <h2 className="text-xl font-semibold">{t.roleDriver}</h2>
             <Field label={t.name}><input name="name" required className={controlClass} /></Field>
             <Field label={t.city}><input name="city" required className={controlClass} /></Field>
-            <Field label={t.phone}><input name="phone" dir="ltr" className={controlClass} /></Field>
-            <button className={btnGhost} type="submit">{t.send}</button>
+            <Field label={t.phone}><input name="phone" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" className={controlClass} /></Field>
+            {sendButton("courier", t.send, true)}
+            {formStatus("courier")}
           </form>
         ) : null}
         <section className="flex flex-col gap-3">
@@ -138,7 +184,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
           ))}
         </section>
         <div className="md:col-span-2"><Report /></div>
-        {message ? <p className="text-sm text-clay md:col-span-2">{message}</p> : null}
+        <div aria-live="polite" className="md:col-span-2">{message ? <p role="status" className="text-sm text-clay">{message}</p> : null}</div>
       </div>
     </Shell>
   );
@@ -240,3 +286,4 @@ function OpenCard({ kind, id, label, onDone, onNote }: { kind: "delivery" | "tra
     </article>
   );
 }
+

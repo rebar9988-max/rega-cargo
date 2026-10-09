@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { UX_COPY } from "@/lib/ux-copy";
 import { UserRound, X } from "lucide-react";
 import { btnPrimary, controlClass } from "@/components/field";
 import { useI18n } from "@/lib/i18n";
@@ -206,7 +208,7 @@ export function PhoneButton({
           type="button"
           onClick={() => setOpen(true)}
           aria-label={label ?? t.in}
-          className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper max-[389px]:hidden"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper max-[389px]:hidden"
         >
           <UserRound className="size-5" aria-hidden="true" />
         </button>
@@ -231,6 +233,7 @@ export function PhoneButton({
         <PhoneDialog
           t={t}
           me={me}
+          lang={lang}
           onClose={() => setOpen(false)}
           onUser={(user) => {
             setMe(user);
@@ -245,11 +248,13 @@ export function PhoneButton({
 
 function PhoneDialog({
   t,
+  lang,
   me,
   onClose,
   onUser,
 }: {
   t: PhoneCopy;
+  lang: keyof typeof UX_COPY;
   me: { name: string; phone: string } | null;
   onClose: () => void;
   onUser: (user: { name: string; phone: string } | null) => void;
@@ -265,6 +270,41 @@ function PhoneDialog({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [available, setAvailable] = useState<boolean | null>(null);
+  const titleId = useId();
+  const panel = useRef<HTMLDivElement>(null);
+  const closeLabel = UX_COPY[lang]?.close ?? UX_COPY.en.close;
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+
+  // Modal behaviour: focus moves in, Tab stays inside, Escape closes, focus returns to the trigger.
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    panel.current?.focus();
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeRef.current();
+        return;
+      }
+      if (event.key !== "Tab" || !panel.current) return;
+      const items = [...panel.current.querySelectorAll<HTMLElement>("button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex='-1'])")];
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === panel.current)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      opener?.focus?.();
+    };
+  }, []);
   useEffect(() => {
     let live = true;
     phoneStatus()
@@ -323,27 +363,40 @@ function PhoneDialog({
       onUser({ name: result.name, phone: result.phone });
   }
 
-  return (
+  // Portal to <body>: inside the sticky header the sheet was painted under the bottom nav.
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 md:items-center md:p-6"
-      role="dialog"
-      aria-modal="true"
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-ink/40 md:items-center md:p-6"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
-      <div className="flex max-h-[94vh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-surface shadow-2xl md:rounded-3xl">
+      <div
+        ref={panel}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        className="flex max-h-[94vh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl outline-none md:rounded-3xl"
+      >
         <div className="flex items-center justify-between gap-3 px-5 pt-5">
-          <h2 className="text-3xl font-semibold tracking-tight">{me ? me.name : t.title}</h2>
+          <h2 id={titleId} className="text-3xl font-semibold tracking-tight">{me ? me.name : t.title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex size-10 items-center justify-center rounded-full border border-line"
-            aria-label="close"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-line"
+            aria-label={closeLabel}
           >
-            <X className="size-4" />
+            <X className="size-4" aria-hidden="true" />
           </button>
         </div>
-        <p className="px-5 pt-2 text-sm leading-relaxed text-muted">
-          {me ? <bdi dir="ltr">{me.phone}</bdi> : t.lede}
-        </p>
+        {me ? (
+          <p className="px-5 pt-2 text-sm leading-relaxed text-muted">
+            <bdi dir="ltr">{me.phone}</bdi>
+          </p>
+        ) : available === false ? null : (
+          <p className="px-5 pt-2 text-sm leading-relaxed text-muted">{t.lede}</p>
+        )}
 
         {me ? (
           <button
@@ -475,6 +528,7 @@ function PhoneDialog({
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
