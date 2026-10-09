@@ -7,6 +7,7 @@ import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
 import { readService, writeService, type Service } from "@/lib/service-choice";
 import { Shell } from "@/components/shell";
 import type { BazaarSearch } from "@/lib/bazaar-search";
+import { BRANDS, COLLECTION_ORDER } from "@/lib/catalog";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
@@ -21,19 +22,7 @@ import {
   type StoreCategory,
 } from "@/lib/stores";
 
-const BRANDS: { name: string; category: StoreCategory }[] = [
-  { name: "NIVEA", category: "beauty" },
-  { name: "L'ORÉAL", category: "beauty" },
-  { name: "GARNIER", category: "beauty" },
-  { name: "KÉRASTASE", category: "beauty" },
-  { name: "SEPHORA", category: "beauty" },
-  { name: "ZARA", category: "fashion" },
-  { name: "H&M", category: "fashion" },
-  { name: "ZALANDO", category: "fashion" },
-  { name: "AMAZON", category: "electronics" },
-  { name: "OTTO", category: "home" },
-  { name: "DECATHLON", category: "sports" },
-];
+
 
 type Audience = "women" | "men" | "kids";
 const AUDIENCES: Audience[] = ["women", "men", "kids"];
@@ -48,16 +37,7 @@ const AUDIENCE_CATEGORIES: Record<Audience, StoreCategory[]> = {
   men: ["fashion", "electronics", "sports"],
   kids: ["baby", "sports"],
 };
-const COLLECTION_ORDER = [
-  "sneakers",
-  "earbuds",
-  "perfume",
-  "dress",
-  "cream",
-  "kettle",
-  "baby",
-  "ball",
-];
+
 const isAudience = (value: unknown): value is Audience => AUDIENCES.includes(value as Audience);
 const isCategory = (value: unknown): value is StoreCategory =>
   STORE_CATEGORIES.includes(value as StoreCategory);
