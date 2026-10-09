@@ -2,14 +2,15 @@ export type MarketRole = "buyer" | "seller" | "courier" | "admin";
 export type MarketCategory = "beauty" | "fashion" | "electronics" | "home" | "baby" | "sports";
 export type Stock = "in" | "low" | "out";
 export type ReviewStatus = "pending" | "approved" | "removed";
-export type JobStatus = "requested" | "accepted" | "picked_up" | "on_the_way" | "delivered" | "cancelled";
+export type JobStatus =
+  "requested" | "accepted" | "picked_up" | "on_the_way" | "delivered" | "cancelled";
 export type JobKind = "delivery" | "transport";
 
 export const JOB_FLOW = ["requested", "accepted", "picked_up", "on_the_way", "delivered"] as const;
 
 export class MarketError extends Error {
-  code: "invalid" | "rate" | "forbidden" | "notfound";
-  constructor(code: "invalid" | "rate" | "forbidden" | "notfound") {
+  code: "invalid" | "rate" | "forbidden" | "notfound" | "prohibited";
+  constructor(code: "invalid" | "rate" | "forbidden" | "notfound" | "prohibited") {
     super(code);
     this.name = "MarketError";
     this.code = code;
@@ -56,7 +57,8 @@ export function cleanContact(value: unknown) {
 export function contactHref(value: string) {
   try {
     const url = new URL(value);
-    if (url.protocol === "https:" || url.protocol === "tel:" || url.protocol === "mailto:") return value;
+    if (url.protocol === "https:" || url.protocol === "tel:" || url.protocol === "mailto:")
+      return value;
   } catch {
     /* plain text */
   }
@@ -66,7 +68,8 @@ export function contactHref(value: string) {
 export function cleanImage(value: unknown) {
   if (value == null || value === "") return null;
   const text = cleanText(value, 300);
-  if (text.includes("..") || /\s/.test(text) || text.includes("\\")) throw new MarketError("invalid");
+  if (text.includes("..") || /\s/.test(text) || text.includes("\\"))
+    throw new MarketError("invalid");
   if (text.startsWith("/bazaar/") && !text.includes("//")) return text;
   if (text.startsWith("https://")) {
     let url: URL;
@@ -99,10 +102,17 @@ export function offerTotal(price: number, shipping: number) {
   return price + shipping;
 }
 
-export function rankOffers<T extends { price: number; shipping: number; stock: Stock }>(offers: T[]) {
+export function rankOffers<T extends { price: number; shipping: number; stock: Stock }>(
+  offers: T[],
+) {
   return offers
     .map((offer) => ({ ...offer, total: offerTotal(offer.price, offer.shipping) }))
-    .sort((a, b) => Number(a.stock === "out") - Number(b.stock === "out") || a.total - b.total || a.price - b.price);
+    .sort(
+      (a, b) =>
+        Number(a.stock === "out") - Number(b.stock === "out") ||
+        a.total - b.total ||
+        a.price - b.price,
+    );
 }
 
 export function cheapest<T extends { total: number; stock: Stock }>(offers: T[]) {
@@ -121,7 +131,8 @@ export function slugify(name: string) {
 
 export function canSetJobStatus(from: JobStatus, to: JobStatus, who: "requester" | "courier") {
   if (from === to) return false;
-  if (to === "cancelled") return who === "requester" && from !== "delivered" && from !== "cancelled";
+  if (to === "cancelled")
+    return who === "requester" && from !== "delivered" && from !== "cancelled";
   if (who !== "courier") return false;
   const current = JOB_FLOW.indexOf(from as (typeof JOB_FLOW)[number]);
   const next = JOB_FLOW.indexOf(to as (typeof JOB_FLOW)[number]);

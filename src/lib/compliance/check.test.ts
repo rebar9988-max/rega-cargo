@@ -1,0 +1,147 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { checkProduct, checkText, isProhibitedQuery, normalizeText } from "./check.ts";
+
+const d = (s: string) => checkText(s).decision;
+
+test("clear prohibited words block, in every language", () => {
+  for (const s of [
+    "Vodka 0.7l",
+    "Absolut VODKA",
+    "Red wine 75cl",
+    "Craft beers pack",
+    "Bacon strips",
+    "Pork belly",
+    "Marlboro cigarettes",
+    "Disposable vape 600 puffs",
+    "E-Liquid 10ml",
+    "Poker chips set",
+    "sex toys",
+    "خمر",
+    "الخمر",
+    "والخمر",
+    "بالخمر",
+    "بيرة",
+    "سجائر",
+    "لحم الخنزير",
+    "كازينو",
+    "جگەرە",
+    "جگەرەکان",
+    "بیرە",
+    "گۆشتی بەراز",
+    "قومار",
+    "sigara",
+    "sigaralar",
+    "şarap",
+    "votka",
+    "domuz eti",
+    "سیگار",
+    "قلیان",
+    "آبجو",
+    "Bier",
+    "Wodka",
+    "Zigaretten",
+    "Schweinefleisch",
+    "Glücksspiel",
+  ])
+    assert.equal(d(s), "block", s);
+});
+
+test("Arabic/Kurdish letter variants and diacritics fold", () => {
+  assert.equal(d("بيره"), "block"); // ة written as ه
+  assert.equal(d("بیرە"), "block"); // Kurdish ی / ە
+  assert.equal(d("خَمْر"), "block"); // harakat
+  assert.equal(d("خـــمر"), "block"); // tatweel
+  assert.equal(d("كازينو"), d("کازینو"));
+  assert.equal(d("VÓDKA"), "block");
+  assert.equal(d("ｖｏｄｋａ"), "block"); // NFKC full-width
+  assert.equal(normalizeText("أإآا"), "اااا");
+});
+
+test("no false positives (decisions in progress.md)", () => {
+  for (const s of [
+    "Ginger tea",
+    "Ginger shot",
+    "Hammer drill",
+    "Hamburg",
+    "Rummikub family game",
+    "rummy cards",
+    "Ginkgo biloba",
+    "Gingerbread",
+    "Hamster cage",
+    "Champion shoes",
+    "Portable fan",
+    "Sakura cream",
+    "Wine red dress",
+    "Ham radio kit",
+    "For the sake of comfort",
+    "Nivea Creme",
+    "Speckled mug",
+    "Taschen",
+    "Lagerfeld perfume",
+    "Rumford baking powder",
+    "Origin T-shirt",
+    "Begin here",
+    "Engine oil",
+    "Sunglasses",
+    "برهان",
+    "مزيل عرق",
+    "شامپۆ",
+    "بیرەوەری",
+    "ئارەق",
+    "Sextant",
+  ])
+    assert.equal(d(s), "allow", s);
+  // "Gin" as a word is blocked; inside names it is not.
+  assert.equal(d("Gin Tonic"), "block");
+  assert.equal(d("Gingko / Ginseng / Original"), "allow");
+});
+
+test("ambiguous wording goes to review, not reject", () => {
+  assert.equal(d("Alcohol wipes 70%"), "review");
+  assert.equal(d("Turkish porcelain tabak set"), "review");
+  assert.equal(d("Gelatin capsules"), "review");
+  assert.equal(d("Alcohol-free beer"), "review");
+  assert.equal(d("Non-alcoholic wine"), "review");
+  assert.equal(d("Malzbier 0.0%"), "allow"); // no prohibited word at all
+  assert.equal(d("Beer 0,0 %"), "review");
+  assert.equal(d("بيرة بدون كحول"), "review");
+  assert.equal(d("بیرە بێ ئەلکهول"), "review");
+  assert.equal(d("alkoholfrei Bier"), "review");
+});
+
+test("products: every field is checked, category mapping applies", () => {
+  assert.equal(
+    checkProduct({ title: "Gift box", description: "with a bottle of whisky" }).decision,
+    "block",
+  );
+  assert.equal(checkProduct({ title: "Gift box", tags: ["party", "vodka"] }).decision, "block");
+  assert.equal(
+    checkProduct({ title: "Gift box", brand: "Jack Daniel's whiskey" }).decision,
+    "block",
+  );
+  assert.equal(
+    checkProduct({ title: "Gift box", attributes: { flavour: "rum" } }).decision,
+    "block",
+  );
+  assert.equal(checkProduct({ title: "Leather case", category: "Tabakwaren" }).decision, "block");
+  assert.equal(
+    checkProduct({ title: "Gift set", category: "Wein & Spirituosen" }).decision,
+    "block",
+  );
+  assert.equal(checkProduct({ title: "Massager", category: "Sexual Wellness" }).decision, "block");
+  assert.equal(
+    checkProduct({ title: "Nivea Soft", brand: "Nivea", category: "beauty" }).decision,
+    "allow",
+  );
+  const r = checkProduct({ title: "ok", description: "contains pork" });
+  assert.equal(r.matches[0]?.field, "description");
+  assert.equal(r.matches[0]?.category, "pork");
+});
+
+test("search queries: any prohibited word (block or review) means no results", () => {
+  for (const q of ["vodka", "جگەرە", "sigara", "خمر", "alcohol", "cheap beer near me"])
+    assert.ok(isProhibitedQuery(q), q);
+  for (const q of ["nivea", "ginger", "hamburg", "rossmann", "dm", "douglas", "iphone"])
+    assert.ok(!isProhibitedQuery(q), q);
+});
