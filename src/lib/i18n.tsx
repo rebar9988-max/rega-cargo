@@ -536,15 +536,36 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const meta = langMeta(lang);
-    document.documentElement.lang = meta.html;
-    document.documentElement.dir = "ltr";
-    document.documentElement.dataset.textdir = meta.dir;
+    const root = document.documentElement;
+    const scriptChanged = root.dataset.textdir !== meta.dir;
+    root.lang = meta.html;
+    root.dir = "ltr";
+    root.dataset.textdir = meta.dir;
+    if (scriptChanged) restyle(root);
     if (ready) setItem("lang", lang);
   }, [lang, ready]);
 
   const value = useMemo<Ctx>(() => ({ lang, t: catalog[lang] ?? ckb, setLang }), [lang, setLang]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+/**
+ * Switching between Arabic-script and Latin type scales changes inherited font sizes across
+ * the page. WebKit (Safari) can leave some descendants with the previous script's sizes
+ * (caught by the layout-lock WebKit runs), so rebuild styles once, synchronously (no paint in
+ * between), keeping scroll position and focus.
+ */
+function restyle(root: HTMLElement) {
+  const { scrollX, scrollY } = window;
+  const focused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  const display = root.style.display;
+  root.style.display = "none";
+  void root.offsetHeight;
+  root.style.display = display;
+  void root.offsetHeight;
+  if (window.scrollX !== scrollX || window.scrollY !== scrollY) window.scrollTo(scrollX, scrollY);
+  if (focused && document.activeElement !== focused) focused.focus({ preventScroll: true });
 }
 
 export function useI18n() {

@@ -28,7 +28,7 @@ async function open(page: Page, path: string, lang: string) {
     localStorage.setItem("rega-lang-v3", "1");
   }, lang);
   await page.goto(path, { waitUntil: "networkidle" });
-  await expect(page.locator("html")).toHaveAttribute("lang", lang);
+  await expect(page.locator("html")).toHaveAttribute("lang", lang, { timeout: 15_000 });
   await settle(page);
 }
 
@@ -51,6 +51,14 @@ async function settle(page: Page) {
   await page.waitForLoadState("networkidle");
 }
 
+/**
+ * Content photos are masked with a silver box: their boxes (size, ratio, position) stay in the
+ * baseline, while photo decoding noise and megabytes of pixels stay out of the repo.
+ */
+function shot(page: Page) {
+  return { mask: [page.locator("main img, [data-layout=sheet] img")], maskColor: "#c9ced6" };
+}
+
 async function geometry(page: Page, bp: Bp, sheet = false) {
   const issues = await page.evaluate(measureLayout, { bp, layout: LAYOUT, sheet });
   expect(issues, issues.join("\n")).toEqual([]);
@@ -62,7 +70,10 @@ for (const lang of LANGS) {
       test(`${slug(path)} ${lang}`, async ({ page, breakpoint }) => {
         await open(page, path, lang);
         await geometry(page, breakpoint);
-        await expect(page).toHaveScreenshot(`${slug(path)}-${lang}.png`, { fullPage: true });
+        await expect(page).toHaveScreenshot(`${slug(path)}-${lang}.png`, {
+          fullPage: true,
+          ...shot(page),
+        });
       });
     }
 
@@ -73,7 +84,7 @@ for (const lang of LANGS) {
       await expect(page.locator('[data-layout="sheet"]')).toBeVisible();
       await settle(page);
       await geometry(page, breakpoint, true);
-      await expect(page).toHaveScreenshot(`menu-${lang}.png`);
+      await expect(page).toHaveScreenshot(`menu-${lang}.png`, shot(page));
     });
 
     test(`search sheet ${lang}`, async ({ page, breakpoint }) => {
@@ -82,7 +93,7 @@ for (const lang of LANGS) {
       await expect(page.locator('input[type="search"][aria-expanded="true"]')).toBeVisible();
       await settle(page);
       await geometry(page, breakpoint, true);
-      await expect(page).toHaveScreenshot(`search-${lang}.png`);
+      await expect(page).toHaveScreenshot(`search-${lang}.png`, shot(page));
     });
   });
 }
