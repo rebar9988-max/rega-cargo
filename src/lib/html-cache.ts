@@ -17,24 +17,31 @@ export type HtmlCacheOptions = {
   now?: () => number;
   /** When set, only these hosts are cached. Client-supplied forwarded hosts must not be passed in. */
   hosts?: readonly string[];
+  /**
+   * Optional small, closed set of variants per page (e.g. the remembered home
+   * service). Must return a short fixed token, never raw header text, so the
+   * cache stays bounded and cannot be poisoned with arbitrary keys.
+   */
+  vary?: (headers: Headers) => "" | "delivery";
 };
 
 type Entry = { body: string; headers: [string, string][]; at: number };
 
-export function createHtmlCache({ paths, ttlMs, maxEntries, now = Date.now, hosts }: HtmlCacheOptions) {
+export function createHtmlCache({ paths, ttlMs, maxEntries, now = Date.now, hosts, vary }: HtmlCacheOptions) {
   const allowed = new Set(paths);
   const entries = new Map<string, Entry>();
 
   return {
     size: () => entries.size,
     async handle(
-      req: { method: string; url: URL; host: string },
+      req: { method: string; url: URL; host: string; headers?: Headers },
       next: () => unknown | Promise<unknown>,
     ): Promise<unknown> {
       if (req.method.toUpperCase() !== "GET" || req.url.search || !allowed.has(req.url.pathname))
         return next();
       if (hosts && !hosts.includes(req.host.toLowerCase().replace(/:\d+$/, ""))) return next();
-      const key = `${req.host}${req.url.pathname}`;
+      const variant = vary && req.headers ? vary(req.headers) : "";
+      const key = `${req.host}${req.url.pathname}${variant ? `|${variant}` : ""}`;
       const hit = entries.get(key);
       if (hit && now() - hit.at < ttlMs) {
         const headers = new Headers(hit.headers);

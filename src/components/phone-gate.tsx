@@ -184,7 +184,12 @@ type PhoneCopy = { [K in keyof typeof copy.en]: string };
 export function PhoneButton({
   variant = "pill",
   label,
-}: { variant?: "pill" | "icon" | "block"; label?: string } = {}) {
+  onUser: onUserChange,
+}: {
+  variant?: "pill" | "icon" | "block";
+  label?: string;
+  onUser?: (user: { name: string; phone: string } | null) => void;
+} = {}) {
   const { lang } = useI18n();
   const t: PhoneCopy = copy[lang] ?? copy.en;
   const [open, setOpen] = useState(false);
@@ -230,6 +235,7 @@ export function PhoneButton({
           onUser={(user) => {
             setMe(user);
             setOpen(false);
+            onUserChange?.(user);
           }}
         />
       ) : null}

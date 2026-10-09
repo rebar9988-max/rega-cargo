@@ -4,19 +4,25 @@ import { Report } from "@/routes/market.$slug";
 import { btnGhost, btnPrimary, controlClass, Field } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
 import { DeliveryTabs } from "@/components/delivery-hub";
+import { SignInGate } from "@/components/sign-in-gate";
 import { useI18n } from "@/lib/i18n";
+import { viewerState } from "@/lib/viewer/api";
 import { marketCopy } from "@/lib/market-copy";
 import { marketRole, moveChoose, moveCreateDelivery, moveCreateTransport, moveJobs, moveOffer, moveRate, moveStatus } from "@/lib/market/api";
 
 export const Route = createFileRoute("/move")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    product: typeof search.product === "string" ? search.product : "",
-    item: typeof search.item === "string" ? search.item : "",
+  validateSearch: (search: Record<string, unknown>): { product?: string; item?: string } => ({
+    product: typeof search.product === "string" && search.product ? search.product : undefined,
+    item: typeof search.item === "string" && search.item ? search.item : undefined,
   }),
-  loader: () => moveJobs(),
+  loader: async () => {
+    const { state } = await viewerState();
+    if (state !== "in") return { gate: state };
+    return { gate: null, jobs: await moveJobs() };
+  },
   head: () => ({
     meta: [
-      { title: "گەیاندن · R&L" },
+      { title: "گواستنەوە و ناردن · R&L" },
       { name: "description", content: "داوای گەیاندن و گواستنەوە. شۆفێر خۆی پێشنیار دەکات و تۆ هەڵیدەبژێریت." },
     ],
   }),
@@ -24,8 +30,15 @@ export const Route = createFileRoute("/move")({
 });
 
 function MovePage() {
-  const initial = Route.useLoaderData();
-  const { product, item } = Route.useSearch();
+  const data = Route.useLoaderData();
+  const { lang } = useI18n();
+  const t = marketCopy(lang);
+  if (data.gate) return <SignInGate state={data.gate} kicker={t.moveKicker} />;
+  return <MoveSignedIn initial={data.jobs} />;
+}
+
+function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs>> }) {
+  const { product = "", item = "" } = Route.useSearch();
   const { lang } = useI18n();
   const t = marketCopy(lang);
   const [jobs, setJobs] = useState(initial);

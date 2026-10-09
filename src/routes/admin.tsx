@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { btnGhost, btnPrimary } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
+import { SignInGate } from "@/components/sign-in-gate";
 import { useI18n } from "@/lib/i18n";
+import { viewerState } from "@/lib/viewer/api";
 import { iqd, marketCopy } from "@/lib/market-copy";
 import { marketAdmin, marketAdminSet } from "@/lib/market/api";
 import { orderAdmin, orderAdminSet } from "@/lib/orders/api";
@@ -11,13 +13,15 @@ const ORDER_STATUS = ["received", "confirmed", "in_transit", "delivered", "cance
 
 export const Route = createFileRoute("/admin")({
   loader: async () => {
+    const { state } = await viewerState();
+    if (state !== "in") return { gate: state, market: null, orders: null };
     const market = await marketAdmin();
-    if ("error" in market) return { market, orders: null };
+    if ("error" in market) return { gate: null, market, orders: null };
     try {
       const orders = await orderAdmin();
-      return { market, orders };
+      return { gate: null, market, orders };
     } catch {
-      return { market, orders: { error: "unavailable" as const } };
+      return { gate: null, market, orders: { error: "unavailable" as const } };
     }
   },
   head: () => ({ meta: [{ title: "بەڕێوەبەر · R&L" }] }),
@@ -25,7 +29,19 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
-  const initial = Route.useLoaderData();
+  const data = Route.useLoaderData();
+  if (data.gate || !data.market) return <SignInGate state={data.gate ?? "out"} kicker="R&L" />;
+  return <AdminSignedIn initial={{ market: data.market, orders: data.orders }} />;
+}
+
+function AdminSignedIn({
+  initial,
+}: {
+  initial: {
+    market: Awaited<ReturnType<typeof marketAdmin>>;
+    orders: Awaited<ReturnType<typeof orderAdmin>> | { error: "unavailable" } | null;
+  };
+}) {
   const { lang } = useI18n();
   const t = marketCopy(lang);
   const [market, setMarket] = useState(initial.market);

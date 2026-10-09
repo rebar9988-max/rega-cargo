@@ -5,6 +5,7 @@ import { Field, btnPrimary, controlClass } from "@/components/field";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { DESTS, ORIGINS, SAMPLE_BOX, getDest, getOrigin, placeName } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
+import { parseKg } from "@/lib/quote-search";
 import type { Service } from "@/lib/service-choice";
 
 /** Two equal cards under the search strip: Bazaar (shopping) and Delivery (shipping/moving). */
@@ -106,7 +107,7 @@ export function DeliveryHub() {
           className="flex flex-col gap-4 rounded-3xl border border-line bg-surface p-5"
           onSubmit={(event) => {
             event.preventDefault();
-            void navigate({ to: "/quote", search: { from, to, kg: kg.trim() || undefined } });
+            void navigate({ to: "/quote", search: { from, to, kg: parseKg(kg) } });
           }}
         >
           <CardHead icon={Tag} title={d.quoteCard} />

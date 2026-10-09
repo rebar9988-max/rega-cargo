@@ -104,3 +104,27 @@ test("a host outside the allow-list is never cached", async () => {
   await get("cargo.regaplatform.com");
   assert.equal(renders, 3);
 });
+
+test("the remembered service cookie gets its own cache entry and never leaks across", async () => {
+  const { serviceFromCookieHeader } = await import("./service-choice.ts");
+  let n = 0;
+  const cache = createHtmlCache({
+    paths: ["/"],
+    ttlMs: 60_000,
+    maxEntries: 4,
+    vary: (headers) => (serviceFromCookieHeader(headers.get("cookie")) === "delivery" ? "delivery" : ""),
+  });
+  const get = (cookie?: string) =>
+    cache.handle(
+      { method: "GET", url: new URL("https://x.test/"), host: "x.test", headers: new Headers(cookie ? { cookie } : {}) },
+      () => html(cookie?.includes("delivery") ? `delivery #${++n}` : `bazaar #${++n}`),
+    ) as Promise<Response>;
+  assert.equal(await (await get()).text(), "bazaar #1");
+  assert.equal(await (await get("a=1; rl-service=delivery")).text(), "delivery #2");
+  assert.equal(await (await get("rl-service=delivery")).text(), "delivery #2");
+  assert.equal(await (await get()).text(), "bazaar #1");
+  // Arbitrary cookie values collapse to the default entry instead of growing the cache.
+  assert.equal(await (await get("rl-service=<script>")).text(), "bazaar #1");
+  assert.equal(await (await get("rl-service=deliveryX")).text(), "bazaar #1");
+  assert.equal(cache.size(), 2);
+});

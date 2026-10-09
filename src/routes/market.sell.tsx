@@ -2,21 +2,36 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { btnPrimary, controlClass, Field } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
+import { SignInGate } from "@/components/sign-in-gate";
 import { useI18n } from "@/lib/i18n";
+import { viewerState } from "@/lib/viewer/api";
 import { iqd, marketCopy } from "@/lib/market-copy";
 import { marketMe, marketMine, marketRole, marketSaveOffer, marketSaveProduct } from "@/lib/market/api";
 
 export const Route = createFileRoute("/market/sell")({
   loader: async () => {
+    const { state } = await viewerState();
+    if (state !== "in") return { gate: state };
     const [me, mine] = await Promise.all([marketMe(), marketMine()]);
-    return { me, mine };
+    return { gate: null, me, mine };
   },
   head: () => ({ meta: [{ title: "فرۆشتن · R&L" }] }),
   component: SellPage,
 });
 
 function SellPage() {
-  const initial = Route.useLoaderData();
+  const data = Route.useLoaderData();
+  const { lang } = useI18n();
+  const t = marketCopy(lang);
+  if (data.gate) return <SignInGate state={data.gate} kicker={t.marketKicker} />;
+  return <SellSignedIn initial={data} />;
+}
+
+function SellSignedIn({
+  initial,
+}: {
+  initial: { me: Awaited<ReturnType<typeof marketMe>>; mine: Awaited<ReturnType<typeof marketMine>> };
+}) {
   const { lang } = useI18n();
   const t = marketCopy(lang);
   const [message, setMessage] = useState("");
