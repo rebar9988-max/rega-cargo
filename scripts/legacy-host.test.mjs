@@ -30,6 +30,9 @@ test("old host: /sw.js is a no-store self-unregistering worker that moves client
   assert.match(body, /caches\.delete/);
   assert.match(body, /client\.navigate\("https:\/\/cargo\.regaplatform\.com" \+ u\.pathname/);
   assert.match(body, /skipWaiting/);
+  // claim before navigate (navigate needs control), unregister last
+  assert.ok(body.indexOf("clients.claim()") < body.indexOf("client.navigate("));
+  assert.ok(body.indexOf("client.navigate(") < body.indexOf("registration.unregister()"));
 });
 
 test("new host, staging and anything else pass through", async () => {
