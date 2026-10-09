@@ -324,7 +324,7 @@ export function QuotePanel({
                     type="checkbox"
                     checked={restrictedOk}
                     onChange={(event) => setRestrictedOk(event.target.checked)}
-                    className="mt-1 size-4 shrink-0 accent-pine"
+                    className="mt-0.5 size-6 shrink-0 accent-pine"
                   />
                   <span>{dc.declare}</span>
                 </label>

@@ -124,7 +124,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
           <Field label={t.size}><input name="size" className={controlClass} /></Field>
           <Field label={t.date}><input name="date" type="date" dir="ltr" className={controlClass} /></Field>
           <label className="flex items-start gap-3 text-sm leading-relaxed">
-            <input type="checkbox" name="declared" required className="mt-1 size-4 shrink-0 accent-pine" />
+            <input type="checkbox" name="declared" required className="mt-0.5 size-6 shrink-0 accent-pine" />
             <span>{DECLARE_COPY[lang].declare}</span>
           </label>
           {sendButton("delivery", t.send)}
@@ -144,7 +144,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
           <Field label={t.load}><input name="load" required className={controlClass} /></Field>
           <Field label={t.date}><input name="date" type="date" dir="ltr" className={controlClass} /></Field>
           <label className="flex items-start gap-3 text-sm leading-relaxed">
-            <input type="checkbox" name="declared" required className="mt-1 size-4 shrink-0 accent-pine" />
+            <input type="checkbox" name="declared" required className="mt-0.5 size-6 shrink-0 accent-pine" />
             <span>{DECLARE_COPY[lang].declare}</span>
           </label>
           {sendButton("transport", t.send)}
