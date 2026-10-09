@@ -8,9 +8,8 @@ import { useI18n } from "@/lib/i18n";
 import { viewerState } from "@/lib/viewer/api";
 import { iqd, marketCopy } from "@/lib/market-copy";
 import { marketAdmin, marketAdminComplianceScan, marketAdminSet } from "@/lib/market/api";
-import { orderAdmin, orderAdminSet } from "@/lib/orders/api";
-
-const ORDER_STATUS = ["received", "confirmed", "in_transit", "delivered", "cancelled"] as const;
+import { staffList } from "@/lib/requests/api";
+import { StaffRequestList } from "@/components/staff-requests";
 
 export const Route = createFileRoute("/admin")({
   loader: async () => {
@@ -19,7 +18,7 @@ export const Route = createFileRoute("/admin")({
     const market = await marketAdmin();
     if ("error" in market) return { gate: null, market, orders: null };
     try {
-      const orders = await orderAdmin();
+      const orders = await staffList({ data: {} });
       return { gate: null, market, orders };
     } catch {
       return { gate: null, market, orders: { error: "unavailable" as const } };
@@ -46,14 +45,15 @@ function AdminSignedIn({
 }: {
   initial: {
     market: Awaited<ReturnType<typeof marketAdmin>>;
-    orders: Awaited<ReturnType<typeof orderAdmin>> | { error: "unavailable" } | null;
+    orders: Awaited<ReturnType<typeof staffList>> | null;
   };
 }) {
   const { lang } = useI18n();
   const t = marketCopy(lang);
   const [market, setMarket] = useState(initial.market);
-  const [orders, setOrders] = useState(initial.orders);
-  const [scan, setScan] = useState<Awaited<ReturnType<typeof marketAdminComplianceScan>> | null>(null);
+  const [scan, setScan] = useState<Awaited<ReturnType<typeof marketAdminComplianceScan>> | null>(
+    null,
+  );
   const [scanning, setScanning] = useState(false);
   if ("error" in market) {
     return (
@@ -75,17 +75,6 @@ function AdminSignedIn({
       setScanning(false);
     }
   }
-  async function setStatus(id: string, status: string) {
-    await orderAdminSet({ data: { id, status } });
-    setOrders(await orderAdmin());
-  }
-  const statusLabel: Record<string, string> = {
-    received: t.received,
-    confirmed: t.confirmed,
-    in_transit: t.transit,
-    delivered: t.delivered,
-    cancelled: t.cancelled,
-  };
   return (
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.admin} lede={t.freeSort} />
@@ -93,58 +82,128 @@ function AdminSignedIn({
         <Section title={t.reviews}>
           {market.pendingReviews.map((row) => (
             <Row key={row.id} label={`${row.rating} · ${row.body}`}>
-              <button type="button" className={btnPrimary} onClick={() => act({ kind: "review", id: row.id, status: "approved" })}>{t.approve}</button>
-              <button type="button" className={btnGhost} onClick={() => act({ kind: "review", id: row.id, status: "removed" })}>{t.reject}</button>
+              <button
+                type="button"
+                className={btnPrimary}
+                onClick={() => act({ kind: "review", id: row.id, status: "approved" })}
+              >
+                {t.approve}
+              </button>
+              <button
+                type="button"
+                className={btnGhost}
+                onClick={() => act({ kind: "review", id: row.id, status: "removed" })}
+              >
+                {t.reject}
+              </button>
             </Row>
           ))}
         </Section>
         <Section title={t.roleSeller}>
           {market.pendingRoles.map((row) => (
             <Row key={row.userId + row.role} label={`${row.displayName} · ${row.role}`}>
-              <button type="button" className={btnPrimary} onClick={() => act({ kind: "role", id: row.userId, role: row.role, status: "approved" })}>{t.approve}</button>
-              <button type="button" className={btnGhost} onClick={() => act({ kind: "role", id: row.userId, role: row.role, status: "removed" })}>{t.reject}</button>
+              <button
+                type="button"
+                className={btnPrimary}
+                onClick={() =>
+                  act({ kind: "role", id: row.userId, role: row.role, status: "approved" })
+                }
+              >
+                {t.approve}
+              </button>
+              <button
+                type="button"
+                className={btnGhost}
+                onClick={() =>
+                  act({ kind: "role", id: row.userId, role: row.role, status: "removed" })
+                }
+              >
+                {t.reject}
+              </button>
             </Row>
           ))}
         </Section>
         <Section title={t.marketTitle}>
           {market.pendingProducts.map((row) => (
-            <Row key={row.slug} label={`${row.nameKu} · ${row.brand}${row.review ? ` · ${t.complianceTag}: ${row.review.join(", ")}` : ""}`}>
-              <button type="button" className={btnPrimary} onClick={() => act({ kind: "product", id: row.slug, status: "approved" })}>{t.approve}</button>
-              <button type="button" className={btnGhost} onClick={() => act({ kind: "product", id: row.slug, status: "removed" })}>{t.reject}</button>
+            <Row
+              key={row.slug}
+              label={`${row.nameKu} · ${row.brand}${row.review ? ` · ${t.complianceTag}: ${row.review.join(", ")}` : ""}`}
+            >
+              <button
+                type="button"
+                className={btnPrimary}
+                onClick={() => act({ kind: "product", id: row.slug, status: "approved" })}
+              >
+                {t.approve}
+              </button>
+              <button
+                type="button"
+                className={btnGhost}
+                onClick={() => act({ kind: "product", id: row.slug, status: "removed" })}
+              >
+                {t.reject}
+              </button>
             </Row>
           ))}
         </Section>
         <Section title={t.offers}>
           {market.pendingOffers.map((row) => (
             <Row key={row.id} label={`${row.nameKu} · ${iqd(row.price + row.shipping)}`}>
-              <button type="button" className={btnPrimary} onClick={() => act({ kind: "offer", id: row.id, status: "approved" })}>{t.approve}</button>
-              <button type="button" className={btnGhost} onClick={() => act({ kind: "offer", id: row.id, status: "removed" })}>{t.reject}</button>
+              <button
+                type="button"
+                className={btnPrimary}
+                onClick={() => act({ kind: "offer", id: row.id, status: "approved" })}
+              >
+                {t.approve}
+              </button>
+              <button
+                type="button"
+                className={btnGhost}
+                onClick={() => act({ kind: "offer", id: row.id, status: "removed" })}
+              >
+                {t.reject}
+              </button>
             </Row>
           ))}
         </Section>
         <Section title={t.report}>
           {market.openReports.map((row) => (
-            <p key={row.id} className="break-words text-sm">{row.subject} — {row.body}</p>
+            <p key={row.id} className="break-words text-sm">
+              {row.subject} — {row.body}
+            </p>
           ))}
         </Section>
         <Section title={t.complianceTitle}>
           <div>
-            <button type="button" className={btnPrimary} disabled={scanning} onClick={runScan}>{t.complianceRun}</button>
+            <button type="button" className={btnPrimary} disabled={scanning} onClick={runScan}>
+              {t.complianceRun}
+            </button>
           </div>
           {scan && "error" in scan ? <p className="text-sm text-muted">{t.forbidden}</p> : null}
           {scan && !("error" in scan) ? (
             <div className="flex flex-col gap-2 text-sm" dir="auto">
               <p dir="ltr" className="text-muted">
-                {scan.at} · products {scan.scanned.products} · reviews {scan.scanned.reviews} · offers {scan.scanned.offers} · roles {scan.scanned.roles}
+                {scan.at} · products {scan.scanned.products} · reviews {scan.scanned.reviews} ·
+                offers {scan.scanned.offers} · roles {scan.scanned.roles}
               </p>
               {scan.blocked.length + scan.review.length === 0 ? <p>{t.complianceNone}</p> : null}
-              {([["blocked", t.complianceBlocked], ["review", t.complianceReview]] as const).map(([key, title]) =>
+              {(
+                [
+                  ["blocked", t.complianceBlocked],
+                  ["review", t.complianceReview],
+                ] as const
+              ).map(([key, title]) =>
                 scan[key].length ? (
                   <div key={key} className="flex flex-col gap-1">
-                    <h3 className="font-bold">{title} ({scan[key].length})</h3>
+                    <h3 className="font-bold">
+                      {title} ({scan[key].length})
+                    </h3>
                     {scan[key].map((item) => (
                       <p key={item.table + item.id} className="break-words">
-                        {item.table} · {item.label} · {[...new Set(item.matches.map((m) => `${m.category}: ${m.keyword}`))].join(", ")}
+                        {item.table} · {item.label} ·{" "}
+                        {[...new Set(item.matches.map((m) => `${m.category}: ${m.keyword}`))].join(
+                          ", ",
+                        )}
                       </p>
                     ))}
                   </div>
@@ -153,22 +212,7 @@ function AdminSignedIn({
             </div>
           ) : null}
         </Section>
-        <Section title={t.orders}>
-          {orders && "error" in orders ? <p className="text-sm text-muted">{t.notfound}</p> : null}
-          {orders && !("error" in orders)
-            ? orders.orders.map((row) => (
-              <Row key={row.id} label={`${row.trackingId} · ${row.kind === "store" ? t.storeKind : t.quoteKind} · ${statusLabel[row.status] ?? row.status}`}>
-                {"link" in row && row.link ? (
-                  // Product link: shown as plain text (never auto-opened or fetched); copy it to open it yourself.
-                  <code dir="ltr" className="block w-full select-all break-all text-xs text-muted">{row.link}</code>
-                ) : null}
-                {ORDER_STATUS.filter((status) => status !== row.status).map((status) => (
-                  <button key={status} type="button" className={btnGhost} onClick={() => setStatus(row.id, status)}>{statusLabel[status]}</button>
-                ))}
-              </Row>
-            ))
-            : null}
-        </Section>
+        <StaffRequestList initial={initial.orders} />
       </div>
     </Shell>
   );
