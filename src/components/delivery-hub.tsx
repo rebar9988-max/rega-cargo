@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, MapPin, ShoppingBag, Tag, Truck, type LucideIcon } from "lucide-react";
+import { BrandHero, IconBadge, TrustRow } from "@/components/brand";
 import { Field, btnPrimary, controlClass } from "@/components/field";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { DESTS, ORIGINS, SAMPLE_BOX, getDest, getOrigin, placeName } from "@/lib/corridor";
@@ -40,13 +41,9 @@ export function ServiceSwitch({
               role="tab"
               aria-selected={on}
               onClick={() => onChange(item.id)}
-              className={`flex min-h-20 min-w-0 items-center gap-3 rounded-2xl border bg-surface p-3 text-start transition-colors ${on ? "border-pine ring-1 ring-pine" : "border-line"}`}
+              className={`flex min-h-20 min-w-0 items-center gap-3 rounded-2xl border bg-surface p-3 text-start transition-[border-color,box-shadow] ${on ? "rl-soft border-pine ring-1 ring-pine" : "border-line"}`}
             >
-              <span
-                className={`grid size-11 shrink-0 place-items-center rounded-xl ${on ? "bg-pine text-white" : "bg-paper text-ink"}`}
-              >
-                <Icon className="size-5" aria-hidden="true" />
-              </span>
+              <IconBadge icon={Icon} />
               <span className="flex min-w-0 flex-col">
                 <span
                   dir="auto"
@@ -69,9 +66,7 @@ export function ServiceSwitch({
 function CardHead({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
   return (
     <div className="flex items-center gap-3" style={{ direction: "ltr" }}>
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-paper text-ink">
-        <Icon className="size-5" aria-hidden="true" />
-      </span>
+      <IconBadge icon={Icon} size="sm" />
       <h2 dir="auto" className="text-lg font-bold">
         {title}
       </h2>
@@ -91,20 +86,11 @@ export function DeliveryHub() {
 
   return (
     <>
-      <section className="bg-ink text-paper">
-        <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
-          <p dir="ltr" className="text-end font-sans text-[11px] tracking-[0.2em] text-paper/60">
-            R&amp;L
-          </p>
-          <h1 className="mt-3 text-3xl leading-snug font-bold tracking-tight text-paper md:text-5xl">
-            {d.deliveryTitle}
-          </h1>
-          <p className="mt-4 text-sm text-paper/60">{d.route}</p>
-        </div>
-      </section>
+      <BrandHero title={d.deliveryTitle} route={d.route} />
+      <TrustRow />
       <div className="mx-auto grid max-w-6xl items-start gap-3 px-4 py-6 md:grid-cols-3 md:gap-5 md:px-5 md:py-10">
         <form
-          className="flex flex-col gap-4 rounded-3xl border border-line bg-surface p-5"
+          className="flex flex-col gap-4 rl-soft rounded-3xl border border-line bg-surface p-5"
           onSubmit={(event) => {
             event.preventDefault();
             void navigate({ to: "/quote", search: { from, to, kg: parseKg(kg) } });
@@ -146,7 +132,7 @@ export function DeliveryHub() {
           </button>
         </form>
         <form
-          className="flex flex-col gap-4 rounded-3xl border border-line bg-surface p-5"
+          className="flex flex-col gap-4 rl-soft rounded-3xl border border-line bg-surface p-5"
           onSubmit={(event) => {
             event.preventDefault();
             const id = code.trim().toUpperCase();
@@ -170,7 +156,7 @@ export function DeliveryHub() {
         </form>
         <Link
           to={"/move" as string}
-          className="flex items-center gap-3 rounded-3xl border border-line bg-surface p-5"
+          className="flex items-center gap-3 rl-soft rounded-3xl border border-line bg-surface p-5"
           style={{ direction: "ltr" }}
         >
           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-paper text-ink">

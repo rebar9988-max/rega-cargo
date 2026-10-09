@@ -18,6 +18,8 @@ export type DesignCopy = {
   delivery: string;
   deliverySub: string;
   deliveryTitle: string;
+  trustLabel: string;
+  trust: { fast: string; safe: string; reach: string; onTime: string };
   quoteCard: string;
   quoteGo: string;
   trackCard: string;
@@ -43,6 +45,8 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     delivery: "گەیاندن",
     deliverySub: "ناردن و شوێنپێکردنی بار",
     deliveryTitle: "بنێرە. شوێنی بکەوە.",
+    trustLabel: "بۆچی R&L",
+    trust: { fast: "خێرا و متمانەپێکراو", safe: "سەلامەت و پارێزراو", reach: "گەیشتنی فراوان", onTime: "لە کاتی خۆیدا" },
     quoteCard: "نرخی ناردن",
     quoteGo: "نرخ ببینە",
     trackCard: "شوێنپێکردن بە کۆد",
@@ -66,6 +70,8 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     delivery: "Delivery",
     deliverySub: "Send & track parcels",
     deliveryTitle: "Send it. Track it.",
+    trustLabel: "Why R&L",
+    trust: { fast: "Fast & reliable", safe: "Safe & secure", reach: "Wide reach", onTime: "On time" },
     quoteCard: "Shipping price",
     quoteGo: "See price",
     trackCard: "Track by code",
@@ -89,6 +95,8 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     delivery: "Gihandin",
     deliverySub: "Pakêtan bişîne û bişopîne",
     deliveryTitle: "Bişîne. Bişopîne.",
+    trustLabel: "Çima R&L",
+    trust: { fast: "Bilez û pêbawer", safe: "Ewle û parastî", reach: "Gihîştina fireh", onTime: "Di wextê xwe de" },
     quoteCard: "Bihayê şandinê",
     quoteGo: "Bihayê bibîne",
     trackCard: "Bi kodê bişopîne",
@@ -112,6 +120,8 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     delivery: "التوصيل",
     deliverySub: "أرسل الطرود وتتبّعها",
     deliveryTitle: "أرسل. وتتبّع.",
+    trustLabel: "لماذا R&L",
+    trust: { fast: "سريع وموثوق", safe: "آمن ومحمي", reach: "وصول واسع", onTime: "في الوقت المحدد" },
     quoteCard: "سعر الشحن",
     quoteGo: "اعرض السعر",
     trackCard: "التتبّع بالرمز",
@@ -135,6 +145,8 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     delivery: "ارسال",
     deliverySub: "ارسال و پیگیری بسته",
     deliveryTitle: "بفرست. پیگیری کن.",
+    trustLabel: "چرا R&L",
+    trust: { fast: "سریع و مطمئن", safe: "امن و محافظت‌شده", reach: "پوشش گسترده", onTime: "به‌موقع" },
     quoteCard: "هزینهٔ ارسال",
     quoteGo: "دیدن قیمت",
     trackCard: "پیگیری با کد",
@@ -158,6 +170,8 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     delivery: "Teslimat",
     deliverySub: "Paket gönder ve takip et",
     deliveryTitle: "Gönder. Takip et.",
+    trustLabel: "Neden R&L",
+    trust: { fast: "Hızlı ve güvenilir", safe: "Güvenli ve korumalı", reach: "Geniş erişim", onTime: "Zamanında" },
     quoteCard: "Gönderim fiyatı",
     quoteGo: "Fiyatı gör",
     trackCard: "Kodla takip",
@@ -181,6 +195,8 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     delivery: "Versand",
     deliverySub: "Pakete senden & verfolgen",
     deliveryTitle: "Senden. Verfolgen.",
+    trustLabel: "Warum R&L",
+    trust: { fast: "Schnell & zuverlässig", safe: "Sicher & geschützt", reach: "Große Reichweite", onTime: "Pünktlich" },
     quoteCard: "Versandpreis",
     quoteGo: "Preis ansehen",
     trackCard: "Mit Code verfolgen",

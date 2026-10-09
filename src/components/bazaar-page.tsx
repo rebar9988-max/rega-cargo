@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { QuotePanel } from "@/components/quote-panel";
 import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
 import { readService, writeService, type Service } from "@/lib/service-choice";
+import { BrandHero, TrustRow } from "@/components/brand";
 import { Shell } from "@/components/shell";
 import type { BazaarSearch } from "@/lib/bazaar-search";
 import { BRANDS, COLLECTION_ORDER } from "@/lib/catalog";
@@ -153,7 +154,7 @@ export function BazaarPage({
                   >
                     {d.audience[item]}
                     <span
-                      className={`absolute inset-x-6 bottom-0 h-0.5 ${on ? "bg-ink" : "bg-transparent"}`}
+                      className={`absolute inset-x-6 bottom-0 h-0.5 ${on ? "bg-pine" : "bg-transparent"}`}
                       aria-hidden="true"
                     />
                   </button>
@@ -162,20 +163,8 @@ export function BazaarPage({
             </div>
           </div>
 
-          <section className="bg-ink text-paper">
-            <div className="mx-auto max-w-6xl px-5 py-10 md:py-16">
-              <p
-                dir="ltr"
-                className="text-end font-sans text-[11px] tracking-[0.2em] text-paper/60"
-              >
-                R&amp;L
-              </p>
-              <h1 className="mt-4 text-3xl leading-snug font-bold tracking-tight text-balance text-paper md:text-5xl md:leading-tight">
-                {d.tagline}
-              </h1>
-              <p className="mt-5 text-sm text-paper/60">{d.route}</p>
-            </div>
-          </section>
+          <BrandHero title={d.tagline} route={d.route} />
+          <TrustRow />
 
           <section className="mx-auto max-w-6xl px-5 pt-8 md:pt-12">
             <div className="flex items-center justify-between gap-3" style={{ direction: "ltr" }}>
@@ -238,7 +227,7 @@ export function BazaarPage({
                         setBrandName(brand.name);
                         setCategory(brand.category);
                       }}
-                      className={`h-10 shrink-0 rounded-full border px-4 font-sans text-sm ${on ? "border-ink bg-ink text-pine-ink" : "border-line bg-surface text-ink"}`}
+                      className={`h-10 shrink-0 rounded-full border px-4 font-sans text-sm ${on ? "rl-grad border-transparent" : "border-line bg-surface text-ink"}`}
                     >
                       <bdi dir="ltr">{brand.name}</bdi>
                     </button>
@@ -303,7 +292,7 @@ export function BazaarPage({
                       <Link
                         to="/stores/request"
                         search={{ store: good.storeId, intent: "buy", item: good.id }}
-                        className="mt-2 inline-flex h-10 items-center justify-center rounded-full bg-ink text-sm text-pine-ink"
+                        className="mt-2 inline-flex h-10 items-center justify-center rounded-full rl-grad text-sm"
                       >
                         {t.order}
                       </Link>
@@ -389,7 +378,7 @@ export function BazaarPage({
                       href={store.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-ink text-sm font-medium text-pine-ink"
+                      className="mt-5 inline-flex h-11 items-center justify-center rounded-full rl-grad text-sm font-medium"
                     >
                       {t.open}
                     </a>
@@ -438,7 +427,7 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
     <button
       type="button"
       onClick={onClick}
-      className={`h-11 shrink-0 rounded-full border px-4 text-sm ${on ? "border-ink bg-ink text-pine-ink" : "border-line bg-surface text-ink"}`}
+      className={`h-11 shrink-0 rounded-full border px-4 text-sm ${on ? "rl-grad border-transparent" : "border-line bg-surface text-ink"}`}
     >
       {children}
     </button>
