@@ -1,3 +1,4 @@
+import { parseKg } from "@/lib/quote-search";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
@@ -357,7 +358,7 @@ export function QuotePanel({
         {variant === "compact" && valid ? (
           <Link
             to="/quote"
-            search={{ from: fromId, to: toId, kg }}
+            search={{ from: fromId, to: toId, kg: parseKg(kg) }}
             className={`${btnPrimary} mt-4 w-full`}
           >
             {t.changeBox}

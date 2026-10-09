@@ -42,7 +42,7 @@ const en = {
   forbidden: "You cannot do that.",
   notfound: "Not found.",
   moveKicker: "Free",
-  moveTitle: "Delivery and transport",
+  moveTitle: "Move & send",
   moveLede:
     "Ask for a delivery or a larger load. A driver can offer to take it. You choose. No fee inside the app.",
   pickup: "Pickup",
@@ -129,7 +129,7 @@ const ckb: typeof en = {
   forbidden: "ئەمەت بۆ ناکرێت.",
   notfound: "نەدۆزرایەوە.",
   moveKicker: "خۆڕایی",
-  moveTitle: "گەیاندن و گواستنەوە",
+  moveTitle: "گواستنەوە و ناردن",
   moveLede:
     "داوای گەیاندن یان باری گەورە بکە. شۆفێر دەتوانێت بیبات. تۆ هەڵیدەبژێریت. هیچ کرێیەک لەناو ئەپدا نییە.",
   pickup: "هەڵگرتن",
@@ -216,7 +216,7 @@ const fa: typeof en = {
   forbidden: "اجازهٔ این کار را نداری.",
   notfound: "پیدا نشد.",
   moveKicker: "رایگان",
-  moveTitle: "تحویل و حمل",
+  moveTitle: "جابه‌جایی و ارسال",
   moveLede:
     "برای یک تحویل یا بار بزرگ‌تر درخواست بده. یک راننده می‌تواند پیشنهاد بردن آن را بدهد. انتخاب با توست. داخل برنامه هیچ کارمزدی نیست.",
   pickup: "محل تحویل گرفتن",
@@ -267,7 +267,7 @@ const ALL: Record<Lang, typeof en> = {
   ar: {
     ...en,
     marketTitle: "السوق",
-    moveTitle: "التوصيل والنقل",
+    moveTitle: "النقل والإرسال",
     search: "بحث",
     sell: "بيع",
     admin: "إدارة",
@@ -286,7 +286,7 @@ const ALL: Record<Lang, typeof en> = {
   de: {
     ...en,
     marketTitle: "Marktplatz",
-    moveTitle: "Lieferung und Transport",
+    moveTitle: "Umzug & Versand",
     search: "Suche",
     sell: "Verkaufen",
     admin: "Verwaltung",
@@ -302,9 +302,9 @@ const ALL: Record<Lang, typeof en> = {
     delivered: "Zugestellt",
     cancelled: "Storniert",
   },
-  ku: { ...en, marketTitle: "Bazar", moveTitle: "Radestkirin", search: "Lêgerîn", sell: "Firotin", reviews: "Nirxandin", approve: "Pejirandin", reject: "Redkirin", orders: "Daxwaz", quoteKind: "Biha", storeKind: "Kirîna firoşgehê", received: "Gihîşt", confirmed: "Pejirandî", transit: "Di rê de", delivered: "Radest kirî", cancelled: "Betal kirî" },
+  ku: { ...en, marketTitle: "Bazar", moveTitle: "Barkirin û şandin", search: "Lêgerîn", sell: "Firotin", reviews: "Nirxandin", approve: "Pejirandin", reject: "Redkirin", orders: "Daxwaz", quoteKind: "Biha", storeKind: "Kirîna firoşgehê", received: "Gihîşt", confirmed: "Pejirandî", transit: "Di rê de", delivered: "Radest kirî", cancelled: "Betal kirî" },
   fa,
-  tr: { ...en, marketTitle: "Pazar", moveTitle: "Teslimat ve taşıma", search: "Ara", sell: "Sat", reviews: "Yorumlar", approve: "Onayla", reject: "Reddet", orders: "İstekler", quoteKind: "Fiyat", storeKind: "Mağaza alışverişi", received: "Alındı", confirmed: "Onaylandı", transit: "Yolda", delivered: "Teslim edildi", cancelled: "İptal" },
+  tr: { ...en, marketTitle: "Pazar", moveTitle: "Taşıma ve gönderim", search: "Ara", sell: "Sat", reviews: "Yorumlar", approve: "Onayla", reject: "Reddet", orders: "İstekler", quoteKind: "Fiyat", storeKind: "Mağaza alışverişi", received: "Alındı", confirmed: "Onaylandı", transit: "Yolda", delivered: "Teslim edildi", cancelled: "İptal" },
 };
 
 export function marketCopy(lang: Lang) {

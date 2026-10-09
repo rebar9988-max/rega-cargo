@@ -4,6 +4,7 @@
  * other middleware and caches their final output.
  */
 import { createHtmlCache } from "../../src/lib/html-cache";
+import { serviceFromCookieHeader } from "../../src/lib/service-choice";
 
 const ALLOWED_HOSTS = [
   "cargo.regaplatform.com",
@@ -16,6 +17,8 @@ const cache = createHtmlCache({
   ttlMs: 60_000,
   maxEntries: 32,
   hosts: ALLOWED_HOSTS,
+  // "/" renders the remembered Bazaar/Delivery panel from the rl-service cookie.
+  vary: (headers) => (serviceFromCookieHeader(headers.get("cookie")) === "delivery" ? "delivery" : ""),
 });
 
 interface HtmlCacheEvent {
@@ -29,5 +32,8 @@ export default function htmlCacheMiddleware(
 ) {
   // Key on the Worker's own URL host only. Ignore x-forwarded-host (client-controlled).
   const host = event.url.host;
-  return cache.handle({ method: event.req.method ?? "GET", url: event.url, host }, next);
+  return cache.handle(
+    { method: event.req.method ?? "GET", url: event.url, host, headers: event.req.headers },
+    next,
+  );
 }

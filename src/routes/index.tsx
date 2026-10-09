@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BazaarPage } from "@/components/bazaar-page";
 import { validateBazaarSearch } from "@/lib/bazaar-search";
+import { initialService } from "@/lib/service-initial";
 
 export const Route = createFileRoute("/")({
   validateSearch: validateBazaarSearch,
+  loader: async () => ({ service: await initialService() }),
   head: () => ({
     meta: [
       { title: "بازاڕ · R&L" },
@@ -18,5 +20,6 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  return <BazaarPage home />;
+  const { service } = Route.useLoaderData();
+  return <BazaarPage home initialService={service} />;
 }

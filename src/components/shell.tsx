@@ -27,6 +27,7 @@ import { rlAiEnabled } from "@/lib/ai/flag";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
+import { storeCopy } from "@/lib/store-copy";
 import { LANGS, langMeta, type Lang } from "@/lib/langs";
 
 const LINKS = [
@@ -226,7 +227,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
         {t.skip}
       </a>
       <header className="sticky top-0 z-30 border-b-2 border-pine bg-surface text-ink">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 md:px-5">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 md:px-5" style={{ direction: "ltr" }}>
           <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="R&L">
             <Mark className="size-11 md:size-12" />
             <span className="hidden min-w-0 flex-col leading-none xl:flex">
@@ -245,7 +246,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
                   to={link.to}
                   className={`text-sm ${on ? "font-semibold text-pine" : "text-muted hover:text-ink"}`}
                 >
-                  {t.nav[link.key]}
+                  {link.to === "/move" ? d.moveSend : t.nav[link.key]}
                 </Link>
               );
             })}
@@ -322,7 +323,9 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
                             ? AI_COPY[lang].navLabel
                             : item.to === "/move"
                               ? d.moveSend
-                              : t.nav[item.key as keyof typeof t.nav]
+                              : item.to === "/stores"
+                                ? storeCopy(lang).storesHeading
+                                : t.nav[item.key as keyof typeof t.nav]
                         }
                         on={isOn(path, item.to, false)}
                       />

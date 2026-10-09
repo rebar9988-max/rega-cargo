@@ -62,7 +62,10 @@ const isAudience = (value: unknown): value is Audience => AUDIENCES.includes(val
 const isCategory = (value: unknown): value is StoreCategory =>
   STORE_CATEGORIES.includes(value as StoreCategory);
 
-export function BazaarPage({ home = false }: { home?: boolean } = {}) {
+export function BazaarPage({
+  home = false,
+  initialService = "bazaar",
+}: { home?: boolean; initialService?: Service } = {}) {
   const { lang } = useI18n();
   const t = storeCopy(lang);
   const d = DESIGN_COPY[lang];
@@ -79,11 +82,18 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
   const [onlyFav, setOnlyFav] = useState(params.fav === "1");
   const [favs, setFavs] = useState<string[]>(() => readFavs());
   const query = q.trim().toLowerCase();
-  // Home offers both services; the choice is remembered (default Bazaar, read after hydration).
-  const [service, setService] = useState<Service>("bazaar");
+  // Home offers both services. The server renders the remembered choice from the
+  // rl-service cookie; this effect only corrects devices that still have the
+  // older storage-only choice (and gives them the cookie for next time).
+  const [service, setService] = useState<Service>(initialService);
   useEffect(() => {
-    if (home) setService(readService());
-  }, [home]);
+    if (!home) return;
+    const stored = readService();
+    if (stored !== initialService) {
+      setService(stored);
+      writeService(stored);
+    }
+  }, [home, initialService]);
   const chooseService = (next: Service) => {
     setService(next);
     writeService(next);
