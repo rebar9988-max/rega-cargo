@@ -1,22 +1,37 @@
-import type { ErrorComponentProps } from "@tanstack/react-router";
+import { useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
+import { pagesCopyFromDocument } from "@/lib/pages-copy";
 
-const FALLBACK_MESSAGE = "An unexpected error occurred. Try reloading the page.";
-
-function errorMessage(error: unknown): string {
-  if (error instanceof Error && error.message) return error.message;
-  if (typeof error === "string" && error) return error;
-  return FALLBACK_MESSAGE;
-}
-
-export function AppErrorComponent({ error }: ErrorComponentProps) {
+/**
+ * Route error fallback. Never shows the error message or stack (they can name
+ * internals); logs it to the console for debugging and offers a retry.
+ */
+export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
+  const router = useRouter();
+  const copy = pagesCopyFromDocument();
+  if (typeof window !== "undefined") console.error("[route]", error instanceof Error ? error.name : "error");
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-paper px-6 text-center text-ink">
-      <span className="text-clay" aria-hidden="true">
-        <TriangleAlert className="size-10" strokeWidth={2} />
+    <main className="flex min-h-[60vh] flex-col items-center justify-center gap-3 bg-paper px-6 text-center text-ink">
+      <span className="text-pine" aria-hidden="true">
+        <TriangleAlert className="size-10" strokeWidth={1.75} />
       </span>
-      <h1 className="text-lg font-semibold">Something went wrong</h1>
-      <p className="max-w-md text-sm break-words text-muted">{errorMessage(error)}</p>
+      <h1 className="text-lg font-semibold">{copy.errorTitle}</h1>
+      <p className="max-w-md text-sm text-muted">{copy.errorBody}</p>
+      <div className="mt-2 flex flex-wrap justify-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            reset();
+            void router.invalidate();
+          }}
+          className="rl-grad inline-flex h-11 items-center rounded-full px-5 text-sm font-medium"
+        >
+          {copy.retry}
+        </button>
+        <a href="/" className="inline-flex h-11 items-center rounded-full border border-silver bg-surface px-5 text-sm font-medium">
+          {copy.home}
+        </a>
+      </div>
     </main>
   );
 }

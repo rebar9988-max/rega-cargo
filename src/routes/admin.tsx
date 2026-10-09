@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { seo } from "@/lib/seo";
 import { useState, type ReactNode } from "react";
 import { btnGhost, btnPrimary } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
@@ -24,7 +25,13 @@ export const Route = createFileRoute("/admin")({
       return { gate: null, market, orders: { error: "unavailable" as const } };
     }
   },
-  head: () => ({ meta: [{ title: "بەڕێوەبەر · R&L" }] }),
+  head: () =>
+    seo({
+      path: "/admin",
+      title: "بەڕێوەبەر · R&L",
+      description: "بەڕێوەبردنی R&L.",
+      noindex: true,
+    }),
   component: AdminPage,
 });
 

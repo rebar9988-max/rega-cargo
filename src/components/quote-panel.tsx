@@ -309,7 +309,7 @@ export function QuotePanel({
                           {row.mode.id === "economy" ? (
                             <p className="text-xs font-medium text-pine">{t.usual}</p>
                           ) : null}
-                          <h3 className="text-lg font-semibold">{t.modes[row.mode.id].name}</h3>
+                          <h2 className="text-lg font-semibold">{t.modes[row.mode.id].name}</h2>
                           <p className="text-sm text-muted">
                             <bdi dir="ltr">{dayRange(t.dayRange, row.mode.days[0], row.mode.days[1])}</bdi>
                           </p>

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { seo } from "@/lib/seo";
 import { useState } from "react";
 import { Report } from "@/routes/market.$slug";
 import { btnGhost, btnPrimary, controlClass, Field } from "@/components/field";
@@ -21,12 +22,12 @@ export const Route = createFileRoute("/move")({
     if (state !== "in") return { gate: state };
     return { gate: null, jobs: await moveJobs() };
   },
-  head: () => ({
-    meta: [
-      { title: "گواستنەوە و ناردن · R&L" },
-      { name: "description", content: "داوای گەیاندن و گواستنەوە. شۆفێر خۆی پێشنیار دەکات و تۆ هەڵیدەبژێریت." },
-    ],
-  }),
+  head: () =>
+    seo({
+      path: "/move",
+      title: "گواستنەوە و ناردن · R&L",
+      description: "داوای گەیاندن و گواستنەوە. شۆفێر خۆی پێشنیار دەکات و تۆ هەڵیدەبژێریت.",
+    }),
   component: MovePage,
 });
 

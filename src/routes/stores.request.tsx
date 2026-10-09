@@ -1,4 +1,5 @@
 import { responsiveImage } from "@/lib/images";
+import { seo } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Field, controlClass, btnPrimary } from "@/components/field";
@@ -15,7 +16,13 @@ export const Route = createFileRoute("/stores/request")({
     item: typeof search.item === "string" ? search.item : undefined,
     intent: search.intent === "ship" ? "ship" : "buy",
   }),
-  head: () => ({ meta: [{ title: "لینکی کاڵا · R&L" }] }),
+  head: () =>
+    seo({
+      path: "/stores/request",
+      title: "لینکی کاڵا · R&L",
+      description: "داوای کڕینی کاڵایەک لە فرۆشگایەکی ئەوروپی.",
+      noindex: true,
+    }),
   component: RequestPage,
 });
 

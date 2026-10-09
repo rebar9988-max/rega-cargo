@@ -1,4 +1,5 @@
 import { responsiveImage } from "@/lib/images";
+import { seo } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { btnGhost, btnPrimary, controlClass, Field } from "@/components/field";
@@ -10,15 +11,15 @@ import { marketAlert, marketFavorite, marketProduct, marketReport, marketReview 
 
 export const Route = createFileRoute("/market/$slug")({
   loader: ({ params }) => marketProduct({ data: { slug: params.slug } }),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData && "nameKu" in loaderData ? loaderData.nameKu : "R&L"} · R&L` },
-      {
-        name: "description",
-        content: loaderData && "descriptionKu" in loaderData ? loaderData.descriptionKu : "R&L",
-      },
-    ],
-  }),
+  head: ({ loaderData, params }) => {
+    const found = loaderData && "nameKu" in loaderData;
+    return seo({
+      path: `/market/${encodeURIComponent(params.slug)}`,
+      title: `${found ? loaderData.nameKu : "بەراوردی نرخ"} · R&L`,
+      description: found && "descriptionKu" in loaderData && loaderData.descriptionKu ? loaderData.descriptionKu : "بەراوردی نرخی کاڵا لە چەند فرۆشیارێک.",
+      noindex: !found,
+    });
+  },
   component: ProductPage,
 });
 

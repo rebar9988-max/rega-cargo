@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { seo } from "@/lib/seo";
 import { QuotePanel } from "@/components/quote-panel";
 import { PageHeader, Shell } from "@/components/shell";
 import { DeliveryTabs } from "@/components/delivery-hub";
@@ -11,9 +12,12 @@ export const Route = createFileRoute("/quote")({
     to: typeof search.to === "string" && search.to ? search.to : undefined,
     kg: parseKg(search.kg),
   }),
-  head: () => ({
-    meta: [{ title: "نرخ · R&L" }],
-  }),
+  head: () =>
+    seo({
+      path: "/quote",
+      title: "نرخی ناردن · R&L",
+      description: "نرخی ناردنی بار لە ئەوروپاوە بۆ کوردستان و عێراق بە پێی کێشی حیسابکراو، بە یۆرۆ و دینار. گومرگ لەناو نرخەکەدا نییە.",
+    }),
   component: QuotePage,
 });
 

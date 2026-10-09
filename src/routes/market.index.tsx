@@ -1,5 +1,7 @@
 import { responsiveImage } from "@/lib/images";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { seo } from "@/lib/seo";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { PAGES_COPY } from "@/lib/pages-copy";
 import { PageHeader, Shell } from "@/components/shell";
 import { controlClass } from "@/components/field";
 import { useI18n } from "@/lib/i18n";
@@ -20,12 +22,13 @@ export const Route = createFileRoute("/market/")({
   }),
   loaderDeps: ({ search }) => search,
   loader: ({ deps }) => marketHome({ data: { ...deps, saved: deps.saved === "1" } }),
-  head: () => ({
-    meta: [
-      { title: "بازاڕ · R&L" },
-      { name: "description", content: "بەراوردی نرخی کاڵا لە چەند فرۆشیارێک. بێ پارەدان و بێ ڕیکلام." },
-    ],
-  }),
+  head: () =>
+    seo({
+      path: "/market",
+      title: "بەراوردی نرخ · R&L",
+      description: "بەراوردی نرخی کاڵا لە چەند فرۆشیارێک. بێ پارەدان و بێ ڕیکلام.",
+    }),
+  pendingComponent: MarketLoading,
   component: MarketHome,
 });
 
@@ -35,11 +38,22 @@ function MarketHome() {
   const navigate = useNavigate({ from: "/market/" });
   const { lang } = useI18n();
   const t = marketCopy(lang);
+  const router = useRouter();
   if ("error" in data) {
+    const pc = PAGES_COPY[lang];
     return (
       <Shell>
         <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
-        <p className="mx-auto max-w-6xl px-5 py-10 text-sm text-clay">{t.invalid}</p>
+        <div className="mx-auto flex max-w-6xl flex-col items-start gap-4 px-4 py-10 md:px-5" role="status">
+          <p className="text-sm text-muted">{data.error === "unavailable" ? pc.unavailable : pc.errorBody}</p>
+          <button
+            type="button"
+            onClick={() => void router.invalidate()}
+            className="inline-flex h-11 items-center rounded-full border border-silver bg-surface px-5 text-sm font-medium"
+          >
+            {pc.retry}
+          </button>
+        </div>
       </Shell>
     );
   }
@@ -99,7 +113,16 @@ function MarketHome() {
           <button type="submit" className="h-12 rounded-full bg-pine px-5 text-sm font-medium text-pine-ink">{t.search}</button>
         </form>
         <p className="text-sm text-muted">{t.freeSort}</p>
-        {data.items.length === 0 ? <p className="text-sm text-muted">{t.none}</p> : null}
+        {data.items.length === 0 ? (
+          <div className="flex flex-col items-start gap-3 rounded-2xl border border-line bg-surface p-5" role="status">
+            <p className="text-sm text-muted">{t.none}</p>
+            {search.q || search.category || search.brand || search.min || search.max || search.stock || search.saved ? (
+              <Link to="/market" search={{ sort: "price", page: 1, q: "", category: "", brand: "", min: "", max: "", stock: "", saved: "" }} className="text-sm font-medium text-pine">
+                {t.all}
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
         <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {data.items.map((item) => (
             <li key={item.slug} className="overflow-hidden rounded-2xl border border-line bg-surface">
@@ -117,13 +140,31 @@ function MarketHome() {
         </ul>
         <div className="flex gap-3">
           {search.page > 1 ? (
-            <button type="button" className="text-sm text-pine" onClick={() => set({ page: search.page - 1 })}>←</button>
+            <button type="button" aria-label={PAGES_COPY[lang].prev} className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine" onClick={() => set({ page: search.page - 1 })}>←</button>
           ) : null}
           <span className="text-sm text-muted"><bdi dir="ltr">{search.page} / {data.pages}</bdi></span>
           {search.page < data.pages ? (
-            <button type="button" className="text-sm text-pine" onClick={() => navigate({ search: { ...search, page: search.page + 1 } })}>→</button>
+            <button type="button" aria-label={PAGES_COPY[lang].next} className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine" onClick={() => navigate({ search: { ...search, page: search.page + 1 } })}>→</button>
           ) : null}
         </div>
+      </div>
+    </Shell>
+  );
+}
+
+function MarketLoading() {
+  const { lang } = useI18n();
+  const t = marketCopy(lang);
+  return (
+    <Shell>
+      <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
+      <div className="mx-auto max-w-6xl px-4 py-10 md:px-5" role="status" aria-busy="true">
+        <span className="sr-only">{PAGES_COPY[lang].loading}</span>
+        <ul className="grid grid-cols-2 gap-3 md:grid-cols-4" aria-hidden="true">
+          {Array.from({ length: 8 }, (_, index) => (
+            <li key={index} className="aspect-[3/4] animate-pulse rounded-2xl bg-line" />
+          ))}
+        </ul>
       </div>
     </Shell>
   );

@@ -29,7 +29,10 @@
     // R&L AI (/ai, /api/ai/*): enabled in production (user-approved 2026-10-08).
     // Hard daily cap of identifications across all visitors.
     "RL_AI_ENABLED": "true",
-    "RL_AI_DAILY_CAP": "200"
+    "RL_AI_DAILY_CAP": "200",
+    // Canonical origin for <link rel=canonical>, robots.txt and sitemap.xml.
+    // Change only when a custom domain is attached (owner decision).
+    "SITE_URL": "https://rega-cargo.rebar9988.workers.dev"
   },
 
   // R&L AI: Workers AI binding + strongly consistent usage counter (daily cap and
@@ -59,7 +62,10 @@
         "VITE_GROK_EXTENSIONS": "0",
         "RL_AI_ENABLED": "true",
         // Hard daily cap on AI identifications (all visitors together).
-        "RL_AI_DAILY_CAP": "200"
+        "RL_AI_DAILY_CAP": "200",
+        "SITE_URL": "https://rega-cargo-staging.rebar9988.workers.dev",
+        // Staging is never indexed (x-robots-tag + robots.txt Disallow: /).
+        "RL_NOINDEX": "1"
       },
       "ai": { "binding": "AI" },
       "durable_objects": {
