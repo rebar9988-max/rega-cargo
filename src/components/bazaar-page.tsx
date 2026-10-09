@@ -404,24 +404,24 @@ export function BazaarPage({
                     >
                       {t.open}
                     </a>
-                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                    <div className="mt-1 flex flex-wrap gap-x-4 text-sm">
                       <Link
                         to="/stores/request"
                         search={{ store: store.id, intent: "buy", item: undefined }}
-                        className="text-ink underline-offset-4 hover:underline"
+                        className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline"
                       >
                         {t.assist}
                       </Link>
                       <Link
                         to="/stores/request"
                         search={{ store: store.id, intent: "ship", item: undefined }}
-                        className="text-muted underline-offset-4 hover:underline"
+                        className="inline-flex min-h-11 items-center text-muted underline-offset-4 hover:underline"
                       >
                         {t.shipOwn}
                       </Link>
                     </div>
-                    <details className="mt-3 text-sm text-muted">
-                      <summary className="cursor-pointer">{t.external}</summary>
+                    <details className="text-sm text-muted">
+                      <summary className="flex min-h-11 cursor-pointer items-center">{t.external}</summary>
                       <p className="mt-2 leading-relaxed">{t.notes[store.note]}</p>
                       {store.caution.length > 0 ? (
                         <ul className="mt-2 flex flex-col gap-1">

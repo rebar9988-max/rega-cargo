@@ -61,7 +61,7 @@ const MENU_DELIVERY = [
 ] as const;
 
 const iconBtn =
-  "inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper";
+  "inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper lg:size-9";
 
 function MenuRow({
   to,
@@ -239,14 +239,14 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
               <span className="mt-1 font-sans text-xs text-muted">EUROPE ↔ KURDISTAN ↔ IRAQ</span>
             </span>
           </Link>
-          <nav className="ms-auto hidden items-center gap-3 lg:flex">
+          <nav className="ms-auto hidden items-center gap-2 lg:flex">
             {LINKS.map((link) => {
               const on = isOn(path, link.to, link.exact);
               return (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`inline-flex min-h-11 items-center text-sm whitespace-nowrap ${on ? "font-semibold text-pine" : "text-muted hover:text-ink"}`}
+                  className={`inline-flex min-h-11 min-w-6 items-center justify-center text-sm whitespace-nowrap ${on ? "font-semibold text-pine" : "text-muted hover:text-ink"}`}
                 >
                   {link.to === "/move" ? d.moveSend : t.nav[link.key]}
                 </Link>

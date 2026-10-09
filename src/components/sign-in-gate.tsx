@@ -61,7 +61,7 @@ export function SignInGate({ state, kicker }: { state: Exclude<ViewerState, "in"
       <PageHeader kicker={kicker} title={off ? t.off : t.out} lede={off ? t.offBody : t.outBody} />
       <div className="mx-auto max-w-md px-5 py-10">
         {off ? (
-          <a href={`mailto:${CONTACT_EMAIL}`} className="font-sans text-base font-semibold underline" dir="ltr">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex min-h-11 items-center font-sans text-base font-semibold underline" dir="ltr">
             {CONTACT_EMAIL}
           </a>
         ) : (

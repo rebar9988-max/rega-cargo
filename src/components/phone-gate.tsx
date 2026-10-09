@@ -208,7 +208,7 @@ export function PhoneButton({
           type="button"
           onClick={() => setOpen(true)}
           aria-label={label ?? t.in}
-          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper max-[389px]:hidden"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper max-[389px]:hidden lg:size-9"
         >
           <UserRound className="size-5" aria-hidden="true" />
         </button>

@@ -122,7 +122,7 @@ export function AiPage() {
               <input
                 id={consentId}
                 type="checkbox"
-                className="mt-1 size-5 shrink-0 accent-[var(--color-pine)]"
+                className="mt-0.5 size-6 shrink-0 accent-[var(--color-pine)]"
                 checked={consent}
                 onChange={(event) => setConsent(event.target.checked)}
               />
