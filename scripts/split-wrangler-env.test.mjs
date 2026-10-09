@@ -42,8 +42,9 @@ test("repo config: production has AI on with cap; staging is a separate worker w
   const json = JSON.parse(src.replace(/^\s*\/\/.*$/gm, ""));
   const { production, environments } = splitEnvironments(json);
   assert.equal(production.name, "rega-cargo");
-  // Production lives only on its custom domain; staging keeps workers.dev.
-  assert.equal(production.workers_dev, false);
+  // Production lives on its custom domain; staging keeps workers.dev.
+  // workers.dev stays on only for the legacy-host 301 (scripts/legacy-host.mjs).
+  assert.equal(production.workers_dev, true);
   assert.equal(production.preview_urls, false);
   assert.deepEqual(production.routes, [{ pattern: "cargo.regaplatform.com", custom_domain: true }]);
   assert.equal(production.vars.SITE_URL, "https://cargo.regaplatform.com");

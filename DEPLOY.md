@@ -95,12 +95,20 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
    and redeploy. Requires a token with Zone DNS edit + Workers Routes edit.
    **Status: done 2026-10-09** — `cargo.regaplatform.com` is attached to
    `rega-cargo` (production only; staging has `routes: []`) and is listed in
-   `wrangler.jsonc`. Since the owner confirmed the new address, production has
-   `workers_dev: false` and `preview_urls: false`: the old
-   `rega-cargo.<subdomain>.workers.dev` URL no longer serves the app.
-   Staging (`rega-cargo-staging`) stays on workers.dev. Note: rolling back code
-   (`wrangler rollback`) does not re-enable workers.dev; that needs
-   `workers_dev: true` + a deploy (or Dashboard → Domains & Routes).
+   `wrangler.jsonc`. Since the owner confirmed the new address, the old
+   `rega-cargo.<subdomain>.workers.dev` URL never serves the app: a wrapper in
+   front of Nitro (`scripts/legacy-host.mjs`, wired in by
+   `scripts/wrap-legacy-host.mjs` after `vite build`) answers every request on
+   that host with a 301 (308 for non-GET) to the same path + query on
+   `https://cargo.regaplatform.com`, and `/sw.js` with a no-store service worker
+   that clears caches, unregisters itself and navigates open windows/installed
+   PWAs to the new domain. `assets.run_worker_first` routes `/sw.js`,
+   `/manifest.webmanifest` and `/offline.html` through the Worker so the asset
+   server can't serve them on the old host. Production keeps `workers_dev: true`
+   for this redirect and has `preview_urls: false`. Staging
+   (`rega-cargo-staging`) stays on workers.dev and is passed through untouched.
+   Note: a code rollback (`wrangler rollback`) to a version before the redirect
+   would serve the app on the old host again.
 
 ## Rollback
 
