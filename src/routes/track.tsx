@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { seo } from "@/lib/seo";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageHeader, Shell } from "@/components/shell";
 import { DeliveryTabs } from "@/components/delivery-hub";
@@ -15,9 +16,13 @@ export const Route = createFileRoute("/track")({
   validateSearch: (search: Record<string, unknown>) => ({
     id: typeof search.id === "string" && search.id ? search.id : undefined,
   }),
-  head: () => ({
-    meta: [{ title: "شوێنپێکردن · R&L" }],
-  }),
+  head: () =>
+    seo({
+      path: "/track",
+      title: "شوێنپێکردنی بار · R&L",
+      description: "شوێنی بارەکەت بە کۆدی شوێنپێکردن بدۆزەوە.",
+      noindex: true,
+    }),
   component: TrackPage,
 });
 

@@ -1,13 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { seo } from "@/lib/seo";
 import { Mail } from "lucide-react";
 import { PageHeader, Shell } from "@/components/shell";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [{ title: "پەیوەندی · R&L" }],
-  }),
+  head: () =>
+    seo({
+      path: "/contact",
+      title: "پەیوەندی · R&L",
+      description: "پەیوەندی بە R&L بکە لە ڕێگەی ئیمەیڵەوە: 2233rega@gmail.com.",
+    }),
   component: ContactPage,
 });
 

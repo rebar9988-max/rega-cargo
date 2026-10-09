@@ -1,11 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { seo } from "@/lib/seo";
 import { PageHeader, Shell } from "@/components/shell";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/customs")({
-  head: () => ({
-    meta: [{ title: "گومرگ · R&L" }],
-  }),
+  head: () =>
+    seo({
+      path: "/customs",
+      title: "گومرگ · R&L",
+      description: "زانیاریی گومرگ بۆ ناردنی بار بۆ کوردستان و عێراق.",
+    }),
   component: CustomsPage,
 });
 

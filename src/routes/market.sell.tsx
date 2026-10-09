@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { seo } from "@/lib/seo";
 import { useState } from "react";
 import { btnPrimary, controlClass, Field } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
@@ -15,7 +16,13 @@ export const Route = createFileRoute("/market/sell")({
     const [me, mine] = await Promise.all([marketMe(), marketMine()]);
     return { gate: null, me, mine };
   },
-  head: () => ({ meta: [{ title: "فرۆشتن · R&L" }] }),
+  head: () =>
+    seo({
+      path: "/market/sell",
+      title: "فرۆشتن · R&L",
+      description: "فرۆشتن لە بازاڕی R&L.",
+      noindex: true,
+    }),
   component: SellPage,
 });
 

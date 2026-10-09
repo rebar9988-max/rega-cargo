@@ -31,6 +31,8 @@ export default async function securityHeaders(_event: unknown, next: () => unkno
   headers.set("x-content-type-options", "nosniff");
   headers.set("referrer-policy", "strict-origin-when-cross-origin");
   headers.set("permissions-policy", "camera=(self), microphone=(), geolocation=(), payment=()");
+  // Staging and other preview Workers must never be indexed.
+  if ((globalThis as { __env__?: Record<string, unknown> }).__env__?.RL_NOINDEX === "1") headers.set("x-robots-tag", "noindex, nofollow");
   const type = headers.get("content-type") ?? "";
   if (!type.includes("text/html") || !result.body) {
     return new Response(result.body, { status: result.status, statusText: result.statusText, headers });

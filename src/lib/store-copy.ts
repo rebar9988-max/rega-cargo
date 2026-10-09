@@ -181,7 +181,7 @@ const ckb: StoreCopy = {
     earbuds: "بیستۆکی بێوایەر",
     kettle: "کەتڵی کارەبایی",
     baby: "جلی منداڵ",
-    ball: "تۆپی تۆپ",
+    ball: "تۆپی پێ",
   },
   categories: {
     beauty: "جوانکاری و چاودێری",

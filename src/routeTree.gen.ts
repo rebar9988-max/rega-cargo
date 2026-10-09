@@ -14,10 +14,13 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AiRouteImport } from './routes/ai'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CustomsRouteImport } from './routes/customs'
+import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as MoveRouteImport } from './routes/move'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as QuoteRouteImport } from './routes/quote'
 import { Route as StoresRouteImport } from './routes/stores'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as MarketIndexRouteImport } from './routes/market.index'
 import { Route as MarketSlugRouteImport } from './routes/market.$slug'
@@ -50,6 +53,11 @@ const CustomsRoute = CustomsRouteImport.update({
   path: '/customs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ImpressumRoute = ImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketRoute = MarketRouteImport.update({
   id: '/market',
   path: '/market',
@@ -60,6 +68,11 @@ const MoveRoute = MoveRouteImport.update({
   path: '/move',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuoteRoute = QuoteRouteImport.update({
   id: '/quote',
   path: '/quote',
@@ -68,6 +81,11 @@ const QuoteRoute = QuoteRouteImport.update({
 const StoresRoute = StoresRouteImport.update({
   id: '/stores',
   path: '/stores',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackRoute = TrackRouteImport.update({
@@ -107,10 +125,13 @@ export interface FileRoutesByFullPath {
   '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/impressum': typeof ImpressumRoute
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
+  '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
   '/stores': typeof StoresRouteWithChildren
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/market/$slug': typeof MarketSlugRoute
   '/market/sell': typeof MarketSellRoute
@@ -124,8 +145,11 @@ export interface FileRoutesByTo {
   '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/impressum': typeof ImpressumRoute
   '/move': typeof MoveRoute
+  '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/market/$slug': typeof MarketSlugRoute
   '/market/sell': typeof MarketSellRoute
@@ -140,10 +164,13 @@ export interface FileRoutesById {
   '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/impressum': typeof ImpressumRoute
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
+  '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
   '/stores': typeof StoresRouteWithChildren
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/market/$slug': typeof MarketSlugRoute
   '/market/sell': typeof MarketSellRoute
@@ -159,10 +186,13 @@ export interface FileRouteTypes {
     | '/ai'
     | '/contact'
     | '/customs'
+    | '/impressum'
     | '/market'
     | '/move'
+    | '/privacy'
     | '/quote'
     | '/stores'
+    | '/terms'
     | '/track'
     | '/market/$slug'
     | '/market/sell'
@@ -176,8 +206,11 @@ export interface FileRouteTypes {
     | '/ai'
     | '/contact'
     | '/customs'
+    | '/impressum'
     | '/move'
+    | '/privacy'
     | '/quote'
+    | '/terms'
     | '/track'
     | '/market/$slug'
     | '/market/sell'
@@ -191,10 +224,13 @@ export interface FileRouteTypes {
     | '/ai'
     | '/contact'
     | '/customs'
+    | '/impressum'
     | '/market'
     | '/move'
+    | '/privacy'
     | '/quote'
     | '/stores'
+    | '/terms'
     | '/track'
     | '/market/$slug'
     | '/market/sell'
@@ -209,10 +245,13 @@ export interface RootRouteChildren {
   AiRoute: typeof AiRoute
   ContactRoute: typeof ContactRoute
   CustomsRoute: typeof CustomsRoute
+  ImpressumRoute: typeof ImpressumRoute
   MarketRoute: typeof MarketRouteWithChildren
   MoveRoute: typeof MoveRoute
+  PrivacyRoute: typeof PrivacyRoute
   QuoteRoute: typeof QuoteRoute
   StoresRoute: typeof StoresRouteWithChildren
+  TermsRoute: typeof TermsRoute
   TrackRoute: typeof TrackRoute
 }
 
@@ -253,6 +292,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/impressum': {
+      id: '/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof ImpressumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/market': {
       id: '/market'
       path: '/market'
@@ -267,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quote': {
       id: '/quote'
       path: '/quote'
@@ -279,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/stores'
       fullPath: '/stores'
       preLoaderRoute: typeof StoresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track': {
@@ -360,10 +420,13 @@ const rootRouteChildren: RootRouteChildren = {
   AiRoute: AiRoute,
   ContactRoute: ContactRoute,
   CustomsRoute: CustomsRoute,
+  ImpressumRoute: ImpressumRoute,
   MarketRoute: MarketRouteWithChildren,
   MoveRoute: MoveRoute,
+  PrivacyRoute: PrivacyRoute,
   QuoteRoute: QuoteRoute,
   StoresRoute: StoresRouteWithChildren,
+  TermsRoute: TermsRoute,
   TrackRoute: TrackRoute,
 }
 export const routeTree = rootRouteImport

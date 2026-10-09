@@ -3,6 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { I18nProvider } from "@/lib/i18n";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { ServiceWorkerSetup } from "@/components/sw-setup";
+import { NotFound } from "@/components/not-found";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -37,6 +38,7 @@ export const Route = createRootRoute({
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
   }),
+  notFoundComponent: NotFound,
   component: () => (
     <html lang="ckb" dir="ltr" data-textdir="rtl" data-rl-ai={rlAiEnabled() ? "1" : undefined} suppressHydrationWarning>
       <head>

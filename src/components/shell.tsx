@@ -23,6 +23,7 @@ import {
 import { AI_COPY } from "@/components/ai-copy";
 import { PhoneButton } from "@/components/phone-gate";
 import { SearchBox } from "@/components/search-box";
+import { LEGAL_COPY } from "@/lib/legal-copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
@@ -123,7 +124,7 @@ function AiPill({ lang, on }: { lang: Lang; on: boolean }) {
   return (
     <Link
       to="/ai"
-      aria-label={label}
+      aria-label={label.includes("AI") ? label : `${label} (AI)`}
       aria-current={on ? "page" : undefined}
       style={{ direction: "ltr" }}
       className={`inline-flex h-10 w-16 shrink-0 items-center justify-center gap-1.5 rounded-full border px-2 sm:w-36 lg:w-16 xl:w-36 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
@@ -349,7 +350,14 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
         </div>
         <div className="border-t border-line bg-paper">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
-            <p className="text-xs leading-relaxed text-muted">{t.footerNote}</p>
+            <div className="flex flex-col gap-2">
+              <p className="text-xs leading-relaxed text-muted">{t.footerNote}</p>
+              <nav aria-label={LEGAL_COPY[lang].links.impressum} className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                <Link to="/impressum" className="text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.impressum}</Link>
+                <Link to="/privacy" className="text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.privacy}</Link>
+                <Link to="/terms" className="text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.terms}</Link>
+              </nav>
+            </div>
             <a
               href="/rl-cargo.pdf"
               download="rl-cargo.pdf"
