@@ -25,19 +25,36 @@ export const issueQuote = createServerFn({ method: "POST" })
 
 /** Books a quote. Only a valid signed token is accepted; the client sends no price. */
 export const orderQuote = createServerFn({ method: "POST" })
-  .middleware([phoneOrAuthMiddleware])
   .validator((input: Record<string, unknown>) => input)
-  .handler(async ({ data, context }) => {
-    const { serverSecret } = await import("@/lib/rate-limit.server");
+  .handler(async ({ data }) => {
+    const { allow, serverSecret } = await import("@/lib/rate-limit.server");
     const { verifyQuote } = await import("@/lib/quote-token");
-    if (data.declared !== true) return { error: "declare" as const };
+    const { setResponseStatus } = await import("@tanstack/react-start/server");
+    if (!(await allow("book"))) {
+      setResponseStatus(429);
+      return { error: "rate" as const };
+    }
+    if (data.declared !== true) {
+      setResponseStatus(400);
+      return { error: "declare" as const };
+    }
     const secret = serverSecret("QUOTE_SECRET");
     if (!secret) return { error: "unavailable" as const };
+    // Signature and expiry are checked before auth, so a tampered or expired quote is always refused.
     const quote = await verifyQuote(data.quote, secret);
-    if (!quote) return { error: "expired" as const };
+    if (!quote) {
+      setResponseStatus(400);
+      return { error: "expired" as const };
+    }
+    const { resolveUserId } = await import("@/lib/auth/resolve-user.server");
+    const userId = await resolveUserId();
+    if (!userId) {
+      setResponseStatus(401);
+      return { error: "signin" as const };
+    }
     const contents = typeof data.contents === "string" ? data.contents.slice(0, 20) : "personal";
     const { submitRequest } = await import("./handlers.server");
-    return submitRequest(context.userId, "quote", { ...quote, contents, declared: true }, Math.round(quote.total));
+    return submitRequest(userId, "quote", { ...quote, contents, declared: true }, Math.round(quote.total));
   });
 
 /**
@@ -59,6 +76,13 @@ export const orderStore = createServerFn({ method: "POST" })
       setResponseStatus(403);
       return { error: "forbidden" as const };
     }
+    // Reject bad input (links, quantity, destination) before touching auth or the database.
+    const { validateStoreRequest } = await import("./store-request");
+    const shape = validateStoreRequest(data, null, { requireContact: false });
+    if (!shape.ok) {
+      setResponseStatus(400);
+      return { error: shape.error };
+    }
     const { resolveUserId } = await import("@/lib/auth/resolve-user.server");
     const userId = await resolveUserId();
     if (!userId) {
@@ -72,7 +96,6 @@ export const orderStore = createServerFn({ method: "POST" })
     } catch {
       sessionPhone = null;
     }
-    const { validateStoreRequest } = await import("./store-request");
     const checked = validateStoreRequest(data, sessionPhone);
     if (!checked.ok) {
       setResponseStatus(400);

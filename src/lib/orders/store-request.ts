@@ -79,6 +79,7 @@ export function checkProductUrl(raw: unknown, store: StoreEntry | undefined): { 
 export function validateStoreRequest(
   raw: Record<string, unknown>,
   sessionPhone: string | null | undefined,
+  { requireContact = true }: { requireContact?: boolean } = {},
 ): { ok: true; data: StoreRequest } | { ok: false; error: StoreRequestError } {
   const intent = raw.intent === "ship" ? "ship" : raw.intent === "buy" || raw.intent == null ? "buy" : null;
   if (!intent) return { ok: false, error: "invalid" };
@@ -105,8 +106,8 @@ export function validateStoreRequest(
   const dest = DESTS.find((entry) => entry.id === raw.dest)?.id;
   if (!dest) return { ok: false, error: "dest" };
 
-  const phone = normalizePhone(sessionPhone ?? "") ?? normalizePhone(raw.phone);
-  if (!phone) return { ok: false, error: "contact" };
+  const phone = normalizePhone(sessionPhone ?? "") ?? normalizePhone(raw.phone) ?? "";
+  if (!phone && requireContact) return { ok: false, error: "contact" };
 
   return {
     ok: true,
