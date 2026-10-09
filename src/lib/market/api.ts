@@ -168,6 +168,17 @@ export const marketAdminSet = createServerFn({ method: "POST" })
     }
   });
 
+export const marketAdminComplianceScan = createServerFn({ method: "POST" })
+  .middleware([phoneOrAuthMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const { adminComplianceScan } = await import("./handlers.server");
+      return await adminComplianceScan(context.userId);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
 export const moveCreateDelivery = createServerFn({ method: "POST" })
   .middleware([phoneOrAuthMiddleware])
   .validator((input: Record<string, unknown>) => input)
@@ -225,7 +236,13 @@ export const moveChoose = createServerFn({ method: "POST" })
 
 export const moveStatus = createServerFn({ method: "POST" })
   .middleware([phoneOrAuthMiddleware])
-  .validator((input: { kind: "delivery" | "transport"; id: string; status: "picked_up" | "on_the_way" | "delivered" | "cancelled" }) => input)
+  .validator(
+    (input: {
+      kind: "delivery" | "transport";
+      id: string;
+      status: "picked_up" | "on_the_way" | "delivered" | "cancelled";
+    }) => input,
+  )
   .handler(async ({ data, context }) => {
     try {
       const { setJobStatus } = await import("./handlers.server");
@@ -237,7 +254,10 @@ export const moveStatus = createServerFn({ method: "POST" })
 
 export const moveRate = createServerFn({ method: "POST" })
   .middleware([phoneOrAuthMiddleware])
-  .validator((input: { kind: "delivery" | "transport"; id: string; rating: unknown; body: unknown }) => input)
+  .validator(
+    (input: { kind: "delivery" | "transport"; id: string; rating: unknown; body: unknown }) =>
+      input,
+  )
   .handler(async ({ data, context }) => {
     try {
       const { rateJob } = await import("./handlers.server");

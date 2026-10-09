@@ -19,7 +19,7 @@ for (const file of readdirSync(new URL("migrations/dev/", root))
 }
 
 async function getSql() {
-  return async function sql<T = Record<string, unknown>>(
+  const sql = async function sql<T = Record<string, unknown>>(
     strings: TemplateStringsArray,
     ...values: unknown[]
   ) {
@@ -27,6 +27,10 @@ async function getSql() {
     for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
     return (await pg.query<T>(text, values)).rows;
   };
+  return Object.assign(sql, {
+    query: async <T = Record<string, unknown>>(text: string, params?: unknown[]) =>
+      (await pg.query<T>(text, params)).rows,
+  });
 }
 (globalThis as { __phoneTestSql__?: typeof getSql }).__phoneTestSql__ = getSql;
 
@@ -54,6 +58,7 @@ process.env.PHONE_CODE_SECRET = "flow-test-secret";
 process.env.RL_PHONE_TEST_SINK = "1";
 
 const market = await import("../market/handlers.server.ts");
+const orders = await import("../orders/handlers.server.ts");
 const service = await import("./service.server.ts");
 const sql = await getSql();
 
@@ -202,6 +207,120 @@ describe("compliance: market search and detail", () => {
     await assert.rejects(
       market.getProduct(r.slug, null),
       (e: Error & { code?: string }) => e.code === "notfound",
+    );
+  });
+});
+
+describe("compliance: user content", () => {
+  const isProhibited = (e: Error & { code?: string }) => e.code === "prohibited";
+  it("blocks prohibited words and links to prohibited shops in user text; reports stay possible", async () => {
+    const buyer = "compliance-buyer";
+    await sql`insert into products (id, slug, owner_id, category_id, name_ku, name_en, brand, status) values ('rev-1', 'rev-target', ${seller}, 'home', 'x', 'Kettle', 'Brand', 'approved')`;
+    await assert.rejects(
+      market.addReview(buyer, "rev-target", 5, "great, better than vodka"),
+      isProhibited,
+    );
+    await market.addReview(buyer, "rev-target", 5, "great kettle"); // a normal review still works
+    await assert.rejects(
+      market.requestRole(buyer, { role: "seller", displayName: "Vodka Shop", city: "Erbil" }),
+      isProhibited,
+    );
+    await assert.rejects(
+      market.createTransport(buyer, {
+        origin: "Erbil",
+        destination: "Duhok",
+        load: "20 crates of beer",
+        declared: true,
+      }),
+      isProhibited,
+    );
+    await assert.rejects(
+      market.createDelivery(buyer, { pickup: "A", dropoff: "B", item: "سجائر", declared: true }),
+      isProhibited,
+    );
+    const offer = await market.saveProduct(seller, { ...base, nameEn: "Tea glass" });
+    await assert.rejects(
+      market.saveOffer(seller, {
+        slug: offer.slug,
+        price: 1000,
+        shipping: 0,
+        stock: "in",
+        contact: "https://www.vodka-shop.de/",
+      }),
+      isProhibited,
+    );
+    assert.deepEqual(await market.reportProblem(buyer, "Bad listing", "someone sells vodka here"), {
+      ok: true,
+    });
+    const r = await orders.submitRequest(
+      buyer,
+      "store",
+      { item: "Jack Daniels whiskey", url: "https://www.amazon.de/x" },
+      null,
+    );
+    assert.deepEqual(r, { error: "prohibited" });
+    const logged = (
+      await sql<{
+        n: number;
+      }>`select count(*)::int n from compliance_audit_log where action in ('rejected_user_text', 'rejected_request')`
+    )[0]?.n;
+    assert.ok((logged ?? 0) >= 6);
+  });
+});
+
+describe("compliance: scan of existing data", () => {
+  it("unpublishes clear matches, sends unclear ones to review, is idempotent, keeps admin clearances", async () => {
+    await sql`insert into products (id, slug, owner_id, category_id, name_ku, name_en, brand, status) values
+      ('scan-1', 'scan-whisky', ${seller}, 'home', 'x', 'Whisky tumbler set with whisky', 'Brand', 'approved'),
+      ('scan-2', 'scan-gelatin', ${seller}, 'home', 'x', 'Gelatin gummies', 'Brand', 'approved'),
+      ('scan-3', 'scan-cleared', ${seller}, 'home', 'x', 'Gelatin capsules', 'Brand', 'approved'),
+      ('scan-4', 'scan-kettle', ${seller}, 'home', 'x', 'Electric kettle', 'Brand', 'approved')`;
+    await sql`update products set compliance_reason = '{"cleared_by":"compliance-admin"}'::jsonb where id = 'scan-3'`;
+    await sql`insert into reviews (id, user_id, product_id, rating, body, status) values ('scan-r', 'someone', 'scan-4', 4, 'goes well with cigarettes', 'approved')`;
+    const report = await market.adminComplianceScan(admin);
+    const statusOf2 = async (id: string) =>
+      (
+        await sql<{
+          status: string;
+          compliance_status: string;
+        }>`select status, compliance_status from products where id = ${id}`
+      )[0];
+    assert.deepEqual(await statusOf2("scan-1"), {
+      status: "pending",
+      compliance_status: "blocked",
+    });
+    assert.deepEqual(await statusOf2("scan-2"), {
+      status: "pending",
+      compliance_status: "pending_review",
+    });
+    assert.deepEqual(await statusOf2("scan-3"), { status: "approved", compliance_status: "ok" });
+    assert.deepEqual(await statusOf2("scan-4"), { status: "approved", compliance_status: "ok" });
+    assert.equal(
+      (await sql<{ status: string }>`select status from reviews where id = 'scan-r'`)[0]?.status,
+      "removed",
+    );
+    assert.ok(report.blocked.some((i) => i.id === "scan-whisky" && i.changed));
+    assert.ok(report.review.some((i) => i.id === "scan-gelatin" && i.changed));
+    // the admin view lists the review item with its reason, never the blocked one
+    const queue = await market.adminQueue(admin);
+    assert.deepEqual(queue.pendingProducts.find((p) => p.slug === "scan-gelatin")?.review, [
+      "gelatin",
+    ]);
+    assert.ok(!queue.pendingProducts.some((p) => p.slug === "scan-whisky"));
+    // second run: nothing new changes
+    const again = await market.adminComplianceScan(admin);
+    assert.ok([...again.blocked, ...again.review].every((i) => !i.changed));
+    // only admins may run it
+    await assert.rejects(
+      market.adminComplianceScan(seller),
+      (e: Error & { code?: string }) => e.code === "forbidden",
+    );
+    assert.ok(
+      ((
+        await sql<{
+          n: number;
+        }>`select count(*)::int n from compliance_audit_log where action = 'scan'`
+      )[0]?.n ?? 0) >= 2,
     );
   });
 });

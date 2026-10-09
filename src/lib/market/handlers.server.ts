@@ -1,6 +1,11 @@
 import { getSql, type Sql } from "@/lib/db";
 import { checkProduct, isProhibitedQuery } from "@/lib/compliance/check";
-import { auditLog, checkProductServer, complianceRules } from "@/lib/compliance/service.server";
+import {
+  auditLog,
+  checkProductServer,
+  checkTextServer,
+  complianceRules,
+} from "@/lib/compliance/service.server";
 import {
   MarketError,
   canSetJobStatus,
@@ -25,6 +30,27 @@ const PAGE = 8;
 
 async function sqlOf() {
   return getSql();
+}
+
+/**
+ * Compliance for user-written text (reviews, notes, store names, item descriptions, links).
+ * A clear prohibited word or a link to a prohibited shop is rejected and logged; review-level
+ * words pass (reviews are moderated anyway). Problem reports are NOT checked, so users can
+ * still report a prohibited listing.
+ */
+async function guardUserText(
+  sql: Sql,
+  userId: string,
+  where: string,
+  ...texts: (string | null | undefined)[]
+) {
+  const text = texts.filter(Boolean).join(" \n ");
+  if (!text) return;
+  const verdict = await checkTextServer(sql, text);
+  if (verdict.decision === "block") {
+    await auditLog(sql, "rejected_user_text", where, { userId, matches: verdict.matches });
+    throw new MarketError("prohibited");
+  }
 }
 
 async function ensureBuyer(sql: Sql, userId: string) {
@@ -103,6 +129,7 @@ export async function requestRole(
   const name = cleanText(input.displayName, 80);
   const city = cleanText(input.city, 40);
   const phone = cleanOptional(input.phone, 30);
+  await guardUserText(sql, userId, "user_roles", name, city);
   const rows = await sql<{ status: string }>`
     insert into user_roles (user_id, role, status, display_name, city, phone)
     values (${userId}, ${input.role}, 'pending', ${name}, ${city}, ${phone})
@@ -370,6 +397,7 @@ export async function saveProduct(
   const shipping = cleanMoney(input.shipping ?? 0, 5000000, true);
   const stock = cleanStock(input.stock);
   const contact = cleanContact(input.contact);
+  await guardUserText(sql, userId, "offers", contact);
   const cats = await sql`select id from categories where id = ${category}`;
   if (!cats.length) throw new MarketError("invalid");
   // Islamic-compliance check on every text field (no switch can disable it).
@@ -443,6 +471,7 @@ export async function saveOffer(
   const shipping = cleanMoney(input.shipping ?? 0, 5000000, true);
   const stock = cleanStock(input.stock);
   const contact = cleanContact(input.contact);
+  await guardUserText(sql, userId, "offers", contact);
   const products = await sql<{
     id: string;
     status: string;
@@ -556,6 +585,7 @@ export async function addReview(userId: string, slug: string, rating: unknown, b
   await limit(sql, userId, "review");
   const score = cleanMoney(rating, 5, false);
   const text = cleanOptional(body, 500);
+  await guardUserText(sql, userId, "reviews", text);
   const products = await sql<{
     id: string;
     owner_id: string;
@@ -595,7 +625,7 @@ export async function adminQueue(userId: string) {
       >`select user_id, role, display_name, city, phone from user_roles where status = 'pending' order by created_at`,
       sql<
         Record<string, unknown>
-      >`select slug, name_ku, name_en, brand, owner_id from products where status = 'pending' order by created_at`,
+      >`select slug, name_ku, name_en, brand, owner_id, compliance_status, compliance_reason from products where status = 'pending' and compliance_status <> 'blocked' order by created_at`,
       sql<
         Record<string, unknown>
       >`select o.id, p.slug, p.name_ku, o.seller_id, o.price_iqd, o.shipping_iqd from offers o join products p on p.id = o.product_id where o.status = 'pending' order by o.created_at`,
@@ -618,6 +648,17 @@ export async function adminQueue(userId: string) {
       nameKu: String(row.name_ku),
       nameEn: String(row.name_en),
       brand: String(row.brand),
+      review:
+        row.compliance_status === "pending_review"
+          ? [
+              ...new Set(
+                (
+                  (row.compliance_reason as { matches?: { keyword: string }[] } | null)?.matches ??
+                  []
+                ).map((m) => m.keyword),
+              ),
+            ]
+          : null,
     })),
     pendingOffers: pendingOffers.map((row) => ({
       id: String(row.id),
@@ -691,12 +732,14 @@ export async function adminSet(
         });
         throw new MarketError("prohibited");
       }
-      if (p.compliance_status === "pending_review") {
+      if (p.compliance_status === "pending_review" || verdict.decision === "review") {
         await auditLog(sql, "review_cleared", "products", {
           userId,
           slug: id,
           matches: verdict.matches,
         });
+        // remembered so a later scan does not flag the same reviewed wording again
+        await sql`update products set compliance_reason = ${JSON.stringify({ cleared_by: userId, at: new Date().toISOString(), matches: verdict.matches })}::jsonb where slug = ${id}`;
       }
     }
     const rows = await sql`
@@ -746,6 +789,7 @@ export async function createDelivery(
   const size = cleanOptional(input.size, 80);
   const date = cleanOptional(input.date, 20);
   const product = input.product ? cleanText(input.product, 80) : null;
+  await guardUserText(sql, userId, "delivery_requests", item, size, pickup, dropoff);
   await sql`
     insert into delivery_requests (id, user_id, product_slug, pickup, dropoff, item_desc, size_note, preferred_date)
     values (${id}, ${userId}, ${product}, ${pickup}, ${dropoff}, ${item}, ${size}, ${date})`;
@@ -776,6 +820,7 @@ export async function createTransport(
   const destination = cleanText(input.destination, 200);
   const load = cleanText(input.load, 300);
   const date = cleanOptional(input.date, 20);
+  await guardUserText(sql, userId, "transport_requests", load, origin, destination);
   await sql`
     insert into transport_requests (id, user_id, origin, destination, load_desc, preferred_date)
     values (${id}, ${userId}, ${origin}, ${destination}, ${load}, ${date})`;
@@ -865,6 +910,7 @@ export async function offerJob(userId: string, kind: JobKind, jobId: string, not
   if (!approved(mine, "courier")) throw new MarketError("forbidden");
   await limit(sql, userId, "bid");
   const text = cleanOptional(note, 200);
+  await guardUserText(sql, userId, "job_offers", text);
   const table = await tableOf(kind);
   const jobs = await sql.query<{ user_id: string; status: string }>(
     `select user_id, status from ${table} where id = $1`,
@@ -974,6 +1020,7 @@ export async function rateJob(
   await limit(sql, userId, "rate");
   const score = cleanMoney(rating, 5, false);
   const text = cleanOptional(body, 500);
+  await guardUserText(sql, userId, "reviews", text);
   const table = await tableOf(kind);
   const jobs = await sql.query<{ user_id: string; status: string; courier_id: string | null }>(
     `select user_id, status, courier_id from ${table} where id = $1`,
@@ -998,4 +1045,12 @@ export async function markNotificationsRead(userId: string, ids: unknown) {
     await sql`update notifications set read_at = now() where user_id = ${userId} and id = any(${list}) and read_at is null`;
   }
   return { ok: true };
+}
+
+export async function adminComplianceScan(userId: string) {
+  const sql = await sqlOf();
+  const mine = await roles(sql, userId);
+  if (!approved(mine, "admin")) throw new MarketError("forbidden");
+  const { runComplianceScan } = await import("@/lib/compliance/service.server");
+  return runComplianceScan(sql, userId);
 }

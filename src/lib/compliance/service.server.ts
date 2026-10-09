@@ -97,3 +97,11 @@ export async function screenProducts<T extends ProductFields>(
   }
   return out;
 }
+
+/** Admin-triggered scan of existing data (see scan.ts). */
+export async function runComplianceScan(sql: Sql, actor: string) {
+  const { scanDatabase } = await import("./scan.ts");
+  resetComplianceCache();
+  const rules = await complianceRules(sql);
+  return scanDatabase((text, params) => sql.query(text, params), rules, actor);
+}
