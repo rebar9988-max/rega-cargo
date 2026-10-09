@@ -15,7 +15,8 @@ self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     try { for (const key of await caches.keys()) await caches.delete(key); } catch {}
-    try { await self.registration.unregister(); } catch {}
+    // navigate() only works on clients this worker controls, so claim first.
+    try { await self.clients.claim(); } catch {}
     const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
     for (const client of windows) {
       try {
@@ -23,6 +24,7 @@ self.addEventListener("activate", (event) => {
         await client.navigate("${CANONICAL_ORIGIN}" + u.pathname + u.search + u.hash);
       } catch {}
     }
+    try { await self.registration.unregister(); } catch {}
   })());
 });
 `;
