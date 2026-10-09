@@ -3,6 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ChevronDown,
   ChevronRight,
+  ClipboardList,
   Heart,
   House,
   LayoutGrid,
@@ -23,6 +24,7 @@ import { AI_COPY } from "@/components/ai-copy";
 import { PhoneButton } from "@/components/phone-gate";
 import { SearchBox } from "@/components/search-box";
 import { LEGAL_COPY } from "@/lib/legal-copy";
+import { REQUEST_COPY } from "@/lib/requests/copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
@@ -58,6 +60,7 @@ const MENU_DELIVERY = [
   { to: "/quote", key: "quote", icon: Tag },
   { to: "/track", key: "track", icon: MapPin },
   { to: "/move", key: "move", icon: Truck },
+  { to: "/account", key: "account", icon: ClipboardList },
 ] as const;
 
 const iconBtn =
@@ -318,7 +321,9 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
                         label={
                           item.to === "/ai"
                             ? AI_COPY[lang].navLabel
-                            : item.to === "/move"
+                            : item.to === "/account"
+                              ? REQUEST_COPY[lang].dashTitle
+                              : item.to === "/move"
                               ? d.moveSend
                               : item.to === "/stores"
                                 ? storeCopy(lang).storesHeading

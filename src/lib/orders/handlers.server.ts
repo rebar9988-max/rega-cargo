@@ -37,16 +37,27 @@ async function rate(userId: string) {
 
 export async function submitRequest(
   userId: string,
-  kind: "quote" | "store",
+  kind: "quote" | "store" | "buy" | "forward",
   payload: Record<string, unknown>,
   estimateEur: number | null,
+  options: { idempotencyKey?: string | null } = {},
 ) {
+  const key = options.idempotencyKey ?? null;
   try {
     let me: { name?: string; phone?: string } | null = null;
     try {
       me = await phoneMe();
     } catch {
       me = null;
+    }
+    if (!me) {
+      // No request context (e.g. called from a test or a job): use the stored phone account.
+      const sqlForUser = await getSql();
+      const rows = await sqlForUser<{
+        name: string;
+        phone: string;
+      }>`select name, phone from phone_users where id = ${userId}`;
+      me = rows[0] ?? null;
     }
     const str = (value: unknown) => (typeof value === "string" ? value : "");
     const name = cleanOptional(me?.name ?? str(payload.name), 80);
@@ -55,8 +66,15 @@ export async function submitRequest(
     const { name: _name, phone: _phone, ...stored } = payload;
     void _name;
     void _phone;
-    await rate(userId);
     const sql = await getSql();
+    // Same form submission again (double tap, retry after a lost response): return the first request.
+    if (key) {
+      const existing = await sql<{ tracking_id: string }>`
+        select tracking_id from shipment_requests where user_id = ${userId} and idempotency_key = ${key}`;
+      if (existing[0])
+        return { id: existing[0].tracking_id, estimate: true as const, repeated: true as const };
+    }
+    await rate(userId);
     // Compliance: no shipping or buying of prohibited goods (item, notes, product link, contents).
     const text = Object.values(stored)
       .flatMap((value) =>
@@ -78,14 +96,31 @@ export async function submitRequest(
     }
     const id = crypto.randomUUID();
     const tracking = newTrackingId();
-    await sql`
+    const inserted = await sql<{ id: string }>`
       with req as (
-        insert into shipment_requests (id, user_id, kind, name, phone, payload, estimate_eur, tracking_id)
-        values (${id}, ${userId}, ${kind}, ${name}, ${phone}, ${JSON.stringify(stored).slice(0, 4000)}, ${estimateEur}, ${tracking})
+        insert into shipment_requests (id, user_id, kind, name, phone, payload, estimate_eur, tracking_id, idempotency_key)
+        values (${id}, ${userId}, ${kind}, ${name}, ${phone}, ${JSON.stringify(stored).slice(0, 4000)}, ${estimateEur}, ${tracking}, ${key})
+        on conflict do nothing
         returning id
+      ), ev as (
+        insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase)
+      select ${crypto.randomUUID()}, req.id, 'Request received', 'داواکاری گەیشت', '', '', 'now' from req
+      ), log as (
+        insert into request_status_log (id, request_id, status, actor)
+        select ${crypto.randomUUID()}, req.id, 'received', 'system' from req
       )
-      insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase)
-      select ${crypto.randomUUID()}, req.id, 'Request received', 'داواکاری گەیشت', '', '', 'now' from req`;
+      select id from req`;
+    if (!inserted[0]) {
+      // Lost a race with the same idempotency key: hand back the request that won.
+      const existing = key
+        ? await sql<{
+            tracking_id: string;
+          }>`select tracking_id from shipment_requests where user_id = ${userId} and idempotency_key = ${key}`
+        : [];
+      if (existing[0])
+        return { id: existing[0].tracking_id, estimate: true as const, repeated: true as const };
+      throw new Error("request insert failed");
+    }
     if (payload.declared === true) {
       await sql`
         insert into declarations (id, user_id, kind, ref_id, version)
@@ -180,24 +215,18 @@ export async function adminOrders(userId: string) {
   }));
 }
 
+/**
+ * Legacy admin status change by row id. Now goes through the same rules as the staff
+ * panel: work statuses need a quote the customer accepted (see requests/handlers.server).
+ */
 export async function adminOrderStatus(userId: string, id: string, status: string) {
-  if (!["received", "confirmed", "in_transit", "delivered", "cancelled"].includes(status))
-    throw new MarketError("invalid");
   const sql = await getSql();
-  const role =
-    await sql`select 1 as ok from user_roles where user_id = ${userId} and role = 'admin' and status = 'approved'`;
-  if (!role.length) throw new MarketError("forbidden");
-  const rows = await sql<{ user_id: string; tracking_id: string }>`
-    update shipment_requests set status = ${status} where id = ${cleanText(id, 80)} and status <> ${status} returning user_id, tracking_id`;
-  const row = rows[0];
-  if (!row) throw new MarketError("notfound");
-  await sql`
-    insert into tracking_events (id, shipment_id, title, title_ku, phase)
-    values (${crypto.randomUUID()}, ${cleanText(id, 80)}, ${status}, ${status}, 'now')`;
-  await sql`
-    insert into notifications (id, user_id, body_ku, body_en)
-    values (${crypto.randomUUID()}, ${row.user_id}, ${`دۆخی ${row.tracking_id}: ${status}`}, ${`Status ${row.tracking_id}: ${status}`})`;
-  return { ok: true };
+  const rows = await sql<{
+    tracking_id: string;
+  }>`select tracking_id from shipment_requests where id = ${cleanText(id, 80)}`;
+  if (!rows[0]) throw new MarketError("notfound");
+  const { staffSetStatus } = await import("@/lib/requests/handlers.server");
+  return staffSetStatus(userId, { ref: rows[0].tracking_id, status });
 }
 
 export function readEstimateEur() {

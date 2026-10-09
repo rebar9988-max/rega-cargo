@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AiRouteImport } from './routes/ai'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -19,9 +20,12 @@ import { Route as MarketRouteImport } from './routes/market'
 import { Route as MoveRouteImport } from './routes/move'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as QuoteRouteImport } from './routes/quote'
+import { Route as RequestRouteImport } from './routes/request'
 import { Route as StoresRouteImport } from './routes/stores'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as AccountIndexRouteImport } from './routes/account.index'
+import { Route as AccountRefRouteImport } from './routes/account.$ref'
 import { Route as MarketIndexRouteImport } from './routes/market.index'
 import { Route as MarketSlugRouteImport } from './routes/market.$slug'
 import { Route as MarketSellRouteImport } from './routes/market.sell'
@@ -31,6 +35,11 @@ import { Route as StoresRequestRouteImport } from './routes/stores.request'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -78,6 +87,11 @@ const QuoteRoute = QuoteRouteImport.update({
   path: '/quote',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RequestRoute = RequestRouteImport.update({
+  id: '/request',
+  path: '/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoresRoute = StoresRouteImport.update({
   id: '/stores',
   path: '/stores',
@@ -92,6 +106,16 @@ const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AccountIndexRoute = AccountIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountRefRoute = AccountRefRouteImport.update({
+  id: '/$ref',
+  path: '/$ref',
+  getParentRoute: () => AccountRoute,
 } as any)
 const MarketIndexRoute = MarketIndexRouteImport.update({
   id: '/',
@@ -121,6 +145,7 @@ const StoresRequestRoute = StoresRequestRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRoute
   '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
@@ -130,12 +155,15 @@ export interface FileRoutesByFullPath {
   '/move': typeof MoveRoute
   '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
+  '/request': typeof RequestRoute
   '/stores': typeof StoresRouteWithChildren
   '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
+  '/account/$ref': typeof AccountRefRoute
   '/market/$slug': typeof MarketSlugRoute
   '/market/sell': typeof MarketSellRoute
   '/stores/request': typeof StoresRequestRoute
+  '/account/': typeof AccountIndexRoute
   '/market/': typeof MarketIndexRoute
   '/stores/': typeof StoresIndexRoute
 }
@@ -149,17 +177,21 @@ export interface FileRoutesByTo {
   '/move': typeof MoveRoute
   '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
+  '/request': typeof RequestRoute
   '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
+  '/account/$ref': typeof AccountRefRoute
   '/market/$slug': typeof MarketSlugRoute
   '/market/sell': typeof MarketSellRoute
   '/stores/request': typeof StoresRequestRoute
+  '/account': typeof AccountIndexRoute
   '/market': typeof MarketIndexRoute
   '/stores': typeof StoresIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRoute
   '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
@@ -169,12 +201,15 @@ export interface FileRoutesById {
   '/move': typeof MoveRoute
   '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
+  '/request': typeof RequestRoute
   '/stores': typeof StoresRouteWithChildren
   '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
+  '/account/$ref': typeof AccountRefRoute
   '/market/$slug': typeof MarketSlugRoute
   '/market/sell': typeof MarketSellRoute
   '/stores/request': typeof StoresRequestRoute
+  '/account/': typeof AccountIndexRoute
   '/market/': typeof MarketIndexRoute
   '/stores/': typeof StoresIndexRoute
 }
@@ -182,6 +217,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/admin'
     | '/ai'
     | '/contact'
@@ -191,12 +227,15 @@ export interface FileRouteTypes {
     | '/move'
     | '/privacy'
     | '/quote'
+    | '/request'
     | '/stores'
     | '/terms'
     | '/track'
+    | '/account/$ref'
     | '/market/$slug'
     | '/market/sell'
     | '/stores/request'
+    | '/account/'
     | '/market/'
     | '/stores/'
   fileRoutesByTo: FileRoutesByTo
@@ -210,16 +249,20 @@ export interface FileRouteTypes {
     | '/move'
     | '/privacy'
     | '/quote'
+    | '/request'
     | '/terms'
     | '/track'
+    | '/account/$ref'
     | '/market/$slug'
     | '/market/sell'
     | '/stores/request'
+    | '/account'
     | '/market'
     | '/stores'
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/admin'
     | '/ai'
     | '/contact'
@@ -229,18 +272,22 @@ export interface FileRouteTypes {
     | '/move'
     | '/privacy'
     | '/quote'
+    | '/request'
     | '/stores'
     | '/terms'
     | '/track'
+    | '/account/$ref'
     | '/market/$slug'
     | '/market/sell'
     | '/stores/request'
+    | '/account/'
     | '/market/'
     | '/stores/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRouteWithChildren
   AdminRoute: typeof AdminRoute
   AiRoute: typeof AiRoute
   ContactRoute: typeof ContactRoute
@@ -250,6 +297,7 @@ export interface RootRouteChildren {
   MoveRoute: typeof MoveRoute
   PrivacyRoute: typeof PrivacyRoute
   QuoteRoute: typeof QuoteRoute
+  RequestRoute: typeof RequestRoute
   StoresRoute: typeof StoresRouteWithChildren
   TermsRoute: typeof TermsRoute
   TrackRoute: typeof TrackRoute
@@ -262,6 +310,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -327,6 +382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuoteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/request': {
+      id: '/request'
+      path: '/request'
+      fullPath: '/request'
+      preLoaderRoute: typeof RequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stores': {
       id: '/stores'
       path: '/stores'
@@ -347,6 +409,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/account/': {
+      id: '/account/'
+      path: '/'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AccountIndexRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/account/$ref': {
+      id: '/account/$ref'
+      path: '/$ref'
+      fullPath: '/account/$ref'
+      preLoaderRoute: typeof AccountRefRouteImport
+      parentRoute: typeof AccountRoute
     }
     '/market/': {
       id: '/market/'
@@ -386,6 +462,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AccountRouteChildren {
+  AccountRefRoute: typeof AccountRefRoute
+  AccountIndexRoute: typeof AccountIndexRoute
+}
+
+const AccountRouteChildren: AccountRouteChildren = {
+  AccountRefRoute: AccountRefRoute,
+  AccountIndexRoute: AccountIndexRoute,
+}
+
+const AccountRouteWithChildren =
+  AccountRoute._addFileChildren(AccountRouteChildren)
+
 interface MarketRouteChildren {
   MarketSlugRoute: typeof MarketSlugRoute
   MarketSellRoute: typeof MarketSellRoute
@@ -416,6 +505,7 @@ const StoresRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRouteWithChildren,
   AdminRoute: AdminRoute,
   AiRoute: AiRoute,
   ContactRoute: ContactRoute,
@@ -425,6 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   MoveRoute: MoveRoute,
   PrivacyRoute: PrivacyRoute,
   QuoteRoute: QuoteRoute,
+  RequestRoute: RequestRoute,
   StoresRoute: StoresRouteWithChildren,
   TermsRoute: TermsRoute,
   TrackRoute: TrackRoute,
