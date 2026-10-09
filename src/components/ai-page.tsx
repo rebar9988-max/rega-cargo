@@ -1,3 +1,4 @@
+import { UX_COPY } from "@/lib/ux-copy";
 import { Camera, ImageUp, ShieldCheck } from "lucide-react";
 import { gateFields } from "@/lib/ai/gate-client";
 import { type ReactNode, useEffect, useId, useMemo, useState } from "react";
@@ -136,7 +137,7 @@ export function AiPage() {
             <div className="grid max-w-md grid-cols-2 gap-3">
               <label
                 style={{ direction: "ltr" }}
-                className={`${pickClass} bg-pine text-pine-ink ${!consent || busy || !enabled ? "pointer-events-none opacity-40" : "hover:opacity-90"}`}
+                className={`${pickClass} rl-grad font-semibold shadow-sm focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-pine ${!consent || busy || !enabled ? "pointer-events-none opacity-40" : "hover:opacity-90"}`}
               >
                 <Camera className="size-4" aria-hidden />
                 <span dir="auto">{preview ? t.retake : t.take}</span>
@@ -146,6 +147,7 @@ export function AiPage() {
                   capture="environment"
                   className="sr-only"
                   disabled={!consent || busy || !enabled}
+                  aria-describedby={consent ? undefined : `${consentId}-hint`}
                   onChange={(event) => {
                     void onFile(event.target.files?.[0]);
                     event.target.value = "";
@@ -154,7 +156,7 @@ export function AiPage() {
               </label>
               <label
                 style={{ direction: "ltr" }}
-                className={`${pickClass} border border-line bg-surface text-ink ${!consent || busy || !enabled ? "pointer-events-none opacity-40" : "hover:border-pine"}`}
+                className={`${pickClass} border border-line bg-surface text-ink focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-pine ${!consent || busy || !enabled ? "pointer-events-none opacity-40" : "hover:border-pine"}`}
               >
                 <ImageUp className="size-4" aria-hidden />
                 <span dir="auto">{t.choose}</span>
@@ -163,6 +165,7 @@ export function AiPage() {
                   accept="image/*"
                   className="sr-only"
                   disabled={!consent || busy || !enabled}
+                  aria-describedby={consent ? undefined : `${consentId}-hint`}
                   onChange={(event) => {
                     void onFile(event.target.files?.[0]);
                     event.target.value = "";
@@ -170,6 +173,11 @@ export function AiPage() {
                 />
               </label>
             </div>
+            {!consent ? (
+              <p id={`${consentId}-hint`} className="-mt-2 text-xs text-muted">
+                {UX_COPY[lang].consentFirst}
+              </p>
+            ) : null}
             {preview ? (
               <img src={preview} alt="" className="max-h-72 w-full rounded-xl object-contain" />
             ) : null}

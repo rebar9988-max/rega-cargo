@@ -1,6 +1,6 @@
 import { QUOTE_LIMITS, dimInRange, kgInRange, parseKg } from "@/lib/quote-search";
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   DESTS,
   IQD_PER_EUR,
@@ -22,6 +22,8 @@ import {
 } from "@/lib/corridor";
 import { dayRange, useI18n } from "@/lib/i18n";
 import { issueQuote, orderQuote } from "@/lib/orders/api";
+import { UX_COPY } from "@/lib/ux-copy";
+import { ContactNote } from "@/components/contact-note";
 import { DECLARE_COPY } from "@/lib/declare-copy";
 import { getJson, setJson } from "@/lib/storage";
 import { Eur, Field, Iqd, btnGhost, btnPrimary, controlClass } from "@/components/field";
@@ -54,7 +56,6 @@ export function QuotePanel({
   initial?: { from?: string; to?: string; kg?: string };
 }) {
   const { t, lang } = useI18n();
-  const navigate = useNavigate();
   const [fromId, setFromId] = useState(getOrigin(initial?.from).id);
   const [toId, setToId] = useState(getDest(initial?.to).id);
   const [kg, setKg] = useState(initial?.kg && Number(initial.kg) > 0 ? initial.kg : String(SAMPLE_BOX.kg));
@@ -65,6 +66,10 @@ export function QuotePanel({
   const [contents, setContents] = useState<Contents>("personal");
   const [value, setValue] = useState("");
   const [notice, setNotice] = useState("");
+  // Per-card booking state: blocks duplicate submits and shows the result next to the button.
+  const [booking, setBooking] = useState<{ mode: ModeId; state: "busy" | "failed" | "message"; text?: string } | null>(null);
+  const ux = UX_COPY[lang];
+  const inFlight = useRef(false);
   const [held, setHeld] = useState<HeldQuote[] | null>(null);
   const [restrictedOk, setRestrictedOk] = useState(false);
   const dc = DECLARE_COPY[lang];
@@ -117,31 +122,41 @@ export function QuotePanel({
   }
 
   async function book(modeId: ModeId) {
+    if (inFlight.current) return;
     if (!restrictedOk) {
-      setNotice(dc.mustDeclare);
+      setBooking({ mode: modeId, state: "message", text: dc.mustDeclare });
       return;
     }
+    inFlight.current = true;
+    setBooking({ mode: modeId, state: "busy" });
     try {
       // The server prices the shipment itself and signs the quote; no client price is sent.
       const quote = await issueQuote({ data: { fromId, toId, mode: modeId, kg: weight, l: dims.l, w: dims.w, h: dims.h } });
       if ("token" in quote && quote.token) {
         const result = await orderQuote({ data: { quote: quote.token, contents, declared: true } });
         if (result && "id" in result && result.id) {
-          setNotice(String(result.id));
+          setBooking({ mode: modeId, state: "message", text: String(result.id) });
           return;
         }
         if (result && "error" in result && result.error === "expired") {
-          setNotice(dc.expired);
+          setBooking({ mode: modeId, state: "message", text: dc.expired });
+          return;
+        }
+        if (result && "error" in result && result.error === "rate") {
+          setBooking({ mode: modeId, state: "message", text: dc.rate });
           return;
         }
       } else if ("error" in quote && quote.error === "rate") {
-        setNotice(dc.rate);
+        setBooking({ mode: modeId, state: "message", text: dc.rate });
         return;
       }
     } catch {
       /* not signed in, or the database is not configured */
+    } finally {
+      inFlight.current = false;
     }
-    void navigate({ to: "/contact" });
+    // Stay on the page: the quote and inputs are kept; offer the email route instead.
+    setBooking({ mode: modeId, state: "failed" });
   }
 
   function save(modeId: ModeId, total: number, chargeable: number) {
@@ -360,10 +375,12 @@ export function QuotePanel({
                       <div className="mt-4 flex flex-wrap gap-2">
                         <button
                           type="button"
-                          className={btnPrimary}
+                          className={`${btnPrimary} disabled:opacity-60`}
+                          disabled={booking?.state === "busy"}
+                          aria-busy={booking?.mode === row.mode.id && booking.state === "busy"}
                           onClick={() => book(row.mode.id)}
                         >
-                          {t.book}
+                          {booking?.mode === row.mode.id && booking.state === "busy" ? ux.sending : t.book}
                         </button>
                         <button
                           type="button"
@@ -372,6 +389,16 @@ export function QuotePanel({
                         >
                           {t.save}
                         </button>
+                      </div>
+                      <div aria-live="polite">
+                        {booking?.mode === row.mode.id && booking.state === "failed" ? (
+                          <ContactNote pre={ux.bookFailPre} post={ux.bookFailPost} className="mt-3" />
+                        ) : null}
+                        {booking?.mode === row.mode.id && booking.state === "message" ? (
+                          <p role="alert" className="mt-3 text-sm text-pine">
+                            <bdi>{booking.text}</bdi>
+                          </p>
+                        ) : null}
                       </div>
                     </article>
                   );
@@ -410,7 +437,11 @@ export function QuotePanel({
             {t.changeBox}
           </Link>
         ) : null}
-        {notice ? <p className="mt-4 text-sm text-pine">{notice}</p> : null}
+        {notice ? (
+          <p role="status" className="mt-4 text-sm text-pine">
+            {notice}
+          </p>
+        ) : null}
         {variant === "full" ? <p className="mt-4 text-sm leading-relaxed text-muted">{t.footnote}</p> : null}
       </div>
 

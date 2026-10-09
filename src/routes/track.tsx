@@ -9,8 +9,15 @@ import { useI18n } from "@/lib/i18n";
 import { localizedTrack } from "@/lib/track-copy";
 import { SHIPMENTS, currentEvent, findShipment } from "@/lib/shipments";
 import { orderTrack } from "@/lib/orders/api";
-import { CONTACT_EMAIL } from "@/lib/contact";
 import { DECLARE_COPY } from "@/lib/declare-copy";
+import { UX_COPY, type UxCopy } from "@/lib/ux-copy";
+import { ContactNote } from "@/components/contact-note";
+import type { Lang } from "@/lib/langs";
+
+type LiveEvent = { title: string; titleKu: string; place?: string; placeKu?: string; phase: string; at?: string };
+type LiveResult = { error?: string; id?: string; status?: string; events?: LiveEvent[] };
+
+const DEV = import.meta.env.DEV;
 
 export const Route = createFileRoute("/track")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -31,7 +38,9 @@ function TrackPage() {
   const { id } = Route.useSearch();
   const navigate = useNavigate();
   const [draft, setDraft] = useState(id ?? "");
-  const [live, setLive] = useState<{ error?: string; id?: string; status?: string; events?: { title: string; titleKu: string; phase: string }[] } | null>(null);
+  const ux = UX_COPY[lang];
+  const hintId = "track-hint";
+  const [live, setLive] = useState<LiveResult | null>(null);
 
   useEffect(() => {
     setDraft(id ?? "");
@@ -42,9 +51,10 @@ function TrackPage() {
       return;
     }
     let on = true;
+    setLive(null);
     orderTrack({ data: { id } })
       .then((result) => {
-        if (on) setLive(result as typeof live);
+        if (on) setLive(result as LiveResult);
       })
       .catch(() => {
         if (on) setLive({ error: "unavailable" });
@@ -54,14 +64,15 @@ function TrackPage() {
     };
   }, [id]);
 
-  const demo = import.meta.env.DEV && id && live?.error === "notfound" ? findShipment(id) : undefined;
+  const loading = Boolean(id) && live === null;
+  const demo = DEV && id && live?.error === "notfound" ? findShipment(id) : undefined;
   const shipment = demo;
   const missing = Boolean(id) && live?.error === "notfound" && !shipment;
 
   return (
     <Shell>
       <DeliveryTabs active="/track" />
-      <PageHeader kicker={t.trackKicker} title={t.trackTitle} lede={t.trackLede} />
+      <PageHeader kicker={t.trackKicker} title={t.trackTitle} lede={DEV ? t.trackLede : ux.trackLede} />
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-12 md:py-16">
         <form
           className="flex flex-col gap-3 sm:flex-row"
@@ -77,19 +88,26 @@ function TrackPage() {
               dir="ltr"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
-              placeholder="RG-48291"
+              placeholder="RG-XXXX-XXXX-XXXX"
               autoCapitalize="characters"
+              autoComplete="off"
+              spellCheck={false}
+              aria-describedby={hintId}
             />
+            <span id={hintId} className="text-xs text-muted">
+              {ux.trackHint}
+            </span>
           </label>
-          <button type="submit" className={`${btnPrimary} sm:self-end`}>
+          <button type="submit" disabled={loading} aria-busy={loading} className={`${btnPrimary} sm:mb-7 sm:self-end disabled:opacity-60`}>
             {t.trackButton}
           </button>
         </form>
 
+        {DEV ? (
         <div>
           <p className="text-sm font-medium">{t.samples}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {(import.meta.env.DEV ? SHIPMENTS : []).map((item) => (
+            {SHIPMENTS.map((item) => (
               <button
                 key={item.id}
                 type="button"
@@ -101,21 +119,22 @@ function TrackPage() {
             ))}
           </div>
         </div>
+        ) : null}
 
-        {missing ? <p className="text-sm text-clay">{t.notFound}</p> : null}
-        {live?.error === "rate" ? <p className="text-sm text-clay">{DECLARE_COPY[lang].rate}</p> : null}
-        {live?.error === "unavailable" ? (
-          <p className="text-sm text-clay">
-            <a href={`mailto:${CONTACT_EMAIL}`}><bdi dir="ltr">{CONTACT_EMAIL}</bdi></a>
-          </p>
-        ) : null}
-        {live && !live.error && live.events ? (
-          <ol className="flex flex-col gap-2 text-sm">
-            {live.events.map((event) => (
-              <li key={event.title + event.phase}>{lang === "ckb" ? event.titleKu : event.title}</li>
-            ))}
-          </ol>
-        ) : null}
+        <div aria-live="polite" className="-mt-4 flex flex-col gap-3">
+          {loading ? (
+            <p role="status" className="flex items-center gap-2 text-sm text-muted">
+              <span className="size-4 animate-spin rounded-full border-2 border-line border-t-pine" aria-hidden="true" />
+              {ux.trackLoading}
+            </p>
+          ) : null}
+          {missing ? <p className="text-sm text-clay">{DEV ? t.notFound : ux.trackNotFound}</p> : null}
+          {live?.error === "rate" ? <p className="text-sm text-clay">{DECLARE_COPY[lang].rate}</p> : null}
+          {live?.error === "unavailable" ? (
+            <ContactNote role="status" pre={ux.trackUnavailablePre} post={ux.trackUnavailablePost} className="max-w-2xl rounded-2xl border border-line bg-surface p-5 text-ink" />
+          ) : null}
+        </div>
+        {live && !live.error && live.events ? <LiveTrack data={live} lang={lang} ux={ux} /> : null}
 
         {shipment ? (
           <article className="grid gap-8 lg:grid-cols-3">
@@ -225,5 +244,68 @@ function TrackPage() {
         ) : null}
       </div>
     </Shell>
+  );
+}
+
+function when(at: string | undefined) {
+  if (!at) return null;
+  const date = new Date(at);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(date);
+}
+
+/** Real tracking record: status, last update, next step (labelled as an estimate). Shows only what the server returned. */
+function LiveTrack({ data, lang, ux }: { data: LiveResult; lang: Lang; ux: UxCopy }) {
+  const events = data.events ?? [];
+  const title = (event: LiveEvent) => (lang === "ckb" ? event.titleKu || event.title : localizedTrack(lang, event.title, event.titleKu));
+  const past = events.filter((event) => event.phase !== "next");
+  const current = events.find((event) => event.phase === "now") ?? past[past.length - 1];
+  const next = events.find((event) => event.phase === "next");
+  const updated = when(current?.at);
+  return (
+    <article className="flex flex-col gap-6 rounded-2xl border border-line bg-surface p-5 md:p-6">
+      <h2 className="text-xl font-semibold">
+        <bdi dir="ltr">{data.id}</bdi>
+      </h2>
+      {current ? (
+        <dl className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <dt className="text-xs text-muted">{ux.status}</dt>
+            <dd className="mt-1 font-semibold text-pine">{title(current)}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-muted">{ux.lastUpdate}</dt>
+            <dd className="mt-1 font-medium">{updated ? <bdi dir="ltr">{updated}</bdi> : "—"}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-muted">{ux.nextStep}</dt>
+            <dd className="mt-1 font-medium">
+              {next ? title(next) : "—"}
+              {next && when(next.at) ? (
+                <span className="block text-xs font-normal text-muted">
+                  <bdi dir="ltr">{when(next.at)}</bdi> · {ux.estimate}
+                </span>
+              ) : null}
+            </dd>
+          </div>
+        </dl>
+      ) : (
+        <p className="text-sm text-muted">{ux.noEvents}</p>
+      )}
+      {past.length ? (
+        <ol className="flex flex-col gap-3 border-t border-line pt-4 text-sm">
+          {past.map((event, index) => (
+            <li key={`${event.title}-${index}`} className="flex flex-wrap items-baseline justify-between gap-2">
+              <span className={event === current ? "font-semibold" : ""}>{title(event)}</span>
+              {when(event.at) ? (
+                <span className="text-xs text-muted">
+                  <bdi dir="ltr">{when(event.at)}</bdi>
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+      ) : null}
+    </article>
   );
 }

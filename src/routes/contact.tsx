@@ -4,6 +4,8 @@ import { Mail } from "lucide-react";
 import { PageHeader, Shell } from "@/components/shell";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { useI18n } from "@/lib/i18n";
+import { btnPrimary } from "@/components/field";
+import { UX_COPY } from "@/lib/ux-copy";
 
 export const Route = createFileRoute("/contact")({
   head: () =>
@@ -16,11 +18,11 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <Shell>
       <PageHeader kicker={t.contactKicker} title={t.contactTitle} lede={t.contactLede} />
-      <div className="mx-auto max-w-6xl px-5 py-10 md:py-16">
+      <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-10 md:py-16">
         <a
           href={`mailto:${CONTACT_EMAIL}`}
           className="group flex max-w-xl items-center gap-4 rounded-3xl border border-line bg-surface p-5 transition-colors hover:border-pine md:p-6"
@@ -34,6 +36,10 @@ function ContactPage() {
               {CONTACT_EMAIL}
             </bdi>
           </span>
+        </a>
+        <a href={`mailto:${CONTACT_EMAIL}`} className={`${btnPrimary} gap-2`}>
+          <Mail className="size-4" aria-hidden="true" />
+          {UX_COPY[lang].sendEmail}
         </a>
       </div>
     </Shell>

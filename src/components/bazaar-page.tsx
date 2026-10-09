@@ -190,6 +190,7 @@ export function BazaarPage({
                         width={640}
                         height={640}
                         loading={index < 3 ? "eager" : "lazy"}
+                        fetchPriority={index === 0 ? "high" : undefined}
                         decoding="async"
                         className="aspect-[3/4] w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                       />

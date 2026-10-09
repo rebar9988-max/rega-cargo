@@ -61,7 +61,7 @@ const MENU_DELIVERY = [
 ] as const;
 
 const iconBtn =
-  "inline-flex size-8 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper";
+  "inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper";
 
 function MenuRow({
   to,
@@ -118,23 +118,57 @@ export function Mark({ className = "size-14" }: { className?: string }) {
   );
 }
 
+/**
+ * Route heads are written in Sorani (SSR/SEO). For other languages the tab title follows
+ * the page's visible h1, so tabs and screen readers announce the chosen language.
+ */
+let routerTitle = "";
+let appliedTitle = "";
+function useLocalizedTitle(lang: Lang, path: string) {
+  useEffect(() => {
+    const titleEl = document.querySelector("title");
+    function apply() {
+      if (document.title !== appliedTitle) routerTitle = document.title;
+      if (lang === "ckb") {
+        if (routerTitle && document.title !== routerTitle) document.title = routerTitle;
+        appliedTitle = "";
+        return;
+      }
+      const text = document.querySelector("main h1, h1")?.textContent?.replace(/\s+/g, " ").trim();
+      if (!text) return;
+      const next = `${text.slice(0, 70)} · R&L`;
+      appliedTitle = next;
+      if (document.title !== next) document.title = next;
+    }
+    apply();
+    const timer = window.setTimeout(apply, 50);
+    const observer = new MutationObserver(() => {
+      if (document.title !== appliedTitle) apply();
+    });
+    if (titleEl) observer.observe(titleEl, { childList: true, characterData: true, subtree: true });
+    return () => {
+      window.clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [lang, path]);
+}
+
 /** R&L AI entry: same pill as the sign-in button; shown only where RL_AI_ENABLED is on. */
 function AiPill({ lang, on }: { lang: Lang; on: boolean }) {
   const label = AI_COPY[lang].navLabel;
   return (
     <Link
       to="/ai"
-      aria-label={label.includes("AI") ? label : `${label} (AI)`}
       aria-current={on ? "page" : undefined}
       style={{ direction: "ltr" }}
       className={`inline-flex h-10 w-16 shrink-0 items-center justify-center gap-1.5 rounded-full border px-2 sm:w-36 lg:w-16 xl:w-36 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
     >
       <Sparkles className="size-4 shrink-0 text-pine" aria-hidden="true" />
-      <span className="hidden sm:inline lg:hidden xl:inline" dir="auto">
-        {label}
-      </span>
       <span className="sm:hidden lg:inline xl:hidden" dir="ltr">
         AI
+      </span>
+      <span className="sr-only sm:not-sr-only lg:sr-only xl:not-sr-only" dir="auto">
+        {label.includes("AI") ? label : ` ${label}`}
       </span>
     </Link>
   );
@@ -175,6 +209,8 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
     setOpen(false);
   }, [path]);
 
+  useLocalizedTitle(lang, path);
+
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -194,7 +230,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
       </a>
       <header className="sticky top-0 z-30 border-b-2 border-pine bg-surface text-ink">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 md:px-5" style={{ direction: "ltr" }}>
-          <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="R&L">
+          <Link to="/" className="flex shrink-0 items-center gap-3">
             <Mark className="size-11 md:size-12" />
             <span lang="en" className="hidden min-w-0 flex-col leading-none xl:flex">
               <span className="font-sans text-xs font-semibold tracking-wide text-ink">
@@ -210,7 +246,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`text-sm whitespace-nowrap ${on ? "font-semibold text-pine" : "text-muted hover:text-ink"}`}
+                  className={`inline-flex min-h-11 items-center text-sm whitespace-nowrap ${on ? "font-semibold text-pine" : "text-muted hover:text-ink"}`}
                 >
                   {link.to === "/move" ? d.moveSend : t.nav[link.key]}
                 </Link>
@@ -341,7 +377,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
             </div>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="flex items-center gap-2 text-sm font-medium text-pine hover:underline"
+              className="flex min-h-11 items-center gap-2 text-sm font-medium text-pine hover:underline"
             >
               <Mail className="size-4 shrink-0" aria-hidden="true" />
               <bdi dir="ltr">{CONTACT_EMAIL}</bdi>
@@ -352,10 +388,10 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
             <div className="flex flex-col gap-2">
               <p className="text-xs leading-relaxed text-muted">{t.footerNote}</p>
-              <nav aria-label={LEGAL_COPY[lang].links.impressum} className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                <Link to="/impressum" className="text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.impressum}</Link>
-                <Link to="/privacy" className="text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.privacy}</Link>
-                <Link to="/terms" className="text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.terms}</Link>
+              <nav aria-label={LEGAL_COPY[lang].links.impressum} className="flex flex-wrap gap-x-4 text-xs">
+                <Link to="/impressum" className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.impressum}</Link>
+                <Link to="/privacy" className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.privacy}</Link>
+                <Link to="/terms" className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline">{LEGAL_COPY[lang].links.terms}</Link>
               </nav>
             </div>
             <a

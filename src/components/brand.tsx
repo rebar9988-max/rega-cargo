@@ -104,6 +104,8 @@ export function TrustRow() {
   return (
     <section className="border-b border-line bg-surface" aria-label={d.trustLabel}>
       <ul
+        tabIndex={0}
+        aria-label={d.trustLabel}
         className={`mx-auto flex max-w-6xl items-center overflow-x-auto ${GUTTER} ${RAIL} md:justify-between`}
         style={{ direction: "ltr" }}
       >

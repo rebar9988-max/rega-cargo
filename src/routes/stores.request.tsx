@@ -1,7 +1,7 @@
 import { responsiveImage } from "@/lib/images";
 import { seo } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Field, controlClass, btnPrimary } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
 import { DESTS, placeName } from "@/lib/corridor";
@@ -12,6 +12,8 @@ import { checkProductUrl, normalizePhone, QTY_MAX, QTY_MIN, TEXT_MAX, URL_MAX } 
 import { REQUEST_COPY } from "@/lib/request-copy";
 import { gateFields } from "@/lib/ai/gate-client";
 import { orderStore } from "@/lib/orders/api";
+import { UX_COPY } from "@/lib/ux-copy";
+import { ContactNote } from "@/components/contact-note";
 
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -46,10 +48,16 @@ function RequestPage() {
   const [error, setError] = useState("");
   const [warn, setWarn] = useState("");
   const [saved, setSaved] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false);
+  const [failed, setFailed] = useState(false);
+  const ux = UX_COPY[lang];
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    if (inFlight.current) return;
     setWarn("");
+    setFailed(false);
     // Same checks as the server (store-request.ts); the server re-validates everything.
     let href = "";
     if (url.trim()) {
@@ -73,6 +81,8 @@ function RequestPage() {
       return;
     }
     setError("");
+    inFlight.current = true;
+    setBusy(true);
     try {
       const gate = await gateFields();
       const result = await orderStore({
@@ -98,9 +108,13 @@ function RequestPage() {
       }
     } catch {
       /* network error, or the service is not configured */
+    } finally {
+      inFlight.current = false;
+      setBusy(false);
     }
+    // Inputs stay as typed; the email route is offered instead of a dead end.
     setSaved(null);
-    setError(t.serviceLater);
+    setFailed(true);
   }
 
   return (
@@ -163,10 +177,17 @@ function RequestPage() {
             <Field label={rc.phone} hint={rc.phoneHint}>
               <input className={controlClass} dir="ltr" type="tel" inputMode="tel" autoComplete="tel" maxLength={24} value={phone} onChange={(event) => setPhone(event.target.value)} />
             </Field>
-            {error ? <p className="text-sm text-clay">{error}</p> : null}
+            <div aria-live="polite">
+              {error ? (
+                <p role="alert" className="text-sm text-clay">
+                  {error}
+                </p>
+              ) : null}
+              {failed && !error ? <ContactNote pre={ux.failPre} post={ux.failPost} /> : null}
+            </div>
             {warn ? <p className="text-sm text-clay">{warn}</p> : null}
-            <button type="submit" className={btnPrimary}>
-              {t.submit}
+            <button type="submit" className={`${btnPrimary} disabled:opacity-60`} disabled={busy} aria-busy={busy}>
+              {busy ? ux.sending : t.submit}
             </button>
           </form>
         )}
