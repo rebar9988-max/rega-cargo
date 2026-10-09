@@ -1,3 +1,4 @@
+import { NUM_LOCALE } from "@/lib/numbers";
 import { formatIqdFromEur } from "@/lib/corridor";
 import type { ReactNode } from "react";
 
@@ -29,7 +30,7 @@ export function Field({
 }
 
 export function Eur({ value }: { value: number }) {
-  const text = new Intl.NumberFormat("en-GB", {
+  const text = new Intl.NumberFormat(NUM_LOCALE, {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 2,

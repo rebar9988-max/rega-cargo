@@ -155,8 +155,8 @@ export const de = {
   dutyPlan: "Ein Planwert, keine Zollentscheidung.",
   footnote:
     "Planpreise für heute. Vor der Abholung bestätigt. Treibstoff und Stoßwochen können sie leicht bewegen. 1 Euro ≈ 1.520 Dinar, damit die Zahl zu Hause lesbar ist — kein Bankkurs.",
-  weightError: "Gewicht zwischen 0,2 und 300 kg eingeben.",
-  dimError: "Maße zwischen 0 und 300 cm. 0, wenn der Karton noch unbekannt ist.",
+  weightError: "Gewicht zwischen 0,1 und 70 kg eingeben.",
+  dimError: "Maße zwischen 1 und 200 cm.",
   perPiece: "Der Preis gilt für das Gesamtgewicht, nicht je Stück.",
   cm: "cm",
   kg: "kg",

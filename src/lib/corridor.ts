@@ -1,3 +1,4 @@
+import { NUM_LOCALE } from "./numbers.ts";
 import type { Lang } from "@/lib/langs";
 
 /** The one EUR → IQD rate used everywhere (UI, PDF rate sheet). Applied last, to the final euro-cent total. */
@@ -194,7 +195,7 @@ export function iqdFromCents(totalCents: number) {
 }
 
 export function formatEur(value: number) {
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat(NUM_LOCALE, {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 2,
@@ -204,7 +205,7 @@ export function formatEur(value: number) {
 
 export function formatIqdFromEur(eur: number) {
   const iqd = iqdFromCents(toCents(eur));
-  return `${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(iqd)} IQD`;
+  return `${new Intl.NumberFormat(NUM_LOCALE, { maximumFractionDigits: 0 }).format(iqd)} IQD`;
 }
 
 export function getOrigin(id?: string) {

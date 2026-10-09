@@ -5,6 +5,7 @@
  * `npm run rate-sheet`; rate-sheet.test.ts fails if prices change and the PDF
  * was not regenerated (hash in rate-sheet.lock.json).
  */
+import { NUM_LOCALE } from "./numbers.ts";
 import {
   DESTS,
   DUTY_RULES,
@@ -58,7 +59,7 @@ export function rateSheetHash(data: RateSheetData = rateSheetData()): string {
 }
 
 const eur = (cents: number) => `€${(cents / 100).toFixed(2)}`;
-const iqd = (n: number) => `${n.toLocaleString("en-GB")} IQD`;
+const iqd = (n: number) => `${n.toLocaleString(NUM_LOCALE)} IQD`;
 const esc = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const MODE_COPY: Record<string, { name: string; blurb: string }> = {
@@ -142,7 +143,7 @@ footer { margin-top: 12px; border-top: 1px solid #E9ECEF; padding-top: 8px; font
 </div>
 
 <footer>
-  <p>دینار بە نرخی ${ltr(`1 € = ${data.iqdPerEur.toLocaleString("en-GB")} IQD`)}، دوایین نوێکردنەوە ${ltr(data.iqdUpdated)}. نرخەکان بۆ پلاندانانن و پێش کۆکردنەوە پشتڕاست دەکرێنەوە.</p>
+  <p>دینار بە نرخی ${ltr(`1 € = ${data.iqdPerEur.toLocaleString(NUM_LOCALE)} IQD`)}، دوایین نوێکردنەوە ${ltr(data.iqdUpdated)}. نرخەکان بۆ پلاندانانن و پێش کۆکردنەوە پشتڕاست دەکرێنەوە.</p>
   <p>پەیوەندی: ${ltr(data.contact)} · © R&amp;L · ${ltr(`rate sheet ${rateSheetHash(data)}`)}</p>
 </footer>
 </body></html>`;

@@ -155,8 +155,8 @@ export const ku = {
   dutyPlan: "Rêjeyeke planê ye, ne biryara gumrikê.",
   footnote:
     "Bihayên planê yên îro. Hevkarek berî berhevkirinê dipijirîne. Sotemenî û hefteyên qelebalix dikarin hinekî biguherînin. 1 euro ≈ 1.520 dînar — ne nirxa bankê ye.",
-  weightError: "Giraniyek di navbera 0.2 û 300 kg de binivîse.",
-  dimError: "Pîvan divê di navbera 0 û 300 cm de bin. Heke qutî nizanim, 0 binivîse.",
+  weightError: "Giraniyek di navbera 0.1 û 70 kg de binivîse.",
+  dimError: "Pîvan divê di navbera 1 û 200 cm de bin.",
   perPiece: "Biha tevahiya giraniyê digire, ne her perçeyek cuda.",
   cm: "cm",
   kg: "kg",
