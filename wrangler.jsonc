@@ -40,6 +40,9 @@
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RlAiUsage"] }],
 
+  // Per-IP rate limit for quote signing and tracking lookups (20 / 60 s per key).
+  "ratelimits": [{ "name": "RL_LIMIT", "namespace_id": "1101", "simple": { "limit": 20, "period": 60 } }],
+
   // Staging: separate Worker `rega-cargo-staging` on workers.dev only (no
   // routes, no custom domain, no database, its own secrets). Deploy with
   // `npm run deploy:staging`. Bindings and vars are not inherited from the
@@ -62,7 +65,8 @@
       "durable_objects": {
         "bindings": [{ "name": "RL_AI_USAGE", "class_name": "RlAiUsage" }]
       },
-      "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RlAiUsage"] }]
+      "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RlAiUsage"] }],
+      "ratelimits": [{ "name": "RL_LIMIT", "namespace_id": "1102", "simple": { "limit": 20, "period": 60 } }]
     }
   }
 }

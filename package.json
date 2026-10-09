@@ -20,7 +20,7 @@
     "preview:stop": "node scripts/preview.mjs stop",
     "typecheck": "tsc --noEmit",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/market/logic.test.ts src/lib/flow.e2e.test.ts src/lib/ai/ai.test.ts src/lib/html-cache.test.ts src/lib/quote-search.test.ts src/lib/sw-rules.test.ts src/lib/ai/challenge.test.ts src/lib/images.test.ts src/lib/phone/format.test.ts src/lib/phone/session.server.test.ts src/lib/corridor.test.ts src/lib/shipments.test.ts src/lib/search/search.test.ts",
+    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/market/logic.test.ts src/lib/flow.e2e.test.ts src/lib/ai/ai.test.ts src/lib/html-cache.test.ts src/lib/quote-search.test.ts src/lib/sw-rules.test.ts src/lib/ai/challenge.test.ts src/lib/images.test.ts src/lib/phone/format.test.ts src/lib/phone/session.server.test.ts src/lib/corridor.test.ts src/lib/shipments.test.ts src/lib/search/search.test.ts src/lib/quote-token.test.ts",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

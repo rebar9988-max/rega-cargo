@@ -567,8 +567,9 @@ async function tableOf(kind: JobKind) {
 
 export async function createDelivery(
   userId: string,
-  input: { pickup?: unknown; dropoff?: unknown; item?: unknown; size?: unknown; date?: unknown; product?: unknown },
+  input: { pickup?: unknown; dropoff?: unknown; item?: unknown; size?: unknown; date?: unknown; product?: unknown; declared?: unknown },
 ) {
+  if (input.declared !== true) throw new MarketError("invalid");
   const sql = await sqlOf();
   await ensureBuyer(sql, userId);
   await limit(sql, userId, "delivery");
@@ -583,11 +584,15 @@ export async function createDelivery(
     insert into delivery_requests (id, user_id, product_slug, pickup, dropoff, item_desc, size_note, preferred_date)
     values (${id}, ${userId}, ${product}, ${pickup}, ${dropoff}, ${item}, ${size}, ${date})`;
   await sql`insert into job_status (id, job_kind, job_id, status, actor_id) values (${crypto.randomUUID()}, 'delivery', ${id}, 'requested', ${userId})`;
+  await sql`
+    insert into declarations (id, user_id, kind, ref_id, version)
+    values (${crypto.randomUUID()}, ${userId}, 'delivery', ${id}, '2026-10-09')`;
   log("delivery", userId);
   return { id };
 }
 
-export async function createTransport(userId: string, input: { origin?: unknown; destination?: unknown; load?: unknown; date?: unknown }) {
+export async function createTransport(userId: string, input: { origin?: unknown; destination?: unknown; load?: unknown; date?: unknown; declared?: unknown }) {
+  if (input.declared !== true) throw new MarketError("invalid");
   const sql = await sqlOf();
   await ensureBuyer(sql, userId);
   await limit(sql, userId, "transport");
@@ -600,6 +605,9 @@ export async function createTransport(userId: string, input: { origin?: unknown;
     insert into transport_requests (id, user_id, origin, destination, load_desc, preferred_date)
     values (${id}, ${userId}, ${origin}, ${destination}, ${load}, ${date})`;
   await sql`insert into job_status (id, job_kind, job_id, status, actor_id) values (${crypto.randomUUID()}, 'transport', ${id}, 'requested', ${userId})`;
+  await sql`
+    insert into declarations (id, user_id, kind, ref_id, version)
+    values (${crypto.randomUUID()}, ${userId}, 'transport', ${id}, '2026-10-09')`;
   log("transport", userId);
   return { id };
 }

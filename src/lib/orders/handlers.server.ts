@@ -1,6 +1,10 @@
 import { getSql } from "@/lib/db";
 import { MarketError, cleanText } from "@/lib/market";
 import { phoneMe } from "@/lib/phone/session.server";
+import { newTrackingId, normalizeTrackingId } from "./tracking-id";
+
+/** Version of the restricted-items declaration text the user accepted. */
+export const DECLARATION_VERSION = "2026-10-09";
 
 function dbUnavailable(err: unknown) {
   return err instanceof Error && /Database not configured|getSql/i.test(err.message);
@@ -43,7 +47,7 @@ export async function submitRequest(userId: string, kind: "quote" | "store", pay
     await rate(userId);
     const sql = await getSql();
     const id = crypto.randomUUID();
-    const tracking = `RG-${id.replace(/-/g, "").slice(0, 5).toUpperCase()}`;
+    const tracking = newTrackingId();
     await sql`
       with req as (
         insert into shipment_requests (id, user_id, kind, name, phone, payload, estimate_eur, tracking_id)
@@ -52,6 +56,11 @@ export async function submitRequest(userId: string, kind: "quote" | "store", pay
       )
       insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase)
       select ${crypto.randomUUID()}, req.id, 'Request received', 'داواکاری گەیشت', '', '', 'now' from req`;
+    if (payload.declared === true) {
+      await sql`
+        insert into declarations (id, user_id, kind, ref_id, version)
+        values (${crypto.randomUUID()}, ${userId}, ${kind}, ${id}, ${DECLARATION_VERSION})`;
+    }
     await sql`
       insert into notifications (id, user_id, body_ku, body_en)
       select md5(user_id || ${tracking}), user_id, ${`داواکاری ${tracking}`}, ${`Request ${tracking}`}
@@ -66,12 +75,13 @@ export async function submitRequest(userId: string, kind: "quote" | "store", pay
 }
 
 export async function lookupTracking(id: string) {
-  const code = id.trim().toUpperCase().slice(0, 40);
-  if (!/^RG-[A-Z0-9-]{4,}$/.test(code)) return { error: "notfound" as const };
+  const code = normalizeTrackingId(id);
+  if (!code) return { error: "notfound" as const };
   try {
     const sql = await getSql();
-    const rows = await sql<{ id: string; tracking_id: string; status: string; payload: string; estimate_eur: number | null }>`
-      select id, tracking_id, status, payload, estimate_eur from shipment_requests where tracking_id = ${code}`;
+    // Public view: status and milestones only. No name, phone, payload or price.
+    const rows = await sql<{ id: string; tracking_id: string; status: string }>`
+      select id, tracking_id, status from shipment_requests where tracking_id = ${code}`;
     const row = rows[0];
     if (!row) return { error: "notfound" as const };
     const events = await sql<{ title: string; title_ku: string; place: string; place_ku: string; phase: string; created_at: string }>`
@@ -79,7 +89,6 @@ export async function lookupTracking(id: string) {
     return {
       id: row.tracking_id,
       status: row.status,
-      estimateEur: row.estimate_eur,
       events: events.map((event) => ({
         title: event.title,
         titleKu: event.title_ku,

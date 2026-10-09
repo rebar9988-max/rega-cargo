@@ -21,7 +21,8 @@ import {
   type ModeId,
 } from "@/lib/corridor";
 import { dayRange, useI18n } from "@/lib/i18n";
-import { orderQuote } from "@/lib/orders/api";
+import { issueQuote, orderQuote } from "@/lib/orders/api";
+import { DECLARE_COPY } from "@/lib/declare-copy";
 import { Eur, Field, Iqd, btnGhost, btnPrimary, controlClass } from "@/components/field";
 
 function readHeld(): HeldQuote[] {
@@ -54,6 +55,8 @@ export function QuotePanel({
   const [value, setValue] = useState("");
   const [notice, setNotice] = useState("");
   const [held, setHeld] = useState<HeldQuote[] | null>(null);
+  const [restrictedOk, setRestrictedOk] = useState(false);
+  const dc = DECLARE_COPY[lang];
 
   useEffect(() => {
     if (variant === "full") setHeld(readHeld());
@@ -105,11 +108,26 @@ export function QuotePanel({
   }
 
   async function book(modeId: ModeId, total: number, chargeable: number) {
+    if (!restrictedOk) {
+      setNotice(dc.mustDeclare);
+      return;
+    }
     const draft = persist(modeId, total, chargeable);
     try {
-      const result = await orderQuote({ data: { ...draft, estimateEur: total } });
-      if (result && "id" in result && result.id) {
-        setNotice(String(result.id));
+      // The server prices the shipment itself and signs the quote; no client price is sent.
+      const quote = await issueQuote({ data: { fromId, toId, mode: modeId, kg: weight, l: dims.l, w: dims.w, h: dims.h } });
+      if ("token" in quote && quote.token) {
+        const result = await orderQuote({ data: { quote: quote.token, contents, declared: true } });
+        if (result && "id" in result && result.id) {
+          setNotice(String(result.id));
+          return;
+        }
+        if (result && "error" in result && result.error === "expired") {
+          setNotice(dc.expired);
+          return;
+        }
+      } else if ("error" in quote && quote.error === "rate") {
+        setNotice(dc.rate);
         return;
       }
     } catch {
@@ -273,6 +291,15 @@ export function QuotePanel({
               </ul>
             ) : (
               <div className="mt-4 flex flex-col gap-3">
+                <label className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 text-sm leading-relaxed">
+                  <input
+                    type="checkbox"
+                    checked={restrictedOk}
+                    onChange={(event) => setRestrictedOk(event.target.checked)}
+                    className="mt-1 size-4 shrink-0 accent-pine"
+                  />
+                  <span>{dc.declare}</span>
+                </label>
                 {rows.map((row) => {
                   const less = Math.round((rows[0].price.total - row.price.total) * 100) / 100;
                   return (
@@ -341,12 +368,15 @@ export function QuotePanel({
 
             {variant === "full" ? (
               <div className="mt-4 rounded-xl border border-line bg-paper p-4">
-                <div className="flex items-baseline justify-between gap-3 text-sm">
-                  <span>{t.duty}</span>
-                  <span className="font-medium">
-                    <Eur value={duty} />
-                  </span>
-                </div>
+                {duty > 0 ? (
+                  <div className="flex items-baseline justify-between gap-3 text-sm">
+                    <span>{t.duty}</span>
+                    <span className="font-medium">
+                      ≈ <Eur value={duty} />
+                    </span>
+                  </div>
+                ) : null}
+                <p className={`text-sm font-medium ${duty > 0 ? "mt-2" : ""}`}>{dc.customs}</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
                   {contents === "documents" ? t.dutyDocs : safeValue > 0 && safeValue <= 200 && contents === "personal" ? t.dutyLow : t.dutyPlan}
                 </p>
