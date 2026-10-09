@@ -197,7 +197,7 @@ export function DeliveryTabs({ active }: { active: "/quote" | "/track" | "/move"
               key={item.to}
               to={item.to as string}
               aria-current={on ? "page" : undefined}
-              className={`relative flex h-12 items-center justify-center gap-1.5 px-1 text-sm ${on ? "font-semibold text-pine" : "text-muted"}`}
+              className={`relative flex h-12 items-center justify-center gap-1.5 px-1 text-xs sm:text-sm ${on ? "font-semibold text-pine" : "text-muted"}`}
             >
               <Icon className="size-4 shrink-0" aria-hidden="true" />
               <span dir="auto" className="truncate">

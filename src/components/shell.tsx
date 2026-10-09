@@ -196,7 +196,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 md:px-5" style={{ direction: "ltr" }}>
           <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="R&L">
             <Mark className="size-11 md:size-12" />
-            <span className="hidden min-w-0 flex-col leading-none xl:flex">
+            <span lang="en" className="hidden min-w-0 flex-col leading-none xl:flex">
               <span className="font-sans text-xs font-semibold tracking-wide text-ink">
                 MOVE SMART. DELIVER FAST.
               </span>
@@ -379,7 +379,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
             <Link
               key={tab.to}
               to={tab.to}
-              className={`flex h-16 flex-col items-center justify-center gap-1 text-[11px] ${on ? "font-semibold text-pine" : "text-muted"}`}
+              className={`flex h-16 flex-col items-center justify-center gap-1 text-xs ${on ? "font-semibold text-pine" : "text-muted"}`}
             >
               <Icon className="size-5" aria-hidden="true" />
               {tab.key === "delivery" ? d.delivery : t.nav[tab.key]}

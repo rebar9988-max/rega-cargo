@@ -77,7 +77,7 @@ export function BrandHero({ title, route }: { title: string; route: string }) {
   return (
     <section className="rl-hero relative overflow-hidden border-b border-line">
       <div className={`relative mx-auto max-w-6xl ${GUTTER} pt-8 pb-14 md:pt-14 md:pb-24`}>
-        <p className="flex items-center gap-3 font-sans text-xs font-bold tracking-[0.3em] text-pine">
+        <p lang="en" className="flex items-center gap-3 font-sans text-xs font-bold tracking-[0.3em] text-pine">
           <bdi dir="ltr">R&amp;L</bdi>
           <span className="rl-grad h-0.5 w-8 rounded-full" aria-hidden="true" />
         </p>
