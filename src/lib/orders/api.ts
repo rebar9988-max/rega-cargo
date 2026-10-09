@@ -40,12 +40,46 @@ export const orderQuote = createServerFn({ method: "POST" })
     return submitRequest(context.userId, "quote", { ...quote, contents, declared: true }, Math.round(quote.total));
   });
 
+/**
+ * Buy / ship request from /stores/request. Order of checks: per-IP rate limit
+ * (HTTP 429), bot gate (Turnstile or signed token), same-site + signed-in user,
+ * then strict validation. Only the validated minimal fields are stored.
+ */
 export const orderStore = createServerFn({ method: "POST" })
-  .middleware([phoneOrAuthMiddleware])
   .validator((input: Record<string, unknown>) => input)
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
+    const { allow, clientIp } = await import("@/lib/rate-limit.server");
+    const { setResponseStatus } = await import("@tanstack/react-start/server");
+    if (!(await allow("request"))) {
+      setResponseStatus(429);
+      return { error: "rate" as const };
+    }
+    const { verifyGate } = await import("@/lib/ai/gate.server");
+    if (!(await verifyGate({ token: data.token, turnstile: data.turnstile }, await clientIp()))) {
+      setResponseStatus(403);
+      return { error: "forbidden" as const };
+    }
+    const { resolveUserId } = await import("@/lib/auth/resolve-user.server");
+    const userId = await resolveUserId();
+    if (!userId) {
+      setResponseStatus(401);
+      return { error: "signin" as const };
+    }
+    let sessionPhone: string | null = null;
+    try {
+      const { phoneMe } = await import("@/lib/phone/session.server");
+      sessionPhone = (await phoneMe())?.phone ?? null;
+    } catch {
+      sessionPhone = null;
+    }
+    const { validateStoreRequest } = await import("./store-request");
+    const checked = validateStoreRequest(data, sessionPhone);
+    if (!checked.ok) {
+      setResponseStatus(400);
+      return { error: checked.error };
+    }
     const { submitRequest } = await import("./handlers.server");
-    return submitRequest(context.userId, "store", data, null);
+    return submitRequest(userId, "store", checked.data, null);
   });
 
 export const orderTrack = createServerFn({ method: "GET" })

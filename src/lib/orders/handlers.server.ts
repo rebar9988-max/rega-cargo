@@ -1,5 +1,5 @@
 import { getSql } from "@/lib/db";
-import { MarketError, cleanText } from "@/lib/market";
+import { MarketError, cleanOptional, cleanText } from "@/lib/market";
 import { phoneMe } from "@/lib/phone/session.server";
 import { newTrackingId, normalizeTrackingId } from "./tracking-id";
 
@@ -42,8 +42,13 @@ export async function submitRequest(userId: string, kind: "quote" | "store", pay
     } catch {
       me = null;
     }
-    const name = cleanText(me?.name ?? payload.name, 80);
-    const phone = cleanText(me?.phone ?? payload.phone, 20);
+    const str = (value: unknown) => (typeof value === "string" ? value : "");
+    const name = cleanOptional(me?.name ?? str(payload.name), 80);
+    const phone = cleanOptional(me?.phone ?? str(payload.phone), 20);
+    // Contact details live in their own columns only; the JSON payload keeps the rest.
+    const { name: _name, phone: _phone, ...stored } = payload;
+    void _name;
+    void _phone;
     await rate(userId);
     const sql = await getSql();
     const id = crypto.randomUUID();
@@ -51,7 +56,7 @@ export async function submitRequest(userId: string, kind: "quote" | "store", pay
     await sql`
       with req as (
         insert into shipment_requests (id, user_id, kind, name, phone, payload, estimate_eur, tracking_id)
-        values (${id}, ${userId}, ${kind}, ${name}, ${phone}, ${JSON.stringify(payload).slice(0, 4000)}, ${estimateEur}, ${tracking})
+        values (${id}, ${userId}, ${kind}, ${name}, ${phone}, ${JSON.stringify(stored).slice(0, 4000)}, ${estimateEur}, ${tracking})
         returning id
       )
       insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase)
@@ -105,13 +110,27 @@ export async function lookupTracking(id: string) {
   }
 }
 
+/** The stored product link, only if it is still a plain https URL. Shown as text, never fetched. */
+function productLink(payload: unknown): string | null {
+  let value: unknown = payload;
+  if (typeof value === "string") {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return null;
+    }
+  }
+  const url = value && typeof value === "object" ? (value as { url?: unknown }).url : null;
+  return typeof url === "string" && url.startsWith("https://") && url.length <= 2000 ? url : null;
+}
+
 export async function adminOrders(userId: string) {
   const sql = await getSql();
   const role = await sql`select 1 as ok from user_roles where user_id = ${userId} and role = 'admin' and status = 'approved'`;
   if (!role.length) throw new MarketError("forbidden");
-  const rows = await sql<{ id: string; tracking_id: string; kind: string; status: string; name: string }>`
-    select id, tracking_id, kind, status, name from shipment_requests order by created_at desc limit 30`;
-  return rows.map((row) => ({ id: row.id, trackingId: row.tracking_id, kind: row.kind, status: row.status, name: row.name }));
+  const rows = await sql<{ id: string; tracking_id: string; kind: string; status: string; name: string; payload: unknown }>`
+    select id, tracking_id, kind, status, name, payload from shipment_requests order by created_at desc limit 30`;
+  return rows.map((row) => ({ id: row.id, trackingId: row.tracking_id, kind: row.kind, status: row.status, name: row.name, link: productLink(row.payload) }));
 }
 
 export async function adminOrderStatus(userId: string, id: string, status: string) {

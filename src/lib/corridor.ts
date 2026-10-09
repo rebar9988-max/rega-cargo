@@ -1,9 +1,9 @@
 import type { Lang } from "@/lib/langs";
 
+/** The one EUR → IQD rate used everywhere (UI, PDF rate sheet). Applied last, to the final euro-cent total. */
 export const IQD_PER_EUR = 1520;
-export const BOOKING_KEY = "rega-booking";
-export const HELD_KEY = "rega-held";
-export const REQUESTS_KEY = "rega-requests";
+/** When IQD_PER_EUR was last set (shown next to dinar amounts). */
+export const IQD_RATE_UPDATED = "2026-10-08";
 
 export const SAMPLE_BOX = { kg: 3.2, l: 40, w: 30, h: 20 };
 
@@ -41,6 +41,9 @@ export type Price = {
   volumetricWins: boolean;
   minApplied: boolean;
   bulky: boolean;
+  /** Final price in integer euro cents (the value all money maths uses). */
+  totalCents: number;
+  /** totalCents / 100, for display. */
   total: number;
 };
 
@@ -134,10 +137,18 @@ function tenth(n: number) {
   return Math.round(n * 10) / 10;
 }
 
-function cents(n: number) {
-  return Math.round(n * 100) / 100;
+/** Euro amount → integer cents. */
+export function toCents(eur: number) {
+  return Math.round(eur * 100);
 }
 
+/**
+ * Prices are computed in integer euro cents. The rate step rounds once
+ * (Math.round) to whole cents; minimum and destination surcharge are added as
+ * integer cents; conversion to IQD happens only at the very end (iqdFromCents).
+ * Formulas and numbers are unchanged: e.g. 4.8 kg × 7.80 = 37.44, 4.8 × 4.60 = 22.08,
+ * road minimum 18.00 (locked by corridor.test.ts).
+ */
 export function priceShipment(input: {
   mode: Mode;
   origin: Origin;
@@ -152,24 +163,34 @@ export function priceShipment(input: {
   const bulky = input.l > 120 || input.w > 120 || input.h > 120;
   let rated = chargeable * input.mode.perKg * input.origin.factor;
   if (bulky) rated *= 1.12;
-  rated = cents(rated);
-  const minApplied = rated < input.mode.min;
-  const total = cents(Math.max(rated, input.mode.min) + input.dest.surcharge);
+  const ratedCents = toCents(rated);
+  const minCents = toCents(input.mode.min);
+  const minApplied = ratedCents < minCents;
+  const totalCents = Math.max(ratedCents, minCents) + toCents(input.dest.surcharge);
   return {
     volumetric,
     chargeable,
     volumetricWins: volumetric > input.weightKg,
     minApplied,
     bulky,
-    total,
+    totalCents,
+    total: totalCents / 100,
   };
 }
 
+/** Planning rates for the customs estimate (not a customs decision). Same numbers as before. */
+export const DUTY_RULES = { personalFreeEur: 200, personalRate: 0.05, commercialRate: 0.08 } as const;
+
 export function dutyEstimate(contents: Contents, declaredEur: number) {
   if (contents === "documents") return 0;
-  if (contents === "personal" && declaredEur <= 200) return 0;
-  const rate = contents === "personal" ? 0.05 : 0.08;
-  return cents(declaredEur * rate);
+  if (contents === "personal" && declaredEur <= DUTY_RULES.personalFreeEur) return 0;
+  const rate = contents === "personal" ? DUTY_RULES.personalRate : DUTY_RULES.commercialRate;
+  return toCents(declaredEur * rate) / 100;
+}
+
+/** IQD from integer euro cents, rounded to whole dinars: the last step of every calculation. */
+export function iqdFromCents(totalCents: number) {
+  return Math.round((totalCents * IQD_PER_EUR) / 100);
 }
 
 export function formatEur(value: number) {
@@ -182,7 +203,7 @@ export function formatEur(value: number) {
 }
 
 export function formatIqdFromEur(eur: number) {
-  const iqd = Math.round(eur * IQD_PER_EUR);
+  const iqd = iqdFromCents(toCents(eur));
   return `${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(iqd)} IQD`;
 }
 

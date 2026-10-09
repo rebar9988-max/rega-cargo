@@ -57,6 +57,8 @@ export type IdentifyDeps = {
   tokenSecret?: string;
   turnstileSecret?: string;
   verifyToken?: (token: string, now: number) => Promise<boolean>;
+  /** Per-IP burst limit (Workers rate-limit binding); checked before the body is read. */
+  limit?: (ip: string) => Promise<boolean>;
 };
 
 export type IdentifyResponse =
@@ -149,6 +151,8 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
   if (!aiEnabled(env)) return json({ ok: false, error: "disabled" }, 404);
   if (request.method !== "POST") return json({ ok: false, error: "method" }, 405);
   if (!sameOrigin(request)) return json({ ok: false, error: "forbidden" }, 403);
+  if (deps.limit && !(await deps.limit(ipKey(request.headers.get("cf-connecting-ip") ?? "unknown"))))
+    return json({ ok: false, error: "rate_limited" }, 429);
   if (!env.AI || !deps.usage) return json({ ok: false, error: "unavailable" }, 503);
 
   const cap = MAX_IMAGE_BYTES + 64_000;

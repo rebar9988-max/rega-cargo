@@ -1,8 +1,8 @@
+import { getItem, setItem } from "./storage.ts";
 /** Which of the two services (Bazaar or Delivery) the home page shows; remembered per device. */
 export type Service = "bazaar" | "delivery";
-export const SERVICE_KEY = "rl-service";
-/** Same name as the storage key; read on the server so SSR renders the remembered panel. */
-export const SERVICE_COOKIE = SERVICE_KEY;
+/** Cookie read on the server so SSR renders the remembered panel (storage key: rl-service-v1, see storage.ts). */
+export const SERVICE_COOKIE = "rl-service";
 
 /** Only "delivery" is meaningful; anything else (absent, tampered) is the default. */
 export function serviceFromCookieHeader(header: string | null | undefined): Service {
@@ -10,19 +10,11 @@ export function serviceFromCookieHeader(header: string | null | undefined): Serv
 }
 
 export function readService(): Service {
-  try {
-    return localStorage.getItem(SERVICE_KEY) === "delivery" ? "delivery" : "bazaar";
-  } catch {
-    return "bazaar";
-  }
+  return getItem("service") === "delivery" ? "delivery" : "bazaar";
 }
 
 export function writeService(service: Service) {
-  try {
-    localStorage.setItem(SERVICE_KEY, service);
-  } catch {
-    // storage unavailable (private mode): the choice simply isn't remembered
-  }
+  setItem("service", service);
   try {
     const secure = location.protocol === "https:" ? "; Secure" : "";
     document.cookie =

@@ -1,10 +1,10 @@
-import { parseKg } from "@/lib/quote-search";
+import { QUOTE_LIMITS, dimInRange, kgInRange, parseKg } from "@/lib/quote-search";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
-  BOOKING_KEY,
   DESTS,
-  HELD_KEY,
+  IQD_PER_EUR,
+  IQD_RATE_UPDATED,
   MODES,
   ORIGINS,
   SAMPLE_BOX,
@@ -23,16 +23,27 @@ import {
 import { dayRange, useI18n } from "@/lib/i18n";
 import { issueQuote, orderQuote } from "@/lib/orders/api";
 import { DECLARE_COPY } from "@/lib/declare-copy";
+import { getJson, setJson } from "@/lib/storage";
 import { Eur, Field, Iqd, btnGhost, btnPrimary, controlClass } from "@/components/field";
 
+const HELD_FIELDS = ["fromId", "toId", "mode", "contents", "at"] as const;
+
+/** Saved quotes: route, mode, weight and price only (no personal data). Tampered entries are dropped. */
 function readHeld(): HeldQuote[] {
-  try {
-    const raw = window.localStorage.getItem(HELD_KEY);
-    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
-    return Array.isArray(parsed) ? (parsed as HeldQuote[]).slice(0, 4) : [];
-  } catch {
-    return [];
-  }
+  return getJson(
+    "held",
+    (value) =>
+      Array.isArray(value)
+        ? (value.filter(
+            (item) =>
+              item &&
+              typeof item === "object" &&
+              HELD_FIELDS.every((key) => typeof (item as Record<string, unknown>)[key] === "string") &&
+              ["total", "kg", "chargeable"].every((key) => Number.isFinite((item as Record<string, unknown>)[key])),
+          ) as HeldQuote[]).slice(0, 4)
+        : null,
+    [],
+  );
 }
 
 export function QuotePanel({
@@ -66,12 +77,10 @@ export function QuotePanel({
   const dest = getDest(toId);
   const weight = Number(kg);
   const dims = variant === "compact" ? SAMPLE_BOX : { l: Number(length), w: Number(width), h: Number(height) };
-  const weightOk = Number.isFinite(weight) && weight >= 0.2 && weight <= 300;
-  const dimsOk =
-    variant === "compact" ||
-    [dims.l, dims.w, dims.h].every((n) => Number.isFinite(n) && n >= 0 && n <= 300);
+  const weightOk = kgInRange(weight);
+  const dimsOk = variant === "compact" || [dims.l, dims.w, dims.h].every(dimInRange);
   const valid = weightOk && dimsOk;
-  const pieceCount = Math.min(50, Math.max(1, Math.round(Number(pieces) || 1)));
+  const pieceCount = Math.min(QUOTE_LIMITS.pieces.max, Math.max(QUOTE_LIMITS.pieces.min, Math.round(Number(pieces) || 1)));
   const declared = Number(value);
   const safeValue = Number.isFinite(declared) && declared > 0 ? declared : 0;
 
@@ -107,12 +116,11 @@ export function QuotePanel({
     return draft;
   }
 
-  async function book(modeId: ModeId, total: number, chargeable: number) {
+  async function book(modeId: ModeId) {
     if (!restrictedOk) {
       setNotice(dc.mustDeclare);
       return;
     }
-    const draft = persist(modeId, total, chargeable);
     try {
       // The server prices the shipment itself and signs the quote; no client price is sent.
       const quote = await issueQuote({ data: { fromId, toId, mode: modeId, kg: weight, l: dims.l, w: dims.w, h: dims.h } });
@@ -133,21 +141,20 @@ export function QuotePanel({
     } catch {
       /* not signed in, or the database is not configured */
     }
-    window.sessionStorage.setItem(BOOKING_KEY, JSON.stringify(draft));
     void navigate({ to: "/contact" });
   }
 
   function save(modeId: ModeId, total: number, chargeable: number) {
     const draft: HeldQuote = { ...persist(modeId, total, chargeable), at: new Date().toISOString() };
     const next = [draft, ...(held ?? []).filter((item) => !(item.fromId === fromId && item.toId === toId && item.mode === modeId))].slice(0, 4);
-    window.localStorage.setItem(HELD_KEY, JSON.stringify(next));
+    setJson("held", next);
     setHeld(next);
     setNotice(t.saved);
   }
 
   function removeHeld(index: number) {
     const next = (held ?? []).filter((_, i) => i !== index);
-    window.localStorage.setItem(HELD_KEY, JSON.stringify(next));
+    setJson("held", next);
     setHeld(next);
   }
 
@@ -212,6 +219,7 @@ export function QuotePanel({
                 className={controlClass}
                 dir="ltr"
                 inputMode="decimal"
+                aria-invalid={!weightOk}
                 value={kg}
                 onChange={(event) => setKg(event.target.value)}
               />
@@ -226,14 +234,19 @@ export function QuotePanel({
               />
             </Field>
             <Field label={`${t.length} (${t.cm})`}>
-              <input className={controlClass} dir="ltr" inputMode="decimal" value={length} onChange={(e) => setLength(e.target.value)} />
+              <input className={controlClass} dir="ltr" inputMode="decimal" aria-invalid={!dimInRange(Number(length))} value={length} onChange={(e) => setLength(e.target.value)} />
             </Field>
             <Field label={`${t.width} (${t.cm})`}>
-              <input className={controlClass} dir="ltr" inputMode="decimal" value={width} onChange={(e) => setWidth(e.target.value)} />
+              <input className={controlClass} dir="ltr" inputMode="decimal" aria-invalid={!dimInRange(Number(width))} value={width} onChange={(e) => setWidth(e.target.value)} />
             </Field>
             <Field label={`${t.height} (${t.cm})`}>
-              <input className={controlClass} dir="ltr" inputMode="decimal" value={height} onChange={(e) => setHeight(e.target.value)} />
+              <input className={controlClass} dir="ltr" inputMode="decimal" aria-invalid={!dimInRange(Number(height))} value={height} onChange={(e) => setHeight(e.target.value)} />
             </Field>
+            {!valid ? (
+              <p role="alert" className="text-sm text-clay sm:col-span-2">
+                {dc.range}
+              </p>
+            ) : null}
             <Field label={t.inside}>
               <select
                 className={controlClass}
@@ -348,7 +361,7 @@ export function QuotePanel({
                         <button
                           type="button"
                           className={btnPrimary}
-                          onClick={() => book(row.mode.id, row.price.total, row.price.chargeable)}
+                          onClick={() => book(row.mode.id)}
                         >
                           {t.book}
                         </button>
@@ -379,6 +392,9 @@ export function QuotePanel({
                 <p className={`text-sm font-medium ${duty > 0 ? "mt-2" : ""}`}>{dc.customs}</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
                   {contents === "documents" ? t.dutyDocs : safeValue > 0 && safeValue <= 200 && contents === "personal" ? t.dutyLow : t.dutyPlan}
+                </p>
+                <p className="mt-2 text-xs text-muted">
+                  {dc.iqdRate.replace("{rate}", IQD_PER_EUR.toLocaleString("en-GB")).replace("{date}", IQD_RATE_UPDATED)}
                 </p>
               </div>
             ) : null}

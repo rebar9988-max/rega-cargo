@@ -1,3 +1,4 @@
+import { formatIqdFromEur } from "@/lib/corridor";
 import type { ReactNode } from "react";
 
 export const controlClass =
@@ -42,8 +43,7 @@ export function Eur({ value }: { value: number }) {
 }
 
 export function Iqd({ eur }: { eur: number }) {
-  const iqd = Math.round(eur * 1520);
-  const text = `${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(iqd)} IQD`;
+  const text = formatIqdFromEur(eur);
   return (
     <bdi dir="ltr" className="tabular-nums">
       {text}

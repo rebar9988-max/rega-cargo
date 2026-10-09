@@ -18,6 +18,7 @@ type WorkerEnv = IdentifyEnv & {
   TURNSTILE_SITE_KEY?: string;
   AI_TOKEN_SECRET?: string;
   BETTER_AUTH_SECRET?: string;
+  RL_LIMIT?: { limit(input: { key: string }): Promise<{ success: boolean }> };
 };
 
 export function aiEnv(): IdentifyDeps {
@@ -41,6 +42,15 @@ export function aiEnv(): IdentifyDeps {
     turnstileSecret: raw.TURNSTILE_SECRET ?? process.env.TURNSTILE_SECRET,
     tokenSecret: raw.AI_TOKEN_SECRET ?? process.env.AI_TOKEN_SECRET ?? process.env.BETTER_AUTH_SECRET,
     verifyToken: stub ? (token, now) => stub.verify(token, now) : undefined,
+    limit: raw.RL_LIMIT
+      ? async (ip) => {
+          try {
+            return (await raw.RL_LIMIT!.limit({ key: `ai:${ip}` })).success;
+          } catch {
+            return true;
+          }
+        }
+      : undefined,
   };
 }
 

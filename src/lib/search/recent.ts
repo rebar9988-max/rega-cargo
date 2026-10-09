@@ -1,14 +1,12 @@
-/** Recent searches, kept only on this device. */
-const KEY = "rl-recent-searches";
+import { getJson, removeItem, setJson } from "../storage.ts";
+
+/** Recent searches, kept only on this device (storage key rl-recent-v1). */
 const MAX = 8;
 
+const strings = (value: unknown) => (Array.isArray(value) ? value.filter((item): item is string => typeof item === "string").slice(0, MAX) : null);
+
 export function readRecent(): string[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem(KEY) ?? "[]");
-    return Array.isArray(raw) ? raw.filter((item): item is string => typeof item === "string").slice(0, MAX) : [];
-  } catch {
-    return [];
-  }
+  return getJson("recent", strings, []);
 }
 
 export function addRecent(text: string): string[] {
@@ -16,19 +14,11 @@ export function addRecent(text: string): string[] {
   if (!value) return readRecent();
   const key = value.toLowerCase();
   const next = [value, ...readRecent().filter((item) => item.toLowerCase() !== key)].slice(0, MAX);
-  try {
-    localStorage.setItem(KEY, JSON.stringify(next));
-  } catch {
-    // storage unavailable: the list just isn't remembered
-  }
+  setJson("recent", next);
   return next;
 }
 
 export function clearRecent(): string[] {
-  try {
-    localStorage.removeItem(KEY);
-  } catch {
-    // ignore
-  }
+  removeItem("recent");
   return [];
 }

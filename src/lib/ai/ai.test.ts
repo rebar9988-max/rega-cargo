@@ -361,3 +361,26 @@ test("per-visitor daily limit, reserved share for new visitors, and refund", asy
   await refundUsage(near, { day: "2026-10-08", hour: "2026-10-08T21", visitor: "fresh" });
   assert.equal(near.data.get("day:2026-10-08"), 80);
 });
+
+test("per-IP burst limit answers 429 before the body is read; oversized upload is 413", async () => {
+  const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
+  let n = 0;
+  const deps = {
+    env: { ...on, AI: mockAi({}, calls) },
+    skipGate: true,
+    usage: storeLimiter(memoryUsageStore()),
+    limit: async () => ++n <= 1,
+  };
+  assert.equal((await handleIdentify(upload({ consent: "1", bytes: new TextEncoder().encode("x") }), deps)).status, 415);
+  assert.equal((await handleIdentify(upload({ consent: "1" }), deps)).status, 429);
+  const big = new Uint8Array(MAX_IMAGE_BYTES + 100_000);
+  big.set([0xff, 0xd8, 0xff]);
+  assert.equal((await handleIdentify(upload({ consent: "1", bytes: big }), { ...deps, limit: undefined })).status, 413);
+  assert.equal(calls.length, 0);
+});
+
+test("AI text never names a shop, a price or a link", () => {
+  assert.equal(cleanText("Nike Air from Amazon, €49.99, see zalando.de", 80), "Nike Air from , see");
+  assert.equal(cleanText("eBay seller says 20 EUR", 80), "seller says");
+  assert.equal(cleanText("Admiral cream", 80), "Admiral cream");
+});

@@ -2,7 +2,7 @@
  * Outermost security headers (sorts before 0-html-cache, so it sees the final
  * response, including cache hits) and a per-request nonce for inline scripts.
  */
-const FONT_HASH = "'sha256-d+9JVhYSHpWepfI9cknBb9xs6iHWlXIFM1pcB4nZ6dg='";
+const FONT_HASH = "'sha256-IBFlRbLgBwm+fNvJ7e1DzAkKc1x5o6cv2B53+jVCQmo='";
 
 function csp(nonce: string) {
   return [
@@ -15,7 +15,7 @@ function csp(nonce: string) {
     "worker-src 'self'",
     "frame-src https://challenges.cloudflare.com",
     "frame-ancestors 'none'",
-    "base-uri 'self'",
+    "base-uri 'none'",
     "form-action 'self'",
     "object-src 'none'",
   ].join("; ");

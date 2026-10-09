@@ -4,12 +4,12 @@ import { QuotePanel } from "@/components/quote-panel";
 import { PageHeader, Shell } from "@/components/shell";
 import { DeliveryTabs } from "@/components/delivery-hub";
 import { useI18n } from "@/lib/i18n";
-import { parseKg } from "@/lib/quote-search";
+import { parseFrom, parseKg, parseTo } from "@/lib/quote-search";
 
 export const Route = createFileRoute("/quote")({
   validateSearch: (search: Record<string, unknown>) => ({
-    from: typeof search.from === "string" && search.from ? search.from : undefined,
-    to: typeof search.to === "string" && search.to ? search.to : undefined,
+    from: parseFrom(search.from),
+    to: parseTo(search.to),
     kg: parseKg(search.kg),
   }),
   head: () =>

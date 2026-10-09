@@ -60,7 +60,7 @@ export function BazaarPage({
   );
   const [brandName, setBrandName] = useState<string | null>(null);
   const [country, setCountry] = useState<"all" | "DE" | "INT">("all");
-  const [onlyFav, setOnlyFav] = useState(params.fav === "1");
+  const [onlyFav, setOnlyFav] = useState(params.fav === 1);
   const [favs, setFavs] = useState<string[]>(() => readFavs());
   const query = q.trim().toLowerCase();
   // Home offers both services. The server renders the remembered choice from the
@@ -86,7 +86,7 @@ export function BazaarPage({
     setQ(params.q ?? "");
     if (isCategory(params.cat)) setCategory(params.cat);
     if (isAudience(params.who)) setAudience(params.who);
-    setOnlyFav(params.fav === "1");
+    setOnlyFav(params.fav === 1);
   }, [params.q, params.cat, params.who, params.fav]);
 
   const collection = useMemo(
