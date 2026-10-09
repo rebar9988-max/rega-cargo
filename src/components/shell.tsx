@@ -161,13 +161,13 @@ function AiPill({ lang, on }: { lang: Lang; on: boolean }) {
       to="/ai"
       aria-current={on ? "page" : undefined}
       style={{ direction: "ltr" }}
-      className={`inline-flex h-10 w-16 shrink-0 items-center justify-center gap-1.5 rounded-full border px-2 sm:w-36 lg:w-16 xl:w-36 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
+      className={`inline-flex h-10 w-16 shrink-0 items-center justify-center gap-1.5 rounded-full border px-2 sm:w-36 lg:w-16 2xl:w-36 text-sm whitespace-nowrap ${on ? "border-pine text-pine" : "border-line text-ink"}`}
     >
       <Sparkles className="size-4 shrink-0 text-pine" aria-hidden="true" />
-      <span className="sm:hidden lg:inline xl:hidden" dir="ltr">
+      <span className="sm:hidden lg:inline 2xl:hidden" dir="ltr">
         AI
       </span>
-      <span className="sr-only sm:not-sr-only lg:sr-only xl:not-sr-only" dir="auto">
+      <span className="sr-only sm:not-sr-only lg:sr-only 2xl:not-sr-only" dir="auto">
         {label.includes("AI") ? label : ` ${label}`}
       </span>
     </Link>
