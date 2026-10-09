@@ -89,6 +89,22 @@ for (const lang of LANGS) {
       await expect(page).toHaveScreenshot(`menu-${lang}.png`, shot(page, true));
     });
 
+    test(`language picker ${lang}`, async ({ page, breakpoint }) => {
+      await open(page, "/", lang);
+      const button = page.locator('[data-layout="lang-button"]');
+      const box = await button.boundingBox();
+      expect(box && box.width >= 40 && box.height >= 40, "language button tap target >= 40px").toBe(true);
+      await button.click();
+      const panel = page.locator(breakpoint === "phone" ? '[data-layout="lang-sheet"]' : '[data-layout="lang-popover"]');
+      await expect(panel).toBeVisible();
+      await expect(panel.locator('[role="option"]')).toHaveCount(7);
+      await expect(panel.locator(`[role="option"][data-lang="${lang}"]`)).toBeFocused();
+      await expect(page).toHaveScreenshot(`lang-${lang}.png`, shot(page, true));
+      await page.keyboard.press("Escape");
+      await expect(panel).toHaveCount(0);
+      await expect(button).toBeFocused();
+    });
+
     test(`search sheet ${lang}`, async ({ page, breakpoint }) => {
       await open(page, "/", lang);
       await page.locator('input[type="search"]').first().click();

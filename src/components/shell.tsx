@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  Check,
   ChevronDown,
   ChevronRight,
   Heart,
@@ -27,9 +26,10 @@ import { LEGAL_COPY } from "@/lib/legal-copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
+import { HeaderLangPicker, LangOptions } from "@/components/lang-picker";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
-import { LANGS, langMeta, type Lang } from "@/lib/langs";
+import { langMeta, type Lang } from "@/lib/langs";
 
 const LINKS = [
   { to: "/", key: "home", exact: true },
@@ -65,12 +65,14 @@ const iconBtn =
 
 function MenuRow({
   to,
+  search,
   icon: Icon,
   label,
   sub,
   on,
 }: {
   to: string;
+  search?: Record<string, unknown>;
   icon: LucideIcon;
   label: string;
   sub?: string;
@@ -79,6 +81,7 @@ function MenuRow({
   return (
     <Link
       to={to}
+      search={search as never}
       className="flex min-h-16 items-center gap-3 border-b border-line px-4 py-3 last:border-b-0"
       style={{ direction: "ltr" }}
     >
@@ -248,11 +251,9 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
             })}
           </nav>
           <div className="ms-auto flex shrink-0 items-center gap-1 lg:ms-4">
-            <div className="hidden lg:block">
-              <LangSwitch key={path} lang={lang} setLang={setLang} />
-            </div>
             {ai ? <AiPill lang={lang} on={isOn(path, "/ai", false)} /> : null}
-            <Link to="/stores" search={{ fav: 1 }} aria-label={d.wishlist} className={iconBtn}>
+            {/* Phones: the wishlist lives in the menu, making room for the language button. */}
+            <Link to="/stores" search={{ fav: 1 }} aria-label={d.wishlist} className={`${iconBtn} max-md:hidden`}>
               <Heart className="size-5" aria-hidden="true" />
             </Link>
             <Link
@@ -263,6 +264,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
             >
               <ShoppingBag className="size-5" aria-hidden="true" />
             </Link>
+            <HeaderLangPicker key={path} lang={lang} setLang={setLang} title={d.language} />
             <PhoneButton variant="icon" label={d.account} />
             <PhoneButton />
             <button
@@ -328,6 +330,9 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
                 </nav>
               </section>
             ))}
+            <div className="overflow-hidden rounded-3xl border border-line bg-surface md:hidden">
+              <MenuRow to="/stores" search={{ fav: 1 }} icon={Heart} label={d.wishlist} on={false} />
+            </div>
             <div className="overflow-hidden rounded-3xl border border-line bg-surface">
               <MenuRow
                 to="/contact"
@@ -457,43 +462,15 @@ function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (lang: Lang) => vo
         />
       </button>
       {open ? (
-        <div
-          role="listbox"
-          aria-label={current.name}
-          className="absolute end-0 top-full z-30 mt-2 w-72 max-w-[calc(100vw-2.5rem)] rounded-2xl border border-line bg-surface p-1.5 shadow-xl"
-        >
-          {LANGS.map((item) => {
-            const on = item.id === lang;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="option"
-                aria-selected={on}
-                onClick={() => {
-                  setLang(item.id);
-                  setOpen(false);
-                }}
-                className={`grid h-11 w-full grid-cols-[1.25rem_minmax(0,1fr)_2.5rem] items-center gap-2 rounded-xl px-3 text-sm ${
-                  on ? "bg-pine/10 text-pine" : "text-ink hover:bg-paper"
-                }`}
-              >
-                <span className="flex justify-center">
-                  {on ? <Check className="size-4" strokeWidth={2.5} /> : null}
-                </span>
-                <span
-                  className={`truncate text-center font-medium ${item.dir === "rtl" ? "font-ar" : "font-sans"}`}
-                >
-                  {item.name}
-                </span>
-                <span
-                  className={`text-end text-xs tracking-wide ${on ? "text-pine" : "text-muted"}`}
-                >
-                  {item.code}
-                </span>
-              </button>
-            );
-          })}
+        <div className="absolute end-0 top-full z-30 mt-2 w-72 max-w-[calc(100vw-2.5rem)] rounded-2xl border border-line bg-surface p-1.5 shadow-xl">
+          <LangOptions
+            lang={lang}
+            label={current.name}
+            onPick={(next) => {
+              setLang(next);
+              setOpen(false);
+            }}
+          />
         </div>
       ) : null}
     </div>
