@@ -61,8 +61,6 @@ function shot(page: Page, sheet = false) {
   return { mask: [page.locator(photos)], maskColor: "#c9ced6" };
 }
 
-}
-
 async function geometry(page: Page, bp: Bp, sheet = false) {
   const issues = await page.evaluate(measureLayout, { bp, layout: LAYOUT, sheet });
   expect(issues, issues.join("\n")).toEqual([]);
