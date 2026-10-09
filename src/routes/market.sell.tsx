@@ -68,7 +68,7 @@ function SellSignedIn({
               setMessage("error" in result ? t[result.error as "invalid"] ?? t.invalid : t.pending);
             }}
           >
-            <h2 className="text-xl font-semibold">{t.roleSeller}</h2>
+            <h2 className="text-2xl leading-tight font-bold">{t.roleSeller}</h2>
             <Field label={t.name}><input name="name" required className={controlClass} /></Field>
             <Field label={t.city}><input name="city" required className={controlClass} /></Field>
             <Field label={t.phone}><input name="phone" dir="ltr" className={controlClass} /></Field>
@@ -144,7 +144,7 @@ function SellSignedIn({
                 if (!("error" in result)) void refresh();
               }}
             >
-              <h2 className="text-lg font-semibold">{t.offers}</h2>
+              <h2 className="text-2xl leading-tight font-bold">{t.offers}</h2>
               <Field label="slug"><input name="slug" required dir="ltr" className={controlClass} /></Field>
               <Field label={t.price}><input name="price" required dir="ltr" inputMode="numeric" className={controlClass} /></Field>
               <Field label={t.shipping}><input name="shipping" dir="ltr" inputMode="numeric" defaultValue={0} className={controlClass} /></Field>

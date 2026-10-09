@@ -380,7 +380,7 @@ function PhoneDialog({
         className="flex max-h-[94vh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl outline-none md:rounded-3xl"
       >
         <div className="flex items-center justify-between gap-3 px-5 pt-5">
-          <h2 id={titleId} className="text-3xl font-semibold tracking-tight">{me ? me.name : t.title}</h2>
+          <h2 id={titleId} className="text-2xl leading-tight font-bold tracking-tight">{me ? me.name : t.title}</h2>
           <button
             type="button"
             onClick={onClose}

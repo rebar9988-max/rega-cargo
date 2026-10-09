@@ -15,7 +15,7 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
       <span className="text-pine" aria-hidden="true">
         <TriangleAlert className="size-10" strokeWidth={1.75} />
       </span>
-      <h1 className="text-lg font-semibold">{copy.errorTitle}</h1>
+      <h1 className="text-2xl leading-tight font-bold">{copy.errorTitle}</h1>
       <p className="max-w-md text-sm text-muted">{copy.errorBody}</p>
       <div className="mt-2 flex flex-wrap justify-center gap-2">
         <button

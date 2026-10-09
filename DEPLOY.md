@@ -33,6 +33,13 @@ npx wrangler deploy      # deploy the last build
 For `npm run cf:dev`, put local-only values in `.output/server/.dev.vars`
 (git-ignored), e.g. `BETTER_AUTH_SECRET=...` and `DATABASE_URL=postgres://...`.
 
+## Brand typography
+
+- **Brand font for Arabic script (ckb, ar, fa): Noto Sans Arabic** (v2.012, SIL OFL 1.1), approved by the owner on **Oct 9 2026**. It replaces Vazirmatn, which stays only as a fallback in the font stack and is not downloaded.
+- Self-hosted subset: `public/fonts/noto-sans-arabic-v2.woff2` (U+0600-06FF + joiners, wght 400-700, ~38 KB, `font-display: swap`); licence in `public/fonts/NotoSansArabic-OFL.txt`. Latin text uses Outfit Variable.
+- The preload for this file is an inline script in `src/routes/__root.tsx`; if it changes, update `FONT_HASH` in `server/middleware/0-a-security.ts` (sha256 of the script text) or the CSP will block it.
+- Type scale tokens live in `src/styles.css` (`@theme` + `html[data-textdir="rtl"]` overrides): Arabic-script body 17px / 1.8, h1 ~30px mobile to ~44px desktop, h2 ~22-26px, card titles 19px, headings bold with line-height ~1.35, no letter-spacing on Arabic script.
+
 ## Runtime configuration
 
 ### Plain vars (in `wrangler.jsonc`)

@@ -39,7 +39,7 @@ export function SectionHeader({ title, sub, action }: { title: string; sub?: str
   return (
     <div className="flex items-end justify-between gap-4" style={{ direction: "ltr" }}>
       <div className="flex min-w-0 flex-col items-start">
-        <h2 className="text-xl leading-tight font-bold tracking-tight text-ink md:text-2xl">{title}</h2>
+        <h2 className="text-2xl leading-tight font-bold tracking-tight text-ink md:text-3xl">{title}</h2>
         {sub ? <p className="mt-1 text-xs text-muted md:text-sm">{sub}</p> : null}
       </div>
       {action}
@@ -81,7 +81,7 @@ export function BrandHero({ title, route }: { title: string; route: string }) {
           <bdi dir="ltr">R&amp;L</bdi>
           <span className="rl-grad h-0.5 w-8 rounded-full" aria-hidden="true" />
         </p>
-        <h1 className="mt-3 max-w-3xl text-3xl leading-snug font-bold tracking-tight text-balance text-ink md:text-5xl md:leading-tight">
+        <h1 className="mt-3 max-w-3xl text-4xl leading-tight font-bold tracking-tight text-balance text-ink md:text-5xl">
           {title}
         </h1>
         <p className="mt-4 text-sm tracking-wide text-muted">{route}</p>

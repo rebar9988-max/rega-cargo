@@ -240,7 +240,7 @@ function ResultCard({
 }) {
   return (
     <section className="rounded-2xl border border-line bg-surface p-6" aria-live="polite">
-      <h2 className="text-xl font-semibold tracking-tight">{t.result}</h2>
+      <h2 className="text-2xl leading-tight font-bold tracking-tight">{t.result}</h2>
       <p className="mt-1 text-xs text-muted">{t.aiNote}</p>
       <dl className="mt-4">
         <Row label={t.category}>{categoryLabel}</Row>
@@ -293,7 +293,7 @@ function EstimateCard({ t }: { t: AiCopy }) {
   return (
     <section className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-6">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight">{t.estimateTitle}</h2>
+        <h2 className="text-2xl leading-tight font-bold tracking-tight">{t.estimateTitle}</h2>
         <p className="mt-1 text-sm text-muted">{t.estimateLede}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

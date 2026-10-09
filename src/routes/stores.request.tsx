@@ -193,7 +193,7 @@ function RequestPage() {
         )}
         <aside className="flex flex-col gap-4">
           <div className="rounded-2xl border border-line bg-surface p-5">
-            <h2 className="text-lg font-semibold">{t.costs}</h2>
+            <h2 className="text-2xl leading-tight font-bold">{t.costs}</h2>
             <ul className="mt-4 flex flex-col gap-3">
               {t.rows.map((row) => (
                 <li key={row} className="flex items-baseline justify-between gap-3 text-sm">
@@ -206,12 +206,12 @@ function RequestPage() {
             </ul>
           </div>
           <div className="rounded-2xl border border-line bg-surface p-5">
-            <h2 className="text-lg font-semibold">{t.whoTitle}</h2>
+            <h2 className="text-2xl leading-tight font-bold">{t.whoTitle}</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted">{intent === "ship" ? t.shipBody : t.whoBody}</p>
           </div>
           {store && store.caution.length > 0 ? (
             <div className="rounded-2xl border border-line bg-surface p-5">
-              <h2 className="text-lg font-semibold">{t.cautionTitle}</h2>
+              <h2 className="text-2xl leading-tight font-bold">{t.cautionTitle}</h2>
               <ul className="mt-3 flex flex-col gap-2">
                 {store.caution.map((item) => (
                   <li key={item} className="text-sm text-clay">

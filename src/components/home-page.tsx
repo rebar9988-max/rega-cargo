@@ -50,7 +50,7 @@ export function HomePage() {
           <div className="min-w-0">
             <p className="font-sans text-xs font-semibold tracking-wide text-ink">MOVE SMART. DELIVER FAST.</p>
             <p className="mt-2 font-sans text-sm font-medium tracking-wide text-pine">EUROPE ↔ KURDISTAN ↔ IRAQ</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance text-ink md:mt-4 md:text-5xl md:leading-tight">
+            <h1 className="mt-3 text-4xl leading-tight font-bold tracking-tight text-balance text-ink md:mt-4 md:text-5xl">
               {t.hero.title}
             </h1>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">{t.hero.lede}</p>
@@ -86,7 +86,7 @@ export function HomePage() {
 
       <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.stepsKicker}</p>
-        <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">{t.stepsTitle}</h2>
+        <h2 className="mt-3 max-w-2xl text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.stepsTitle}</h2>
         <ol className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
           {t.steps.map((step, index) => (
             <li key={step.title} className="bg-surface p-5">
@@ -100,7 +100,7 @@ export function HomePage() {
 
       <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.gapKicker}</p>
-        <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">{t.gapTitle}</h2>
+        <h2 className="mt-3 max-w-2xl text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.gapTitle}</h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{t.gapLede}</p>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {t.columns.map((column, index) => {
@@ -127,7 +127,7 @@ export function HomePage() {
 
       <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.modesKicker}</p>
-        <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">{t.modesTitle}</h2>
+        <h2 className="mt-3 max-w-2xl text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.modesTitle}</h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{t.modesLede}</p>
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
           {priced.map((row) => {
@@ -135,7 +135,7 @@ export function HomePage() {
             return (
               <article key={row.mode.id} className="flex flex-col rounded-2xl border border-line bg-surface p-6">
                 {row.mode.id === "economy" ? <p className="text-xs font-medium text-pine">{t.usual}</p> : null}
-                <h3 className="mt-1 text-xl font-semibold">{t.modes[row.mode.id].name}</h3>
+                <h3 className="mt-1 text-lg font-semibold">{t.modes[row.mode.id].name}</h3>
                 <p className="mt-2 text-sm text-muted">
                   <bdi dir="ltr">{dayRange(t.dayRange, row.mode.days[0], row.mode.days[1])}</bdi>
                 </p>
@@ -158,7 +158,7 @@ export function HomePage() {
 
       <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.boardKicker}</p>
-        <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">{t.boardTitle}</h2>
+        <h2 className="mt-3 max-w-2xl text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.boardTitle}</h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{t.boardLede}</p>
         <div className="mt-8 grid gap-10 md:grid-cols-2">
           <div>
@@ -206,7 +206,7 @@ export function HomePage() {
 
       <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.faqKicker}</p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">{t.faqTitle}</h2>
+        <h2 className="mt-3 text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.faqTitle}</h2>
         <div className="mt-6 border-t border-line">
           {t.faq.map((item) => (
             <details key={item.q} className="group border-b border-line py-4">
@@ -222,7 +222,7 @@ export function HomePage() {
 
       <section className="border-t border-line bg-surface">
         <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 py-14 md:py-20">
-          <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-ink md:text-4xl">{t.closeTitle}</h2>
+          <h2 className="max-w-2xl text-2xl leading-tight font-bold tracking-tight text-ink md:text-4xl">{t.closeTitle}</h2>
           <p className="max-w-xl text-base leading-relaxed text-muted">{t.closeLede}</p>
           <div className="flex flex-wrap gap-3">
             <Link to="/quote" search={{ from: undefined, to: undefined, kg: undefined }} className={btnPrimary}>
