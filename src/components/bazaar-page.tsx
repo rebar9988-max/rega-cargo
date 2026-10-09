@@ -234,39 +234,27 @@ export function BazaarPage({
               >
                 {BRANDS.map((brand) => {
                   const on = brandName === brand.name;
-                  const logo = STORES.find(
-                    (store) => store.name.toLowerCase() === brand.name.toLowerCase(),
-                  );
+                  // Uniform tile; the logo sits in a fixed box (28px high, 70% wide), object-contain.
                   return (
                     <li key={brand.name} className="shrink-0">
                       <button
                         type="button"
                         aria-pressed={on}
-                        aria-label={brand.name}
                         onClick={() => {
                           setBrandName(brand.name);
                           setCategory(brand.category);
                         }}
-                        className={`grid h-12 w-28 place-items-center rounded-xl border bg-surface px-3 transition-colors ${on ? "border-pine ring-1 ring-pine" : "border-line hover:border-silver"}`}
+                        className={`grid h-14 w-32 place-items-center rounded-xl border bg-surface transition-colors ${on ? "border-pine ring-1 ring-pine" : "border-line hover:border-silver"}`}
                       >
-                        {logo ? (
-                          <img
-                            src={storeLogo(logo.id)}
-                            alt=""
-                            width={96}
-                            height={24}
-                            loading="lazy"
-                            decoding="async"
-                            className="h-5 w-full object-contain"
-                          />
-                        ) : (
-                          <bdi
-                            dir="ltr"
-                            className="truncate font-sans text-sm font-semibold tracking-wide text-ink"
-                          >
-                            {brand.name}
-                          </bdi>
-                        )}
+                        <img
+                          src={brand.logo}
+                          alt={brand.name}
+                          width={90}
+                          height={28}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-7 w-7/10 object-contain"
+                        />
                       </button>
                     </li>
                   );

@@ -1,4 +1,4 @@
-import { BRANDS, idealoSearchUrl } from "../catalog.ts";
+import { SEARCH_BRANDS, idealoSearchUrl } from "../catalog.ts";
 import { findMatches, isProhibitedQuery } from "../compliance/check.ts";
 import { LANGS, type Lang } from "../langs.ts";
 import { storeCopy } from "../store-copy.ts";
@@ -262,7 +262,7 @@ function buildEntries(): Entry[] {
       logo: storeLogo(store.id),
     });
   }
-  for (const brand of BRANDS) {
+  for (const brand of SEARCH_BRANDS) {
     if (storeNames.has(fold(brand.name))) continue;
     entries.push({
       kind: "brand",

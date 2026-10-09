@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { suggest, screen, ITEM_IDEALO } from "../search/index.ts";
-import { BRANDS, idealoSearchUrl } from "../catalog.ts";
+import { SEARCH_BRANDS, idealoSearchUrl } from "../catalog.ts";
 import { GOODS, STORES } from "../stores.ts";
 import { LANGS } from "../langs.ts";
 import { storeCopy } from "../store-copy.ts";
@@ -55,7 +55,7 @@ test("idealo links are never made for a prohibited term", () => {
 test("bundled catalogue (stores, brands, goods, idealo terms) has nothing prohibited", () => {
   const names: string[] = [
     ...STORES.flatMap((s) => [s.name, s.host]),
-    ...BRANDS.map((b) => b.name),
+    ...SEARCH_BRANDS.map((b) => b.name),
     ...Object.values(ITEM_IDEALO),
     ...LANGS.flatMap(({ id }) => GOODS.map((g) => storeCopy(id).goods[g.id])),
   ];
