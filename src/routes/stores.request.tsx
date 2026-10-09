@@ -13,6 +13,7 @@ import { REQUEST_COPY } from "@/lib/request-copy";
 import { gateFields } from "@/lib/ai/gate-client";
 import { orderStore } from "@/lib/orders/api";
 import { UX_COPY } from "@/lib/ux-copy";
+import { marketCopy } from "@/lib/market-copy";
 import { ContactNote } from "@/components/contact-note";
 
 export const Route = createFileRoute("/stores/request")({
@@ -101,6 +102,7 @@ function RequestPage() {
         contact: rc.badPhone,
         rate: rc.rate,
         signin: rc.signin,
+        prohibited: marketCopy(lang).prohibited,
       };
       if (code && message[code]) {
         setError(message[code]);

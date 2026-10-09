@@ -13,6 +13,8 @@ export type SuggestCopy = {
   onIdealo: string;
   aiPhoto: string;
   none: string;
+  /** Neutral, for a query with a prohibited word: no suggestion, no idealo hint. */
+  noResults: string;
   external: string;
 };
 
@@ -29,6 +31,7 @@ export const SUGGEST_COPY: Record<Lang, SuggestCopy> = {
     onIdealo: "گەڕان بۆ «{q}» لە idealo",
     aiPhoto: "ناسینەوە بە وێنە لەگەڵ R&L AI",
     none: "هیچ ئەنجامێک نییە. دەتوانیت لە idealo بگەڕێیت.",
+    noResults: "هیچ ئەنجامێک نییە.",
     external: "idealo.de دەکاتەوە",
   },
   ku: {
@@ -43,6 +46,7 @@ export const SUGGEST_COPY: Record<Lang, SuggestCopy> = {
     onIdealo: "Li idealo li «{q}» bigere",
     aiPhoto: "Bi wêneyê nas bike bi R&L AI",
     none: "Encam tune. Tu dikarî li idealo bigerî.",
+    noResults: "Encam tune.",
     external: "idealo.de vedike",
   },
   ar: {
@@ -57,6 +61,7 @@ export const SUGGEST_COPY: Record<Lang, SuggestCopy> = {
     onIdealo: "ابحث عن «{q}» في idealo",
     aiPhoto: "تعرّف بالصورة مع R&L AI",
     none: "لا نتائج. يمكنك البحث في idealo.",
+    noResults: "لا نتائج.",
     external: "يفتح idealo.de",
   },
   fa: {
@@ -71,6 +76,7 @@ export const SUGGEST_COPY: Record<Lang, SuggestCopy> = {
     onIdealo: "جستجوی «{q}» در idealo",
     aiPhoto: "شناسایی با عکس با R&L AI",
     none: "نتیجه‌ای نیست. می‌توانید در idealo جستجو کنید.",
+    noResults: "نتیجه‌ای نیست.",
     external: "idealo.de را باز می‌کند",
   },
   de: {
@@ -79,12 +85,14 @@ export const SUGGEST_COPY: Record<Lang, SuggestCopy> = {
     categories: "Beliebte Kategorien",
     stores: "Läden",
     trending: "Im Trend",
-    idealoNote: "Preise werden hier nicht festgelegt. Du siehst sie auf idealo und bestellst dann hier.",
+    idealoNote:
+      "Preise werden hier nicht festgelegt. Du siehst sie auf idealo und bestellst dann hier.",
     brands: "Marken",
     items: "Artikel",
     onIdealo: "„{q}“ auf idealo suchen",
     aiPhoto: "Per Foto erkennen mit R&L AI",
     none: "Keine Treffer. Du kannst auf idealo suchen.",
+    noResults: "Keine Treffer.",
     external: "Öffnet idealo.de",
   },
   tr: {
@@ -99,6 +107,7 @@ export const SUGGEST_COPY: Record<Lang, SuggestCopy> = {
     onIdealo: "“{q}” için idealo'da ara",
     aiPhoto: "R&L AI ile fotoğraftan tanı",
     none: "Sonuç yok. idealo'da arayabilirsin.",
+    noResults: "Sonuç yok.",
     external: "idealo.de'yi açar",
   },
   en: {
@@ -113,6 +122,7 @@ export const SUGGEST_COPY: Record<Lang, SuggestCopy> = {
     onIdealo: "Search “{q}” on idealo",
     aiPhoto: "Identify by photo with R&L AI",
     none: "No matches. You can search idealo.",
+    noResults: "No results.",
     external: "Opens idealo.de",
   },
 };

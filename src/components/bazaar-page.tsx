@@ -12,6 +12,7 @@ import { BRANDS, COLLECTION_ORDER } from "@/lib/catalog";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
+import { isProhibitedQuery } from "@/lib/compliance/check";
 import {
   GOODS,
   readFavs,
@@ -22,8 +23,6 @@ import {
   writeFavs,
   type StoreCategory,
 } from "@/lib/stores";
-
-
 
 type Audience = "women" | "men" | "kids";
 const AUDIENCES: Audience[] = ["women", "men", "kids"];
@@ -63,6 +62,8 @@ export function BazaarPage({
   const [onlyFav, setOnlyFav] = useState(params.fav === 1);
   const [favs, setFavs] = useState<string[]>(() => readFavs());
   const query = q.trim().toLowerCase();
+  // Compliance: a query with a prohibited word shows no goods and no stores.
+  const blocked = useMemo(() => isProhibitedQuery(query), [query]);
   // Home offers both services. The server renders the remembered choice from the
   // rl-service cookie; this effect only corrects devices that still have the
   // older storage-only choice (and gives them the cookie for next time).
@@ -98,6 +99,7 @@ export function BazaarPage({
   );
 
   const goods = useMemo(() => {
+    if (blocked) return [];
     return GOODS.filter((good) => {
       if (audience && !AUDIENCE_GOODS[audience].includes(good.id)) return false;
       if (category !== "all" && good.category !== category) return false;
@@ -107,9 +109,10 @@ export function BazaarPage({
         .toLowerCase()
         .includes(query);
     });
-  }, [category, query, t, audience]);
+  }, [category, query, t, audience, blocked]);
 
   const list = useMemo(() => {
+    if (blocked) return [];
     return STORES.filter((store) => {
       if (onlyFav && !favs.includes(store.id)) return false;
       if (
@@ -122,7 +125,7 @@ export function BazaarPage({
       if (!query) return true;
       return `${store.name} ${store.host}`.toLowerCase().includes(query);
     });
-  }, [query, category, country, onlyFav, favs, audience]);
+  }, [query, category, country, onlyFav, favs, audience, blocked]);
 
   function toggle(id: string) {
     const next = favs.includes(id) ? favs.filter((item) => item !== id) : [...favs, id];
@@ -170,7 +173,11 @@ export function BazaarPage({
             <SectionHeader
               title={d.newCollection}
               action={
-                <Link to="/stores" search={audience ? { who: audience } : {}} className={seeAllClass}>
+                <Link
+                  to="/stores"
+                  search={audience ? { who: audience } : {}}
+                  className={seeAllClass}
+                >
                   <span dir="auto">{d.seeAll}</span>
                   <ChevronRight className="size-4" aria-hidden="true" />
                 </Link>
@@ -204,7 +211,9 @@ export function BazaarPage({
             </ul>
           </section>
 
-          <section className={`page grid items-start gap-6 pt-8 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:pt-12`}>
+          <section
+            className={`page grid items-start gap-6 pt-8 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:pt-12`}
+          >
             <div className="min-w-0">
               <SectionHeader
                 title={t.title}
@@ -216,14 +225,18 @@ export function BazaarPage({
                   </Link>
                 }
               />
-              <p className="mt-3 hidden max-w-xl text-sm leading-relaxed text-muted md:block">{t.lede}</p>
+              <p className="mt-3 hidden max-w-xl text-sm leading-relaxed text-muted md:block">
+                {t.lede}
+              </p>
               <ul
                 className={`-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0 ${RAIL}`}
                 style={{ direction: "ltr" }}
               >
                 {BRANDS.map((brand) => {
                   const on = brandName === brand.name;
-                  const logo = STORES.find((store) => store.name.toLowerCase() === brand.name.toLowerCase());
+                  const logo = STORES.find(
+                    (store) => store.name.toLowerCase() === brand.name.toLowerCase(),
+                  );
                   return (
                     <li key={brand.name} className="shrink-0">
                       <button
@@ -247,7 +260,10 @@ export function BazaarPage({
                             className="h-5 w-full object-contain"
                           />
                         ) : (
-                          <bdi dir="ltr" className="truncate font-sans text-sm font-semibold tracking-wide text-ink">
+                          <bdi
+                            dir="ltr"
+                            className="truncate font-sans text-sm font-semibold tracking-wide text-ink"
+                          >
                             {brand.name}
                           </bdi>
                         )}
@@ -421,7 +437,9 @@ export function BazaarPage({
                       </Link>
                     </div>
                     <details className="text-sm text-muted">
-                      <summary className="flex min-h-11 cursor-pointer items-center">{t.external}</summary>
+                      <summary className="flex min-h-11 cursor-pointer items-center">
+                        {t.external}
+                      </summary>
                       <p className="mt-2 leading-relaxed">{t.notes[store.note]}</p>
                       {store.caution.length > 0 ? (
                         <ul className="mt-2 flex flex-col gap-1">
