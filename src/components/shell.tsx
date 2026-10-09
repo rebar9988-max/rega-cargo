@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Check,
   ChevronDown,
@@ -10,7 +10,6 @@ import {
   Mail,
   MapPin,
   Menu,
-  Search,
   ShoppingBag,
   Sparkles,
   Store,
@@ -23,6 +22,7 @@ import {
 } from "lucide-react";
 import { AI_COPY } from "@/components/ai-copy";
 import { PhoneButton } from "@/components/phone-gate";
+import { SearchBox } from "@/components/search-box";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
@@ -96,41 +96,6 @@ function MenuRow({
       </span>
       <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden="true" />
     </Link>
-  );
-}
-
-function SearchStrip({ search, label }: { search?: ShellSearch; label: string }) {
-  const navigate = useNavigate();
-  const [local, setLocal] = useState("");
-  const value = search ? search.q : local;
-  return (
-    <form
-      role="search"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (!search) void navigate({ to: "/stores", search: { q: local.trim() || undefined } });
-      }}
-      className="border-b border-line bg-paper"
-    >
-      <label
-        className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 md:px-5"
-        style={{ direction: "ltr" }}
-      >
-        <Search className="size-5 shrink-0 text-muted" aria-hidden="true" />
-        <input
-          type="search"
-          dir="auto"
-          value={value}
-          onChange={(event) =>
-            search ? search.setQ(event.target.value) : setLocal(event.target.value)
-          }
-          placeholder={label}
-          aria-label={label}
-          enterKeyHint="search"
-          className="h-full min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-muted"
-        />
-      </label>
-    </form>
   );
 }
 
@@ -348,7 +313,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
           </div>
         </div>
       ) : null}
-      <SearchStrip search={search} label={d.search} />
+      <SearchBox search={search} label={d.search} closeLabel={t.menuClose} lang={lang} ai={ai} />
       <main id="content" className="flex-1 pb-20 lg:pb-0">
         {children}
       </main>
