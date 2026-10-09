@@ -144,8 +144,7 @@ const en: StoreCopy = {
   cautionTitle: "May not fly",
   submit: "Send order",
   invalidUrl: "Enter a full https link, or leave it empty for a bazaar order.",
-  wrongHost:
-    "This link is not on that store's official site. Staff will still see it, but it is not confirmed.",
+  wrongHost: "This link is not on that store's official site. Paste a link from the store's own website.",
   sentTitle: "Order saved on this device",
   sentBody: "No purchase was made and no price was confirmed.",
   serviceLater: "This service is not available yet. Email 2233rega@gmail.com.",
@@ -472,6 +471,7 @@ const ku: StoreCopy = {
   sentTitle: "Siparîş li ser vî amûrî hate tomarkirin",
   sentBody: "Tu kirîn nehat kirin û tu biha nehat piştrastkirin.",
   serviceLater: "Ev xizmet hê ne amade ye. E-name 2233rega@gmail.com.",
+  wrongHost: "Ev girêdan ne li ser malpera fermî ya wê firoşgehê ye. Girêdanekê ji malpera firoşgehê bi xwe binivîse.",
 };
 
 const fa: StoreCopy = {
@@ -564,7 +564,7 @@ const fa: StoreCopy = {
   cautionTitle: "ممکن است با هواپیما نرود",
   submit: "فرستادن سفارش",
   invalidUrl: "یک لینک کامل https وارد کن، یا برای سفارش از بازار خالی بگذار.",
-  wrongHost: "این لینک روی سایت رسمی آن فروشگاه نیست. کارکنان آن را می‌بینند، اما تأیید نشده است.",
+  wrongHost: "این لینک روی سایت رسمی آن فروشگاه نیست. لینکی از سایت خود فروشگاه وارد کنید.",
   sentTitle: "سفارش روی این دستگاه ذخیره شد",
   sentBody: "خریدی انجام نشد و قیمتی تأیید نشد.",
   serviceLater: "این خدمات هنوز آماده نیست. ایمیل 2233rega@gmail.com.",
@@ -608,6 +608,7 @@ const tr: StoreCopy = {
   sentTitle: "Sipariş bu cihazda saklandı",
   sentBody: "Satın alma yapılmadı ve fiyat onaylanmadı.",
   serviceLater: "Bu hizmet henüz yok. E-posta 2233rega@gmail.com.",
+  wrongHost: "Bu bağlantı o mağazanın resmi sitesinde değil. Mağazanın kendi sitesinden bir bağlantı yapıştırın.",
 };
 
 const ALL: Record<Lang, StoreCopy> = { en, ckb, ar, de, ku, fa, tr };

@@ -54,6 +54,9 @@ describe("request validation", () => {
     assert.deepEqual(validateStoreRequest({ ...base, phone: "" }, null), { ok: false, error: "contact" });
     assert.deepEqual(validateStoreRequest({ ...base, phone: "12345" }, null), { ok: false, error: "contact" });
     assert.equal(validateStoreRequest({ ...base, phone: "" }, "+9647501234567").ok, true);
+    // Pre-auth shape check: contact is checked later, everything else already here.
+    assert.equal(validateStoreRequest({ ...base, phone: "" }, null, { requireContact: false }).ok, true);
+    assert.deepEqual(validateStoreRequest({ ...base, url: "https://evil.com/" }, null, { requireContact: false }), { ok: false, error: "host" });
   });
   it("rejects unknown store or item ids and bad links", () => {
     assert.deepEqual(validateStoreRequest({ ...base, storeId: "evil" }, null), { ok: false, error: "invalid" });
