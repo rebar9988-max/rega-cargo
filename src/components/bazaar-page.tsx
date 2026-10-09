@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { QuotePanel } from "@/components/quote-panel";
 import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
 import { readService, writeService, type Service } from "@/lib/service-choice";
-import { BrandHero, TrustRow } from "@/components/brand";
+import { BrandHero, GUTTER, RAIL, SectionHeader, TrustRow, seeAllClass } from "@/components/brand";
 import { Shell } from "@/components/shell";
 import type { BazaarSearch } from "@/lib/bazaar-search";
 import { BRANDS, COLLECTION_ORDER } from "@/lib/catalog";
@@ -166,40 +166,35 @@ export function BazaarPage({
           <BrandHero title={d.tagline} route={d.route} />
           <TrustRow />
 
-          <section className="mx-auto max-w-6xl px-5 pt-8 md:pt-12">
-            <div className="flex items-center justify-between gap-3" style={{ direction: "ltr" }}>
-              <h2 className="text-2xl font-bold tracking-tight">{d.newCollection}</h2>
-              <Link
-                to="/stores"
-                search={audience ? { who: audience } : {}}
-                aria-label={d.seeAll}
-                className="inline-flex size-10 items-center justify-center rounded-full text-ink hover:bg-surface"
-              >
-                <ChevronRight className="size-5" aria-hidden="true" />
-              </Link>
-            </div>
+          <section className={`mx-auto max-w-6xl ${GUTTER} pt-8 md:pt-12`}>
+            <SectionHeader
+              title={d.newCollection}
+              action={
+                <Link to="/stores" search={audience ? { who: audience } : {}} className={seeAllClass}>
+                  <span dir="auto">{d.seeAll}</span>
+                  <ChevronRight className="size-4" aria-hidden="true" />
+                </Link>
+              }
+            />
             <ul
-              className="-mx-5 mt-4 flex snap-x scroll-px-5 gap-3 overflow-x-auto px-5 pb-2"
+              className={`-mx-4 mt-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 md:mx-0 md:scroll-px-0 md:gap-4 md:px-0 ${RAIL}`}
               style={{ direction: "ltr" }}
             >
               {collection.map((good, index) => (
-                <li
-                  key={good.id}
-                  className={`shrink-0 snap-start ${index === 0 ? "w-[46%] md:w-64" : "w-[38%] md:w-52"}`}
-                >
-                  <Link to="/stores" search={{ cat: good.category }} className="block">
-                    <span className="block overflow-hidden rounded-sm bg-[#ececea]">
+                <li key={good.id} className="w-[42%] shrink-0 snap-start sm:w-[30%] md:w-[calc((100%-4rem)/5)]">
+                  <Link to="/stores" search={{ cat: good.category }} className="group block">
+                    <span className="block overflow-hidden rounded-xl bg-[#f1f0ee]">
                       <img
-                        {...responsiveImage(good.image, "(min-width: 768px) 256px, 46vw")}
+                        {...responsiveImage(good.image, "(min-width: 768px) 220px, 42vw")}
                         alt=""
                         width={640}
                         height={640}
-                        loading={index < 2 ? "eager" : "lazy"}
+                        loading={index < 3 ? "eager" : "lazy"}
                         decoding="async"
-                        className={`w-full object-cover ${index === 0 ? "aspect-[3/4]" : "aspect-square"}`}
+                        className="aspect-[3/4] w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                       />
                     </span>
-                    <span dir="auto" className="mt-2 block text-sm text-ink">
+                    <span dir="auto" className="mt-2 block truncate text-sm font-medium text-ink">
                       {t.goods[good.id]}
                     </span>
                   </Link>
@@ -208,40 +203,66 @@ export function BazaarPage({
             </ul>
           </section>
 
-          <section className="mx-auto grid max-w-6xl items-start gap-6 px-5 pt-8 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:pt-12">
+          <section className={`mx-auto grid max-w-6xl items-start gap-6 ${GUTTER} pt-8 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:pt-12`}>
             <div className="min-w-0">
-              <h2 className="text-2xl font-bold tracking-tight">{t.title}</h2>
-              <p className="mt-2 hidden max-w-xl text-base leading-relaxed text-muted md:block">
-                {t.lede}
-              </p>
-              <p className="mt-2 text-xs text-muted">{t.notPartner}</p>
-              <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+              <SectionHeader
+                title={t.title}
+                sub={t.notPartner}
+                action={
+                  <Link to="/stores" className={seeAllClass}>
+                    <span dir="auto">{d.seeAll}</span>
+                    <ChevronRight className="size-4" aria-hidden="true" />
+                  </Link>
+                }
+              />
+              <p className="mt-3 hidden max-w-xl text-sm leading-relaxed text-muted md:block">{t.lede}</p>
+              <ul
+                className={`-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0 ${RAIL}`}
+                style={{ direction: "ltr" }}
+              >
                 {BRANDS.map((brand) => {
                   const on = brandName === brand.name;
+                  const logo = STORES.find((store) => store.name.toLowerCase() === brand.name.toLowerCase());
                   return (
-                    <button
-                      key={brand.name}
-                      type="button"
-                      aria-pressed={on}
-                      onClick={() => {
-                        setBrandName(brand.name);
-                        setCategory(brand.category);
-                      }}
-                      className={`h-10 shrink-0 rounded-full border px-4 font-sans text-sm ${on ? "rl-grad border-transparent" : "border-line bg-surface text-ink"}`}
-                    >
-                      <bdi dir="ltr">{brand.name}</bdi>
-                    </button>
+                    <li key={brand.name} className="shrink-0">
+                      <button
+                        type="button"
+                        aria-pressed={on}
+                        aria-label={brand.name}
+                        onClick={() => {
+                          setBrandName(brand.name);
+                          setCategory(brand.category);
+                        }}
+                        className={`grid h-12 w-28 place-items-center rounded-xl border bg-surface px-3 transition-colors ${on ? "border-pine ring-1 ring-pine" : "border-line hover:border-silver"}`}
+                      >
+                        {logo ? (
+                          <img
+                            src={storeLogo(logo.id)}
+                            alt=""
+                            width={96}
+                            height={24}
+                            loading="lazy"
+                            decoding="async"
+                            className="h-5 w-full object-contain"
+                          />
+                        ) : (
+                          <bdi dir="ltr" className="truncate font-sans text-[13px] font-semibold tracking-[0.06em] text-ink">
+                            {brand.name}
+                          </bdi>
+                        )}
+                      </button>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             </div>
             <div className="hidden md:block">
               <QuotePanel variant="compact" />
             </div>
           </section>
 
-          <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-6 md:py-12">
-            <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className={`mx-auto flex max-w-6xl flex-col gap-8 ${GUTTER} pt-8 pb-12 md:pt-12`}>
+            <div className={`-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0 ${RAIL}`}>
               <Chip
                 on={category === "all" && !brandName}
                 onClick={() => {
@@ -270,7 +291,7 @@ export function BazaarPage({
                 const shop = storeById(good.storeId);
                 return (
                   <li key={good.id} className="flex flex-col">
-                    <div className="overflow-hidden rounded-2xl bg-surface">
+                    <div className="overflow-hidden rounded-xl bg-[#f1f0ee]">
                       <img
                         {...responsiveImage(good.image, "(min-width: 768px) 270px, 50vw")}
                         alt={t.goods[good.id]}
@@ -287,7 +308,7 @@ export function BazaarPage({
                           <bdi dir="ltr">{shop.name}</bdi>
                         </p>
                       ) : null}
-                      <h2 className="text-sm font-medium leading-snug">{t.goods[good.id]}</h2>
+                      <h3 className="text-sm font-medium leading-snug">{t.goods[good.id]}</h3>
                       <p className="text-xs text-muted">{t.awaiting}</p>
                       <Link
                         to="/stores/request"
@@ -303,7 +324,7 @@ export function BazaarPage({
             </ul>
 
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+              <h2 className="text-xl leading-tight font-bold tracking-tight md:text-2xl">
                 {t.storesHeading}
               </h2>
               <div className="flex gap-2">
@@ -336,7 +357,7 @@ export function BazaarPage({
                 return (
                   <li
                     key={store.id}
-                    className="flex flex-col rounded-3xl border border-line bg-surface p-5"
+                    className="rl-soft flex flex-col rounded-2xl border border-line bg-surface p-5"
                   >
                     <div className="flex items-start gap-3">
                       <span className="grid h-16 min-w-0 flex-1 place-items-center rounded-2xl border border-line bg-white px-4">

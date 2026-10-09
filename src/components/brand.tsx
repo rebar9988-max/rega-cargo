@@ -9,15 +9,46 @@ import type { ReactNode } from "react";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 
-export function IconBadge({ icon: Icon, size = "md" }: { icon: LucideIcon; size?: "sm" | "md" }) {
+/** Page gutter shared by every home section (16px on phones). */
+export const GUTTER = "px-4 md:px-5";
+/** Hidden scrollbar for horizontal rails. */
+export const RAIL = "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+export function IconBadge({
+  icon: Icon,
+  size = "md",
+  tone = "solid",
+}: {
+  icon: LucideIcon;
+  size?: "sm" | "md";
+  tone?: "solid" | "soft";
+}) {
+  const color =
+    tone === "solid" ? "rl-grad shadow-[0_6px_14px_-8px_rgb(168_0_0/0.7)]" : "bg-pine/[0.08] text-pine";
   return (
     <span
-      className={`rl-grad grid shrink-0 place-items-center rounded-full shadow-[0_6px_14px_-8px_rgb(168_0_0/0.7)] ${size === "sm" ? "size-9" : "size-11"}`}
+      className={`grid shrink-0 place-items-center rounded-full ${color} ${size === "sm" ? "size-9" : "size-11"}`}
     >
       <Icon className={size === "sm" ? "size-4" : "size-5"} aria-hidden="true" />
     </span>
   );
 }
+
+/** One header pattern for every section: title (+ optional subtitle) left, action right. */
+export function SectionHeader({ title, sub, action }: { title: string; sub?: string; action?: ReactNode }) {
+  return (
+    <div className="flex items-end justify-between gap-4" style={{ direction: "ltr" }}>
+      <div className="flex min-w-0 flex-col items-start">
+        <h2 className="text-xl leading-tight font-bold tracking-tight text-ink md:text-2xl">{title}</h2>
+        {sub ? <p className="mt-1 text-xs text-muted md:text-sm">{sub}</p> : null}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+export const seeAllClass =
+  "inline-flex h-9 shrink-0 items-center gap-0.5 rounded-full ps-3 pe-1.5 text-sm font-medium text-ink transition-colors hover:bg-surface";
 
 function Swoosh() {
   return (
@@ -45,7 +76,7 @@ function Swoosh() {
 export function BrandHero({ title, route }: { title: string; route: string }) {
   return (
     <section className="rl-hero relative overflow-hidden border-b border-line">
-      <div className="relative mx-auto max-w-6xl px-5 pt-9 pb-16 md:pt-14 md:pb-24">
+      <div className={`relative mx-auto max-w-6xl ${GUTTER} pt-8 pb-14 md:pt-14 md:pb-24`}>
         <p className="flex items-center gap-3 font-sans text-xs font-bold tracking-[0.3em] text-pine">
           <bdi dir="ltr">R&amp;L</bdi>
           <span className="rl-grad h-0.5 w-8 rounded-full" aria-hidden="true" />
@@ -60,7 +91,8 @@ export function BrandHero({ title, route }: { title: string; route: string }) {
   );
 }
 
-export function TrustRow({ children }: { children?: ReactNode }) {
+/** The calm "free delivery · secure payment" style strip of global stores. */
+export function TrustRow() {
   const { lang } = useI18n();
   const d = DESIGN_COPY[lang];
   const items: { icon: LucideIcon; label: string }[] = [
@@ -70,21 +102,21 @@ export function TrustRow({ children }: { children?: ReactNode }) {
     { icon: Clock, label: d.trust.onTime },
   ];
   return (
-    <section className="mx-auto max-w-6xl px-4 pt-5 md:px-5 md:pt-8" aria-label={d.trustLabel}>
-      <ul className="grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-4" style={{ direction: "ltr" }}>
-        {items.map((item) => (
-          <li
-            key={item.label}
-            className="rl-soft flex min-h-16 min-w-0 items-center gap-3 rounded-2xl border border-line bg-surface px-3 py-2.5"
-          >
-            <IconBadge icon={item.icon} size="sm" />
-            <span dir="auto" className="text-sm leading-snug font-semibold text-ink">
+    <section className="border-b border-line bg-surface" aria-label={d.trustLabel}>
+      <ul
+        className={`mx-auto flex max-w-6xl items-center overflow-x-auto ${GUTTER} ${RAIL} md:justify-between`}
+        style={{ direction: "ltr" }}
+      >
+        {items.map((item, index) => (
+          <li key={item.label} className="flex h-12 shrink-0 items-center gap-2">
+            {index > 0 ? <span className="mx-3.5 h-4 w-px bg-line md:hidden" aria-hidden="true" /> : null}
+            <item.icon className="size-4 shrink-0 text-pine" strokeWidth={1.75} aria-hidden="true" />
+            <span dir="auto" className="text-xs font-medium whitespace-nowrap text-ink">
               {item.label}
             </span>
           </li>
         ))}
       </ul>
-      {children}
     </section>
   );
 }
