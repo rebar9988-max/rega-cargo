@@ -55,8 +55,12 @@ async function settle(page: Page) {
  * Content photos are masked with a silver box: their boxes (size, ratio, position) stay in the
  * baseline, while photo decoding noise and megabytes of pixels stay out of the repo.
  */
-function shot(page: Page) {
-  return { mask: [page.locator("main img, [data-layout=sheet] img")], maskColor: "#c9ced6" };
+function shot(page: Page, sheet = false) {
+  // Masks are painted above everything, so sheet views mask only the sheet's own photos.
+  const photos = sheet ? "[data-layout=sheet] img" : "main img";
+  return { mask: [page.locator(photos)], maskColor: "#c9ced6" };
+}
+
 }
 
 async function geometry(page: Page, bp: Bp, sheet = false) {
@@ -84,7 +88,7 @@ for (const lang of LANGS) {
       await expect(page.locator('[data-layout="sheet"]')).toBeVisible();
       await settle(page);
       await geometry(page, breakpoint, true);
-      await expect(page).toHaveScreenshot(`menu-${lang}.png`, shot(page));
+      await expect(page).toHaveScreenshot(`menu-${lang}.png`, shot(page, true));
     });
 
     test(`search sheet ${lang}`, async ({ page, breakpoint }) => {
@@ -93,7 +97,7 @@ for (const lang of LANGS) {
       await expect(page.locator('input[type="search"][aria-expanded="true"]')).toBeVisible();
       await settle(page);
       await geometry(page, breakpoint, true);
-      await expect(page).toHaveScreenshot(`search-${lang}.png`, shot(page));
+      await expect(page).toHaveScreenshot(`search-${lang}.png`, shot(page, true));
     });
   });
 }
