@@ -187,7 +187,7 @@ export function PageHeader({
     <header className="border-b border-line bg-surface">
       <div className="mx-auto max-w-6xl px-5 py-10 md:py-16">
         <p className="text-sm font-medium text-pine">{kicker}</p>
-        <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance text-ink md:text-5xl">
+        <h1 className="mt-3 max-w-3xl text-4xl leading-tight font-bold tracking-tight text-balance text-ink md:text-5xl">
           {title}
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted md:text-lg">{lede}</p>

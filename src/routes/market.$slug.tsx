@@ -88,7 +88,7 @@ function ProductPage() {
           </ul>
           {data.history.length > 0 ? (
             <div>
-              <h2 className="text-lg font-semibold">{t.history}</h2>
+              <h2 className="text-2xl leading-tight font-bold">{t.history}</h2>
               <ul className="mt-3 flex flex-col gap-2">
                 {data.history.map((point) => (
                   <li key={point.at} className="grid grid-cols-[minmax(0,1fr)_8rem] items-center gap-3 text-sm">
@@ -124,7 +124,7 @@ function ProductPage() {
               if (!("error" in result)) void reload();
             }}
           >
-            <h2 className="text-lg font-semibold">{t.review}</h2>
+            <h2 className="text-2xl leading-tight font-bold">{t.review}</h2>
             <Field label={t.rating}>
               <input name="rating" dir="ltr" inputMode="numeric" min={1} max={5} defaultValue={5} className={controlClass} />
             </Field>
@@ -161,7 +161,7 @@ export function Report() {
         if (!("error" in result)) event.currentTarget.reset();
       }}
     >
-      <h2 className="text-lg font-semibold">{t.report}</h2>
+      <h2 className="text-2xl leading-tight font-bold">{t.report}</h2>
       <input name="subject" required placeholder={t.subject} aria-label={t.subject} className={controlClass} />
       <textarea name="body" required placeholder={t.body} aria-label={t.body} className={`${controlClass} h-24 py-3`} />
       <button className={btnGhost} type="submit">{t.send}</button>

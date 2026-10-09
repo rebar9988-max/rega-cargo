@@ -264,7 +264,7 @@ function LiveTrack({ data, lang, ux }: { data: LiveResult; lang: Lang; ux: UxCop
   const updated = when(current?.at);
   return (
     <article className="flex flex-col gap-6 rounded-2xl border border-line bg-surface p-5 md:p-6">
-      <h2 className="text-xl font-semibold">
+      <h2 className="text-2xl leading-tight font-bold">
         <bdi dir="ltr">{data.id}</bdi>
       </h2>
       {current ? (

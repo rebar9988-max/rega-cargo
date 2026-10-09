@@ -24,6 +24,7 @@ import { dayRange, useI18n } from "@/lib/i18n";
 import { issueQuote, orderQuote } from "@/lib/orders/api";
 import { UX_COPY } from "@/lib/ux-copy";
 import { ContactNote } from "@/components/contact-note";
+import { RichLine } from "@/components/rich-line";
 import { DECLARE_COPY } from "@/lib/declare-copy";
 import { getJson, setJson } from "@/lib/storage";
 import { Eur, Field, Iqd, btnGhost, btnPrimary, controlClass } from "@/components/field";
@@ -337,7 +338,7 @@ export function QuotePanel({
                           {row.mode.id === "economy" ? (
                             <p className="text-xs font-medium text-pine">{t.usual}</p>
                           ) : null}
-                          <h2 className="text-lg font-semibold">{t.modes[row.mode.id].name}</h2>
+                          <h2 className="text-2xl leading-tight font-bold">{t.modes[row.mode.id].name}</h2>
                           <p className="text-sm text-muted">
                             <bdi dir="ltr">{dayRange(t.dayRange, row.mode.days[0], row.mode.days[1])}</bdi>
                           </p>
@@ -416,7 +417,7 @@ export function QuotePanel({
                     </span>
                   </div>
                 ) : null}
-                <p className={`text-sm font-medium ${duty > 0 ? "mt-2" : ""}`}>{dc.customs}</p>
+                <RichLine text={dc.customs} className={`text-sm leading-relaxed text-muted ${duty > 0 ? "mt-2" : ""}`} />
                 <p className="mt-2 text-sm leading-relaxed text-muted">
                   {contents === "documents" ? t.dutyDocs : safeValue > 0 && safeValue <= 200 && contents === "personal" ? t.dutyLow : t.dutyPlan}
                 </p>
@@ -447,7 +448,7 @@ export function QuotePanel({
 
       {variant === "full" && held && held.length > 0 ? (
         <section>
-          <h2 className="text-lg font-semibold">{t.heldTitle}</h2>
+          <h2 className="text-2xl leading-tight font-bold">{t.heldTitle}</h2>
           <ul className="mt-3 flex flex-col gap-2">
             {held.map((item, index) => {
               const from = getOrigin(item.fromId);

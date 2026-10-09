@@ -200,7 +200,7 @@ export function DeliveryTabs({ active }: { active: "/quote" | "/track" | "/move"
               className={`relative flex h-12 items-center justify-center gap-1.5 px-1 text-xs sm:text-sm ${on ? "font-semibold text-pine" : "text-muted"}`}
             >
               <Icon className="size-4 shrink-0" aria-hidden="true" />
-              <span dir="auto" className="truncate">
+              <span dir="auto" className="line-clamp-2 min-w-0 text-center leading-tight">
                 {label[item.to]}
               </span>
               <span

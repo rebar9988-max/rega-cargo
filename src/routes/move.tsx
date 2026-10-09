@@ -117,7 +117,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
             )
           }
         >
-          <h2 className="text-xl font-semibold">{t.deliver}</h2>
+          <h2 className="text-2xl leading-tight font-bold">{t.deliver}</h2>
           <Field label={t.pickup}><input name="pickup" required className={controlClass} /></Field>
           <Field label={t.dropoff}><input name="dropoff" required className={controlClass} /></Field>
           <Field label={t.item}><input name="item" required defaultValue={item} className={controlClass} /></Field>
@@ -138,7 +138,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
             )
           }
         >
-          <h2 className="text-xl font-semibold">{t.load}</h2>
+          <h2 className="text-2xl leading-tight font-bold">{t.load}</h2>
           <Field label={t.origin}><input name="origin" required className={controlClass} /></Field>
           <Field label={t.destination}><input name="destination" required className={controlClass} /></Field>
           <Field label={t.load}><input name="load" required className={controlClass} /></Field>
@@ -157,7 +157,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
               send("courier", event, (form) => marketRole({ data: { role: "courier", displayName: form.get("name"), city: form.get("city"), phone: form.get("phone") } }), false)
             }
           >
-            <h2 className="text-xl font-semibold">{t.roleDriver}</h2>
+            <h2 className="text-2xl leading-tight font-bold">{t.roleDriver}</h2>
             <Field label={t.name}><input name="name" required className={controlClass} /></Field>
             <Field label={t.city}><input name="city" required className={controlClass} /></Field>
             <Field label={t.phone}><input name="phone" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" className={controlClass} /></Field>
@@ -166,7 +166,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
           </form>
         ) : null}
         <section className="flex flex-col gap-3">
-          <h2 className="text-xl font-semibold">{t.myJobs}</h2>
+          <h2 className="text-2xl leading-tight font-bold">{t.myJobs}</h2>
           {jobs.deliveries.map((job) => (
             <JobCard key={job.id} kind="delivery" id={job.id} status={job.status} label={`${job.pickup} → ${job.dropoff}`} bids={jobs.bids.filter((bid) => bid.jobId === job.id && bid.kind === "delivery")} onDone={refresh} onNote={note} />
           ))}
@@ -175,7 +175,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
           ))}
         </section>
         <section className="flex flex-col gap-3">
-          <h2 className="text-xl font-semibold">{t.openJobs}</h2>
+          <h2 className="text-2xl leading-tight font-bold">{t.openJobs}</h2>
           {jobs.openDeliveries.map((job) => (
             <OpenCard key={job.id} kind="delivery" id={job.id} label={`${job.pickup} → ${job.dropoff} · ${job.item}`} onDone={refresh} onNote={note} />
           ))}

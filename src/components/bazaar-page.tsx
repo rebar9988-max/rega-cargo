@@ -325,7 +325,7 @@ export function BazaarPage({
             </ul>
 
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <h2 className="text-xl leading-tight font-bold tracking-tight md:text-2xl">
+              <h2 className="text-2xl leading-tight font-bold tracking-tight md:text-3xl">
                 {t.storesHeading}
               </h2>
               <div className="flex gap-2">
