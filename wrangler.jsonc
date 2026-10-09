@@ -13,6 +13,10 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
   "workers_dev": true,
+  // Production custom domain (attached 2026-10-09). Only this hostname — the
+  // apex and www.regaplatform.com belong to the REGA worker `rega-platform`
+  // and must never be listed here. workers.dev stays on during the transition.
+  "routes": [{ "pattern": "cargo.regaplatform.com", "custom_domain": true }],
 
   // Database (Postgres). Create a Hyperdrive config pointing at the production
   // Postgres and uncomment — see DEPLOY.md. Until then DB-backed pages (market,
@@ -31,8 +35,8 @@
     "RL_AI_ENABLED": "true",
     "RL_AI_DAILY_CAP": "200",
     // Canonical origin for <link rel=canonical>, robots.txt and sitemap.xml.
-    // Change only when a custom domain is attached (owner decision).
-    "SITE_URL": "https://rega-cargo.rebar9988.workers.dev"
+    // Custom domain attached 2026-10-09 (owner-approved).
+    "SITE_URL": "https://cargo.regaplatform.com"
   },
 
   // R&L AI: Workers AI binding + strongly consistent usage counter (daily cap and
