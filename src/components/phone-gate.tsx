@@ -2,7 +2,9 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { UX_COPY } from "@/lib/ux-copy";
 import { UserRound, X } from "lucide-react";
-import { btnPrimary, controlClass } from "@/components/field";
+import { Link } from "@tanstack/react-router";
+import { btnGhost, btnPrimary, controlClass } from "@/components/field";
+import { REQUEST_COPY } from "@/lib/requests/copy";
 import { useI18n } from "@/lib/i18n";
 import { phoneBegin, phoneCheck, phoneLeave, phoneStatus, phoneWho } from "@/lib/phone/api";
 import { COUNTRIES, flag, type PhoneCountry } from "@/lib/phone/format";
@@ -398,6 +400,11 @@ function PhoneDialog({
           <p className="px-5 pt-2 text-sm leading-relaxed text-muted">{t.lede}</p>
         )}
 
+        {me ? (
+          <Link to="/account" className={`${btnGhost} mt-6 w-full`} onClick={onClose}>
+            {REQUEST_COPY[lang]?.dashTitle ?? REQUEST_COPY.en.dashTitle}
+          </Link>
+        ) : null}
         {me ? (
           <button
             type="button"

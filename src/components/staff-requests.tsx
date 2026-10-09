@@ -130,7 +130,7 @@ export function StaffRequestTools({ request, t }: { request: DetailLike; t: Requ
 
   return (
     <section className="flex flex-col gap-5 rounded-2xl border-2 border-pine/40 bg-surface p-5">
-      {request.contact ? (
+      {request.contact && (request.contact.name || request.contact.phone) ? (
         <p className="text-sm">
           <span className="text-muted">{t.customer}: </span>
           {request.contact.name} · <bdi dir="ltr">{request.contact.phone}</bdi>
