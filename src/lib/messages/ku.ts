@@ -221,7 +221,6 @@ export const ku = {
   contactTitle: "Ji me re binivîse.",
   contactLede: "Ji bo her pirsê navnîşanek: biha, bar û firoşgeh.",
   contactEmailLabel: "E-name",
-  warehouse: "Depo: Almanya, Köln",
   name: "Nav",
   phone: "Telefon",
   city: "Bajarê wergir",

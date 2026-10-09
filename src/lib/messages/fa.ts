@@ -221,7 +221,6 @@ export const fa = {
   contactTitle: "به ما بنویسید.",
   contactLede: "یک نشانی برای همه پرسش‌ها: قیمت، محموله و فروشگاه‌ها.",
   contactEmailLabel: "ایمیل",
-  warehouse: "انبار: آلمان، کلن",
   name: "نام",
   phone: "تلفن",
   city: "شهر گیرنده",

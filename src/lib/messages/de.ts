@@ -221,7 +221,6 @@ export const de = {
   contactTitle: "Schreiben Sie uns.",
   contactLede: "Eine Adresse für alle Fragen: Preise, Sendungen und Shops.",
   contactEmailLabel: "E-Mail",
-  warehouse: "Lager: Deutschland, Köln",
   name: "Name",
   phone: "Telefon",
   city: "Stadt des Empfängers",

@@ -28,6 +28,8 @@ import { REQUEST_COPY } from "@/lib/requests/copy";
 import { ITEMS_COPY } from "@/lib/items-copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { CONTACT_EMAIL } from "@/lib/contact";
+import { businessContact } from "@/lib/business";
+import { CONTACT_COPY } from "@/lib/contact-copy";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { HeaderLangPicker, LangOptions } from "@/components/lang-picker";
 import { useI18n } from "@/lib/i18n";
@@ -209,6 +211,9 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
   const { t, lang, setLang } = useI18n();
   const d = DESIGN_COPY[lang];
   const ai = rlAiEnabled();
+  // Warehouse line only from verified config (RL_WAREHOUSE_ADDRESS); hidden otherwise.
+  const address = businessContact().address;
+  const warehouse = address ? `${CONTACT_COPY[lang].address}: ${address}` : "";
   const path = useRouterState({ select: (state) => state.location.pathname });
   const [open, setOpen] = useState(false);
 
@@ -375,10 +380,12 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
             <p className="max-w-xs text-sm leading-relaxed text-muted">{t.footerBlurb}</p>
           </div>
           <div className="flex flex-col gap-3 md:col-span-2 md:items-end">
-            <div className="flex items-center gap-2 text-sm text-muted">
-              <Warehouse className="size-4 shrink-0" aria-hidden="true" />
-              <span dir="auto">{t.warehouse}</span>
-            </div>
+            {warehouse ? (
+              <div className="flex items-center gap-2 text-sm text-muted">
+                <Warehouse className="size-4 shrink-0" aria-hidden="true" />
+                <span dir="auto">{warehouse}</span>
+              </div>
+            ) : null}
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="flex min-h-11 items-center gap-2 text-sm font-medium text-pine hover:underline"

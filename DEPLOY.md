@@ -90,6 +90,14 @@ baseline update.
 | `BETTER_AUTH_URL` | `https://cargo.regaplatform.com` |
 | `SITE_URL` | `https://cargo.regaplatform.com` — canonical links, sitemap.xml, robots.txt |
 | `VITE_GROK_EXTENSIONS` | `0` — no third-party grok.com script in production HTML |
+| `RL_CONTACT_PHONE` | Business phone, E.164 (`+964…`). Empty = hidden. |
+| `RL_CONTACT_WHATSAPP` | WhatsApp number, E.164. Empty = hidden. Shown as a `wa.me` button. |
+| `RL_CONTACT_HOURS` | Opening hours as text (e.g. `Sat–Thu 09:00–18:00`). Shown only with a valid `RL_CONTACT_TIMEZONE`. |
+| `RL_CONTACT_TIMEZONE` | IANA time zone, e.g. `Asia/Baghdad`. |
+| `RL_WAREHOUSE_ADDRESS` | Warehouse / receiving address as text. Empty = hidden everywhere (footer, contact page). |
+| `RL_WAREHOUSE_MAP_URL` | https map link (google.com, goo.gl, openstreetmap.org, maps.apple.com). Shown only with an address. |
+
+Contact details are shown only from these vars, and only once the owner has verified them. Invalid values stay hidden; /admin lists the keys that are not shown. Set them in `wrangler.jsonc`, not the dashboard: `wrangler deploy` replaces dashboard vars with the file's values.
 
 ### Secrets (`npx wrangler secret put <NAME>`; never commit them)
 

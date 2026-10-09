@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL } from "@/lib/contact";
+import { ContactActions } from "@/components/contact-actions";
 import { formatNumber } from "@/lib/numbers";
 import type { RequestCopy } from "@/lib/requests/copy";
 
@@ -27,18 +27,7 @@ export function StatusBadge({ status, t }: { status: string; t: RequestCopy }) {
   );
 }
 
-/** Contact row for request and tracking pages. Only verified details are shown (email for now). */
-export function RequestHelp({ t, refCode }: { t: RequestCopy; refCode?: string }) {
-  const subject = refCode ? `?subject=${encodeURIComponent(refCode)}` : "";
-  return (
-    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-sm">
-      <span className="text-muted">{t.contactHelp}</span>
-      <a
-        href={`mailto:${CONTACT_EMAIL}${subject}`}
-        className="inline-flex min-h-10 items-center font-medium text-pine underline underline-offset-4"
-      >
-        <bdi dir="ltr">{CONTACT_EMAIL}</bdi>
-      </a>
-    </div>
-  );
+/** Contact buttons for request pages (verified config only; email subject = reference). */
+export function RequestHelp({ refCode }: { t?: RequestCopy; refCode?: string }) {
+  return <ContactActions subject={refCode} />;
 }

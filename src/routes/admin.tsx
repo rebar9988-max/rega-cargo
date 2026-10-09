@@ -10,6 +10,8 @@ import { iqd, marketCopy } from "@/lib/market-copy";
 import { marketAdmin, marketAdminComplianceScan, marketAdminSet } from "@/lib/market/api";
 import { staffList } from "@/lib/requests/api";
 import { StaffRequestList } from "@/components/staff-requests";
+import { businessContact, missingContactKeys } from "@/lib/business";
+import { CONTACT_COPY } from "@/lib/contact-copy";
 
 export const Route = createFileRoute("/admin")({
   loader: async () => {
@@ -213,6 +215,22 @@ function AdminSignedIn({
           ) : null}
         </Section>
         <StaffRequestList initial={initial.orders} />
+        <Section title={CONTACT_COPY[lang].adminTitle}>
+          {missingContactKeys(businessContact()).length ? (
+            <>
+              <p className="text-sm text-muted">{CONTACT_COPY[lang].adminBody}</p>
+              <ul className="flex flex-wrap gap-2">
+                {missingContactKeys(businessContact()).map((key) => (
+                  <li key={key}>
+                    <code dir="ltr" className="rounded-full border border-line bg-surface px-3 py-1 text-xs">{key}</code>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="text-sm text-muted">{CONTACT_COPY[lang].adminNone}</p>
+          )}
+        </Section>
       </div>
     </Shell>
   );

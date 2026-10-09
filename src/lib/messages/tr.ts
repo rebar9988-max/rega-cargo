@@ -221,7 +221,6 @@ export const tr = {
   contactTitle: "Bize yazın.",
   contactLede: "Her soru için tek adres: fiyat, gönderi ve mağazalar.",
   contactEmailLabel: "E-posta",
-  warehouse: "Depo: Almanya, Köln",
   name: "Ad",
   phone: "Telefon",
   city: "Alıcının şehri",

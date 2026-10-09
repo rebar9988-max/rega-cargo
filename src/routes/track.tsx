@@ -1,6 +1,7 @@
 import { NUM_LOCALE } from "@/lib/numbers";
 import { useEffect, useState } from "react";
 import { seo } from "@/lib/seo";
+import { ContactActions } from "@/components/contact-actions";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageHeader, Shell } from "@/components/shell";
 import { DeliveryTabs } from "@/components/delivery-hub";
@@ -243,6 +244,7 @@ function TrackPage() {
             </aside>
           </article>
         ) : null}
+        <ContactActions subject={id ? id.slice(0, 40) : undefined} className="max-w-3xl" />
       </div>
     </Shell>
   );

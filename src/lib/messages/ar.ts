@@ -221,7 +221,6 @@ export const ar = {
   contactTitle: "راسلنا.",
   contactLede: "عنوان واحد لكل الأسئلة: الأسعار والشحنات والمتاجر.",
   contactEmailLabel: "البريد الإلكتروني",
-  warehouse: "المستودع: ألمانيا، كولونيا",
   name: "الاسم",
   phone: "الهاتف",
   city: "مدينة المستلم",
