@@ -18,7 +18,7 @@ function CustomsPage() {
   return (
     <Shell>
       <PageHeader kicker={t.customsKicker} title={t.customsTitle} lede={t.customsLede} />
-      <div className="mx-auto flex max-w-6xl flex-col gap-12 px-5 py-12 md:py-16">
+      <div className="page flex flex-col gap-12 py-12 md:py-16">
         <section>
           <h2 className="text-2xl font-semibold tracking-tight">{t.lanesTitle}</h2>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -56,7 +56,7 @@ function CustomsPage() {
         </section>
         <section className="rounded-2xl border border-line bg-surface p-6">
           <h2 className="text-2xl font-semibold tracking-tight">{t.bannedTitle}</h2>
-          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+          <ul className="mt-5 grid gap-3 md:grid-cols-2">
             {t.banned.map((item) => (
               <li key={item} className="flex gap-3 text-sm leading-relaxed">
                 <span className="mt-2 size-1.5 shrink-0 rounded-full bg-clay" />

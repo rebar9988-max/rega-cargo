@@ -45,7 +45,7 @@ function ProductPage() {
   return (
     <Shell>
       <PageHeader kicker={lang === "ckb" ? data.categoryKu : data.categoryEn} title={name} lede={data.descriptionKu} />
-      <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-[16rem_minmax(0,1fr)]">
+      <div className="page grid gap-8 py-10 md:grid-cols-[16rem_minmax(0,1fr)]">
         {data.image ? <img {...responsiveImage(data.image, "(min-width: 768px) 576px, 100vw")} alt="" width={640} height={640} decoding="async" className="aspect-square w-full rounded-2xl object-cover" /> : <div className="aspect-square rounded-2xl bg-paper" />}
         <div className="flex flex-col gap-4">
           <p className="font-sans text-sm text-muted"><bdi dir="ltr">{data.brand}</bdi>{data.specs ? ` · ${data.specs}` : ""}</p>

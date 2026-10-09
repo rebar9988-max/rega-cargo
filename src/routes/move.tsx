@@ -106,7 +106,7 @@ function MoveSignedIn({ initial }: { initial: Awaited<ReturnType<typeof moveJobs
     <Shell>
       <DeliveryTabs active="/move" />
       <PageHeader kicker={t.moveKicker} title={t.moveTitle} lede={t.moveLede} />
-      <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-2">
+      <div className="page grid gap-8 py-10 md:grid-cols-2">
         <form
           className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4"
           onSubmit={(event) =>

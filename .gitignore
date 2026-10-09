@@ -9,3 +9,5 @@ dist
 .vercel
 .wrangler
 .dev.vars
+playwright-report
+test-results

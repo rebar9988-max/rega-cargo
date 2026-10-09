@@ -46,7 +46,7 @@ export function HomePage() {
   return (
     <Shell>
       <section className="bg-paper">
-        <div className="mx-auto grid max-w-6xl items-start gap-8 px-5 py-8 md:grid-cols-2 md:gap-16 md:py-20">
+        <div className="page grid items-start gap-8 py-8 md:grid-cols-2 md:gap-16 md:py-20">
           <div className="min-w-0">
             <p className="font-sans text-xs font-semibold tracking-wide text-ink">MOVE SMART. DELIVER FAST.</p>
             <p className="mt-2 font-sans text-sm font-medium tracking-wide text-pine">EUROPE ↔ KURDISTAN ↔ IRAQ</p>
@@ -71,7 +71,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-8">
+      <section className="page py-8">
         <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
           {t.stats.map((item) => (
             <div key={item.k} className="bg-surface p-5">
@@ -84,7 +84,7 @@ export function HomePage() {
         </dl>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
+      <section className="page py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.stepsKicker}</p>
         <h2 className="mt-3 max-w-2xl text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.stepsTitle}</h2>
         <ol className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
@@ -98,7 +98,7 @@ export function HomePage() {
         </ol>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
+      <section className="page py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.gapKicker}</p>
         <h2 className="mt-3 max-w-2xl text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.gapTitle}</h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{t.gapLede}</p>
@@ -125,7 +125,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
+      <section className="page py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.modesKicker}</p>
         <h2 className="mt-3 max-w-2xl text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.modesTitle}</h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{t.modesLede}</p>
@@ -156,7 +156,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
+      <section className="page py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.boardKicker}</p>
         <h2 className="mt-3 max-w-2xl text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.boardTitle}</h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{t.boardLede}</p>
@@ -204,7 +204,7 @@ export function HomePage() {
         <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted">{t.boardNote}</p>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
+      <section className="page py-12 md:py-16">
         <p className="text-sm font-medium text-pine">{t.faqKicker}</p>
         <h2 className="mt-3 text-2xl leading-tight font-bold tracking-tight md:text-4xl">{t.faqTitle}</h2>
         <div className="mt-6 border-t border-line">
@@ -221,7 +221,7 @@ export function HomePage() {
       </section>
 
       <section className="border-t border-line bg-surface">
-        <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 py-14 md:py-20">
+        <div className="page flex flex-col gap-5 py-14 md:py-20">
           <h2 className="max-w-2xl text-2xl leading-tight font-bold tracking-tight text-ink md:text-4xl">{t.closeTitle}</h2>
           <p className="max-w-xl text-base leading-relaxed text-muted">{t.closeLede}</p>
           <div className="flex flex-wrap gap-3">

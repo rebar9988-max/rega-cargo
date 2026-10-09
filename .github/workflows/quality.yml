@@ -4,6 +4,12 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      update_baselines:
+        description: "Re-render layout baselines (download the layout-report artifact and commit tests/layout/__screenshots__)"
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -29,3 +35,40 @@ jobs:
           DATABASE_URL: ''
       - name: Cloudflare Worker bundle check (wrangler dry-run, no deploy)
         run: npm run cf:dry-run
+
+  # Layout lock (DEPLOY.md "Layout lock"): geometry assertions + screenshot baselines on
+  # phone/tablet/laptop viewports in Chromium and WebKit. Runs in the official Playwright
+  # image so browsers and fonts match the committed baselines exactly (no browser download).
+  layout:
+    name: layout lock
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: "1"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build without production DB migrations
+        run: npm run build
+        env:
+          DATABASE_URL: ''
+      - name: Layout lock (Chromium + WebKit)
+        run: npx playwright test ${{ inputs.update_baselines && '--update-snapshots=all' || '' }}
+      - name: Upload report, diffs and rendered baselines
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-report
+          path: |
+            playwright-report/
+            test-results/
+            tests/layout/__screenshots__/
+          retention-days: 7

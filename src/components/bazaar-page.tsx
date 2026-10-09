@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { QuotePanel } from "@/components/quote-panel";
 import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
 import { readService, writeService, type Service } from "@/lib/service-choice";
-import { BrandHero, GUTTER, RAIL, SectionHeader, TrustRow, seeAllClass } from "@/components/brand";
+import { BrandHero, RAIL, SectionHeader, TrustRow, seeAllClass } from "@/components/brand";
 import { Shell } from "@/components/shell";
 import type { BazaarSearch } from "@/lib/bazaar-search";
 import { BRANDS, COLLECTION_ORDER } from "@/lib/catalog";
@@ -137,7 +137,7 @@ export function BazaarPage({
         <>
           <div className="border-b border-line bg-surface">
             <div
-              className="mx-auto grid max-w-6xl grid-cols-3"
+              className="page-bleed grid grid-cols-3"
               role="tablist"
               style={{ direction: "ltr" }}
             >
@@ -166,7 +166,7 @@ export function BazaarPage({
           <BrandHero title={d.tagline} route={d.route} />
           <TrustRow />
 
-          <section className={`mx-auto max-w-6xl ${GUTTER} pt-8 md:pt-12`}>
+          <section className={`page pt-8 md:pt-12`}>
             <SectionHeader
               title={d.newCollection}
               action={
@@ -177,11 +177,11 @@ export function BazaarPage({
               }
             />
             <ul
-              className={`-mx-4 mt-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 md:mx-0 md:scroll-px-0 md:gap-4 md:px-0 ${RAIL}`}
+              className={`-mx-[var(--gutter)] mt-4 flex snap-x snap-mandatory scroll-px-[var(--gutter)] gap-[var(--rail-gap)] overflow-x-auto px-[var(--gutter)] md:mx-0 md:scroll-px-0 md:px-0 ${RAIL}`}
               style={{ direction: "ltr" }}
             >
               {collection.map((good, index) => (
-                <li key={good.id} className="w-[42%] shrink-0 snap-start sm:w-[30%] md:w-[calc((100%-4rem)/5)]">
+                <li key={good.id} className="rail-item snap-start">
                   <Link to="/stores" search={{ cat: good.category }} className="group block">
                     <span className="block overflow-hidden rounded-xl bg-[#f1f0ee]">
                       <img
@@ -192,7 +192,7 @@ export function BazaarPage({
                         loading={index < 3 ? "eager" : "lazy"}
                         fetchPriority={index === 0 ? "high" : undefined}
                         decoding="async"
-                        className="aspect-[3/4] w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                        className="aspect-product w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                       />
                     </span>
                     <span dir="auto" className="mt-2 block truncate text-sm font-medium text-ink">
@@ -204,7 +204,7 @@ export function BazaarPage({
             </ul>
           </section>
 
-          <section className={`mx-auto grid max-w-6xl items-start gap-6 ${GUTTER} pt-8 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:pt-12`}>
+          <section className={`page grid items-start gap-6 pt-8 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:pt-12`}>
             <div className="min-w-0">
               <SectionHeader
                 title={t.title}
@@ -247,7 +247,7 @@ export function BazaarPage({
                             className="h-5 w-full object-contain"
                           />
                         ) : (
-                          <bdi dir="ltr" className="truncate font-sans text-[13px] font-semibold tracking-[0.06em] text-ink">
+                          <bdi dir="ltr" className="truncate font-sans text-sm font-semibold tracking-wide text-ink">
                             {brand.name}
                           </bdi>
                         )}
@@ -262,7 +262,7 @@ export function BazaarPage({
             </div>
           </section>
 
-          <div className={`mx-auto flex max-w-6xl flex-col gap-8 ${GUTTER} pt-8 pb-12 md:pt-12`}>
+          <div className={`page flex flex-col gap-8 pt-8 pb-12 md:pt-12`}>
             <div className={`-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0 ${RAIL}`}>
               <Chip
                 on={category === "all" && !brandName}
@@ -287,7 +287,7 @@ export function BazaarPage({
               ))}
             </div>
 
-            <ul className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-4 md:gap-x-5">
+            <ul data-layout="card-grid" className="card-grid gap-y-8">
               {goods.map((good) => {
                 const shop = storeById(good.storeId);
                 return (
@@ -300,12 +300,12 @@ export function BazaarPage({
                         height={640}
                         loading="lazy"
                         decoding="async"
-                        className="aspect-[3/4] w-full object-cover"
+                        className="aspect-product w-full object-cover"
                       />
                     </div>
                     <div className="flex flex-1 flex-col gap-1 px-1 pt-3">
                       {shop ? (
-                        <p className="font-sans text-[10px] font-semibold tracking-[0.16em] text-muted">
+                        <p className="font-sans text-xs font-semibold tracking-widest text-muted">
                           <bdi dir="ltr">{shop.name}</bdi>
                         </p>
                       ) : null}
@@ -328,12 +328,12 @@ export function BazaarPage({
               <h2 className="text-2xl leading-tight font-bold tracking-tight md:text-3xl">
                 {t.storesHeading}
               </h2>
-              <div className="flex gap-2">
+              <div className="flex min-w-0 gap-2">
                 <select
                   value={country}
                   onChange={(event) => setCountry(event.target.value as "all" | "DE" | "INT")}
                   aria-label={t.allCountries}
-                  className="h-11 rounded-full border border-line bg-surface px-4 text-sm"
+                  className="h-11 min-w-0 flex-1 rounded-full border border-line bg-surface px-4 text-base md:flex-none"
                 >
                   <option value="all">{t.allCountries}</option>
                   <option value="DE">{t.germany}</option>
@@ -343,7 +343,7 @@ export function BazaarPage({
                   type="button"
                   aria-pressed={onlyFav}
                   onClick={() => setOnlyFav((value) => !value)}
-                  className={`inline-flex h-11 items-center gap-2 rounded-full border px-4 text-sm ${onlyFav ? "border-pine text-pine" : "border-line"}`}
+                  className={`inline-flex h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-sm ${onlyFav ? "border-pine text-pine" : "border-line"}`}
                 >
                   <Heart className="size-4" fill={onlyFav ? "currentColor" : "none"} />
                   {t.favorites}
@@ -352,16 +352,16 @@ export function BazaarPage({
             </div>
 
             {list.length === 0 ? <p className="text-sm text-muted">{t.empty}</p> : null}
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <ul data-layout="card-grid" className="card-grid">
               {list.map((store) => {
                 const loved = favs.includes(store.id);
                 return (
                   <li
                     key={store.id}
-                    className="rl-soft flex flex-col rounded-2xl border border-line bg-surface p-5"
+                    className="rl-soft flex flex-col rounded-2xl border border-line bg-surface p-3 md:p-5"
                   >
                     <div className="flex items-start gap-3">
-                      <span className="grid h-16 min-w-0 flex-1 place-items-center rounded-2xl border border-line bg-white px-4">
+                      <span className="grid h-16 min-w-0 flex-1 place-items-center rounded-2xl border border-line bg-white px-2 md:px-4">
                         <img
                           src={storeLogo(store.id)}
                           alt={store.name}
@@ -377,7 +377,7 @@ export function BazaarPage({
                         aria-pressed={loved}
                         aria-label={t.favorites}
                         onClick={() => toggle(store.id)}
-                        className="inline-flex size-10 items-center justify-center rounded-full border border-line"
+                        className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-line"
                       >
                         <Heart
                           className={`size-4 ${loved ? "text-pine" : "text-muted"}`}
@@ -393,14 +393,14 @@ export function BazaarPage({
                       {" · "}
                       <bdi dir="ltr">{store.host}</bdi>
                     </p>
-                    <p className="mt-4 text-sm text-muted">
+                    <p className="mt-3 mb-4 line-clamp-2 text-sm text-muted">
                       {store.categories.map((item) => t.categories[item]).join(" · ")}
                     </p>
                     <a
                       href={store.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-5 inline-flex h-11 items-center justify-center rounded-full rl-grad text-sm font-medium"
+                      className="mt-auto inline-flex min-h-11 items-center justify-center rounded-full rl-grad px-3 py-2 text-center text-sm leading-tight font-medium"
                     >
                       {t.open}
                     </a>

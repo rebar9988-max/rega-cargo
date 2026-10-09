@@ -20,8 +20,11 @@
     "preview:stop": "node scripts/preview.mjs stop",
     "typecheck": "tsc --noEmit",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/market/logic.test.ts src/lib/flow.e2e.test.ts src/lib/ai/ai.test.ts src/lib/html-cache.test.ts src/lib/quote-search.test.ts src/lib/sw-rules.test.ts src/lib/ai/challenge.test.ts src/lib/images.test.ts src/lib/phone/format.test.ts src/lib/phone/session.server.test.ts src/lib/corridor.test.ts src/lib/shipments.test.ts src/lib/search/search.test.ts src/lib/quote-token.test.ts src/lib/money.test.ts src/lib/lead-in.test.ts src/lib/rate-sheet.test.ts src/lib/orders/store-request.test.ts src/lib/numbers.test.ts",
+    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/market/logic.test.ts src/lib/flow.e2e.test.ts src/lib/ai/ai.test.ts src/lib/html-cache.test.ts src/lib/quote-search.test.ts src/lib/sw-rules.test.ts src/lib/ai/challenge.test.ts src/lib/images.test.ts src/lib/phone/format.test.ts src/lib/phone/session.server.test.ts src/lib/corridor.test.ts src/lib/shipments.test.ts src/lib/search/search.test.ts src/lib/quote-token.test.ts src/lib/money.test.ts src/lib/lead-in.test.ts src/lib/rate-sheet.test.ts src/lib/orders/store-request.test.ts src/lib/numbers.test.ts src/lib/layout-lock.test.ts",
     "lint": "eslint .",
+    "test:layout": "playwright test",
+    "test:layout:geometry": "playwright test --ignore-snapshots",
+    "test:layout:update": "docker run --rm --ipc=host -v \"$PWD\":/work -w /work mcr.microsoft.com/playwright:v1.63.0-noble sh -c \"npm ci && npm run build && npx playwright test --update-snapshots=all\"",
     "format": "prettier --write .",
     "rate-sheet": "node --experimental-strip-types scripts/build-rate-sheet.mjs"
   },
@@ -86,6 +89,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "@playwright/test": "1.63.0",
     "@types/node": "^22.16.5",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.2.0",

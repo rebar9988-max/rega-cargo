@@ -40,6 +40,47 @@ For `npm run cf:dev`, put local-only values in `.output/server/.dev.vars`
 - The preload for this file is an inline script in `src/routes/__root.tsx`; if it changes, update `FONT_HASH` in `server/middleware/0-a-security.ts` (sha256 of the script text) or the CSP will block it.
 - Type scale tokens live in `src/styles.css` (`@theme` + `html[data-textdir="rtl"]` overrides): Arabic-script body 17px / 1.8, h1 ~30px mobile to ~44px desktop, h2 ~22-26px, card titles 19px, headings bold with line-height ~1.35, no letter-spacing on Arabic script.
 
+## Layout lock
+
+The layout is fixed in code and guarded in CI, so no change can move it without a deliberate
+baseline update.
+
+**Tokens** (`src/styles.css`; components use these, never ad-hoc sizes):
+
+| Token | Value |
+|---|---|
+| Breakpoints | phone < 768 · tablet 768–1023 (`md:`) · laptop ≥ 1024 (`lg:`); `sm/xl/2xl` removed |
+| Content width | `--layout-max` 1200px, centred (`page` utility; `page-bleed` without gutters) |
+| Gutters | `--gutter` 16 / 24 / 32 |
+| Card grids | `card-grid`: 2 / 3 / 4 columns, equal widths and heights per row |
+| Media | product photos `aspect-product` (3:4), catalogue tiles `aspect-square` |
+| Header | `--header-h` 64px incl. border, + `safe-area-inset-top` |
+| Bottom bar | `--bottom-bar-h` 64px + `safe-area-inset-bottom`, phone and tablet only |
+| Type scale | stepped per device class (no fluid `clamp`); body 16px Latin / 17px Arabic script |
+| iOS | `viewport-fit=cover` + safe-area paddings, `text-size-adjust: 100%`, inputs ≥ 16px (no focus zoom), zoom never disabled |
+
+**Guards**
+
+- `src/lib/layout-lock.test.ts` (in `npm test`): no `sm:/xl:/2xl:` or `max-[…]` breakpoints, no
+  single-value `[…px|rem|%]` sizes or `text-[…]`, no `max-w-6xl`/`aspect-[…]`; locked token
+  declarations; viewport meta.
+- `tests/layout/` (Playwright, CI job "layout lock"): `/`, `/stores`, `/quote`, `/track`, `/market`,
+  `/ai`, `/contact`, `/privacy`, the menu sheet and the search sheet, in ckb and en, on Chromium at
+  390×844, 375×667, 820×1180, 1180×820, 1280×800, 1440×900 and WebKit (Safari engine) at
+  390×844, 820×1180, 1180×820. Each view asserts: no horizontal overflow; header and bottom bar at
+  exact heights; content within 1200px, centred, correct gutter; card grid column count and equal
+  card sizes per row; nothing outside the viewport; image boxes at their declared aspect ratio;
+  inputs ≥ 16px; every text size on the token scale. Then it compares a full-page screenshot with
+  the committed baseline (`tests/layout/__screenshots__/`, tolerance 0.2% of pixels).
+
+**Changing the layout on purpose**
+
+1. Change the tokens/components. `npm run test:layout:geometry` checks geometry locally (no pixels).
+2. Re-render baselines in the same image CI uses: `npm run test:layout:update` (Docker), or run
+   the "Cargo quality gate" workflow manually with `update_baselines` and commit
+   `tests/layout/__screenshots__/` from the `layout-report` artifact.
+3. Review the image diffs in the PR. A baseline change is a design change.
+
 ## Runtime configuration
 
 ### Plain vars (in `wrangler.jsonc`)

@@ -28,7 +28,7 @@ function QuotePage() {
     <Shell>
       <DeliveryTabs active="/quote" />
       <PageHeader kicker={t.quoteKicker} title={t.quoteTitle} lede={t.quoteLede} />
-      <div className="mx-auto max-w-6xl px-5 py-12 md:py-16">
+      <div className="page py-12 md:py-16">
         <QuotePanel variant="full" initial={{ from, to, kg: kg === undefined ? undefined : String(kg) }} />
       </div>
     </Shell>

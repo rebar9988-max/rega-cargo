@@ -74,9 +74,9 @@ function TrackPage() {
     <Shell>
       <DeliveryTabs active="/track" />
       <PageHeader kicker={t.trackKicker} title={t.trackTitle} lede={DEV ? t.trackLede : ux.trackLede} />
-      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-12 md:py-16">
+      <div className="page flex flex-col gap-10 py-12 md:py-16">
         <form
-          className="flex flex-col gap-3 sm:flex-row"
+          className="flex flex-col gap-3 md:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
             void navigate({ to: "/track", search: { id: draft.trim().toUpperCase() } });
@@ -99,7 +99,7 @@ function TrackPage() {
               {ux.trackHint}
             </span>
           </label>
-          <button type="submit" disabled={loading} aria-busy={loading} className={`${btnPrimary} sm:mb-7 sm:self-end disabled:opacity-60`}>
+          <button type="submit" disabled={loading} aria-busy={loading} className={`${btnPrimary} md:mb-7 md:self-end disabled:opacity-60`}>
             {t.trackButton}
           </button>
         </form>
@@ -269,7 +269,7 @@ function LiveTrack({ data, lang, ux }: { data: LiveResult; lang: Lang; ux: UxCop
         <bdi dir="ltr">{data.id}</bdi>
       </h2>
       {current ? (
-        <dl className="grid gap-4 sm:grid-cols-3">
+        <dl className="grid gap-4 md:grid-cols-3">
           <div>
             <dt className="text-xs text-muted">{ux.status}</dt>
             <dd className="mt-1 font-semibold text-pine">{title(current)}</dd>

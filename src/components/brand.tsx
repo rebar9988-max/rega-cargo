@@ -10,7 +10,6 @@ import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 
 /** Page gutter shared by every home section (16px on phones). */
-export const GUTTER = "px-4 md:px-5";
 /** Hidden scrollbar for horizontal rails. */
 export const RAIL = "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
@@ -76,7 +75,7 @@ function Swoosh() {
 export function BrandHero({ title, route }: { title: string; route: string }) {
   return (
     <section className="rl-hero relative overflow-hidden border-b border-line">
-      <div className={`relative mx-auto max-w-6xl ${GUTTER} pt-8 pb-14 md:pt-14 md:pb-24`}>
+      <div className={`page relative pt-8 pb-14 md:pt-14 md:pb-24`}>
         <p lang="en" className="flex items-center gap-3 font-sans text-xs font-bold tracking-[0.3em] text-pine">
           <bdi dir="ltr">R&amp;L</bdi>
           <span className="rl-grad h-0.5 w-8 rounded-full" aria-hidden="true" />
@@ -106,7 +105,7 @@ export function TrustRow() {
       <ul
         tabIndex={0}
         aria-label={d.trustLabel}
-        className={`mx-auto flex max-w-6xl items-center overflow-x-auto ${GUTTER} ${RAIL} md:justify-between`}
+        className={`page flex items-center overflow-x-auto ${RAIL} md:justify-between`}
         style={{ direction: "ltr" }}
       >
         {items.map((item, index) => (
