@@ -25,12 +25,7 @@ export function ServiceSwitch({
   ];
   return (
     <div className="bg-paper">
-      <div
-        className="page grid grid-cols-2 gap-3 py-3"
-        role="tablist"
-        aria-label={d.services}
-        style={{ direction: "ltr" }}
-      >
+      <div className="page grid grid-cols-2 gap-3 py-3" role="tablist" aria-label={d.services}>
         {items.map((item) => {
           const on = value === item.id;
           const Icon = item.icon;
@@ -65,7 +60,7 @@ export function ServiceSwitch({
 
 function CardHead({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
   return (
-    <div className="flex items-center gap-3" style={{ direction: "ltr" }}>
+    <div className="flex items-center gap-3">
       <IconBadge icon={Icon} size="sm" tone="soft" />
       <h2 dir="auto" className="text-base font-bold">
         {title}
@@ -75,7 +70,7 @@ function CardHead({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
 }
 
 /** Delivery service home: quick quote, track by code, move/send — all into the real routes. */
-export function DeliveryHub() {
+export function DeliveryHub({ embedded = false }: { embedded?: boolean } = {}) {
   const { t, lang } = useI18n();
   const d = DESIGN_COPY[lang];
   const navigate = useNavigate();
@@ -86,8 +81,12 @@ export function DeliveryHub() {
 
   return (
     <>
-      <BrandHero title={d.deliveryTitle} route={d.route} />
-      <TrustRow />
+      {!embedded ? (
+        <>
+          <BrandHero title={d.deliveryTitle} route={d.route} />
+          <TrustRow />
+        </>
+      ) : null}
       <div className={`page grid items-start gap-3 pt-8 pb-12 md:grid-cols-3 md:gap-5 md:pt-12`}>
         <form
           className="flex flex-col gap-4 rl-soft rounded-2xl border border-line bg-surface p-5"
@@ -157,7 +156,6 @@ export function DeliveryHub() {
         <Link
           to={"/move" as string}
           className="flex items-center gap-3 rl-soft rounded-2xl border border-line bg-surface p-5"
-          style={{ direction: "ltr" }}
         >
           <IconBadge icon={Truck} size="sm" tone="soft" />
           <span className="flex min-w-0 flex-1 flex-col items-start">
@@ -188,7 +186,7 @@ export function DeliveryTabs({ active }: { active: "/quote" | "/track" | "/move"
   const label = { "/quote": t.nav.quote, "/track": t.nav.track, "/move": d.moveSend };
   return (
     <nav className="border-b border-line bg-surface" aria-label={d.delivery}>
-      <div className="page-bleed grid grid-cols-3" style={{ direction: "ltr" }}>
+      <div className="page-bleed grid grid-cols-3">
         {DELIVERY_LINKS.map((item) => {
           const on = item.to === active;
           const Icon = item.icon;

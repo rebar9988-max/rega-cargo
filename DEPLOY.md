@@ -36,27 +36,27 @@ For `npm run cf:dev`, put local-only values in `.output/server/.dev.vars`
 ## Brand typography
 
 - **Brand font for Arabic script (ckb, ar, fa): Noto Sans Arabic** (v2.012, SIL OFL 1.1), approved by the owner on **Oct 9 2026**. It replaces Vazirmatn, which stays only as a fallback in the font stack and is not downloaded.
-- Self-hosted subset: `public/fonts/noto-sans-arabic-v2.woff2` (U+0600-06FF + joiners, wght 400-700, ~38 KB, `font-display: swap`); licence in `public/fonts/NotoSansArabic-OFL.txt`. Latin text uses Outfit Variable.
-- The preload for this file is an inline script in `src/routes/__root.tsx`; if it changes, update `FONT_HASH` in `server/middleware/0-a-security.ts` (sha256 of the script text) or the CSP will block it.
-- Type scale tokens live in `src/styles.css` (`@theme` + `html[data-textdir="rtl"]` overrides): Arabic-script body 17px / 1.8, h1 ~30px mobile to ~44px desktop, h2 ~22-26px, card titles 19px, headings bold with line-height ~1.35, no letter-spacing on Arabic script.
+- Self-hosted subset: `public/fonts/noto-sans-arabic-v2.woff2` (U+0600-06FF + joiners, wght 400-700, ~38 KB, `font-display: swap`); licence in `public/fonts/NotoSansArabic-OFL.txt`. Latin text and numbers use **Inter**, with a ~46 KB common subset and a separate ~45 KB extended subset; licence in `public/fonts/Inter-OFL.txt`. Vazirmatn is the self-hosted Arabic-script fallback.
+- Font preloads are server-rendered `<link>` elements in `src/routes/__root.tsx`: Noto for RTL, Inter for all locales. The appearance script and its exact CSP hash live together in `src/lib/appearance-script.ts`, with regression coverage in `src/lib/html-cache.test.ts`.
+- Type scale tokens live in `src/styles.css`; semantic light/dark, font, spacing, radius and motion tokens live in `src/styles/tokens.css`. The body is 16px / 1.65; Arabic-script headings have no letter-spacing and use a 1.5 line-height. The small-phone Sorani hero uses the existing 30px type token to limit font-swap layout shifts. TanStack Start inlines the compiled stylesheet in the initial HTML.
 
 ## Layout lock
 
 The layout is fixed in code and guarded in CI, so no change can move it without a deliberate
 baseline update.
 
-**Tokens** (`src/styles.css`; components use these, never ad-hoc sizes):
+**Tokens** (`src/styles.css` and `src/styles/tokens.css`; components use these, never ad-hoc sizes):
 
 | Token | Value |
 |---|---|
 | Breakpoints | phone < 768 · tablet 768–1023 (`md:`) · laptop ≥ 1024 (`lg:`); `sm/xl/2xl` removed |
 | Content width | `--layout-max` 1200px, centred (`page` utility; `page-bleed` without gutters) |
 | Gutters | `--gutter` 16 / 24 / 32 |
-| Card grids | `card-grid`: 2 / 3 / 4 columns, equal widths and heights per row |
+| Card grids | `card-grid`: 2 / 3 / 4 columns; filtered store catalogue: 2 / 3 / 3, with a desktop filter sidebar |
 | Media | product photos `aspect-product` (3:4), catalogue tiles `aspect-square` |
-| Header | `--header-h` 64px incl. border, + `safe-area-inset-top` |
+| Header | Expanded main row 136px phone/tablet, 88px desktop; compact row 120px phone/tablet, 72px desktop. Announcement/category rows are separate. Legacy `--header-h` remains 64px for existing layout helpers |
 | Bottom bar | `--bottom-bar-h` 64px + `safe-area-inset-bottom`, phone and tablet only |
-| Type scale | stepped per device class (no fluid `clamp`); body 16px Latin / 17px Arabic script |
+| Type scale | stepped tokens (no fluid `clamp`); body 16px, RTL heading line-height/letter-spacing from semantic tokens |
 | iOS | `viewport-fit=cover` + safe-area paddings, `text-size-adjust: 100%`, inputs ≥ 16px (no focus zoom), zoom never disabled |
 
 **Guards**
@@ -64,14 +64,20 @@ baseline update.
 - `src/lib/layout-lock.test.ts` (in `npm test`): no `sm:/xl:/2xl:` or `max-[…]` breakpoints, no
   single-value `[…px|rem|%]` sizes or `text-[…]`, no `max-w-6xl`/`aspect-[…]`; locked token
   declarations; viewport meta.
-- `tests/layout/` (Playwright, CI job "layout lock"): `/`, `/stores`, `/quote`, `/track`, `/market`,
-  `/ai`, `/contact`, `/privacy`, the menu sheet and the search sheet, in ckb and en, on Chromium at
+- `tests/layout/` (Playwright, CI job "layout lock"): required redesigned routes plus `/track`,
+  `/contact`, the menu sheet and the search sheet, in ckb, ar and en, on Chromium at
   390×844, 375×667, 820×1180, 1180×820, 1280×800, 1440×900 and WebKit (Safari engine) at
   390×844, 820×1180, 1180×820. Each view asserts: no horizontal overflow; header and bottom bar at
   exact heights; content within 1200px, centred, correct gutter; card grid column count and equal
   card sizes per row; nothing outside the viewport; image boxes at their declared aspect ratio;
   inputs ≥ 16px; every text size on the token scale. Then it compares a full-page screenshot with
   the committed baseline (`tests/layout/__screenshots__/`, tolerance 0.2% of pixels).
+- `tests/layout/premium.spec.ts`: the required route/query matrix at 360px in ckb/ar/en and both
+  themes, keyboard dialogs, banned searches, filter/favorite URL state, language switching,
+  font-swap layout shifts, and home calculator dimension handoff.
+
+See [the redesign review guide](docs/redesign/README.md) for exact URLs, verification evidence,
+local HTTP/2 performance reproduction, and translation/data release limits.
 
 **Changing the layout on purpose**
 

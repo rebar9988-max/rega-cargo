@@ -49,7 +49,6 @@ function errorText(t: AiCopy, code: string | undefined) {
   return code && code in t.errors ? t.errors[code as keyof AiCopy["errors"]] : t.errors.generic;
 }
 
-
 export function AiPage() {
   const { lang } = useI18n();
   const t: AiCopy = AI_COPY[lang] ?? AI_COPY.en;
@@ -104,20 +103,16 @@ export function AiPage() {
   }
 
   const busy = phase.kind === "busy";
-  const pickClass =
-    "inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-3 text-center text-sm leading-tight font-medium transition-opacity duration-200";
+  const pickClass = "rl-button rl-upload-action";
 
   return (
     <Shell>
       <PageHeader kicker={t.kicker} title={t.title} lede={t.lede} />
-      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-[var(--gutter)] py-10 md:py-14">
+      <div className="page rl-reading-stack">
         {enabled === false ? (
-          <p className="rounded-2xl border border-line bg-surface p-6 text-sm">
-            {t.errors.disabled}
-          </p>
+          <p className="rl-card text-sm">{t.errors.disabled}</p>
         ) : (
-          <section className="flex flex-col gap-5 rounded-2xl border border-line bg-surface p-6">
-            {/* Positions never mirror: only the text runs right-to-left. */}
+          <section className="rl-card rl-ai-card">
             <div className="flex items-start gap-3">
               <input
                 id={consentId}
@@ -136,8 +131,7 @@ export function AiPage() {
             </div>
             <div className="grid max-w-md grid-cols-2 gap-3">
               <label
-                style={{ direction: "ltr" }}
-                className={`${pickClass} rl-grad font-semibold shadow-sm focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-pine ${!consent || busy || !enabled ? "pointer-events-none opacity-40" : "hover:opacity-90"}`}
+                className={`${pickClass} rl-grad font-semibold shadow-sm focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-pine ${!consent || busy || !enabled ? "rl-upload-disabled" : "hover:opacity-90"}`}
               >
                 <Camera className="size-4" aria-hidden />
                 <span dir="auto">{preview ? t.retake : t.take}</span>
@@ -145,6 +139,7 @@ export function AiPage() {
                   type="file"
                   accept="image/*"
                   capture="environment"
+                  aria-label={preview ? t.retake : t.take}
                   className="sr-only"
                   disabled={!consent || busy || !enabled}
                   aria-describedby={consent ? undefined : `${consentId}-hint`}
@@ -155,14 +150,14 @@ export function AiPage() {
                 />
               </label>
               <label
-                style={{ direction: "ltr" }}
-                className={`${pickClass} border border-line bg-surface text-ink focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-pine ${!consent || busy || !enabled ? "pointer-events-none opacity-40" : "hover:border-pine"}`}
+                className={`${pickClass} border border-line bg-surface text-ink focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-pine ${!consent || busy || !enabled ? "rl-upload-disabled" : "hover:border-pine"}`}
               >
                 <ImageUp className="size-4" aria-hidden />
                 <span dir="auto">{t.choose}</span>
                 <input
                   type="file"
                   accept="image/*"
+                  aria-label={t.choose}
                   className="sr-only"
                   disabled={!consent || busy || !enabled}
                   aria-describedby={consent ? undefined : `${consentId}-hint`}
@@ -291,7 +286,7 @@ function EstimateCard({ t }: { t: AiCopy }) {
   );
 
   return (
-    <section className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-6">
+    <section className="rl-card rl-ai-card">
       <div>
         <h2 className="text-2xl leading-tight font-bold tracking-tight">{t.estimateTitle}</h2>
         <p className="mt-1 text-sm text-muted">{t.estimateLede}</p>

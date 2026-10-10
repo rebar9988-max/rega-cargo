@@ -31,3 +31,21 @@ test("URL inputs: kg 0.1–70, from/to only from the allowlist", async () => {
   assert.equal(parseTo("ebl"), "ebl");
   assert.equal(parseTo("mars"), undefined);
 });
+
+test("calculator dimension URLs preserve a real box and discard unsafe values", async () => {
+  const { parseDim } = await import("./quote-search.ts");
+  for (const value of [0, -1, 201, Infinity, "not-a-number", {}, "9999999999999999999999999999"])
+    assert.equal(parseDim(value), undefined);
+  assert.equal(parseDim("60"), 60);
+  assert.equal(parseDim("25,5"), 25.5);
+  assert.equal(parseDim(undefined), undefined);
+});
+
+test("locale URLs preserve Sorani/Kurmanji identity and reject unsafe loader identifiers", async () => {
+  const { validateLocaleSearch } = await import("./locale-search.ts");
+  assert.deepEqual(validateLocaleSearch({ lang: "ckb" }), { lang: "ckb" });
+  assert.deepEqual(validateLocaleSearch({ lang: "ku" }), { lang: "ku" });
+  assert.deepEqual(validateLocaleSearch({ lang: "ar" }), { lang: "ar" });
+  for (const lang of ["../../env", {}, [], "invalid", undefined])
+    assert.equal(validateLocaleSearch({ lang }).lang, undefined);
+});

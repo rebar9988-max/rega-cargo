@@ -5,8 +5,9 @@ import { validateBazaarSearch } from "@/lib/bazaar-search";
 
 export const Route = createFileRoute("/stores/")({
   validateSearch: validateBazaarSearch,
-  head: () =>
+  head: ({ match }) =>
     seo({
+      lang: match.context.initialLang,
       path: "/stores",
       title: "فرۆشگاکان · R&L",
       description: "فرۆشگا ئۆنلاینە ئەوروپییەکان. کاڵاکەت هەڵبژێرە و لێرە داوای کڕین بکە.",

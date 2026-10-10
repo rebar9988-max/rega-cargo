@@ -12,15 +12,24 @@ export function LegalPage({ doc }: { doc: "impressum" | "privacy" | "terms" }) {
   return (
     <Shell>
       <PageHeader kicker="R&L" title={page.title} lede={page.lede} />
-      <div className="mx-auto flex max-w-3xl flex-col gap-10 px-[var(--gutter)] py-10 md:py-14">
+      <div className="page rl-legal-body">
         {doc !== "privacy" ? (
-          <p className="flex items-start gap-3 rounded-2xl border border-pine/30 bg-pine/[0.04] p-4 text-sm leading-relaxed text-ink" role="note" style={{ direction: "ltr" }}>
+          <p className="rl-legal-note" role="note">
             <Info className="mt-0.5 size-4 shrink-0 text-pine" aria-hidden="true" />
-            <span dir="auto" className="min-w-0 flex-1">{copy.pending}</span>
+            <span dir="auto" className="min-w-0 flex-1">
+              {copy.pending}
+            </span>
           </p>
         ) : null}
-        {page.sections.map((section) => (
-          <section key={section.h} className="flex flex-col gap-3">
+        <nav aria-label={page.title} className="rl-legal-toc">
+          {page.sections.map((section, index) => (
+            <a key={section.h} href={`#${doc}-${index}`}>
+              {section.h}
+            </a>
+          ))}
+        </nav>
+        {page.sections.map((section, index) => (
+          <section key={section.h} id={`${doc}-${index}`} className="rl-legal-section">
             <h2 className="text-2xl leading-tight font-bold tracking-tight">{section.h}</h2>
             {section.p.map((line) => (
               <RichLine key={line} text={line} className="text-base leading-relaxed text-muted" />

@@ -188,11 +188,24 @@ describe("compliance: market search and detail", () => {
       ('legacy-2', 'legacy-mug', ${seller}, 'home', 'x', 'Ginger mug', 'Brand', 'approved')`;
     const r = await market.saveProduct(seller, { ...base, nameEn: "Gelatin dessert mix" });
     await sql`update products set status = 'approved' where slug = ${r.slug}`; // the DB guard keeps it pending
+    for (const [i, name] of ["Cigarettes", "Vape pen", "Pork bacon"].entries()) {
+      await sql`insert into products (id, slug, owner_id, category_id, name_ku, name_en, brand, status) values (${`ban-${i}`}, ${`ban-${i}`}, ${seller}, 'home', 'x', ${name}, 'Brand', 'approved')`;
+    }
     const all = await market.listProducts({});
     const slugs = all.items.map((i) => i.slug);
     assert.ok(!slugs.includes("legacy-vodka"));
+    for (let i = 0; i < 3; i++) assert.ok(!slugs.includes(`ban-${i}`));
     assert.ok(!slugs.includes(r.slug));
-    for (const q of ["vodka", "جگەرە", "sigara", "خمر", "Vodka set"]) {
+    for (const q of [
+      "vodka",
+      "جگەرە",
+      "sigara",
+      "خمر",
+      "Vodka set",
+      "Cigarettes",
+      "Vape pen",
+      "Pork bacon",
+    ]) {
       const res = await market.listProducts({ q });
       assert.equal(res.items.length, 0, q);
     }

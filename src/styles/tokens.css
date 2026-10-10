@@ -1,0 +1,118 @@
+/* R&L semantic tokens; all components share light/dark foundations. */
+:root {
+  --rl-hero-art-ratio: 1;
+  --rl-tile-ratio: 1;
+  --rl-carousel-dot: 0.5rem;
+  --rl-logo-width: 7rem;
+  --rl-logo-height: 2.5rem;
+  --rl-hero-columns: minmax(0, 1fr) minmax(0, 1fr);
+  --rl-slide-start: 100%;
+  --rl-mark-size: 3rem;
+  --rl-mark-compact: 2.5rem;
+  --rl-header-expanded: 5.5rem;
+  --rl-header-mobile: 8.5rem;
+  --rl-header-mobile-compact: 7.5rem;
+  --rl-header-compact: 4.5rem;
+  --rl-search-width: 40rem;
+  --rl-nav-h: 3.5rem;
+  --rl-menu-ratio: 1;
+  --rl-hero-title-size: var(--text-4xl);
+  color-scheme: light;
+  --rl-paper: #f7f6f2;
+  --rl-surface: #ffffff;
+  --rl-raised: #eeede8;
+  --rl-ink: #222320;
+  --rl-muted: #64655f;
+  --rl-line: #dedfd8;
+  --rl-control-line: #92958c;
+  --rl-accent: #901d35;
+  --rl-action: #901d35;
+  --rl-on-action: #ffffff;
+  --rl-soft-accent: #f8e9ec;
+  --rl-success: #2f6046;
+  --rl-overlay: rgb(16 19 17 / 0.55);
+  --rl-logo-paper: #ffffff;
+  --rl-space-0: 0;
+  --rl-space-1: 0.5rem;
+  --rl-space-2: 1rem;
+  --rl-space-3: 1.5rem;
+  --rl-space-4: 2rem;
+  --rl-space-5: 2.5rem;
+  --rl-space-6: 3rem;
+  --rl-space-8: 4rem;
+  --rl-space-10: 5rem;
+  --rl-space-12: 6rem;
+  --rl-radius-sm: 0.75rem;
+  --rl-radius-card: 1rem;
+  --rl-radius-pill: 999rem;
+  --rl-shadow-sm: 0 2px 8px rgb(25 28 22 / 0.04);
+  --rl-shadow-lg: 0 16px 48px rgb(25 28 22 / 0.12);
+  --rl-border: 1px;
+  --rl-focus: 2px;
+  --rl-control-h: 3rem;
+  --rl-icon: 1.25rem;
+  --rl-motion-fast: 150ms;
+  --rl-motion: 200ms;
+  --rl-motion-slow: 250ms;
+  --rl-motion-reduced: 0.01ms;
+  --rl-animation-reduced: none;
+  --rl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --rl-font-latin: "Inter RL";
+  --rl-font-arabic: "Noto Sans Arabic RL", "Vazirmatn";
+  --rl-font-body:
+    var(--rl-font-latin), var(--rl-font-arabic), Arial, "Liberation Sans", system-ui, sans-serif;
+  --rl-leading: 1.65;
+  --rl-leading-heading: 1.2;
+  --rl-tracking: -0.035em;
+  --rl-reading: 44rem;
+  --rl-dialog-width: 36rem;
+  --rl-sheet-width: 26rem;
+  --rl-z-header: 30;
+  --rl-z-menu: 40;
+  --rl-z-modal: 60;
+}
+:root[dir="rtl"] {
+  --rl-slide-start: -100%;
+  --rl-font-body: var(--rl-font-arabic), var(--rl-font-latin), system-ui, sans-serif;
+  --rl-leading-heading: 1.5;
+  --rl-tracking: 0;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --rl-paper: #171916;
+  --rl-surface: #20231f;
+  --rl-raised: #2b2f29;
+  --rl-ink: #f3f4ee;
+  --rl-muted: #b6bcb0;
+  --rl-line: #41463e;
+  --rl-control-line: #7d8676;
+  --rl-accent: #ffacba;
+  --rl-action: #a61f3c;
+  --rl-soft-accent: #39232b;
+  --rl-success: #a2d7b5;
+  --rl-shadow-sm: 0 2px 8px rgb(0 0 0 / 0.12);
+  --rl-shadow-lg: 0 16px 48px rgb(0 0 0 / 0.32);
+}
+:root {
+  --rl-weight-semibold: 650;
+  --rl-weight-bold: 700;
+  --rl-weight-medium: 500;
+  --rl-skip-offset: -200%;
+  --rl-space-7: 3.5rem;
+  --rl-filter-width: 16rem;
+  --rl-filter-sticky: 9rem;
+  --rl-form-aside-width: 22rem;
+  --rl-image-hover-scale: 1.03;
+  --rl-underline-offset: 0.2em;
+}
+:root {
+  --rl-section-intrinsic: 36rem;
+  --rl-footer-intrinsic: 44rem;
+  --rl-option-intrinsic: 24rem;
+}
+:root {
+  --rl-mobile-hero-art: 8rem;
+}
+:root {
+  --rl-calc-placeholder: 48rem;
+}

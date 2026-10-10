@@ -8,6 +8,7 @@ export default function robotsRoute() {
       ? "User-agent: *\nDisallow: /\n"
       : [
           "User-agent: *",
+          "Disallow: /_design",
           "Disallow: /admin",
           "Disallow: /market/sell",
           "Disallow: /api/",

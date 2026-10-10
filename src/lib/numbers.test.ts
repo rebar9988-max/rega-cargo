@@ -35,18 +35,32 @@ test("formatters output Western digits for every app locale", () => {
     // …and the -u-nu-latn extension forces Latin digits even on locales that default to Eastern.
     const latn = `${lang}-u-nu-latn`;
     assert.equal(hasEasternDigits(new Intl.NumberFormat(latn).format(value)), false, latn);
-    assert.equal(hasEasternDigits(new Intl.DateTimeFormat(latn, { dateStyle: "medium", timeStyle: "short" }).format(date)), false, latn);
+    assert.equal(
+      hasEasternDigits(
+        new Intl.DateTimeFormat(latn, { dateStyle: "medium", timeStyle: "short" }).format(date),
+      ),
+      false,
+      latn,
+    );
   }
   assert.equal(formatNumber(1520), "1,520");
-  for (const s of [formatEur(1234.5), formatIqdFromEur(1234.5)]) assert.match(s, /^[\x20-\x7e\u00a0€]+$/, s);
+  for (const s of [formatEur(1234.5), formatIqdFromEur(1234.5)])
+    assert.match(s, /^[\x20-\x7e\u00a0€]+$/, s);
   assert.equal((1520).toLocaleString(NUM_LOCALE), "1,520");
-  assert.match(new Intl.DateTimeFormat(NUM_LOCALE, { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(date), /^9 Oct 2026, 14:05$/);
+  assert.match(
+    new Intl.DateTimeFormat(NUM_LOCALE, {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: "UTC",
+    }).format(date),
+    /^9 Oct 2026, 14:05$/,
+  );
   assert.equal(new Intl.NumberFormat(NUM_LOCALE).resolvedOptions().numberingSystem, "latn");
 });
 
 test("weight and dimension errors state the server limits in all 7 languages", async () => {
-  const i18n = readFileSync("src/lib/i18n.tsx", "utf8");
-  const lines = [i18n, ...["ar", "de", "ku", "fa", "tr"].map((l) => readFileSync(`src/lib/messages/${l}.ts`, "utf8"))]
+  const lines = ["ckb", "en", "ar", "de", "ku", "fa", "tr"]
+    .map((l) => readFileSync(`src/lib/messages/${l}.ts`, "utf8"))
     .join("\n")
     .split("\n");
   const weight = lines.filter((l) => /^\s+weightError:/.test(l));
@@ -60,7 +74,10 @@ test("weight and dimension errors state the server limits in all 7 languages", a
     assert.ok(!/300|0[.,]2/.test(line), line);
   }
   for (const line of dims) {
-    assert.ok(line.includes(String(QUOTE_LIMITS.dim.min)) && line.includes(String(QUOTE_LIMITS.dim.max)), line);
+    assert.ok(
+      line.includes(String(QUOTE_LIMITS.dim.min)) && line.includes(String(QUOTE_LIMITS.dim.max)),
+      line,
+    );
     assert.ok(!/300/.test(line), line);
   }
 });

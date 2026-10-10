@@ -1,6 +1,8 @@
 /** Locked layout values. Changing any of these is a deliberate design change (update styles.css too). */
 export const LAYOUT = {
   headerHeight: 64,
+  headerRow: { phone: 136, tablet: 136, laptop: 88 },
+  catalogueColumns: { phone: 2, tablet: 3, laptop: 3 },
   bottomBarHeight: 64,
   maxContent: 1200,
   gutter: { phone: 16, tablet: 24, laptop: 32 },
@@ -21,6 +23,7 @@ export function measureLayout(args: { bp: Bp; layout: typeof LAYOUT; sheet: bool
   const vh = window.innerHeight;
   const px = (n: number) => Math.round(n * 10) / 10;
   const visible = (el: Element) => {
+    if (el.closest("[inert]")) return false;
     const cs = getComputedStyle(el);
     if (cs.display === "none" || cs.visibility === "hidden" || Number(cs.opacity) === 0)
       return false;
@@ -62,8 +65,8 @@ export function measureLayout(args: { bp: Bp; layout: typeof LAYOUT; sheet: bool
   if (!header || !visible(header)) out.push("header missing");
   else {
     const h = header.getBoundingClientRect().height;
-    if (Math.abs(h - layout.headerHeight) > 0.5)
-      out.push(`header height ${px(h)} != ${layout.headerHeight}`);
+    if (Math.abs(h - layout.headerRow[bp]) > 0.5)
+      out.push(`header row ${px(h)} != ${layout.headerRow[bp]}`);
   }
   const bar = document.querySelector('[data-layout="bottom-bar"]');
   if (bp === "laptop") {
@@ -97,8 +100,12 @@ export function measureLayout(args: { bp: Bp; layout: typeof LAYOUT; sheet: bool
   for (const grid of document.querySelectorAll('[data-layout="card-grid"]')) {
     if (!visible(grid)) continue;
     const cols = getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length;
-    if (cols !== layout.cardColumns[bp])
-      out.push(`card grid has ${cols} columns (want ${layout.cardColumns[bp]}) ${describe(grid)}`);
+    const expected =
+      grid.getAttribute("data-layout-cols") === "catalogue"
+        ? layout.catalogueColumns[bp]
+        : layout.cardColumns[bp];
+    if (cols !== expected)
+      out.push(`card grid has ${cols} columns (want ${expected}) ${describe(grid)}`);
     const rows = new Map<number, DOMRect[]>();
     for (const child of grid.children) {
       if (!visible(child)) continue;
@@ -189,7 +196,7 @@ export function measureLayout(args: { bp: Bp; layout: typeof LAYOUT; sheet: bool
 
   // 9. Type scale: every text run uses a size from the token scale active at this breakpoint.
   // One probe per step: reusing a single element can return a stale computed style.
-  const probes = ["xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl"].map((step) => {
+  const probes = ["xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl"].map((step) => {
     const probe = document.createElement("span");
     probe.style.fontSize = `var(--text-${step})`;
     document.body.append(probe);

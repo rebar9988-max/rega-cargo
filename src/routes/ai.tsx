@@ -3,8 +3,9 @@ import { seo } from "@/lib/seo";
 import { AiPage } from "@/components/ai-page";
 
 export const Route = createFileRoute("/ai")({
-  head: () =>
+  head: ({ match }) =>
     seo({
+      lang: match.context.initialLang,
       path: "/ai",
       title: "R&L AI",
       description: "ناسینەوەی کاڵا بە وێنە لەگەڵ R&L AI.",

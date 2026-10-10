@@ -8,7 +8,15 @@
  */
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { Search, X } from "lucide-react";
-import { lazy, Suspense, useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import type { Lang } from "@/lib/langs";
 import { addRecent, clearRecent, readRecent } from "@/lib/search/recent";
 
@@ -29,11 +37,19 @@ export type SearchBoxProps = {
   closeLabel: string;
   lang: Lang;
   ai: boolean;
+  embedded?: boolean;
   /** Pages that filter in place (the Bazaar home) pass their query state. */
   search?: { q: string; setQ: (value: string) => void };
 };
 
-export function SearchBox({ label, closeLabel, lang, ai, search }: SearchBoxProps) {
+export function SearchBox({
+  label,
+  closeLabel,
+  lang,
+  ai,
+  search,
+  embedded = false,
+}: SearchBoxProps) {
   const navigate = useNavigate();
   const path = useRouterState({ select: (state) => state.location.pathname });
   const [open, setOpen] = useState(false);
@@ -136,19 +152,28 @@ export function SearchBox({ label, closeLabel, lang, ai, search }: SearchBoxProp
     }
   }
 
-  const sheet = open ? "max-md:fixed max-md:inset-x-0 max-md:top-0 max-md:z-50 max-md:pt-[var(--safe-top)] max-md:shadow-sm" : "";
+  const sheet = open
+    ? "max-md:fixed max-md:inset-x-0 max-md:top-0 max-md:z-50 max-md:pt-[var(--safe-top)] max-md:shadow-sm"
+    : "";
 
   return (
-    <div ref={boxRef} className="search-bar relative bg-paper">
+    <div
+      ref={boxRef}
+      className={embedded ? "rl-header-search relative" : "search-bar relative bg-paper"}
+    >
       <form
         role="search"
         onSubmit={(event) => {
           event.preventDefault();
           runSearch(text);
         }}
-        className={`border-b border-line bg-paper ${sheet}`}
+        className={`${embedded ? "rl-search-form" : "border-b border-line bg-paper"} ${sheet}`}
       >
-        <label className="page flex h-[var(--search-h)] items-center gap-3" style={{ direction: "ltr" }}>
+        <label
+          className={
+            embedded ? "rl-search-field" : "page flex h-[var(--search-h)] items-center gap-3"
+          }
+        >
           {open ? (
             <button
               type="button"
@@ -189,7 +214,10 @@ export function SearchBox({ label, closeLabel, lang, ai, search }: SearchBoxProp
         </label>
       </form>
       {open ? (
-        <div data-layout="sheet" className="max-md:fixed max-md:inset-x-0 max-md:top-[calc(var(--search-h)+var(--safe-top))] max-md:bottom-0 max-md:z-50 max-md:overflow-y-auto max-md:overscroll-contain max-md:bg-paper md:absolute md:inset-x-0 md:top-full md:z-40">
+        <div
+          data-layout="sheet"
+          className="max-md:fixed max-md:inset-x-0 max-md:top-[calc(var(--search-h)+var(--safe-top))] max-md:bottom-0 max-md:z-50 max-md:overflow-y-auto max-md:overscroll-contain max-md:bg-paper md:absolute md:inset-x-0 md:top-full md:z-40"
+        >
           <div className="md:page">
             <div className="md:max-h-[70vh] md:overflow-y-auto md:rounded-b-3xl md:border md:border-t-0 md:border-line md:bg-paper md:shadow-xl">
               <Suspense fallback={<div className="h-40" aria-hidden="true" />}>
