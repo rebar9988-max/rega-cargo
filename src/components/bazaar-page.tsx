@@ -2,6 +2,7 @@ import { responsiveImage } from "@/lib/images";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronRight, Heart } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { PremiumHome } from "./premium-home";
 import { QuotePanel } from "@/components/quote-panel";
 import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
 import { readService, writeService, type Service } from "@/lib/service-choice";
@@ -131,6 +132,16 @@ export function BazaarPage({
     const next = favs.includes(id) ? favs.filter((item) => item !== id) : [...favs, id];
     setFavs(next);
     writeFavs(next);
+  }
+
+  if (home && !params.q && !params.cat && !params.fav && !params.who) {
+    return (
+      <Shell>
+        <PremiumHome service={service} onService={chooseService}>
+          {service === "delivery" ? <DeliveryHub embedded /> : null}
+        </PremiumHome>
+      </Shell>
+    );
   }
 
   return (

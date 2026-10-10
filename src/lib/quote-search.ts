@@ -41,3 +41,17 @@ export function kgInRange(n: number) {
 export function dimInRange(n: number) {
   return Number.isFinite(n) && n >= QUOTE_LIMITS.dim.min && n <= QUOTE_LIMITS.dim.max;
 }
+
+/** Optional box dimensions preserve a calculator handoff without changing pricing. */
+export function parseDim(value: unknown): number | undefined {
+  const n = toNumber(value);
+  return dimInRange(n) ? n : undefined;
+}
+export type QuoteSearch = {
+  from?: string;
+  to?: string;
+  kg?: number;
+  l?: number;
+  w?: number;
+  h?: number;
+};

@@ -75,7 +75,7 @@ function CardHead({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
 }
 
 /** Delivery service home: quick quote, track by code, move/send — all into the real routes. */
-export function DeliveryHub() {
+export function DeliveryHub({ embedded = false }: { embedded?: boolean } = {}) {
   const { t, lang } = useI18n();
   const d = DESIGN_COPY[lang];
   const navigate = useNavigate();
@@ -86,8 +86,12 @@ export function DeliveryHub() {
 
   return (
     <>
-      <BrandHero title={d.deliveryTitle} route={d.route} />
-      <TrustRow />
+      {!embedded ? (
+        <>
+          <BrandHero title={d.deliveryTitle} route={d.route} />
+          <TrustRow />
+        </>
+      ) : null}
       <div className={`page grid items-start gap-3 pt-8 pb-12 md:grid-cols-3 md:gap-5 md:pt-12`}>
         <form
           className="flex flex-col gap-4 rl-soft rounded-2xl border border-line bg-surface p-5"

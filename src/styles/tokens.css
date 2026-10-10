@@ -1,5 +1,11 @@
 /* R&L semantic tokens; all components share light/dark foundations. */
 :root {
+  --rl-hero-art-ratio: 1;
+  --rl-tile-ratio: 1;
+  --rl-carousel-dot: 0.5rem;
+  --rl-logo-width: 7rem;
+  --rl-logo-height: 2.5rem;
+  --rl-hero-columns: minmax(0, 1fr) minmax(0, 1fr);
   --rl-slide-start: 100%;
   --rl-mark-size: 3rem;
   --rl-mark-compact: 2.5rem;
