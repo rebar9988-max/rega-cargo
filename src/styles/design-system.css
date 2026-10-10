@@ -79,12 +79,6 @@
       inline-size var(--rl-motion),
       block-size var(--rl-motion);
   }
-  .rl-brand-name {
-    display: none;
-    font-family: var(--rl-font-latin);
-    font-size: var(--text-2xl);
-    font-weight: var(--rl-weight-semibold);
-  }
   .rl-header-actions {
     display: flex;
     align-items: center;
@@ -235,9 +229,6 @@
       inline-size: var(--rl-mark-compact);
       block-size: var(--rl-mark-compact);
     }
-    .rl-brand-name {
-      display: inline;
-    }
     .rl-header-search {
       grid-row: 1;
       grid-column: auto;
@@ -284,7 +275,10 @@
       font-size: var(--text-5xl);
     }
   }
+  /* Soft 3D button system. One primitive (.rl-button + data-variant) for <button>, <a> and
+     <Link>; links keep link semantics. Depth comes from tokens; focus never relies on shadow. */
   .rl-button {
+    position: relative;
     display: inline-flex;
     min-block-size: var(--rl-control-h);
     align-items: center;
@@ -292,18 +286,29 @@
     gap: var(--rl-space-1);
     padding-inline: var(--rl-space-3);
     padding-block: var(--rl-space-1);
-    border: var(--rl-border) solid transparent;
+    border: var(--rl-border) solid var(--rl-line);
     border-radius: var(--rl-radius-sm);
+    background: var(--rl-surface);
+    color: var(--rl-ink);
+    box-shadow: var(--rl-button-shadow);
     font-size: var(--text-sm);
     font-weight: var(--rl-weight-semibold);
     text-align: center;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     transition:
-      background var(--rl-motion) var(--rl-ease),
-      border-color var(--rl-motion) var(--rl-ease);
+      transform var(--rl-motion-button) var(--rl-ease),
+      box-shadow var(--rl-motion-button) var(--rl-ease),
+      background-color var(--rl-motion-button) var(--rl-ease),
+      border-color var(--rl-motion-button) var(--rl-ease);
   }
-  .rl-button[data-variant="primary"] {
+  .rl-button[data-variant="primary"],
+  .rl-button.rl-grad {
     background: var(--rl-action);
     color: var(--rl-on-action);
+    border-color: var(--rl-action-active);
+    box-shadow: var(--rl-button-highlight), var(--rl-button-shadow);
   }
   .rl-button[data-variant="secondary"] {
     background: var(--rl-surface);
@@ -313,13 +318,89 @@
   .rl-button[data-variant="ghost"] {
     color: var(--rl-ink);
     background: transparent;
+    border-color: transparent;
+    box-shadow: none;
   }
-  .rl-button:hover {
-    filter: brightness(0.94);
+  .rl-button[data-variant="danger"] {
+    background: var(--rl-surface);
+    color: var(--rl-danger);
+    border-color: currentColor;
   }
-  .rl-button:disabled {
+  @media (hover: hover) and (pointer: fine) {
+    .rl-button:hover:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+      transform: translateY(var(--rl-button-lift));
+      box-shadow: var(--rl-button-shadow-hover);
+      border-color: var(--rl-control-line);
+    }
+    .rl-button[data-variant="primary"]:hover:not(
+        :disabled,
+        [aria-disabled="true"],
+        [aria-busy="true"]
+      ),
+    .rl-button.rl-grad:hover:not(:disabled) {
+      background: var(--rl-action-hover);
+      border-color: var(--rl-action-active);
+      box-shadow: var(--rl-button-highlight), var(--rl-button-shadow-hover);
+    }
+    .rl-button[data-variant="ghost"]:hover:not(:disabled) {
+      transform: none;
+      box-shadow: none;
+      border-color: transparent;
+      background: var(--rl-raised);
+    }
+  }
+  .rl-button:active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+    transform: translateY(0);
+    box-shadow: var(--rl-button-shadow-pressed);
+  }
+  .rl-button[data-variant="primary"]:active:not(:disabled, [aria-busy="true"]),
+  .rl-button.rl-grad:active:not(:disabled) {
+    background: var(--rl-action-active);
+    box-shadow: var(--rl-button-shadow-pressed);
+  }
+  .rl-button[data-variant="ghost"]:active:not(:disabled) {
+    box-shadow: none;
+    background: var(--rl-raised);
+  }
+  .rl-button:focus-visible {
+    outline: var(--rl-focus) solid var(--rl-accent);
+    outline-offset: var(--rl-focus);
+  }
+  .rl-button:disabled,
+  .rl-button[aria-disabled="true"] {
     opacity: 0.5;
     cursor: not-allowed;
+    box-shadow: none;
+  }
+  /* Loading: the label stays visible (forms swap it for "Sending…"), and a small spinner sits in
+     the inline-end padding, so the button keeps its geometry and nothing overlaps the text. */
+  .rl-button[aria-busy="true"] {
+    cursor: progress;
+  }
+  .rl-button[aria-busy="true"]::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--rl-space-1);
+    margin-block: auto;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: var(--rl-radius-pill);
+    animation: rl-spin 700ms linear infinite;
+  }
+  @keyframes rl-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rl-button,
+    .rl-button:hover,
+    .rl-button:active {
+      transform: none !important;
+    }
   }
   .rl-control {
     inline-size: 100%;
@@ -1354,4 +1435,115 @@
   html[lang="ckb"] .rl-hero-copy h2 {
     font-size: var(--text-3xl);
   }
+}
+/* Catalogue: ten primary categories (icon, name, directional chevron) and subcategory chips. */
+.rl-catalogue {
+  margin-block-end: var(--rl-space-6);
+}
+.rl-category-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-card);
+  background: var(--rl-surface);
+  box-shadow: var(--rl-shadow-sm);
+  overflow: hidden;
+}
+.rl-category-list li + li {
+  border-block-start: var(--rl-border) solid var(--rl-line);
+}
+.rl-category-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-2);
+  min-block-size: var(--rl-space-7);
+  padding-block: var(--rl-space-1);
+  padding-inline: var(--rl-space-2);
+  color: var(--rl-ink);
+  text-decoration: none;
+  transition: background-color var(--rl-motion-fast) var(--rl-ease);
+}
+a.rl-category-row:focus-visible {
+  outline: var(--rl-focus) solid var(--rl-accent);
+  outline-offset: calc(var(--rl-focus) * -1);
+}
+.rl-category-row[aria-disabled="true"] {
+  color: var(--rl-muted);
+}
+@media (hover: hover) and (pointer: fine) {
+  a.rl-category-row:hover {
+    background: var(--rl-soft-accent);
+  }
+}
+a.rl-category-row:active {
+  background: var(--rl-raised);
+}
+.rl-category-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  inline-size: var(--rl-control-h);
+  block-size: var(--rl-control-h);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-soft-accent);
+  color: var(--rl-accent);
+}
+.rl-category-name {
+  flex: 1;
+  min-inline-size: 0;
+  font-weight: var(--rl-weight-semibold);
+  overflow-wrap: anywhere;
+}
+.rl-category-chevron {
+  color: var(--rl-muted);
+}
+.rl-subcategories {
+  display: grid;
+  gap: var(--rl-space-2);
+  margin-block-end: var(--rl-space-4);
+}
+.rl-subcategory-head {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-2);
+}
+.rl-subcategory-head h2 {
+  font-size: var(--text-2xl);
+  font-weight: var(--rl-weight-semibold);
+}
+.rl-subcategory-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rl-subcategory-chips .rl-chip {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.rl-subcategory-chips .rl-chip[aria-current="true"] {
+  color: var(--rl-accent);
+  border-color: var(--rl-accent);
+  background: var(--rl-soft-accent);
+}
+.rl-subcategory-detail {
+  display: grid;
+  gap: var(--rl-space-2);
+  justify-items: start;
+}
+@media (width >= 48rem) {
+  .rl-category-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .rl-category-list li:nth-child(2) {
+    border-block-start: 0;
+  }
+  .rl-category-list li:nth-child(even) {
+    border-inline-start: var(--rl-border) solid var(--rl-line);
+  }
+}
+.rl-subcategory-head .rl-badge {
+  margin-inline-start: auto;
 }

@@ -18,19 +18,25 @@
   --rl-menu-ratio: 1;
   --rl-hero-title-size: var(--text-4xl);
   color-scheme: light;
-  --rl-paper: #f7f6f2;
+  /* Brand red sampled from the official logo background (#DD0303). White on it is 5.1:1. */
+  --rl-brand: #dd0303;
+  --rl-paper: #fafafa;
   --rl-surface: #ffffff;
-  --rl-raised: #eeede8;
-  --rl-ink: #222320;
-  --rl-muted: #64655f;
-  --rl-line: #dedfd8;
-  --rl-control-line: #92958c;
-  --rl-accent: #901d35;
-  --rl-action: #901d35;
+  --rl-raised: #f4f4f5;
+  --rl-ink: #171717;
+  --rl-muted: #52525b;
+  --rl-line: #e4e4e7;
+  --rl-control-line: #8a8a93;
+  /* Red text, links and focus rings: one step darker than the logo for small text contrast. */
+  --rl-accent: #b80000;
+  --rl-action: var(--rl-brand);
+  --rl-action-hover: #c40202;
+  --rl-action-active: #a80000;
   --rl-on-action: #ffffff;
-  --rl-soft-accent: #f8e9ec;
+  --rl-soft-accent: #fdecec;
+  --rl-danger: #b42318;
   --rl-success: #2f6046;
-  --rl-overlay: rgb(16 19 17 / 0.55);
+  --rl-overlay: rgb(17 17 19 / 0.55);
   --rl-logo-paper: #ffffff;
   --rl-space-0: 0;
   --rl-space-1: 0.5rem;
@@ -45,8 +51,14 @@
   --rl-radius-sm: 0.75rem;
   --rl-radius-card: 1rem;
   --rl-radius-pill: 999rem;
-  --rl-shadow-sm: 0 2px 8px rgb(25 28 22 / 0.04);
-  --rl-shadow-lg: 0 16px 48px rgb(25 28 22 / 0.12);
+  --rl-shadow-sm: 0 4px 20px rgb(0 0 0 / 0.05);
+  --rl-shadow-lg: 0 16px 48px rgb(0 0 0 / 0.12);
+  /* Soft 3D buttons: two-layer ambient + key shadow, a hairline top highlight, max 1px lift. */
+  --rl-button-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.08);
+  --rl-button-shadow-hover: 0 2px 4px rgb(0 0 0 / 0.08), 0 8px 18px rgb(0 0 0 / 0.1);
+  --rl-button-shadow-pressed: 0 1px 2px rgb(0 0 0 / 0.08);
+  --rl-button-highlight: inset 0 1px 0 rgb(255 255 255 / 0.18);
+  --rl-button-lift: -1px;
   --rl-border: 1px;
   --rl-focus: 2px;
   --rl-control-h: 3rem;
@@ -54,6 +66,7 @@
   --rl-motion-fast: 150ms;
   --rl-motion: 200ms;
   --rl-motion-slow: 250ms;
+  --rl-motion-button: 180ms;
   --rl-motion-reduced: 0.01ms;
   --rl-animation-reduced: none;
   --rl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -79,19 +92,26 @@
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --rl-paper: #171916;
-  --rl-surface: #20231f;
-  --rl-raised: #2b2f29;
-  --rl-ink: #f3f4ee;
-  --rl-muted: #b6bcb0;
-  --rl-line: #41463e;
-  --rl-control-line: #7d8676;
-  --rl-accent: #ffacba;
-  --rl-action: #a61f3c;
-  --rl-soft-accent: #39232b;
+  --rl-paper: #121213;
+  --rl-surface: #1c1c1f;
+  --rl-raised: #27272a;
+  --rl-ink: #f4f4f5;
+  --rl-muted: #b4b4bb;
+  --rl-line: #3a3a3f;
+  --rl-control-line: #7a7a83;
+  --rl-accent: #ff9b94;
+  --rl-action: var(--rl-brand);
+  --rl-action-hover: #c40202;
+  --rl-action-active: #a80000;
+  --rl-soft-accent: #3a1d1d;
+  --rl-danger: #ff9b94;
   --rl-success: #a2d7b5;
-  --rl-shadow-sm: 0 2px 8px rgb(0 0 0 / 0.12);
-  --rl-shadow-lg: 0 16px 48px rgb(0 0 0 / 0.32);
+  --rl-shadow-sm: 0 2px 8px rgb(0 0 0 / 0.24);
+  --rl-shadow-lg: 0 16px 48px rgb(0 0 0 / 0.4);
+  --rl-button-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.28);
+  --rl-button-shadow-hover: 0 2px 4px rgb(0 0 0 / 0.44), 0 8px 18px rgb(0 0 0 / 0.32);
+  --rl-button-shadow-pressed: 0 1px 2px rgb(0 0 0 / 0.4);
+  --rl-button-highlight: inset 0 1px 0 rgb(255 255 255 / 0.08);
 }
 :root {
   --rl-weight-semibold: 650;

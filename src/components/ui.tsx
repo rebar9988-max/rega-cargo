@@ -14,13 +14,24 @@ import { Eur, Iqd } from "./field";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { useTheme } from "@/lib/theme";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+/** Shared soft-3D button. `loading` marks it busy and blocks a second submit. */
 export function Button({
   variant = "primary",
+  loading = false,
   className = "",
+  disabled,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "ghost" }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; loading?: boolean }) {
   return (
-    <button type="button" className={`rl-button ${className}`} data-variant={variant} {...props} />
+    <button
+      type="button"
+      className={`rl-button ${className}`}
+      data-variant={variant}
+      aria-busy={loading || undefined}
+      disabled={disabled || loading}
+      {...props}
+    />
   );
 }
 export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {

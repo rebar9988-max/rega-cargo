@@ -10,13 +10,13 @@
  * takes over immediately; pages stay network first, so nobody gets stuck.
  * Kill switch: replace this file with one that calls self.registration.unregister().
  */
-const VERSION = "rl-sw-v10";
+const VERSION = "rl-sw-v11";
 const PAGES = `${VERSION}-pages`;
 const ASSETS = `${VERSION}-assets`;
 const STATIC = `${VERSION}-static`;
 const NAV_TIMEOUT_MS = 3500;
 const OFFLINE = "/offline"; // assets serve /offline.html at /offline (307 otherwise)
-const PRECACHE = ["/", OFFLINE, "/rega-logo-168.webp", "/favicon.png?v=6"];
+const PRECACHE = ["/", OFFLINE, "/rl-mark-168.webp", "/favicon.png?v=7"];
 const PUBLIC_PAGES = /^\/(?:|quote|track|stores|contact|customs|ai)\/?$/;
 const NEVER = /^\/(?:api|_serverFn|admin|move|__grok\/(?!icon|manifest))(?:\/|$)/;
 const STATIC_RE = /\.(?:png|jpe?g|webp|avif|svg|ico|woff2?)$/i;

@@ -123,9 +123,6 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
         <div className="page rl-header-row" data-layout="header">
           <Link to="/" className="rl-brand" aria-label={t.nav.home}>
             <Mark className="rl-brand-mark" />
-            <span className="rl-brand-name" dir="ltr">
-              R&amp;L
-            </span>
           </Link>
           <SearchBox
             embedded
