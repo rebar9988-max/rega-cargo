@@ -1,5 +1,6 @@
 import type { Lang } from "./langs";
 import { seoCopy } from "./seo-copy";
+import { BRAND_ASSETS } from "./brand-assets";
 /**
  * Per-page title, description and canonical. The canonical origin comes from
  * the Worker var SITE_URL (set per environment in wrangler.jsonc) so it can be
@@ -44,7 +45,8 @@ export function seo(input: {
       content:
         lang === "ckb" ? "ckb_IQ" : lang === "ar" ? "ar_IQ" : lang === "ku" ? "ku_IQ" : "en_GB",
     },
-    { property: "og:image", content: `${siteOrigin()}/og.jpg` },
+    { property: "og:image", content: `${siteOrigin()}${BRAND_ASSETS.social}` },
+    { name: "twitter:image", content: `${siteOrigin()}${BRAND_ASSETS.social}` },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
   ];

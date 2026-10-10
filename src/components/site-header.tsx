@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { Icon, Modal, Select, ThemeToggle } from "./ui";
-import { Mark } from "./site-mark";
+import { BrandLogo } from "./brand-logo";
 import { SITE_COPY } from "@/lib/site-copy";
 import { SearchBox } from "./search-box";
 import { HeaderLangPicker } from "./lang-picker";
@@ -122,7 +122,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
       <header ref={wrap} className="rl-site-header" data-shrunk={shrunk} aria-label={c.navigation}>
         <div className="page rl-header-row" data-layout="header">
           <Link to="/" className="rl-brand" aria-label={t.nav.home}>
-            <Mark className="rl-brand-mark" />
+            <BrandLogo className="rl-brand-mark" />
             <span className="rl-brand-name" dir="ltr">
               R&amp;L
             </span>
@@ -269,7 +269,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
       >
         <div className="rl-stack">
           <div className="rl-row">
-            <Mark />
+            <BrandLogo />
             <ThemeToggle />
           </div>
           <nav className="rl-stack" aria-label={c.categories}>

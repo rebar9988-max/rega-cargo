@@ -6,7 +6,9 @@ export function ServiceWorkerSetup() {
     if (!("serviceWorker" in navigator) || import.meta.env.DEV) return;
     if (location.hostname === "localhost" || location.hostname === "127.0.0.1") return;
     const register = () => {
-      navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => undefined);
+      navigator.serviceWorker
+        .register("/sw.js", { scope: "/", updateViaCache: "none" })
+        .catch(() => undefined);
     };
     const idle = (window as { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback;
     if (document.readyState === "complete") (idle ?? setTimeout)(register);

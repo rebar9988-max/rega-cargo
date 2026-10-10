@@ -6,6 +6,7 @@ import {
   retainSearchParams,
 } from "@tanstack/react-router";
 import { APPEARANCE_SCRIPT } from "@/lib/appearance-script";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 import { AuthProvider } from "@/lib/auth/provider";
 import { ThemeProvider } from "@/lib/theme";
 import { loadCopy, I18nProvider } from "@/lib/i18n";
@@ -36,7 +37,11 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#f7f6f2" },
       { property: "og:title", content: "R&L" },
       { property: "og:description", content: "MOVE SMART. DELIVER FAST." },
-      { property: "og:image", content: "/og.jpg" },
+      { property: "og:image", content: BRAND_ASSETS.social },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "R&L" },
+      { name: "twitter:image", content: BRAND_ASSETS.social },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "apple-mobile-web-app-title", content: "R&L" },
     ],
@@ -47,9 +52,10 @@ export const Route = createRootRoute({
       },
     ],
     links: [
-      { rel: "icon", type: "image/png", href: "/favicon.png?v=6" },
-      { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: BRAND_ASSETS.favicon },
+      { rel: "icon", type: "image/x-icon", href: BRAND_ASSETS.faviconIco },
+      { rel: "manifest", href: "/manifest.webmanifest?v=brand-da41b3010f96" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: BRAND_ASSETS.apple },
     ],
   }),
   notFoundComponent: NotFound,

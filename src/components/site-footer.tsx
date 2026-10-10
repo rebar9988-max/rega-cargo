@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, Warehouse } from "lucide-react";
-import { Mark } from "./site-mark";
+import { BrandLogo } from "./brand-logo";
 import { Icon, Select, ThemeToggle } from "./ui";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
@@ -18,7 +18,7 @@ export function SiteFooter() {
     <footer className="rl-site-footer rl-defer clear-bottom-bar">
       <div className="page rl-footer-grid">
         <div className="rl-stack">
-          <Mark />
+          <BrandLogo />
           <p className="rl-footer-slogan" lang="en" dir="ltr">
             {t.brandSub}
           </p>

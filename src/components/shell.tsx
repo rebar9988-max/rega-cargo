@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
-export { Mark } from "./site-mark";
+export { BrandLogo } from "./brand-logo";
 import { useI18n } from "@/lib/i18n";
 import { type Lang } from "@/lib/langs";
 let routerTitle = "";

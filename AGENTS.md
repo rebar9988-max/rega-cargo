@@ -5,7 +5,7 @@ Read /workspace/PROJECT_MEMORY.md when continuing work in this workspace.
 ## PRODUCT
 - R&L = marketplace + shipping/delivery. Customers in Kurdistan & Iraq order from European stores (later Turkish, Chinese, US brands). We buy/receive goods at our warehouse in Cologne, Germany and ship to Erbil, Sulaymaniyah, Duhok, Kirkuk, Baghdad.
 - Slogan: "MOVE SMART. DELIVER FAST." (Europe ↔ Kurdistan ↔ Iraq)
-- Logo: red and white (globe, swoosh arrow, letters R and L). Never modify it.
+- Logo: the owner's final uploaded red-and-white artwork in `public/brand/official-da41b3010f96-v1/original.jpg`. Original SHA-256: `da41b3010f96b80d0b35cd8a83987f9053c0698b6db676fbe66ca4c756c2362c`. Never modify, reinterpret, recolor or regenerate it. Use `BrandLogo` and `src/lib/brand-assets.ts`; never restore legacy artwork as a fallback.
 - Languages: Sorani Kurdish (default, RTL), Arabic (RTL), English (LTR).
 - Prices in EUR and IQD, based on chargeable weight = max(actual, volumetric).
 
