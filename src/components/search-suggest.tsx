@@ -7,20 +7,7 @@
  * by category, an idealo.de search, or /ai. No prices, no invented products.
  */
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowUpRight,
-  Baby,
-  Camera,
-  ChevronRight,
-  Dumbbell,
-  Flower2,
-  Headphones,
-  History,
-  House,
-  Search,
-  Shirt,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowUpRight, Camera, ChevronRight, History, Search } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
 import { COLLECTION_ORDER, idealoSearchUrl } from "@/lib/catalog";
 import { responsiveImage } from "@/lib/images";
@@ -28,19 +15,11 @@ import type { Lang } from "@/lib/langs";
 import { SUGGEST_COPY } from "@/lib/search/copy";
 import { ITEM_IDEALO, suggest, type Destination, type Hit } from "@/lib/search/index";
 import { storeCopy } from "@/lib/store-copy";
-import { GOODS, STORE_CATEGORIES, STORES, storeLogo, type StoreCategory } from "@/lib/stores";
+import { GOODS, STORES, storeLogo, type StoreCategory } from "@/lib/stores";
+import { PUBLISHED_STORE_CATEGORIES } from "@/lib/catalogue";
+import { CATEGORY_ICON } from "./category-icons";
 
 export const LISTBOX_ID = "rl-suggest";
-
-const CATEGORY_ICON: Record<StoreCategory, LucideIcon> = {
-  beauty: Flower2,
-  fashion: Shirt,
-  electronics: Headphones,
-  home: House,
-  baby: Baby,
-  sports: Dumbbell,
-  general: Search,
-};
 
 export type SuggestProps = {
   query: string;
@@ -180,7 +159,10 @@ export default function SearchSuggest({
             <span dir="auto" className="min-w-0 flex-1 text-sm font-semibold">
               {c.aiPhoto}
             </span>
-            <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden="true" />
+            <ChevronRight
+              className="rl-directional size-4 shrink-0 text-muted"
+              aria-hidden="true"
+            />
           </Option>
         );
       })()
@@ -289,7 +271,7 @@ export default function SearchSuggest({
         <div role="group" aria-labelledby="rl-g-cats">
           <Heading id="rl-g-cats">{c.categories}</Heading>
           <div className="mx-4 overflow-hidden rounded-2xl border border-line bg-surface">
-            {STORE_CATEGORIES.filter((cat) => cat !== "general").map((cat) => {
+            {PUBLISHED_STORE_CATEGORIES.filter((cat) => cat !== "general").map((cat) => {
               const id = nextId();
               const Icon = CATEGORY_ICON[cat];
               return (
@@ -307,7 +289,10 @@ export default function SearchSuggest({
                   <span dir="auto" className="min-w-0 flex-1 text-base">
                     {t.categories[cat]}
                   </span>
-                  <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden="true" />
+                  <ChevronRight
+                    className="rl-directional size-4 shrink-0 text-muted"
+                    aria-hidden="true"
+                  />
                 </Option>
               );
             })}
@@ -434,7 +419,10 @@ export default function SearchSuggest({
                   {hit.dest.type === "external" ? (
                     <ArrowUpRight className="size-4 shrink-0 text-muted" aria-hidden="true" />
                   ) : (
-                    <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden="true" />
+                    <ChevronRight
+                      className="rl-directional size-4 shrink-0 text-muted"
+                      aria-hidden="true"
+                    />
                   )}
                 </Option>
               );
