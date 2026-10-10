@@ -9,6 +9,8 @@ import { SITE_COPY } from "@/lib/site-copy";
 import { ITEMS_COPY } from "@/lib/items-copy";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { NAV_CATEGORIES } from "@/lib/navigation";
+import { isPublishedCategory } from "@/lib/catalogue";
+import { storeCopy } from "@/lib/store-copy";
 import { DESIGN_COPY } from "@/lib/design-copy";
 export function SiteFooter() {
   const { lang, t, setLang } = useI18n();
@@ -34,9 +36,9 @@ export function SiteFooter() {
         </div>
         <nav aria-label={c.footerShop} className="rl-stack">
           <h2>{c.footerShop}</h2>
-          {NAV_CATEGORIES.map((n) => (
-            <Link key={n.id} to="/stores" search={{ cat: n.cat, who: n.who }}>
-              {c[n.id]}
+          {NAV_CATEGORIES.filter(isPublishedCategory).map((cat) => (
+            <Link key={cat} to="/stores" search={{ cat }}>
+              {storeCopy(lang).categories[cat]}
             </Link>
           ))}
           <Link to="/stores" search={{ fav: 1 }}>

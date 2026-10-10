@@ -22,15 +22,29 @@ type To = "/" | "/stores";
  * Rows are links, so each category has a direct URL and a history entry; other query
  * parameters (country, favourites) are kept.
  */
-export function CategoryDirectory({ lang, to }: { lang: Lang; to: To }) {
+export function CategoryDirectory({
+  lang,
+  to,
+  heading = true,
+}: {
+  lang: Lang;
+  to: To;
+  /** false where the page already has its own section heading (home). */
+  heading?: boolean;
+}) {
   const t = storeCopy(lang);
   const c = catalogueCopy(lang);
   return (
-    <section className="rl-catalogue" aria-labelledby="rl-catalogue-title">
-      <div className="rl-result-heading">
-        <h2 id="rl-catalogue-title">{c.title}</h2>
-        <p>{c.lede}</p>
-      </div>
+    <section
+      className="rl-catalogue"
+      aria-labelledby={heading ? "rl-catalogue-title" : "rl-home-cats"}
+    >
+      {heading ? (
+        <div className="rl-result-heading">
+          <h2 id="rl-catalogue-title">{c.title}</h2>
+          <p>{c.lede}</p>
+        </div>
+      ) : null}
       <ul className="rl-category-list">
         {PRIMARY_CATEGORIES.map((cat) => (
           <li key={cat}>

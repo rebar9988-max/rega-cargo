@@ -1,7 +1,6 @@
 /* R&L semantic tokens; all components share light/dark foundations. */
 :root {
   --rl-hero-art-ratio: 1;
-  --rl-tile-ratio: 1;
   --rl-carousel-dot: 0.5rem;
   --rl-logo-width: 7rem;
   --rl-logo-height: 2.5rem;
@@ -15,7 +14,6 @@
   --rl-header-compact: 4.5rem;
   --rl-search-width: 40rem;
   --rl-nav-h: 3.5rem;
-  --rl-menu-ratio: 1;
   --rl-hero-title-size: var(--text-4xl);
   color-scheme: light;
   /* Brand red sampled from the official logo background (#DD0303). White on it is 5.1:1. */

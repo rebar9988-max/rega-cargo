@@ -17,7 +17,7 @@ import { storeCopy } from "@/lib/store-copy";
 import { langMeta } from "@/lib/langs";
 import { BRANDS } from "@/lib/catalog";
 import { GOODS } from "@/lib/stores";
-import { NAV_CATEGORIES } from "@/lib/navigation";
+import { CategoryDirectory } from "./category-directory";
 import { responsiveImage } from "@/lib/images";
 import type { Service } from "@/lib/service-choice";
 
@@ -233,29 +233,7 @@ export function PremiumHome({
             <Icon as={ArrowRight} directional />
           </Link>
         </div>
-        <ul className="rl-category-tiles">
-          {NAV_CATEGORIES.map((n) => {
-            const image = GOODS.find((g) => g.id === n.image)!;
-            return (
-              <li key={n.id}>
-                <Link to="/stores" search={{ cat: n.cat, who: n.who }}>
-                  <img
-                    {...responsiveImage(image.image, "(min-width: 1024px) 160px, 42vw")}
-                    width={320}
-                    height={320}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <span>
-                    {c[n.id]}
-                    <Icon as={ArrowRight} directional />
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <CategoryDirectory lang={lang} to="/stores" heading={false} />
         <p className="rl-caption">{c.samplesBody}</p>
       </section>
       <section className="rl-brand-section rl-defer">

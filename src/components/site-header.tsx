@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  ArrowRight,
   ChevronDown,
+  ChevronRight,
   Heart,
   House,
   LayoutGrid,
@@ -12,7 +12,8 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { Icon, Modal, Select, ThemeToggle } from "./ui";
+import { Badge, Icon, Modal, Select, ThemeToggle } from "./ui";
+import { CATEGORY_ICON } from "./category-icons";
 import { Mark } from "./site-mark";
 import { SITE_COPY } from "@/lib/site-copy";
 import { SearchBox } from "./search-box";
@@ -23,8 +24,8 @@ import { LANGS } from "@/lib/langs";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { NAV_CATEGORIES, ANNOUNCEMENT_ENABLED } from "@/lib/navigation";
 import { storeCopy } from "@/lib/store-copy";
-import { GOODS } from "@/lib/stores";
-import { responsiveImage } from "@/lib/images";
+import { catalogueCopy } from "@/lib/catalogue-copy";
+import { isPublishedCategory, publishedSubcategories } from "@/lib/catalogue";
 import { rawGet, rawSet } from "@/lib/storage";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import type { ShellSearch } from "./shell";
@@ -33,11 +34,12 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
   const { lang, t, setLang } = useI18n();
   const c = redesignCopy(lang);
   const sc = storeCopy(lang);
+  const cc = catalogueCopy(lang);
   const d = DESIGN_COPY[lang];
   const path = useRouterState({ select: (s) => s.location.pathname });
   const wrap = useRef<HTMLElement>(null);
-  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
-  const [active, setActive] = useState<string | null>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const [active, setActive] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [shrunk, setShrunk] = useState(false);
   const [announce, setAnnounce] = useState(ANNOUNCEMENT_ENABLED);
@@ -45,7 +47,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
     setAnnounce(ANNOUNCEMENT_ENABLED && rawGet("rl-announcement-v1") !== "closed");
   }, []);
   useEffect(() => {
-    setActive(null);
+    setActive(false);
     setMobile(false);
   }, [path]);
   useEffect(() => {
@@ -57,39 +59,23 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
   useEffect(() => {
     if (!active) return;
     const down = (e: PointerEvent) => {
-      if (!wrap.current?.contains(e.target as Node)) setActive(null);
+      if (!wrap.current?.contains(e.target as Node)) setActive(false);
     };
     document.addEventListener("pointerdown", down);
     return () => document.removeEventListener("pointerdown", down);
   }, [active]);
   function close() {
-    const at = NAV_CATEGORIES.findIndex((n) => n.id === active);
-    setActive(null);
-    buttons.current[at]?.focus();
+    setActive(false);
+    trigger.current?.focus();
   }
-  function categoryKey(event: KeyboardEvent<HTMLButtonElement>, i: number) {
-    const rtl = lang === "ckb" || lang === "ar" || lang === "fa";
+  function categoryKey(event: KeyboardEvent<HTMLButtonElement>) {
     if (event.key === "Escape") {
       event.preventDefault();
       close();
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActive(NAV_CATEGORIES[i].id);
-      requestAnimationFrame(() =>
-        document
-          .querySelector<HTMLElement>(`[data-mega-column="${NAV_CATEGORIES[i].id}"] a`)
-          ?.focus(),
-      );
-    } else if (["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) {
-      event.preventDefault();
-      let next =
-        event.key === "Home"
-          ? 0
-          : event.key === "End"
-            ? NAV_CATEGORIES.length - 1
-            : i + (event.key === "ArrowRight" ? (rtl ? -1 : 1) : rtl ? 1 : -1);
-      next = (next + NAV_CATEGORIES.length) % NAV_CATEGORIES.length;
-      buttons.current[next]?.focus();
+      setActive(true);
+      requestAnimationFrame(() => document.querySelector<HTMLElement>("#rl-mega a")?.focus());
     }
   }
   const tabs = [
@@ -169,23 +155,19 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
           </div>
         </div>
         <nav className="page rl-category-nav" aria-label={c.categories}>
-          {NAV_CATEGORIES.map((n, i) => (
-            <button
-              key={n.id}
-              ref={(el) => {
-                buttons.current[i] = el;
-              }}
-              type="button"
-              aria-expanded={active === n.id}
-              aria-controls="rl-mega"
-              onClick={() => setActive(active === n.id ? null : n.id)}
-              onKeyDown={(e) => categoryKey(e, i)}
-              className="rl-category-trigger"
-            >
-              {c[n.id]}
-              <Icon as={ChevronDown} />
-            </button>
-          ))}
+          <button
+            ref={trigger}
+            type="button"
+            aria-expanded={active}
+            aria-controls="rl-mega"
+            onClick={() => setActive(!active)}
+            onKeyDown={categoryKey}
+            className="rl-category-trigger"
+          >
+            <Icon as={LayoutGrid} />
+            {cc.title}
+            <Icon as={ChevronDown} />
+          </button>
           <Link
             to="/quote"
             search={{ from: undefined, to: undefined, kg: undefined }}
@@ -211,49 +193,36 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             }}
           >
             <div className="page rl-mega-grid">
-              {NAV_CATEGORIES.map((n) => {
-                const image = GOODS.find((g) => g.id === n.image)!;
-                return (
-                  <section key={n.id} data-mega-column={n.id} className="rl-stack">
-                    <h2>{c[n.id]}</h2>
-                    <Link
-                      to="/stores"
-                      search={{ cat: n.cat, who: n.who }}
-                      onClick={() => setActive(null)}
-                    >
-                      <img
-                        {...responsiveImage(image.image, "160px")}
-                        alt=""
-                        width={160}
-                        height={160}
-                        loading="lazy"
-                        decoding="async"
-                        className="rl-menu-image"
-                      />
-                      <span className="rl-menu-image-note">{c.exampleTitle}</span>
-                    </Link>
-                    {n.children.map((cat) => (
-                      <Link
-                        key={cat}
-                        to="/stores"
-                        search={{ cat, who: n.who }}
-                        onClick={() => setActive(null)}
-                      >
-                        {sc.categories[cat]}
-                      </Link>
-                    ))}
-                    <Link
-                      to="/stores"
-                      search={{ cat: n.cat, who: n.who }}
-                      onClick={() => setActive(null)}
-                      className="rl-menu-more"
-                    >
-                      {c.browse}
-                      <Icon as={ArrowRight} directional />
-                    </Link>
-                  </section>
-                );
-              })}
+              {NAV_CATEGORIES.map((cat) => (
+                <section key={cat} data-mega-column={cat} className="rl-mega-column">
+                  {isPublishedCategory(cat) ? (
+                    <>
+                      <h2>
+                        <Link to="/stores" search={{ cat }} onClick={() => setActive(false)}>
+                          <Icon as={CATEGORY_ICON[cat]} />
+                          {sc.categories[cat]}
+                        </Link>
+                      </h2>
+                      {publishedSubcategories(cat).map((sub) => (
+                        <Link
+                          key={sub.id}
+                          to="/stores"
+                          search={{ cat, sub: sub.id }}
+                          onClick={() => setActive(false)}
+                        >
+                          {cc.subs[cat][sub.id]}
+                        </Link>
+                      ))}
+                    </>
+                  ) : (
+                    <h2 className="rl-mega-pending">
+                      <Icon as={CATEGORY_ICON[cat]} />
+                      {sc.categories[cat]}
+                      <Badge>{cc.comingSoon}</Badge>
+                    </h2>
+                  )}
+                </section>
+              ))}
             </div>
           </div>
         ) : null}
@@ -270,18 +239,31 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             <ThemeToggle />
           </div>
           <nav className="rl-stack" aria-label={c.categories}>
-            {NAV_CATEGORIES.map((n) => (
-              <Link
-                key={n.id}
-                to="/stores"
-                search={{ cat: n.cat, who: n.who }}
-                onClick={() => setMobile(false)}
-                className="rl-mobile-menu-link"
-              >
-                {c[n.id]}
-                <Icon as={ArrowRight} directional />
-              </Link>
-            ))}
+            {NAV_CATEGORIES.map((cat) =>
+              isPublishedCategory(cat) ? (
+                <Link
+                  key={cat}
+                  to="/stores"
+                  search={{ cat }}
+                  onClick={() => setMobile(false)}
+                  className="rl-mobile-menu-link"
+                >
+                  <span className="rl-row">
+                    <Icon as={CATEGORY_ICON[cat]} />
+                    {sc.categories[cat]}
+                  </span>
+                  <Icon as={ChevronRight} directional />
+                </Link>
+              ) : (
+                <span key={cat} className="rl-mobile-menu-link" aria-disabled="true">
+                  <span className="rl-row">
+                    <Icon as={CATEGORY_ICON[cat]} />
+                    {sc.categories[cat]}
+                  </span>
+                  <Badge>{cc.comingSoon}</Badge>
+                </span>
+              ),
+            )}
           </nav>
           <nav className="rl-row" aria-label={d.services}>
             <Link

@@ -45,6 +45,8 @@ Ten primary groups live in `src/lib/catalogue.ts` (order, subcategories, search 
 
 **Held back until the owner approves:** `food` and the `beauty/health` and `pets/food` subcategories (food safety / halal / health). They show "Coming soon", are not linked, and are excluded from filters, search and store cards. To publish, edit `PENDING_APPROVAL_*` in `src/lib/catalogue.ts`. `src/lib/catalogue.test.ts` covers this and the permanent product ban.
 
+**Navigation:** the header "All categories" panel, the mobile menu, the footer, the home directory and the `/stores` directory all read the same ten groups (`src/lib/navigation.ts` → `catalogue.ts`). The old seven-item audience/sample-photo menu was removed; the Women/Men/Kids chips on `/stores` (`?who=`) are unchanged.
+
 New Sorani, Arabic and Persian strings carry `TODO(translate-review)`; Kurmanji (`ku`) uses English catalogue copy until reviewed.
 
 **Layout baselines:** colours and buttons changed, so `tests/layout/__screenshots__` must be re-rendered in CI (run the "Cargo quality gate" workflow with `update_baselines`), then committed. Geometry checks (`--ignore-snapshots`) pass without it.
