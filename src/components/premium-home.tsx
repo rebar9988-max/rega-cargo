@@ -20,7 +20,6 @@ import { storeCopy } from "@/lib/store-copy";
 import { LAYOUT_DIR } from "@/lib/langs";
 import { BRANDS } from "@/lib/catalog";
 import { GOODS } from "@/lib/stores";
-import { CategoryDirectory } from "./category-directory";
 import { responsiveImage } from "@/lib/images";
 import type { Service } from "@/lib/service-choice";
 
@@ -259,20 +258,8 @@ export function PremiumHome({
         </Deferred>
         {children}
       </section>
-      <section className="page rl-section rl-defer" aria-labelledby="rl-home-cats">
-        <div className="rl-section-heading">
-          <div>
-            <p className="rl-eyebrow">{c.categories}</p>
-            <h2 id="rl-home-cats">{c.curated}</h2>
-          </div>
-          <Link to="/stores" className="rl-text-link">
-            {c.browse}
-            <Icon as={ArrowRight} directional />
-          </Link>
-        </div>
-        <CategoryDirectory lang={lang} to="/stores" heading={false} />
-        <p className="rl-caption">{c.samplesBody}</p>
-      </section>
+      {/* The category list lives in one place, the marketplace (/stores); the hero's primary
+          button and the bottom bar lead there. */}
       <section className="rl-brand-section rl-defer">
         <div className="page rl-section">
           <div className="rl-section-heading">
