@@ -2,14 +2,12 @@ import { NUM_LOCALE } from "@/lib/numbers";
 import { formatIqdFromEur } from "@/lib/corridor";
 import type { ReactNode } from "react";
 
-export const controlClass =
-  "h-12 w-full rounded-xl border border-silver bg-surface px-3 text-base text-ink";
+export const controlClass = "rl-control";
 
-export const btnPrimary =
-  "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-pine rl-grad px-5 text-sm font-medium text-pine-ink shadow-[0_8px_18px_-10px_rgb(168_0_0/0.65)] transition-opacity duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40";
+export const btnPrimary = "rl-button rl-grad disabled:opacity-40";
 
 export const btnGhost =
-  "inline-flex h-12 items-center justify-center gap-2 rounded-full border border-line bg-surface px-5 text-sm font-medium text-ink transition-colors duration-200 hover:border-pine disabled:cursor-not-allowed disabled:opacity-40";
+  "rl-button border border-line bg-surface text-ink hover:border-pine disabled:opacity-40";
 
 export function Field({
   label,

@@ -1,5 +1,6 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
+import { ThemeProvider } from "@/lib/theme";
 import { I18nProvider } from "@/lib/i18n";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { ServiceWorkerSetup } from "@/components/sw-setup";
@@ -40,16 +41,24 @@ export const Route = createRootRoute({
   }),
   notFoundComponent: NotFound,
   component: () => (
-    <html lang="ckb" dir="ltr" data-textdir="rtl" data-rl-ai={rlAiEnabled() ? "1" : undefined} suppressHydrationWarning>
+    <html
+      lang="ckb"
+      dir="rtl"
+      data-textdir="rtl"
+      data-rl-ai={rlAiEnabled() ? "1" : undefined}
+      suppressHydrationWarning
+    >
       <head>
         <HeadContent />
       </head>
       <body>
         <ServiceWorkerSetup />
         <AuthProvider>
-          <I18nProvider>
-            <Outlet />
-          </I18nProvider>
+          <ThemeProvider>
+            <I18nProvider>
+              <Outlet />
+            </I18nProvider>
+          </ThemeProvider>
         </AuthProvider>
         <Scripts />
       </body>

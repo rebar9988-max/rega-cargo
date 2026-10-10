@@ -539,7 +539,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     const scriptChanged = root.dataset.textdir !== meta.dir;
     root.lang = meta.html;
-    root.dir = "ltr";
+    root.dir = meta.dir;
     root.dataset.textdir = meta.dir;
     if (scriptChanged) restyle(root);
     if (ready) setItem("lang", lang);
