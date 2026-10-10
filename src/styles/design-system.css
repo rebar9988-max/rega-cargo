@@ -909,6 +909,17 @@
   .rl-footer-slogan {
     font-weight: var(--rl-weight-semibold);
   }
+  /* Phones: brand block on top, the link groups side by side in two columns. */
+  @media (width < 48rem) {
+    .rl-footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--rl-space-3);
+    }
+    .rl-footer-grid > :first-child,
+    .rl-footer-grid > :last-child {
+      grid-column: 1 / -1;
+    }
+  }
   .rl-footer-note {
     border-block-start: var(--rl-border) solid var(--rl-line);
     padding-block: var(--rl-space-3);
@@ -993,23 +1004,74 @@
   padding-block-start: var(--rl-space-3);
   padding-block-end: var(--rl-space-8);
 }
+/* Filter button and audience chips share one row; the chips scroll sideways if they ever
+   outgrow it, so the row never wraps or overflows the page. */
 .rl-market-toolbar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--rl-space-2);
-  margin-block-end: var(--rl-space-3);
+  gap: var(--rl-space-1);
+  margin-block-end: var(--rl-space-2);
+}
+.rl-market-toolbar .rl-mobile-filters {
+  flex: none;
+  padding-inline: var(--rl-space-2);
+  border-radius: var(--rl-radius-pill);
+  font-size: var(--text-sm);
 }
 .rl-chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: var(--rl-space-1);
 }
+/* Phones: the filter button is a round icon button (its label stays for screen readers) so
+   the three audience chips fit beside it without scrolling. */
+@media (width < 28rem) {
+  .rl-market-toolbar .rl-mobile-filters {
+    min-inline-size: var(--rl-control-h);
+    padding-inline: 0;
+  }
+  .rl-audience-chips .rl-chip {
+    flex: 1 0 auto;
+    padding-inline: var(--rl-space-1);
+  }
+  .rl-filters-label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+.rl-audience-chips {
+  flex: 1;
+  min-inline-size: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+.rl-audience-chips::-webkit-scrollbar {
+  display: none;
+}
+.rl-audience-chips .rl-chip {
+  flex: none;
+}
 .rl-partner-note {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
   color: var(--rl-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   margin-block-end: var(--rl-space-4);
+}
+/* Long category lists stay at three lines so store cards in a row line up. */
+.rl-store-categories {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 .rl-market-layout {
   display: grid;

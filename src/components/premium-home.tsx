@@ -123,8 +123,10 @@ export function PremiumHome({
                     {s.ai ? (
                       <p className="rl-eyebrow">{h.eyebrow}</p>
                     ) : (
-                      <p className="rl-eyebrow" lang="en" dir="ltr">
-                        {t.brandSub}
+                      <p className="rl-eyebrow">
+                        <bdi lang="en" dir="ltr">
+                          {t.brandSub}
+                        </bdi>
                       </p>
                     )}
                     <Heading>{s.title}</Heading>

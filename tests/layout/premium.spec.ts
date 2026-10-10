@@ -275,3 +275,25 @@ test("hero: the marketplace, AI and shipping buttons stay in place on every slid
     }
   }
 });
+
+test("marketplace toolbar: filter button and audience chips share one row", async ({ page }) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+    const filters = await page.locator(".rl-market-toolbar .rl-mobile-filters").boundingBox();
+    const chips = page.locator(".rl-market-toolbar .rl-chip");
+    await expect(chips).toHaveCount(3);
+    for (let i = 0; i < 3; i++) {
+      const chip = await chips.nth(i).boundingBox();
+      expect(
+        Math.abs(chip!.y + chip!.height / 2 - (filters!.y + filters!.height / 2)),
+        lang,
+      ).toBeLessThan(2);
+      expect(chip!.height, lang).toBeGreaterThanOrEqual(44);
+    }
+    // The layout is rtl in every language: the filter button sits at the start (right) edge.
+    const width = page.viewportSize()!.width;
+    expect(Math.round(filters!.x + filters!.width), lang).toBeGreaterThan(width - 32);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(overflow, lang).toBe(0);
+  }
+});

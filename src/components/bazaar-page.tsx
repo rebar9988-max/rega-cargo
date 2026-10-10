@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Heart, SlidersHorizontal, ArrowUpRight } from "lucide-react";
+import { Heart, SlidersHorizontal, ArrowUpRight, Info } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { PremiumHome } from "./premium-home";
 import type { DeliveryHub, ServiceSwitch } from "./delivery-hub";
@@ -162,8 +162,18 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
         <>
           <PageHeader kicker={c.marketplace} title={c.storesTitle} lede={t.lede} />
           <section className="page rl-marketplace">
+            {/* One toolbar: the filter sheet button first, then the audience chips in a single
+                scrollable row. */}
             <div className="rl-market-toolbar">
-              <div className="rl-chip-row">
+              <Button
+                variant="secondary"
+                className="rl-mobile-filters"
+                onClick={() => setSheet(true)}
+              >
+                <Icon as={SlidersHorizontal} />
+                <span className="rl-filters-label">{c.filters}</span>
+              </Button>
+              <div className="rl-chip-row rl-audience-chips">
                 {(["women", "men", "kids"] as const).map((who) => (
                   <Chip
                     key={who}
@@ -174,16 +184,11 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
                   </Chip>
                 ))}
               </div>
-              <Button
-                variant="secondary"
-                className="rl-mobile-filters"
-                onClick={() => setSheet(true)}
-              >
-                <Icon as={SlidersHorizontal} />
-                {c.filters}
-              </Button>
             </div>
-            <p className="rl-partner-note">{c.noPartner}</p>
+            <p className="rl-partner-note">
+              <Icon as={Info} />
+              <span>{c.noPartner}</span>
+            </p>
             <div className="rl-market-layout">
               <aside className="rl-filter-sidebar" aria-label={c.filters}>
                 <h2>{c.filters}</h2>
@@ -326,7 +331,7 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
                                     : store.country}{" "}
                                 · <bdi dir="ltr">{store.host}</bdi>
                               </p>
-                              <p className="rl-muted">
+                              <p className="rl-muted rl-store-categories">
                                 {store.categories
                                   .filter(isPublishedCategory)
                                   .map((category) => t.categories[category])
