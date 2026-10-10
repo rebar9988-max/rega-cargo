@@ -607,6 +607,7 @@
     font-weight: var(--rl-weight-semibold);
     letter-spacing: var(--rl-tracking);
     white-space: pre-line;
+    text-wrap: balance;
     margin-block-start: var(--rl-space-3);
   }
   .rl-hero-description {
@@ -622,11 +623,34 @@
   }
   .rl-hero-actions .rl-button {
     padding-inline: var(--rl-space-2);
+    grid-column: 1 / -1;
   }
   .rl-hero-secondary {
     color: var(--rl-ink);
     background: var(--rl-surface);
     border-color: var(--rl-control-line);
+  }
+  .rl-hero-cta {
+    min-block-size: calc(var(--rl-control-h) + var(--rl-space-1));
+    padding-inline: var(--rl-space-3);
+    font-size: var(--text-base);
+    grid-column: 1 / -1;
+  }
+  .rl-hero-trust {
+    list-style: none;
+    margin: var(--rl-space-3) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rl-space-0) var(--rl-space-2);
+    color: var(--rl-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--rl-weight-medium);
+  }
+  .rl-hero-trust li + li::before {
+    content: "·";
+    margin-inline-end: var(--rl-space-2);
+    color: var(--rl-accent);
   }
   .rl-hero-location {
     display: flex;

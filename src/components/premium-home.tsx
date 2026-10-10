@@ -1,5 +1,5 @@
 import { lazy, Suspense, useRef, useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,11 +8,14 @@ import {
   Globe,
   PackageCheck,
   ShieldCheck,
+  Sparkles,
   Warehouse,
 } from "lucide-react";
 import { Button, Chip, Icon, Deferred, Skeleton } from "./ui";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
+import { heroCopy } from "@/lib/hero-copy";
+import { rlAiEnabled } from "@/lib/ai/flag";
 import { storeCopy } from "@/lib/store-copy";
 import { langMeta } from "@/lib/langs";
 import { BRANDS } from "@/lib/catalog";
@@ -37,11 +40,20 @@ export function PremiumHome({
   const { lang, t } = useI18n();
   const c = redesignCopy(lang);
   const sc = storeCopy(lang);
+  const h = heroCopy(lang);
+  const ai = rlAiEnabled();
+  // The AI entry opens the existing /ai route; show a busy state while it loads.
+  const opening = useRouterState({
+    select: (state) => state.status === "pending" && state.location.pathname === "/ai",
+  });
   const [slide, setSlide] = useState(0);
   const rail = useRef<HTMLDivElement>(null);
   const slides = [
-    { title: c.heroTitle, body: c.heroBody, image: "sneakers" },
-    { title: c.heroShippingTitle, body: c.heroShippingBody, image: "earbuds" },
+    // With AI off for this deployment the first slide keeps its original shopping copy.
+    ai
+      ? { title: h.title, body: h.body, image: "sneakers", ai: true }
+      : { title: c.heroTitle, body: c.heroBody, image: "sneakers", ai: false },
+    { title: c.heroShippingTitle, body: c.heroShippingBody, image: "earbuds", ai: false },
   ];
   function go(index: number) {
     const at = (index + slides.length) % slides.length;
@@ -109,16 +121,34 @@ export function PremiumHome({
               >
                 <div className="page rl-hero-layout">
                   <div className="rl-hero-copy">
-                    <p className="rl-eyebrow" lang="en" dir="ltr">
-                      {t.brandSub}
-                    </p>
+                    {s.ai ? (
+                      <p className="rl-eyebrow">{h.eyebrow}</p>
+                    ) : (
+                      <p className="rl-eyebrow" lang="en" dir="ltr">
+                        {t.brandSub}
+                      </p>
+                    )}
                     <Heading>{s.title}</Heading>
                     <p className="rl-hero-description">{s.body}</p>
                     <div className="rl-hero-actions">
-                      <Link to="/stores" className="rl-button rl-grad">
-                        {c.heroShop}
-                        <Icon as={ArrowRight} directional />
-                      </Link>
+                      {s.ai ? (
+                        <Link
+                          to="/ai"
+                          className="rl-button rl-hero-cta"
+                          data-variant="primary"
+                          aria-busy={opening || undefined}
+                          aria-label={opening ? `${h.cta}. ${h.ctaOpening}` : undefined}
+                        >
+                          <Icon as={Sparkles} />
+                          {h.cta}
+                          <Icon as={ArrowRight} directional />
+                        </Link>
+                      ) : (
+                        <Link to="/stores" className="rl-button" data-variant="primary">
+                          {c.heroShop}
+                          <Icon as={ArrowRight} directional />
+                        </Link>
+                      )}
                       <Link
                         to="/quote"
                         search={{ from: undefined, to: undefined, kg: undefined }}
@@ -127,10 +157,18 @@ export function PremiumHome({
                         {c.heroShip}
                       </Link>
                     </div>
-                    <p className="rl-hero-location">
-                      <Icon as={Warehouse} />
-                      {c.warehouse}
-                    </p>
+                    {s.ai ? (
+                      <ul className="rl-hero-trust">
+                        {h.trust.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="rl-hero-location">
+                        <Icon as={Warehouse} />
+                        {c.warehouse}
+                      </p>
+                    )}
                   </div>
                   <figure className="rl-hero-art">
                     <img

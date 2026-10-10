@@ -216,3 +216,27 @@ test("catalogue: ten category rows, direct URLs, history, subcategories and hone
   await page.goto("/stores?lang=en&cat=pets&q=vodka", { waitUntil: "networkidle" });
   await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
 });
+
+test("hero: the AI call to action opens the existing assistant in the chosen language", async ({
+  page,
+}) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const cta = page.locator(".rl-hero-cta");
+    await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute("href", new RegExp(`^/ai(\\?lang=${lang})?$`));
+    // Visible without scrolling on a phone, and a comfortable touch target.
+    const box = await cta.boundingBox();
+    expect(box!.y + box!.height, lang).toBeLessThanOrEqual(800);
+    expect(box!.height, lang).toBeGreaterThanOrEqual(44);
+    await cta.click();
+    await expect(page).toHaveURL(/\/ai/);
+    await expect(page.locator("html")).toHaveAttribute("lang", lang);
+    await expect(page.locator("main h1")).toBeVisible();
+  }
+  // Keyboard: the CTA is reachable and activates with Enter.
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  await page.locator(".rl-hero-cta").focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/ai/);
+});
