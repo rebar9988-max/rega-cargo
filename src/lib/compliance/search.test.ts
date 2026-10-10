@@ -1,3 +1,4 @@
+import { selectBazaar } from "../bazaar-listing.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { suggest, screen, ITEM_IDEALO } from "../search/index.ts";
@@ -107,4 +108,40 @@ test("AI: a prohibited product returns no result; perfume 'Alcohol Denat.' does 
     } as never),
   );
   assert.ok(!isProhibitedAiResult({ ...base, brand: "NIVEA", visibleText: ["Creme"] } as never));
+});
+
+test("marketplace listings and search permanently exclude tobacco, vaping, alcohol and haram food", () => {
+  const banned = ["Cigarettes", "Vape pen", "Vodka", "Pork bacon"];
+  const fixtures = banned.map((title, i) => ({ ...GOODS[0], id: `banned-${i}` }));
+  const goods = [...GOODS, ...fixtures] as typeof GOODS;
+  for (const { id } of LANGS) {
+    const labels = {
+      ...storeCopy(id).goods,
+      ...Object.fromEntries(fixtures.map((good, i) => [good.id, banned[i]])),
+    };
+    for (const params of [
+      {},
+      { cat: "beauty" },
+      { fav: 1 as const },
+      { store: GOODS[0].storeId },
+    ]) {
+      const listed = selectBazaar({ params, labels, goods, favs: STORES.map((store) => store.id) });
+      assert.ok(listed.goods.every((good) => !good.id.startsWith("banned-")));
+    }
+    for (const q of banned) {
+      const listed = selectBazaar({ params: { q }, labels, goods, favs: [] });
+      assert.equal(listed.goods.length + listed.stores.length, 0, q);
+      const searched = suggest(q, id);
+      assert.equal(
+        searched.items.length +
+          searched.stores.length +
+          searched.brands.length +
+          searched.categories.length,
+        0,
+        q,
+      );
+      assert.equal(searched.idealoTerm, "");
+      assert.equal(idealoSearchUrl(q), null);
+    }
+  }
 });

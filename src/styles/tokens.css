@@ -89,3 +89,12 @@
   --rl-shadow-sm: 0 2px 8px rgb(0 0 0 / 0.12);
   --rl-shadow-lg: 0 16px 48px rgb(0 0 0 / 0.32);
 }
+:root {
+  --rl-weight-semibold: 600;
+  --rl-space-7: 3.5rem;
+  --rl-filter-width: 16rem;
+  --rl-filter-sticky: 9rem;
+  --rl-form-aside-width: 22rem;
+  --rl-image-hover-scale: 1.03;
+  --rl-underline-offset: 0.2em;
+}

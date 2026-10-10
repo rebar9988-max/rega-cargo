@@ -10,7 +10,14 @@ import { DESTS, placeName } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
 import { storeById, goodById } from "@/lib/stores";
-import { checkProductUrl, normalizePhone, QTY_MAX, QTY_MIN, TEXT_MAX, URL_MAX } from "@/lib/orders/store-request";
+import {
+  checkProductUrl,
+  normalizePhone,
+  QTY_MAX,
+  QTY_MIN,
+  TEXT_MAX,
+  URL_MAX,
+} from "@/lib/orders/store-request";
 import { REQUEST_COPY } from "@/lib/request-copy";
 import { gateFields } from "@/lib/ai/gate-client";
 import { orderStore } from "@/lib/orders/api";
@@ -94,7 +101,20 @@ function RequestPage() {
     try {
       const gate = await gateFields();
       const result = await orderStore({
-        data: { intent, storeId: store?.id ?? null, item: good?.id ?? null, url: href, size, color, qty: qty.trim(), dest, notes, phone: phone.trim(), declared: true, ...gate },
+        data: {
+          intent,
+          storeId: store?.id ?? null,
+          item: good?.id ?? null,
+          url: href,
+          size,
+          color,
+          qty: qty.trim(),
+          dest,
+          notes,
+          phone: phone.trim(),
+          declared: true,
+          ...gate,
+        },
       });
       if (result && "id" in result && result.id) {
         setSaved(String(result.id));
@@ -129,24 +149,38 @@ function RequestPage() {
 
   return (
     <Shell>
-      <PageHeader kicker={t.requestKicker} title={intent === "ship" ? t.shipTitle : t.buyTitle} lede={t.requestLede} />
-      <div className="page grid gap-8 py-12 md:grid-cols-[minmax(0,1fr)_20rem] md:py-16">
+      <PageHeader
+        kicker={t.requestKicker}
+        title={intent === "ship" ? t.shipTitle : t.buyTitle}
+        lede={t.requestLede}
+      />
+      <div className="page rl-form-layout">
         {saved ? (
-          <div className="rounded-2xl border border-line bg-surface p-6">
+          <div className="rl-card">
             <h2 className="text-2xl font-semibold">{t.sentTitle}</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted">{t.sentBody}</p>
             <p className="mt-4 font-sans text-sm font-semibold">
               <bdi dir="ltr">{saved}</bdi>
             </p>
-            <Link to="/stores" className="mt-6 inline-flex h-12 items-center rounded-full border border-line px-5 text-sm">
+            <Link
+              to="/stores"
+              className="mt-6 inline-flex h-12 items-center rounded-full border border-line px-5 text-sm"
+            >
               {t.back}
             </Link>
           </div>
         ) : (
-          <form onSubmit={submit} className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-6">
+          <form onSubmit={submit} className="rl-card rl-request-form">
             {good ? (
               <div className="flex items-center gap-3">
-                <img {...responsiveImage(good.image, "64px")} alt="" width={64} height={64} decoding="async" className="size-16 rounded-xl object-cover" />
+                <img
+                  {...responsiveImage(good.image, "64px")}
+                  alt=""
+                  width={64}
+                  height={64}
+                  decoding="async"
+                  className="size-16 rounded-xl object-cover"
+                />
                 <div>
                   <p className="font-semibold">{t.goods[good.id]}</p>
                   <p className="text-sm text-muted">{t.sample}</p>
@@ -159,21 +193,54 @@ function RequestPage() {
               </p>
             ) : null}
             <Field label={t.url} hint={t.urlHint}>
-              <input className={controlClass} dir="ltr" type="url" inputMode="url" maxLength={URL_MAX} value={url} onChange={(event) => setUrl(event.target.value)} required={!good} />
+              <input
+                className={controlClass}
+                dir="ltr"
+                type="url"
+                inputMode="url"
+                maxLength={URL_MAX}
+                value={url}
+                onChange={(event) => setUrl(event.target.value)}
+                required={!good}
+              />
             </Field>
             <div className="grid gap-4 md:grid-cols-3">
               <Field label={t.size}>
-                <input className={controlClass} maxLength={TEXT_MAX.size} value={size} onChange={(event) => setSize(event.target.value)} />
+                <input
+                  className={controlClass}
+                  maxLength={TEXT_MAX.size}
+                  value={size}
+                  onChange={(event) => setSize(event.target.value)}
+                />
               </Field>
               <Field label={t.color}>
-                <input className={controlClass} maxLength={TEXT_MAX.color} value={color} onChange={(event) => setColor(event.target.value)} />
+                <input
+                  className={controlClass}
+                  maxLength={TEXT_MAX.color}
+                  value={color}
+                  onChange={(event) => setColor(event.target.value)}
+                />
               </Field>
               <Field label={t.qty}>
-                <input className={controlClass} dir="ltr" type="number" inputMode="numeric" min={QTY_MIN} max={QTY_MAX} step={1} value={qty} onChange={(event) => setQty(event.target.value)} />
+                <input
+                  className={controlClass}
+                  dir="ltr"
+                  type="number"
+                  inputMode="numeric"
+                  min={QTY_MIN}
+                  max={QTY_MAX}
+                  step={1}
+                  value={qty}
+                  onChange={(event) => setQty(event.target.value)}
+                />
               </Field>
             </div>
             <Field label={t.dest}>
-              <select className={controlClass} value={dest} onChange={(event) => setDest(event.target.value)}>
+              <select
+                className={controlClass}
+                value={dest}
+                onChange={(event) => setDest(event.target.value)}
+              >
                 {DESTS.map((place) => (
                   <option key={place.id} value={place.id}>
                     {placeName(place, lang)}
@@ -182,13 +249,32 @@ function RequestPage() {
               </select>
             </Field>
             <Field label={t.notesLabel}>
-              <textarea className={`${controlClass} h-28 py-3`} maxLength={TEXT_MAX.notes} value={notes} onChange={(event) => setNotes(event.target.value)} />
+              <textarea
+                className={`${controlClass} h-28 py-3`}
+                maxLength={TEXT_MAX.notes}
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+              />
             </Field>
             <Field label={rc.phone} hint={rc.phoneHint}>
-              <input className={controlClass} dir="ltr" type="tel" inputMode="tel" autoComplete="tel" maxLength={24} value={phone} onChange={(event) => setPhone(event.target.value)} />
+              <input
+                className={controlClass}
+                dir="ltr"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                maxLength={24}
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+              />
             </Field>
             <label className="flex items-start gap-3 text-sm leading-relaxed">
-              <input type="checkbox" checked={declared} onChange={(event) => setDeclared(event.target.checked)} className="mt-0.5 size-6 shrink-0 accent-pine" />
+              <input
+                type="checkbox"
+                checked={declared}
+                onChange={(event) => setDeclared(event.target.checked)}
+                className="mt-0.5 size-6 shrink-0 accent-pine"
+              />
               <span>{DECLARE_COPY[lang].declare}</span>
             </label>
             <ItemsLink />
@@ -201,31 +287,36 @@ function RequestPage() {
               {failed && !error ? <ContactNote pre={ux.failPre} post={ux.failPost} /> : null}
             </div>
             {warn ? <p className="text-sm text-clay">{warn}</p> : null}
-            <button type="submit" className={`${btnPrimary} disabled:opacity-60`} disabled={busy} aria-busy={busy}>
+            <button
+              type="submit"
+              className={`${btnPrimary} disabled:opacity-60`}
+              disabled={busy}
+              aria-busy={busy}
+            >
               {busy ? ux.sending : t.submit}
             </button>
           </form>
         )}
-        <aside className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-line bg-surface p-5">
+        <aside className="rl-form-aside">
+          <div className="rl-card">
             <h2 className="text-2xl leading-tight font-bold">{t.costs}</h2>
             <ul className="mt-4 flex flex-col gap-3">
               {t.rows.map((row) => (
                 <li key={row} className="flex items-baseline justify-between gap-3 text-sm">
                   <span>{row}</span>
-                  <bdi dir="ltr" className="shrink-0 text-muted">
-                    {t.awaiting}
-                  </bdi>
+                  <span className="rl-awaiting text-muted">{t.awaiting}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="rounded-2xl border border-line bg-surface p-5">
+          <div className="rl-card">
             <h2 className="text-2xl leading-tight font-bold">{t.whoTitle}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">{intent === "ship" ? t.shipBody : t.whoBody}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              {intent === "ship" ? t.shipBody : t.whoBody}
+            </p>
           </div>
           {store && store.caution.length > 0 ? (
-            <div className="rounded-2xl border border-line bg-surface p-5">
+            <div className="rl-card">
               <h2 className="text-2xl leading-tight font-bold">{t.cautionTitle}</h2>
               <ul className="mt-3 flex flex-col gap-2">
                 {store.caution.map((item) => (

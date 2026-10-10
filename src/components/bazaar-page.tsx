@@ -1,73 +1,38 @@
-import { responsiveImage } from "@/lib/images";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronRight, Heart } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Heart, SlidersHorizontal, ArrowUpRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PremiumHome } from "./premium-home";
-import { QuotePanel } from "@/components/quote-panel";
-import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
+import { DeliveryHub, ServiceSwitch } from "./delivery-hub";
+import { Shell, PageHeader } from "./shell";
+import { Badge, BottomSheet, Button, Chip, Icon, Select, Skeleton } from "./ui";
+import { Field } from "./field";
+import { responsiveImage } from "@/lib/images";
 import { readService, writeService, type Service } from "@/lib/service-choice";
-import { BrandHero, RAIL, SectionHeader, TrustRow, seeAllClass } from "@/components/brand";
-import { Shell } from "@/components/shell";
 import type { BazaarSearch } from "@/lib/bazaar-search";
-import { BRANDS, COLLECTION_ORDER } from "@/lib/catalog";
+import { selectBazaar } from "@/lib/bazaar-listing";
+import { redesignCopy } from "@/lib/redesign-copy";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
-import { isProhibitedQuery } from "@/lib/compliance/check";
-import {
-  GOODS,
-  readFavs,
-  STORE_CATEGORIES,
-  STORES,
-  storeById,
-  storeLogo,
-  writeFavs,
-  type StoreCategory,
-} from "@/lib/stores";
-
-type Audience = "women" | "men" | "kids";
-const AUDIENCES: Audience[] = ["women", "men", "kids"];
-/** Real catalogue items and store categories per audience tab (no invented products). */
-const AUDIENCE_GOODS: Record<Audience, string[]> = {
-  women: ["perfume", "cream", "dress"],
-  men: ["sneakers", "earbuds", "ball"],
-  kids: ["baby", "ball"],
-};
-const AUDIENCE_CATEGORIES: Record<Audience, StoreCategory[]> = {
-  women: ["beauty", "fashion"],
-  men: ["fashion", "electronics", "sports"],
-  kids: ["baby", "sports"],
-};
-
-const isAudience = (value: unknown): value is Audience => AUDIENCES.includes(value as Audience);
-const isCategory = (value: unknown): value is StoreCategory =>
-  STORE_CATEGORIES.includes(value as StoreCategory);
+import { readFavs, STORE_CATEGORIES, STORES, storeById, storeLogo, writeFavs } from "@/lib/stores";
 
 export function BazaarPage({
   home = false,
   initialService = "bazaar",
-}: { home?: boolean; initialService?: Service } = {}) {
+}: {
+  home?: boolean;
+  initialService?: Service;
+} = {}) {
   const { lang } = useI18n();
-  const t = storeCopy(lang);
-  const d = DESIGN_COPY[lang];
+  const t = storeCopy(lang),
+    c = redesignCopy(lang),
+    d = DESIGN_COPY[lang];
   const params = useRouterState({ select: (state) => state.location.search as BazaarSearch });
-  const [q, setQ] = useState(params.q ?? "");
-  const [category, setCategory] = useState<StoreCategory | "all">(
-    isCategory(params.cat) ? params.cat : "all",
-  );
-  const [audience, setAudience] = useState<Audience | null>(
-    isAudience(params.who) ? params.who : null,
-  );
-  const [brandName, setBrandName] = useState<string | null>(null);
-  const [country, setCountry] = useState<"all" | "DE" | "INT">("all");
-  const [onlyFav, setOnlyFav] = useState(params.fav === 1);
-  const [favs, setFavs] = useState<string[]>(() => readFavs());
-  const query = q.trim().toLowerCase();
-  // Compliance: a query with a prohibited word shows no goods and no stores.
-  const blocked = useMemo(() => isProhibitedQuery(query), [query]);
-  // Home offers both services. The server renders the remembered choice from the
-  // rl-service cookie; this effect only corrects devices that still have the
-  // older storage-only choice (and gives them the cookie for next time).
+  const pending = useRouterState({ select: (state) => state.status === "pending" });
+  const navigate = useNavigate();
+  const [sheet, setSheet] = useState(false);
+  const [favs, setFavs] = useState<string[]>([]);
+  useEffect(() => setFavs(readFavs()), []);
   const [service, setService] = useState<Service>(initialService);
   useEffect(() => {
     if (!home) return;
@@ -81,60 +46,98 @@ export function BazaarPage({
     setService(next);
     writeService(next);
   };
-  const bazaarOn = !home || service === "bazaar";
-
-  // Follow URL changes (header search, heart icon, collection cards) while mounted.
-  useEffect(() => {
-    setQ(params.q ?? "");
-    if (isCategory(params.cat)) setCategory(params.cat);
-    if (isAudience(params.who)) setAudience(params.who);
-    setOnlyFav(params.fav === 1);
-  }, [params.q, params.cat, params.who, params.fav]);
-
-  const collection = useMemo(
-    () =>
-      (audience ? GOODS.filter((good) => AUDIENCE_GOODS[audience].includes(good.id)) : GOODS)
-        .slice()
-        .sort((a, b) => COLLECTION_ORDER.indexOf(a.id) - COLLECTION_ORDER.indexOf(b.id)),
-    [audience],
+  const setFilter = (patch: Partial<BazaarSearch>) => {
+    void navigate({
+      to: home ? "/" : "/stores",
+      search: (previous) => ({ ...previous, ...patch }),
+      replace: true,
+    });
+  };
+  const clear = () =>
+    setFilter({
+      q: undefined,
+      cat: undefined,
+      who: undefined,
+      store: undefined,
+      country: undefined,
+      fav: undefined,
+    });
+  const results = useMemo(
+    () => selectBazaar({ params, favs, labels: t.goods }),
+    [params, favs, t.goods],
   );
-
-  const goods = useMemo(() => {
-    if (blocked) return [];
-    return GOODS.filter((good) => {
-      if (audience && !AUDIENCE_GOODS[audience].includes(good.id)) return false;
-      if (category !== "all" && good.category !== category) return false;
-      if (!query) return true;
-      const shop = storeById(good.storeId);
-      return `${t.goods[good.id]} ${shop?.name ?? ""} ${shop?.host ?? ""}`
-        .toLowerCase()
-        .includes(query);
-    });
-  }, [category, query, t, audience, blocked]);
-
-  const list = useMemo(() => {
-    if (blocked) return [];
-    return STORES.filter((store) => {
-      if (onlyFav && !favs.includes(store.id)) return false;
-      if (
-        audience &&
-        !store.categories.some((item) => AUDIENCE_CATEGORIES[audience].includes(item))
-      )
-        return false;
-      if (category !== "all" && !store.categories.includes(category)) return false;
-      if (country !== "all" && store.country !== country) return false;
-      if (!query) return true;
-      return `${store.name} ${store.host}`.toLowerCase().includes(query);
-    });
-  }, [query, category, country, onlyFav, favs, audience, blocked]);
-
-  function toggle(id: string) {
+  const toggle = (id: string) => {
     const next = favs.includes(id) ? favs.filter((item) => item !== id) : [...favs, id];
     setFavs(next);
     writeFavs(next);
-  }
-
-  if (home && !params.q && !params.cat && !params.fav && !params.who) {
+  };
+  const filters = (
+    <div className="rl-filter-controls">
+      <Field label={c.categories}>
+        <Select
+          value={params.cat ?? ""}
+          onChange={(e) => setFilter({ cat: e.target.value || undefined })}
+        >
+          <option value="">{t.allCategories}</option>
+          {STORE_CATEGORIES.map((category) => (
+            <option key={category} value={category}>
+              {t.categories[category]}
+            </option>
+          ))}
+        </Select>
+      </Field>
+      <Field label={c.store}>
+        <Select
+          value={params.store ?? ""}
+          onChange={(e) => setFilter({ store: e.target.value || undefined })}
+        >
+          <option value="">{c.all}</option>
+          {STORES.map((store) => (
+            <option key={store.id} value={store.id}>
+              {store.name}
+            </option>
+          ))}
+        </Select>
+      </Field>
+      <Field label={c.country}>
+        <Select
+          value={params.country ?? ""}
+          onChange={(e) => setFilter({ country: e.target.value || undefined })}
+        >
+          <option value="">{t.allCountries}</option>
+          {[...new Set(STORES.map((store) => store.country))].map((country) => (
+            <option key={country} value={country}>
+              {country === "DE" ? t.germany : country === "INT" ? t.international : country}
+            </option>
+          ))}
+        </Select>
+      </Field>
+      <Field label={c.price} hint={c.priceUnavailable}>
+        <Select disabled value="">
+          <option value="">{t.awaiting}</option>
+        </Select>
+      </Field>
+      <Chip
+        selected={params.fav === 1}
+        onClick={() => setFilter({ fav: params.fav ? undefined : 1 })}
+      >
+        <Icon as={Heart} />
+        {t.favorites}
+      </Chip>
+      <Button variant="ghost" onClick={clear}>
+        {c.clear}
+      </Button>
+    </div>
+  );
+  if (
+    home &&
+    !params.q &&
+    !params.cat &&
+    !params.fav &&
+    !params.who &&
+    !params.store &&
+    !params.country
+  )
     return (
       <Shell>
         <PremiumHome service={service} onService={chooseService}>
@@ -142,333 +145,215 @@ export function BazaarPage({
         </PremiumHome>
       </Shell>
     );
-  }
-
   return (
-    <Shell search={{ q, setQ }}>
+    <Shell search={{ q: params.q ?? "", setQ: (q) => setFilter({ q: q || undefined }) }}>
       {home ? <ServiceSwitch value={service} onChange={chooseService} /> : null}
-      {bazaarOn ? (
+      {home && service === "delivery" ? (
+        <DeliveryHub />
+      ) : (
         <>
-          <div className="border-b border-line bg-surface">
-            <div
-              className="page-bleed grid grid-cols-3"
-              role="tablist"
-              style={{ direction: "ltr" }}
-            >
-              {AUDIENCES.map((item) => {
-                const on = audience === item;
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    role="tab"
-                    aria-selected={on}
-                    onClick={() => setAudience(on ? null : item)}
-                    className={`relative h-12 text-sm ${on ? "font-semibold text-ink" : "text-muted"}`}
+          <PageHeader kicker={c.marketplace} title={c.storesTitle} lede={t.lede} />
+          <section className="page rl-marketplace">
+            <div className="rl-market-toolbar">
+              <div className="rl-chip-row">
+                {(["women", "men", "kids"] as const).map((who) => (
+                  <Chip
+                    key={who}
+                    selected={params.who === who}
+                    onClick={() => setFilter({ who: params.who === who ? undefined : who })}
                   >
-                    {d.audience[item]}
-                    <span
-                      className={`absolute inset-x-6 bottom-0 h-0.5 ${on ? "bg-pine" : "bg-transparent"}`}
-                      aria-hidden="true"
-                    />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <BrandHero title={d.tagline} route={d.route} />
-          <TrustRow />
-
-          <section className={`page pt-8 md:pt-12`}>
-            <SectionHeader
-              title={d.newCollection}
-              action={
-                <Link
-                  to="/stores"
-                  search={audience ? { who: audience } : {}}
-                  className={seeAllClass}
-                >
-                  <span dir="auto">{d.seeAll}</span>
-                  <ChevronRight className="size-4" aria-hidden="true" />
-                </Link>
-              }
-            />
-            <ul
-              className={`-mx-[var(--gutter)] mt-4 flex snap-x snap-mandatory scroll-px-[var(--gutter)] gap-[var(--rail-gap)] overflow-x-auto px-[var(--gutter)] md:mx-0 md:scroll-px-0 md:px-0 ${RAIL}`}
-              style={{ direction: "ltr" }}
-            >
-              {collection.map((good, index) => (
-                <li key={good.id} className="rail-item snap-start">
-                  <Link to="/stores" search={{ cat: good.category }} className="group block">
-                    <span className="block overflow-hidden rounded-xl bg-[#f1f0ee]">
-                      <img
-                        {...responsiveImage(good.image, "(min-width: 768px) 220px, 42vw")}
-                        alt=""
-                        width={640}
-                        height={640}
-                        loading={index < 3 ? "eager" : "lazy"}
-                        fetchPriority={index === 0 ? "high" : undefined}
-                        decoding="async"
-                        className="aspect-product w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                      />
-                    </span>
-                    <span dir="auto" className="mt-2 block truncate text-sm font-medium text-ink">
-                      {t.goods[good.id]}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section
-            className={`page grid items-start gap-6 pt-8 md:grid-cols-[minmax(0,1fr)_24rem] md:gap-8 md:pt-12`}
-          >
-            <div className="min-w-0">
-              <SectionHeader
-                title={t.title}
-                sub={t.notPartner}
-                action={
-                  <Link to="/stores" className={seeAllClass}>
-                    <span dir="auto">{d.seeAll}</span>
-                    <ChevronRight className="size-4" aria-hidden="true" />
-                  </Link>
-                }
-              />
-              <p className="mt-3 hidden max-w-xl text-sm leading-relaxed text-muted md:block">
-                {t.lede}
-              </p>
-              <ul
-                className={`-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0 ${RAIL}`}
-                style={{ direction: "ltr" }}
-              >
-                {BRANDS.map((brand) => {
-                  const on = brandName === brand.name;
-                  // Uniform tile; the logo sits in a fixed box (28px high, 70% wide), object-contain.
-                  return (
-                    <li key={brand.name} className="shrink-0">
-                      <button
-                        type="button"
-                        aria-pressed={on}
-                        onClick={() => {
-                          setBrandName(brand.name);
-                          setCategory(brand.category);
-                        }}
-                        className={`grid h-14 w-32 place-items-center rounded-xl border bg-surface transition-colors ${on ? "border-pine ring-1 ring-pine" : "border-line hover:border-silver"}`}
-                      >
-                        <img
-                          src={brand.logo}
-                          alt={brand.name}
-                          width={90}
-                          height={28}
-                          loading="lazy"
-                          decoding="async"
-                          className="h-7 w-7/10 object-contain"
-                        />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-            <div className="hidden md:block">
-              <QuotePanel variant="compact" />
-            </div>
-          </section>
-
-          <div className={`page flex flex-col gap-8 pt-8 pb-12 md:pt-12`}>
-            <div className={`-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0 ${RAIL}`}>
-              <Chip
-                on={category === "all" && !brandName}
-                onClick={() => {
-                  setBrandName(null);
-                  setCategory("all");
-                }}
-              >
-                {t.allCategories}
-              </Chip>
-              {STORE_CATEGORIES.filter((item) => item !== "general").map((item) => (
-                <Chip
-                  key={item}
-                  on={category === item && !brandName}
-                  onClick={() => {
-                    setBrandName(null);
-                    setCategory(item);
-                  }}
-                >
-                  {t.categories[item]}
-                </Chip>
-              ))}
-            </div>
-
-            <ul data-layout="card-grid" className="card-grid gap-y-8">
-              {goods.map((good) => {
-                const shop = storeById(good.storeId);
-                return (
-                  <li key={good.id} className="flex flex-col">
-                    <div className="overflow-hidden rounded-xl bg-[#f1f0ee]">
-                      <img
-                        {...responsiveImage(good.image, "(min-width: 768px) 270px, 50vw")}
-                        alt={t.goods[good.id]}
-                        width={640}
-                        height={640}
-                        loading="lazy"
-                        decoding="async"
-                        className="aspect-product w-full object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-1 flex-col gap-1 px-1 pt-3">
-                      {shop ? (
-                        <p className="font-sans text-xs font-semibold tracking-widest text-muted">
-                          <bdi dir="ltr">{shop.name}</bdi>
-                        </p>
-                      ) : null}
-                      <h3 className="text-sm font-medium leading-snug">{t.goods[good.id]}</h3>
-                      <p className="text-xs text-muted">{t.awaiting}</p>
-                      <Link
-                        to="/stores/request"
-                        search={{ store: good.storeId, intent: "buy", item: good.id }}
-                        className="mt-2 inline-flex h-10 items-center justify-center rounded-full rl-grad text-sm"
-                      >
-                        {t.order}
-                      </Link>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-
-            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <h2 className="text-2xl leading-tight font-bold tracking-tight md:text-3xl">
-                {t.storesHeading}
-              </h2>
-              <div className="flex min-w-0 gap-2">
-                <select
-                  value={country}
-                  onChange={(event) => setCountry(event.target.value as "all" | "DE" | "INT")}
-                  aria-label={t.allCountries}
-                  className="h-11 min-w-0 flex-1 rounded-full border border-line bg-surface px-4 text-base md:flex-none"
-                >
-                  <option value="all">{t.allCountries}</option>
-                  <option value="DE">{t.germany}</option>
-                  <option value="INT">{t.international}</option>
-                </select>
-                <button
-                  type="button"
-                  aria-pressed={onlyFav}
-                  onClick={() => setOnlyFav((value) => !value)}
-                  className={`inline-flex h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-sm ${onlyFav ? "border-pine text-pine" : "border-line"}`}
-                >
-                  <Heart className="size-4" fill={onlyFav ? "currentColor" : "none"} />
-                  {t.favorites}
-                </button>
+                    {d.audience[who]}
+                  </Chip>
+                ))}
               </div>
+              <Button
+                variant="secondary"
+                className="rl-mobile-filters"
+                onClick={() => setSheet(true)}
+              >
+                <Icon as={SlidersHorizontal} />
+                {c.filters}
+              </Button>
             </div>
-
-            {list.length === 0 ? <p className="text-sm text-muted">{t.empty}</p> : null}
-            <ul data-layout="card-grid" className="card-grid">
-              {list.map((store) => {
-                const loved = favs.includes(store.id);
-                return (
-                  <li
-                    key={store.id}
-                    className="rl-soft flex flex-col rounded-2xl border border-line bg-surface p-3 md:p-5"
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="grid h-16 min-w-0 flex-1 place-items-center rounded-2xl border border-line bg-white px-2 md:px-4">
-                        <img
-                          src={storeLogo(store.id)}
-                          alt={store.name}
-                          width={128}
-                          height={32}
-                          loading="lazy"
-                          decoding="async"
-                          className="h-8 w-full max-w-32 object-contain"
-                        />
-                      </span>
-                      <button
-                        type="button"
-                        aria-pressed={loved}
-                        aria-label={t.favorites}
-                        onClick={() => toggle(store.id)}
-                        className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-line"
-                      >
-                        <Heart
-                          className={`size-4 ${loved ? "text-pine" : "text-muted"}`}
-                          fill={loved ? "currentColor" : "none"}
-                        />
-                      </button>
-                    </div>
-                    <h3 className="mt-4 font-sans text-lg font-semibold tracking-tight">
-                      <bdi dir="ltr">{store.name}</bdi>
-                    </h3>
-                    <p className="mt-1 text-sm text-muted">
-                      {store.country === "DE" ? t.germany : t.international}
-                      {" · "}
-                      <bdi dir="ltr">{store.host}</bdi>
-                    </p>
-                    <p className="mt-3 mb-4 line-clamp-2 text-sm text-muted">
-                      {store.categories.map((item) => t.categories[item]).join(" · ")}
-                    </p>
-                    <a
-                      href={store.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-auto inline-flex min-h-11 items-center justify-center rounded-full rl-grad px-3 py-2 text-center text-sm leading-tight font-medium"
-                    >
-                      {t.open}
-                    </a>
-                    <div className="mt-1 flex flex-wrap gap-x-4 text-sm">
-                      <Link
-                        to="/stores/request"
-                        search={{ store: store.id, intent: "buy", item: undefined }}
-                        className="inline-flex min-h-11 items-center text-ink underline-offset-4 hover:underline"
-                      >
-                        {t.assist}
-                      </Link>
-                      <Link
-                        to="/stores/request"
-                        search={{ store: store.id, intent: "ship", item: undefined }}
-                        className="inline-flex min-h-11 items-center text-muted underline-offset-4 hover:underline"
-                      >
-                        {t.shipOwn}
-                      </Link>
-                    </div>
-                    <details className="text-sm text-muted">
-                      <summary className="flex min-h-11 cursor-pointer items-center">
-                        {t.external}
-                      </summary>
-                      <p className="mt-2 leading-relaxed">{t.notes[store.note]}</p>
-                      {store.caution.length > 0 ? (
-                        <ul className="mt-2 flex flex-col gap-1">
-                          {store.caution.map((item) => (
-                            <li key={item}>{t.cautions[item]}</li>
+            <p className="rl-partner-note">{c.noPartner}</p>
+            <div className="rl-market-layout">
+              <aside className="rl-filter-sidebar" aria-label={c.filters}>
+                <h2>{c.filters}</h2>
+                {filters}
+              </aside>
+              <div className="rl-market-results" aria-busy={pending}>
+                {pending ? (
+                  <div className="rl-results-grid">
+                    {[0, 1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="rl-product-skeleton" />
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    {!results.goods.length && !results.stores.length ? (
+                      <div className="rl-empty-state" role="status">
+                        <h2>{c.emptyTitle}</h2>
+                        <p>{c.emptyBody}</p>
+                        <Button variant="secondary" onClick={clear}>
+                          {c.clear}
+                        </Button>
+                      </div>
+                    ) : null}
+                    {results.goods.length ? (
+                      <section aria-labelledby="rl-samples">
+                        <div className="rl-result-heading">
+                          <h2 id="rl-samples">{c.samples}</h2>
+                          <p>{c.samplesBody}</p>
+                        </div>
+                        <ul className="rl-results-grid" data-layout="card-grid">
+                          {results.goods.map((good, index) => (
+                            <li key={good.id} className="rl-product-card" data-good={good.id}>
+                              <Link
+                                to="/stores/request"
+                                search={{ store: good.storeId, intent: "buy", item: good.id }}
+                                className="rl-product-image"
+                              >
+                                <img
+                                  {...responsiveImage(
+                                    good.image,
+                                    "(min-width: 1024px) 280px, (min-width: 768px) 30vw, 45vw",
+                                  )}
+                                  alt={t.goods[good.id]}
+                                  width={640}
+                                  height={640}
+                                  loading={index < 2 ? "eager" : "lazy"}
+                                  decoding="async"
+                                />
+                                <Badge>{c.exampleTitle}</Badge>
+                              </Link>
+                              <div className="rl-product-body">
+                                <p className="rl-eyebrow">
+                                  <bdi dir="ltr">{storeById(good.storeId)?.name}</bdi>
+                                </p>
+                                <h3>{t.goods[good.id]}</h3>
+                                <p className="rl-muted">{t.awaiting}</p>
+                                <Link
+                                  to="/stores/request"
+                                  search={{ store: good.storeId, intent: "buy", item: good.id }}
+                                  className="rl-button"
+                                >
+                                  {t.order}
+                                </Link>
+                                <div className="rl-product-quick" aria-label={c.quickActions}>
+                                  <Link
+                                    to="/stores/request"
+                                    search={{ store: good.storeId, intent: "ship", item: good.id }}
+                                  >
+                                    {t.shipOwn}
+                                  </Link>
+                                </div>
+                              </div>
+                            </li>
                           ))}
                         </ul>
-                      ) : null}
-                    </details>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+                      </section>
+                    ) : null}
+                    {results.stores.length ? (
+                      <section aria-labelledby="rl-store-list">
+                        <div className="rl-result-heading">
+                          <h2 id="rl-store-list">{t.storesHeading}</h2>
+                          <p>{c.noPartner}</p>
+                        </div>
+                        <ul className="rl-results-grid" data-layout="card-grid">
+                          {results.stores.map((store) => (
+                            <li
+                              className="rl-store-card rl-card"
+                              key={store.id}
+                              data-store={store.id}
+                            >
+                              <div className="rl-store-top">
+                                <span className="rl-store-logo">
+                                  <img
+                                    src={storeLogo(store.id)}
+                                    alt={store.name}
+                                    width={128}
+                                    height={32}
+                                    loading="lazy"
+                                    decoding="async"
+                                  />
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  aria-pressed={favs.includes(store.id)}
+                                  aria-label={`${t.favorites} · ${store.name}`}
+                                  onClick={() => toggle(store.id)}
+                                >
+                                  <Heart
+                                    aria-hidden="true"
+                                    className="rl-icon"
+                                    fill={favs.includes(store.id) ? "currentColor" : "none"}
+                                  />
+                                </Button>
+                              </div>
+                              <h3>
+                                <bdi dir="ltr">{store.name}</bdi>
+                              </h3>
+                              <Badge>{t.external}</Badge>
+                              <p className="rl-muted">
+                                {store.country === "DE"
+                                  ? t.germany
+                                  : store.country === "INT"
+                                    ? t.international
+                                    : store.country}{" "}
+                                · <bdi dir="ltr">{store.host}</bdi>
+                              </p>
+                              <p className="rl-muted">
+                                {store.categories
+                                  .map((category) => t.categories[category])
+                                  .join(" · ")}
+                              </p>
+                              <a
+                                href={store.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="rl-button"
+                                data-variant="secondary"
+                              >
+                                {t.open}
+                                <Icon as={ArrowUpRight} directional />
+                              </a>
+                              <Link
+                                to="/stores/request"
+                                search={{ store: store.id, intent: "buy", item: undefined }}
+                                className="rl-button"
+                              >
+                                {t.assist}
+                              </Link>
+                              <Link
+                                to="/stores/request"
+                                search={{ store: store.id, intent: "ship", item: undefined }}
+                                className="rl-text-action"
+                              >
+                                {t.shipOwn}
+                              </Link>
+                              <details>
+                                <summary>{t.external}</summary>
+                                <p>{t.notes[store.note]}</p>
+                                {store.caution.map((caution) => (
+                                  <p key={caution}>{t.cautions[caution]}</p>
+                                ))}
+                              </details>
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    ) : null}
+                  </>
+                )}
+              </div>
+            </div>
+          </section>
+          <BottomSheet open={sheet} onClose={() => setSheet(false)} title={c.filters}>
+            {filters}
+            <Button onClick={() => setSheet(false)}>{c.showResults}</Button>
+          </BottomSheet>
         </>
-      ) : (
-        <DeliveryHub />
       )}
     </Shell>
-  );
-}
-
-function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: string }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`h-11 shrink-0 rounded-full border px-4 text-sm ${on ? "rl-grad border-transparent" : "border-line bg-surface text-ink"}`}
-    >
-      {children}
-    </button>
   );
 }
