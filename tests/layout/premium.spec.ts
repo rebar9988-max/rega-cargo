@@ -231,7 +231,7 @@ test("hero: the AI call to action opens the existing assistant in the chosen lan
 }) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    const cta = page.locator(".rl-hero-cta");
+    const cta = page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-cta");
     await expect(cta).toBeVisible();
     await expect(cta).toHaveAttribute("href", new RegExp(`^/ai(\\?lang=${lang})?$`));
     // Visible without scrolling on a phone, and a comfortable touch target.
@@ -245,7 +245,33 @@ test("hero: the AI call to action opens the existing assistant in the chosen lan
   }
   // Keyboard: the CTA is reachable and activates with Enter.
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
-  await page.locator(".rl-hero-cta").focus();
+  await page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-cta").focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/ai/);
+});
+
+test("hero: the marketplace, AI and shipping buttons stay in place on every slide", async ({
+  page,
+}) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const slides = page.locator(".rl-hero-slide");
+    const count = await slides.count();
+    expect(count).toBeGreaterThan(1);
+    const shop = page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-shop");
+    await expect(shop).toHaveAttribute("href", new RegExp(`^/stores(\\?lang=${lang})?$`));
+    const first = await shop.boundingBox();
+    expect(first!.y + first!.height, lang).toBeLessThanOrEqual(800);
+    for (let i = 0; i < count; i++) {
+      const slide = slides.nth(i);
+      await expect(slide.locator(".rl-hero-shop")).toHaveCount(1);
+      await expect(slide.locator(".rl-hero-secondary")).toHaveCount(1);
+      const box = await slide.locator(".rl-hero-shop").boundingBox();
+      const own = await slide.boundingBox();
+      // Same vertical position on every slide (relative to its own slide).
+      expect(Math.round(box!.y - own!.y), `${lang} slide ${i + 1}`).toBe(
+        Math.round(first!.y - (await slides.first().boundingBox())!.y),
+      );
+    }
+  }
 });

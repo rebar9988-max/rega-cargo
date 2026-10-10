@@ -130,33 +130,6 @@ export function PremiumHome({
                     )}
                     <Heading>{s.title}</Heading>
                     <p className="rl-hero-description">{s.body}</p>
-                    <div className="rl-hero-actions">
-                      {s.ai ? (
-                        <Link
-                          to="/ai"
-                          className="rl-button rl-hero-cta"
-                          data-variant="primary"
-                          aria-busy={opening || undefined}
-                          aria-label={opening ? `${h.cta}. ${h.ctaOpening}` : undefined}
-                        >
-                          <Icon as={Sparkles} />
-                          {h.cta}
-                          <Icon as={ArrowRight} directional />
-                        </Link>
-                      ) : (
-                        <Link to="/stores" className="rl-button" data-variant="primary">
-                          {c.heroShop}
-                          <Icon as={ArrowRight} directional />
-                        </Link>
-                      )}
-                      <Link
-                        to="/quote"
-                        search={{ from: undefined, to: undefined, kg: undefined }}
-                        className="rl-button rl-hero-secondary"
-                      >
-                        {c.heroShip}
-                      </Link>
-                    </div>
                     {s.ai ? (
                       <ul className="rl-hero-trust">
                         {h.trust.map((item) => (
@@ -169,6 +142,32 @@ export function PremiumHome({
                         {c.warehouse}
                       </p>
                     )}
+                    {/* The same actions on every slide, pinned to the bottom of the copy, so
+                        they never move or disappear while the slides change. */}
+                    <div className="rl-hero-actions" data-ai={ai || undefined}>
+                      <Link to="/stores" className="rl-button rl-hero-shop" data-variant="primary">
+                        {c.heroShop}
+                        <Icon as={ArrowRight} directional />
+                      </Link>
+                      {ai ? (
+                        <Link
+                          to="/ai"
+                          className="rl-button rl-hero-cta"
+                          aria-busy={opening || undefined}
+                          aria-label={opening ? `${h.ctaShort}. ${h.ctaOpening}` : undefined}
+                        >
+                          <Icon as={Sparkles} />
+                          {h.ctaShort}
+                        </Link>
+                      ) : null}
+                      <Link
+                        to="/quote"
+                        search={{ from: undefined, to: undefined, kg: undefined }}
+                        className="rl-button rl-hero-secondary"
+                      >
+                        {c.heroShip}
+                      </Link>
+                    </div>
                   </div>
                   <figure className="rl-hero-art">
                     <img
