@@ -1,8 +1,9 @@
-import { Price } from "./ui";
+import { Price, Icon } from "./ui";
+import { Scale, Package } from "lucide-react";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { NUM_LOCALE } from "@/lib/numbers";
 import { QUOTE_LIMITS, dimInRange, kgInRange, parseKg } from "@/lib/quote-search";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, type CSSProperties } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   DESTS,
@@ -67,6 +68,7 @@ export function QuotePanel({
   initial?: { from?: string; to?: string; kg?: string; l?: number; w?: number; h?: number };
 }) {
   const { t, lang } = useI18n();
+  const c = redesignCopy(lang);
   const [fromId, setFromId] = useState(getOrigin(initial?.from).id);
   const [toId, setToId] = useState(getDest(initial?.to).id);
   const [kg, setKg] = useState(
@@ -205,7 +207,6 @@ export function QuotePanel({
   }
 
   if (variant === "quick") {
-    const c = redesignCopy(lang);
     return (
       <div className="rl-quick-calc">
         <div className="rl-quick-fields">
@@ -299,18 +300,8 @@ export function QuotePanel({
   }
 
   return (
-    <div
-      className={
-        variant === "compact"
-          ? "ticket rounded-2xl border border-line bg-surface p-5 md:p-6"
-          : "flex flex-col gap-8"
-      }
-    >
-      <div
-        className={
-          variant === "full" ? "ticket rounded-2xl border border-line bg-surface p-5 md:p-6" : ""
-        }
-      >
+    <div className={variant === "compact" ? "rl-card rl-quote-card" : "rl-quote-stack"}>
+      <div className={variant === "full" ? "rl-card rl-quote-card" : ""}>
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs font-semibold tracking-widest text-pine">{t.waybill}</p>
           <p className="text-xs text-muted">
@@ -459,6 +450,44 @@ export function QuotePanel({
 
         {valid && lead ? (
           <div className="mt-5" aria-live="polite">
+            {variant === "full" ? (
+              <section className="rl-weight-explanation">
+                <h2>{c.weightTitle}</h2>
+                <p>{c.weightBody}</p>
+                <p className="rl-weight-formula">
+                  <bdi dir="ltr">
+                    {dims.l} × {dims.w} × {dims.h} ÷ {lead.mode.divisor} ={" "}
+                    {lead.price.volumetric.toFixed(1)} {t.kg}
+                  </bdi>{" "}
+                  · {t.modes[lead.mode.id].name}
+                </p>
+                <div className="rl-weight-visual">
+                  {[
+                    { label: t.scale, value: weight, icon: Scale },
+                    { label: t.volumeWord, value: lead.price.volumetric, icon: Package },
+                  ].map((item) => (
+                    <div key={item.label} className="rl-weight-item">
+                      <div>
+                        <Icon as={item.icon} />
+                        <span>{item.label}</span>
+                        <bdi dir="ltr">
+                          {item.value.toFixed(1)} {t.kg}
+                        </bdi>
+                      </div>
+                      <span className="rl-weight-track" aria-hidden="true">
+                        <span
+                          style={
+                            {
+                              "--rl-weight-fraction": `${(item.value / lead.price.chargeable) * 100}%`,
+                            } as CSSProperties
+                          }
+                        />
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
             <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-line bg-line">
               <Meter
                 k={t.scale}
@@ -514,15 +543,9 @@ export function QuotePanel({
                 {rows.map((row) => {
                   const less = Math.round((rows[0].price.total - row.price.total) * 100) / 100;
                   return (
-                    <article
-                      key={row.mode.id}
-                      className="rounded-xl border border-line bg-paper p-4"
-                    >
+                    <article key={row.mode.id} className="rl-quote-option">
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
-                          {row.mode.id === "economy" ? (
-                            <p className="text-xs font-medium text-pine">{t.usual}</p>
-                          ) : null}
                           <h2 className="text-2xl leading-tight font-bold">
                             {t.modes[row.mode.id].name}
                           </h2>
@@ -532,14 +555,7 @@ export function QuotePanel({
                             </bdi>
                           </p>
                         </div>
-                        <div className="text-end">
-                          <p className="text-2xl font-semibold tracking-tight">
-                            <Eur value={row.price.total} />
-                          </p>
-                          <p className="text-xs text-muted">
-                            <Iqd eur={row.price.total} />
-                          </p>
-                        </div>
+                        <Price eur={row.price.total} />
                       </div>
                       <p className="mt-3 text-sm leading-relaxed text-muted">
                         {t.modes[row.mode.id].blurb}
@@ -702,9 +718,7 @@ function Meter({ k, v, hot }: { k: string; v: string; hot?: boolean }) {
     <div className={`bg-surface px-3 py-3 ${hot ? "text-pine" : ""}`}>
       <p className="text-xs text-muted">{k}</p>
       <p className="mt-1 text-sm font-semibold">
-        <bdi dir="ltr" className="tabular-nums">
-          {v}
-        </bdi>
+        <span className="tabular-nums">{v}</span>
       </p>
     </div>
   );

@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui";
 import { responsiveImage } from "@/lib/images";
 import { seo } from "@/lib/seo";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
@@ -45,15 +46,18 @@ function MarketHome() {
     return (
       <Shell>
         <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
-        <div className="page flex flex-col items-start gap-4 py-10" role="status">
-          <p className="text-sm text-muted">{data.error === "unavailable" ? pc.unavailable : pc.errorBody}</p>
+        <div className="page rl-market-unavailable" role="status">
+          <p className="text-sm text-muted">
+            {data.error === "unavailable" ? pc.unavailable : pc.errorBody}
+          </p>
           <Link to="/stores" className={btnPrimary}>
             {DESIGN_COPY[lang].bazaarSub}
           </Link>
           <button
             type="button"
             onClick={() => void router.invalidate()}
-            className="inline-flex h-11 items-center rounded-full border border-silver bg-surface px-5 text-sm font-medium"
+            className="rl-button"
+            data-variant="secondary"
           >
             {pc.retry}
           </button>
@@ -67,16 +71,24 @@ function MarketHome() {
   return (
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
-      <div className="page flex flex-col gap-6 py-10">
+      <div className="page rl-compare-page">
         <div className="flex flex-wrap gap-3 text-sm">
-          <Link to="/market/sell" className="text-pine">{t.sell}</Link>
-          <Link to="/admin" className="text-pine">{t.admin}</Link>
-          <button type="button" className="text-pine" onClick={() => set({ saved: search.saved === "1" ? "" : "1" })}>
+          <Link to="/market/sell" className="text-pine">
+            {t.sell}
+          </Link>
+          <Link to="/admin" className="text-pine">
+            {t.admin}
+          </Link>
+          <button
+            type="button"
+            className="text-pine"
+            onClick={() => set({ saved: search.saved === "1" ? "" : "1" })}
+          >
             {t.favorite}
           </button>
         </div>
         <form
-          className="grid gap-3 md:grid-cols-4"
+          className="rl-card rl-compare-filters"
           onSubmit={(event) => {
             event.preventDefault();
             const form = new FormData(event.currentTarget);
@@ -91,40 +103,106 @@ function MarketHome() {
             });
           }}
         >
-          <input name="q" defaultValue={search.q} placeholder={t.search} aria-label={t.search} className={controlClass} />
-          <select name="category" defaultValue={search.category} aria-label={t.all} className={controlClass}>
+          <input
+            name="q"
+            defaultValue={search.q}
+            placeholder={t.search}
+            aria-label={t.search}
+            className={controlClass}
+          />
+          <select
+            name="category"
+            defaultValue={search.category}
+            aria-label={t.all}
+            className={controlClass}
+          >
             <option value="">{t.all}</option>
             {data.categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{lang === "ckb" ? cat.name_ku : cat.name_en}</option>
+              <option key={cat.id} value={cat.id}>
+                {lang === "ckb" ? cat.name_ku : cat.name_en}
+              </option>
             ))}
           </select>
-          <select name="brand" defaultValue={search.brand} aria-label={t.brand} className={controlClass}>
+          <select
+            name="brand"
+            defaultValue={search.brand}
+            aria-label={t.brand}
+            className={controlClass}
+          >
             <option value="">{t.brand}</option>
             {data.brands.map((brand) => (
-              <option key={brand} value={brand}>{brand}</option>
+              <option key={brand} value={brand}>
+                {brand}
+              </option>
             ))}
           </select>
-          <select name="sort" defaultValue={search.sort} aria-label={t.priceSort} className={controlClass}>
+          <select
+            name="sort"
+            defaultValue={search.sort}
+            aria-label={t.priceSort}
+            className={controlClass}
+          >
             <option value="price">{t.priceSort}</option>
             <option value="new">{t.newest}</option>
           </select>
-          <input name="min" defaultValue={search.min} inputMode="numeric" dir="ltr" placeholder={t.min} aria-label={t.min} className={controlClass} />
-          <input name="max" defaultValue={search.max} inputMode="numeric" dir="ltr" placeholder={t.max} aria-label={t.max} className={controlClass} />
+          <input
+            name="min"
+            defaultValue={search.min}
+            inputMode="numeric"
+            dir="ltr"
+            placeholder={t.min}
+            aria-label={t.min}
+            className={controlClass}
+          />
+          <input
+            name="max"
+            defaultValue={search.max}
+            inputMode="numeric"
+            dir="ltr"
+            placeholder={t.max}
+            aria-label={t.max}
+            className={controlClass}
+          />
           <label className="flex h-12 items-center gap-2 text-sm">
             <input name="stock" type="checkbox" defaultChecked={search.stock === "in"} />
             {t.inStock}
           </label>
-          <button type="submit" className="h-12 rounded-full bg-pine px-5 text-sm font-medium text-pine-ink">{t.search}</button>
+          <button type="submit" className={btnPrimary}>
+            {t.search}
+          </button>
         </form>
         <p className="text-sm text-muted">{t.freeSort}</p>
         {data.items.length === 0 ? (
-          <div className="flex flex-col items-start gap-3 rounded-2xl border border-line bg-surface p-5" role="status">
+          <div
+            className="flex flex-col items-start gap-3 rounded-2xl border border-line bg-surface p-5"
+            role="status"
+          >
             <p className="text-sm text-muted">{t.none}</p>
             <Link to="/stores" className={btnPrimary}>
               {DESIGN_COPY[lang].bazaarSub}
             </Link>
-            {search.q || search.category || search.brand || search.min || search.max || search.stock || search.saved ? (
-              <Link to="/market" search={{ sort: "price", page: 1, q: "", category: "", brand: "", min: "", max: "", stock: "", saved: "" }} className="text-sm font-medium text-pine">
+            {search.q ||
+            search.category ||
+            search.brand ||
+            search.min ||
+            search.max ||
+            search.stock ||
+            search.saved ? (
+              <Link
+                to="/market"
+                search={{
+                  sort: "price",
+                  page: 1,
+                  q: "",
+                  category: "",
+                  brand: "",
+                  min: "",
+                  max: "",
+                  stock: "",
+                  saved: "",
+                }}
+                className="text-sm font-medium text-pine"
+              >
                 {t.all}
               </Link>
             ) : null}
@@ -132,14 +210,38 @@ function MarketHome() {
         ) : null}
         <ul data-layout="card-grid" className="card-grid">
           {data.items.map((item) => (
-            <li key={item.slug} className="overflow-hidden rounded-2xl border border-line bg-surface">
-              <Link to="/market/$slug" params={{ slug: item.slug }} className="flex h-full flex-col">
-                {item.image ? <img {...responsiveImage(item.image, "(min-width: 768px) 270px, 50vw")} alt="" width={640} height={640} loading="lazy" decoding="async" className="aspect-square w-full object-cover" /> : <span className="aspect-square bg-paper" />}
+            <li key={item.slug} className="rl-compare-card">
+              <Link
+                to="/market/$slug"
+                params={{ slug: item.slug }}
+                className="flex h-full flex-col"
+              >
+                {item.image ? (
+                  <img
+                    {...responsiveImage(item.image, "(min-width: 768px) 270px, 50vw")}
+                    alt=""
+                    width={640}
+                    height={640}
+                    loading="lazy"
+                    decoding="async"
+                    className="aspect-square w-full object-cover"
+                  />
+                ) : (
+                  <span className="aspect-square bg-paper" />
+                )}
                 <span className="flex flex-1 flex-col gap-1 p-3">
-                  <span className="font-semibold">{lang === "ckb" ? item.nameKu : item.nameEn}</span>
-                  <span className="font-sans text-xs text-muted"><bdi dir="ltr">{item.brand}</bdi></span>
-                  <span className="text-sm text-pine">{item.lowest == null ? "—" : <bdi dir="ltr">{iqd(item.lowest)}</bdi>}</span>
-                  <span className="text-xs text-muted"><bdi dir="ltr">{item.offerCount}</bdi> {t.offers}</span>
+                  <span className="font-semibold">
+                    {lang === "ckb" ? item.nameKu : item.nameEn}
+                  </span>
+                  <span className="font-sans text-xs text-muted">
+                    <bdi dir="ltr">{item.brand}</bdi>
+                  </span>
+                  <span className="text-sm text-pine">
+                    {item.lowest == null ? "—" : <bdi dir="ltr">{iqd(item.lowest)}</bdi>}
+                  </span>
+                  <span className="text-xs text-muted">
+                    <bdi dir="ltr">{item.offerCount}</bdi> {t.offers}
+                  </span>
                 </span>
               </Link>
             </li>
@@ -147,11 +249,29 @@ function MarketHome() {
         </ul>
         <div className="flex gap-3">
           {search.page > 1 ? (
-            <button type="button" aria-label={PAGES_COPY[lang].prev} className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine" onClick={() => set({ page: search.page - 1 })}>←</button>
+            <button
+              type="button"
+              aria-label={PAGES_COPY[lang].prev}
+              className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine"
+              onClick={() => set({ page: search.page - 1 })}
+            >
+              ←
+            </button>
           ) : null}
-          <span className="text-sm text-muted"><bdi dir="ltr">{search.page} / {data.pages}</bdi></span>
+          <span className="text-sm text-muted">
+            <bdi dir="ltr">
+              {search.page} / {data.pages}
+            </bdi>
+          </span>
           {search.page < data.pages ? (
-            <button type="button" aria-label={PAGES_COPY[lang].next} className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine" onClick={() => navigate({ search: { ...search, page: search.page + 1 } })}>→</button>
+            <button
+              type="button"
+              aria-label={PAGES_COPY[lang].next}
+              className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine"
+              onClick={() => navigate({ search: { ...search, page: search.page + 1 } })}
+            >
+              →
+            </button>
           ) : null}
         </div>
       </div>
@@ -169,7 +289,9 @@ function MarketLoading() {
         <span className="sr-only">{PAGES_COPY[lang].loading}</span>
         <ul data-layout="card-grid" className="card-grid" aria-hidden="true">
           {Array.from({ length: 8 }, (_, index) => (
-            <li key={index} className="aspect-product animate-pulse rounded-2xl bg-line" />
+            <li key={index}>
+              <Skeleton className="rl-product-skeleton" />
+            </li>
           ))}
         </ul>
       </div>

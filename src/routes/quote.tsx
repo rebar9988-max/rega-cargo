@@ -32,7 +32,7 @@ function QuotePage() {
     <Shell>
       <DeliveryTabs active="/quote" />
       <PageHeader kicker={t.quoteKicker} title={t.quoteTitle} lede={t.quoteLede} />
-      <div className="page py-12 md:py-16">
+      <div className="page rl-quote-page">
         <QuotePanel
           key={`${from}-${to}-${kg}-${l}-${w}-${h}`}
           variant="full"
