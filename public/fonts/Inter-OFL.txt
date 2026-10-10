@@ -90,3 +90,8 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
+
+R&L distribution note: split into common Latin and Latin Extended subsets.
+Punctuation, currency and layout features are retained. The weight axis is
+restricted to the UI weights 400–700 and optical size is fixed at 14.
+Source: https://github.com/rsms/inter (InterVariable.woff2).

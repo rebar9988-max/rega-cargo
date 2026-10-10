@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, useRef, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -10,8 +10,7 @@ import {
   ShieldCheck,
   Warehouse,
 } from "lucide-react";
-import { Button, Chip, Icon } from "./ui";
-import { QuotePanel } from "./quote-panel";
+import { Button, Chip, Icon, Deferred, Skeleton } from "./ui";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { storeCopy } from "@/lib/store-copy";
@@ -21,6 +20,10 @@ import { GOODS } from "@/lib/stores";
 import { NAV_CATEGORIES } from "@/lib/navigation";
 import { responsiveImage } from "@/lib/images";
 import type { Service } from "@/lib/service-choice";
+
+const QuickQuote = lazy(() =>
+  import("./quote-panel").then(({ QuotePanel }) => ({ default: QuotePanel })),
+);
 
 export function PremiumHome({
   service,
@@ -67,7 +70,11 @@ export function PremiumHome({
   }
   return (
     <>
-      <section className="rl-hero-carousel" aria-label={c.heroShop} aria-roledescription="carousel">
+      <section
+        className="rl-hero-carousel"
+        aria-label={c.heroShop}
+        aria-roledescription={c.carousel}
+      >
         <div
           ref={rail}
           className="rl-hero-rail"
@@ -127,7 +134,7 @@ export function PremiumHome({
                   </div>
                   <figure className="rl-hero-art">
                     <img
-                      {...responsiveImage(image.image, "(min-width: 1024px) 560px, 100vw")}
+                      {...responsiveImage(image.image, "(min-width: 1024px) 560px, 128px")}
                       width={640}
                       height={640}
                       alt={sc.goods[image.id]}
@@ -187,10 +194,35 @@ export function PremiumHome({
             </Chip>
           </div>
         </div>
-        <QuotePanel variant="quick" />
+        <Deferred
+          className="rl-deferred-calculator"
+          fallback={
+            <div className="rl-calc-placeholder">
+              <Skeleton />
+              <Link
+                to="/quote"
+                search={{ from: undefined, to: undefined, kg: undefined }}
+                className="rl-button"
+                data-variant="secondary"
+              >
+                {t.hero.fullQuote}
+              </Link>
+            </div>
+          }
+        >
+          <Suspense
+            fallback={
+              <div className="rl-calc-placeholder">
+                <Skeleton />
+              </div>
+            }
+          >
+            <QuickQuote variant="quick" />
+          </Suspense>
+        </Deferred>
         {children}
       </section>
-      <section className="page rl-section" aria-labelledby="rl-home-cats">
+      <section className="page rl-section rl-defer" aria-labelledby="rl-home-cats">
         <div className="rl-section-heading">
           <div>
             <p className="rl-eyebrow">{c.categories}</p>
@@ -226,7 +258,7 @@ export function PremiumHome({
         </ul>
         <p className="rl-caption">{c.samplesBody}</p>
       </section>
-      <section className="rl-brand-section">
+      <section className="rl-brand-section rl-defer">
         <div className="page rl-section">
           <div className="rl-section-heading">
             <div>
@@ -256,7 +288,7 @@ export function PremiumHome({
           </ul>
         </div>
       </section>
-      <section className="page rl-section">
+      <section className="page rl-section rl-defer">
         <div className="rl-section-heading">
           <div>
             <p className="rl-eyebrow">{c.howBody}</p>
@@ -275,7 +307,7 @@ export function PremiumHome({
           ))}
         </ol>
       </section>
-      <section className="rl-trust-section">
+      <section className="rl-trust-section rl-defer">
         <div className="page rl-section">
           <div className="rl-section-heading">
             <div>

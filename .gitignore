@@ -3,6 +3,7 @@ dist
 .output
 .nitro
 .vinxi
+.tanstack
 .env
 .env.*
 *.log

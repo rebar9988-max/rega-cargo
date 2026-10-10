@@ -70,7 +70,8 @@ export default defineConfig(({ command, isPreview }) => ({
     // Dev-only /__app-env, read by scripts/check-auth-invariant.mjs.
     appEnvPlugin(),
     tailwindcss(),
-    tanstackStart(),
+    // Render route CSS with the HTML, without copying the stylesheet into client JavaScript.
+    tanstackStart({ server: { build: { inlineCss: true } } }),
     ...(command === "build" || isPreview
       ? [
           nitro({

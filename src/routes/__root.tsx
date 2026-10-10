@@ -1,13 +1,28 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+  retainSearchParams,
+} from "@tanstack/react-router";
+import { APPEARANCE_SCRIPT } from "@/lib/appearance-script";
 import { AuthProvider } from "@/lib/auth/provider";
 import { ThemeProvider } from "@/lib/theme";
-import { I18nProvider } from "@/lib/i18n";
+import { loadCopy, I18nProvider } from "@/lib/i18n";
+import { validateLocaleSearch } from "@/lib/locale-search";
+import { langMeta } from "@/lib/langs";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { ServiceWorkerSetup } from "@/components/sw-setup";
 import { NotFound } from "@/components/not-found";
-import appCss from "../styles.css?url";
+import "../styles.css";
 
 export const Route = createRootRoute({
+  validateSearch: validateLocaleSearch,
+  search: { middlewares: [retainSearchParams(["lang"])] },
+  beforeLoad: async ({ search }) => {
+    const initialLang = search.lang ?? "ckb";
+    return { initialLang, initialCopy: await loadCopy(initialLang), localeExplicit: !!search.lang };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -18,7 +33,7 @@ export const Route = createRootRoute({
         content:
           "R&L — Move smart. Deliver fast. Europe, Kurdistan, and Iraq. Chargeable-weight prices in euro and dinar.",
       },
-      { name: "theme-color", content: "#f4f4f4" },
+      { name: "theme-color", content: "#f7f6f2" },
       { property: "og:title", content: "R&L" },
       { property: "og:description", content: "MOVE SMART. DELIVER FAST." },
       { property: "og:image", content: "/og.jpg" },
@@ -27,35 +42,59 @@ export const Route = createRootRoute({
     ],
     scripts: [
       {
-        // Preload Vazirmatn only for Arabic-script languages (ckb is the default).
-        children:
-          '(function(){try{var l=localStorage.getItem("rl-lang-v4")||localStorage.getItem("rega-lang");if(!l||l==="ckb"||l==="ar"||l==="fa"){var k=document.createElement("link");k.rel="preload";k.as="font";k.type="font/woff2";k.crossOrigin="anonymous";k.href="/fonts/noto-sans-arabic-v2.woff2";document.head.appendChild(k)}}catch(e){}})()',
+        // Set appearance before the first paint. The CSP middleware supplies its nonce.
+        children: APPEARANCE_SCRIPT,
       },
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/favicon.png?v=6" },
-      { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
   }),
   notFoundComponent: NotFound,
-  component: () => (
+  component: RootDocument,
+});
+
+function RootDocument() {
+  const { initialLang, initialCopy, localeExplicit } = Route.useRouteContext();
+  const meta = langMeta(initialLang);
+  return (
     <html
-      lang="ckb"
-      dir="rtl"
-      data-textdir="rtl"
+      lang={meta.html}
+      dir={meta.dir}
+      data-textdir={meta.dir}
       data-rl-ai={rlAiEnabled() ? "1" : undefined}
       suppressHydrationWarning
     >
       <head>
+        {meta.dir === "rtl" ? (
+          <link
+            rel="preload"
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+            href="/fonts/noto-sans-arabic-v2.woff2"
+          />
+        ) : null}
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+          href="/fonts/inter-variable.woff2?v=2"
+        />
         <HeadContent />
       </head>
       <body>
         <ServiceWorkerSetup />
         <AuthProvider>
           <ThemeProvider>
-            <I18nProvider>
+            <I18nProvider
+              initialLang={initialLang}
+              initialCopy={initialCopy}
+              localeExplicit={localeExplicit}
+            >
               <Outlet />
             </I18nProvider>
           </ThemeProvider>
@@ -63,5 +102,5 @@ export const Route = createRootRoute({
         <Scripts />
       </body>
     </html>
-  ),
-});
+  );
+}

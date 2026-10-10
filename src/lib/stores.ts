@@ -1,17 +1,21 @@
 import { getJson, setJson } from "./storage.ts";
 
-export type StoreCategory = "beauty" | "fashion" | "electronics" | "home" | "baby" | "sports" | "general";
+export type StoreCategory =
+  "beauty" | "fashion" | "electronics" | "home" | "baby" | "sports" | "general";
 
 export type StoreNote = "amazon" | "ebay" | "otto" | "zalando" | "shein" | "sephora" | "link";
 
 export type StoreCaution = "perfume" | "aerosol" | "battery" | "cosmetics";
+
+/** Extend this data configuration when additional store origins are introduced. */
+export const STORE_COUNTRIES = ["DE", "INT"] as const;
 
 export type StoreEntry = {
   id: string;
   name: string;
   host: string;
   url: string;
-  country: "DE" | "INT";
+  country: (typeof STORE_COUNTRIES)[number];
   categories: StoreCategory[];
   note: StoreNote;
   caution: StoreCaution[];
@@ -148,7 +152,14 @@ export const STORE_CATEGORIES: StoreCategory[] = [
 
 export function readFavs(): string[] {
   if (typeof window === "undefined") return [];
-  return getJson("favs", (value) => (Array.isArray(value) ? value.filter((item): item is string => typeof item === "string").slice(0, 100) : null), []);
+  return getJson(
+    "favs",
+    (value) =>
+      Array.isArray(value)
+        ? value.filter((item): item is string => typeof item === "string").slice(0, 100)
+        : null,
+    [],
+  );
 }
 
 export function writeFavs(ids: string[]) {
@@ -169,7 +180,8 @@ export function hostAllowed(store: StoreEntry | undefined, raw: string) {
   }
 }
 
-export type GoodId = "perfume" | "cream" | "sneakers" | "dress" | "earbuds" | "kettle" | "baby" | "ball";
+export type GoodId =
+  "perfume" | "cream" | "sneakers" | "dress" | "earbuds" | "kettle" | "baby" | "ball";
 
 export type Good = {
   id: GoodId;

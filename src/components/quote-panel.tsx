@@ -543,7 +543,7 @@ export function QuotePanel({
                 {rows.map((row) => {
                   const less = Math.round((rows[0].price.total - row.price.total) * 100) / 100;
                   return (
-                    <article key={row.mode.id} className="rl-quote-option">
+                    <article key={row.mode.id} className="rl-quote-option rl-defer">
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
                           <h2 className="text-2xl leading-tight font-bold">

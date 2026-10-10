@@ -31,8 +31,9 @@ export const Route = createFileRoute("/stores/request")({
     item: typeof search.item === "string" ? search.item : undefined,
     intent: search.intent === "ship" ? "ship" : "buy",
   }),
-  head: () =>
+  head: ({ match }) =>
     seo({
+      lang: match.context.initialLang,
       path: "/stores/request",
       title: "لینکی کاڵا · R&L",
       description: "داوای کڕینی کاڵایەک لە فرۆشگایەکی ئەوروپی.",

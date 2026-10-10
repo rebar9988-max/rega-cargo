@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Icon, Modal, Select, ThemeToggle } from "./ui";
 import { Mark } from "./site-mark";
-import { AI_COPY } from "./ai-copy";
+import { SITE_COPY } from "@/lib/site-copy";
 import { SearchBox } from "./search-box";
 import { HeaderLangPicker } from "./lang-picker";
 import { useI18n } from "@/lib/i18n";
@@ -198,7 +198,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
           </Link>
           {rlAiEnabled() ? (
             <Link to="/ai" className="rl-nav-service">
-              {AI_COPY[lang].navLabel}
+              {SITE_COPY[lang].ai}
             </Link>
           ) : null}
         </nav>
@@ -267,7 +267,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
         title={c.navigation}
         className="rl-mobile-menu"
       >
-        <div data-layout="sheet" className="rl-stack">
+        <div className="rl-stack">
           <div className="rl-row">
             <Mark />
             <ThemeToggle />
@@ -316,7 +316,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             </Link>
             {rlAiEnabled() ? (
               <Link to="/ai" onClick={() => setMobile(false)}>
-                {AI_COPY[lang].navLabel}
+                {SITE_COPY[lang].ai}
               </Link>
             ) : null}
             <Link to="/account" onClick={() => setMobile(false)}>

@@ -10,6 +10,8 @@
   --rl-mark-size: 3rem;
   --rl-mark-compact: 2.5rem;
   --rl-header-expanded: 5.5rem;
+  --rl-header-mobile: 8.5rem;
+  --rl-header-mobile-compact: 7.5rem;
   --rl-header-compact: 4.5rem;
   --rl-search-width: 40rem;
   --rl-nav-h: 3.5rem;
@@ -53,10 +55,12 @@
   --rl-motion: 200ms;
   --rl-motion-slow: 250ms;
   --rl-motion-reduced: 0.01ms;
+  --rl-animation-reduced: none;
   --rl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --rl-font-latin: "Inter RL";
   --rl-font-arabic: "Noto Sans Arabic RL", "Vazirmatn";
-  --rl-font-body: var(--rl-font-latin), var(--rl-font-arabic), system-ui, sans-serif;
+  --rl-font-body:
+    var(--rl-font-latin), var(--rl-font-arabic), Arial, "Liberation Sans", system-ui, sans-serif;
   --rl-leading: 1.65;
   --rl-leading-heading: 1.2;
   --rl-tracking: -0.035em;
@@ -90,11 +94,25 @@
   --rl-shadow-lg: 0 16px 48px rgb(0 0 0 / 0.32);
 }
 :root {
-  --rl-weight-semibold: 600;
+  --rl-weight-semibold: 650;
+  --rl-weight-bold: 700;
+  --rl-weight-medium: 500;
+  --rl-skip-offset: -200%;
   --rl-space-7: 3.5rem;
   --rl-filter-width: 16rem;
   --rl-filter-sticky: 9rem;
   --rl-form-aside-width: 22rem;
   --rl-image-hover-scale: 1.03;
   --rl-underline-offset: 0.2em;
+}
+:root {
+  --rl-section-intrinsic: 36rem;
+  --rl-footer-intrinsic: 44rem;
+  --rl-option-intrinsic: 24rem;
+}
+:root {
+  --rl-mobile-hero-art: 8rem;
+}
+:root {
+  --rl-calc-placeholder: 48rem;
 }

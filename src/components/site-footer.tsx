@@ -5,7 +5,7 @@ import { Icon, Select, ThemeToggle } from "./ui";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { LANGS } from "@/lib/langs";
-import { LEGAL_COPY } from "@/lib/legal-copy";
+import { SITE_COPY } from "@/lib/site-copy";
 import { ITEMS_COPY } from "@/lib/items-copy";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { NAV_CATEGORIES } from "@/lib/navigation";
@@ -13,9 +13,9 @@ import { DESIGN_COPY } from "@/lib/design-copy";
 export function SiteFooter() {
   const { lang, t, setLang } = useI18n();
   const c = redesignCopy(lang);
-  const legal = LEGAL_COPY[lang];
+  const legal = SITE_COPY[lang].legal;
   return (
-    <footer className="rl-site-footer clear-bottom-bar">
+    <footer className="rl-site-footer rl-defer clear-bottom-bar">
       <div className="page rl-footer-grid">
         <div className="rl-stack">
           <Mark />
@@ -62,7 +62,7 @@ export function SiteFooter() {
             <h2>{c.footerLegal}</h2>
             {(["impressum", "privacy", "terms"] as const).map((doc) => (
               <Link key={doc} to={`/${doc}`}>
-                {legal.links[doc]}
+                {legal[doc]}
               </Link>
             ))}
           </nav>

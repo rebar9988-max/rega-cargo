@@ -4,10 +4,20 @@
 @font-face {
   font-family: "Inter RL";
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400 700;
   font-display: swap;
-  src: url("/fonts/inter-variable.woff2") format("woff2");
-  unicode-range: U+0000-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2190-21FF;
+  src: url("/fonts/inter-variable.woff2?v=2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+011E-011F, U+0130-0131, U+015E-015F, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+@font-face {
+  font-family: "Inter RL";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/inter-latin-ext.woff2?v=2") format("woff2");
+  unicode-range:
+    U+0100-011D, U+0120-012F, U+0132-015D, U+0160-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2100-2121, U+2123-214F;
 }
 @font-face {
   font-family: "Noto Sans Arabic RL";
@@ -139,7 +149,8 @@
     font-variant-numeric: tabular-nums;
     unicode-bidi: isolate;
   }
-  bdi[dir="ltr"] {
+  bdi[dir="ltr"],
+  input[dir="ltr"] {
     font-family: var(--rl-font-latin);
   }
   :focus-visible {
@@ -229,6 +240,7 @@ html[dir="rtl"] .rl-directional {
   *,
   *::before,
   *::after {
+    animation-name: var(--rl-animation-reduced) !important;
     animation-duration: var(--rl-motion-reduced) !important;
     animation-iteration-count: 1 !important;
     transition-duration: var(--rl-motion-reduced) !important;

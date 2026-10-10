@@ -14,11 +14,14 @@ const PAGES = [
   "/ai",
   "/contact",
   "/privacy",
+  "/impressum",
+  "/terms",
+  "/stores/request?store=zalando&intent=buy",
 ] as const;
-const LANGS = ["ckb", "en"] as const;
+const LANGS = ["ckb", "ar", "en"] as const;
 
 function slug(path: string) {
-  return path === "/" ? "home" : path.slice(1).replace(/\//g, "-");
+  return path === "/" ? "home" : path.slice(1).split("?")[0].replace(/\//g, "-");
 }
 
 async function open(page: Page, path: string, lang: string) {
@@ -27,14 +30,36 @@ async function open(page: Page, path: string, lang: string) {
     localStorage.setItem("rega-lang", l);
     localStorage.setItem("rega-lang-v3", "1");
   }, lang);
-  await page.goto(path, { waitUntil: "networkidle" });
+  await page.goto(`${path}${path.includes("?") ? "&" : "?"}lang=${lang}`, {
+    waitUntil: "networkidle",
+  });
   await expect(page.locator("html")).toHaveAttribute("lang", lang, { timeout: 15_000 });
   await settle(page);
 }
 
 /** Load every image (incl. lazy ones below the fold) and the web fonts before measuring. */
 async function settle(page: Page) {
+  const deferred = page.locator(".rl-deferred-calculator");
+  if (await deferred.count()) {
+    // Network idle can precede hydration; the router then resets the initial scroll.
+    // Keep the calculator in view until its interactive content has actually mounted.
+    await expect
+      .poll(
+        async () => {
+          await deferred.scrollIntoViewIfNeeded();
+          return page.locator(".rl-quick-options").isVisible();
+        },
+        { intervals: [100, 250, 500] },
+      )
+      .toBe(true);
+    await expect(page.locator(".rl-quick-options")).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(page.locator(".rl-site-header")).toHaveAttribute("data-shrunk", "false");
+  }
   await page.evaluate(async () => {
+    // Full-page snapshots measure all deferred sections, including those below the viewport.
+    for (const section of document.querySelectorAll<HTMLElement>(".rl-defer"))
+      section.style.contentVisibility = "visible";
     for (const img of document.querySelectorAll("img")) img.loading = "eager";
     await Promise.all(
       [...document.querySelectorAll("img")].map((img) =>
@@ -62,6 +87,12 @@ function shot(page: Page, sheet = false) {
 }
 
 async function geometry(page: Page, bp: Bp, sheet = false) {
+  // Scroll restoration and WebKit's grid layout may settle a frame after the header state.
+  await expect
+    .poll(() =>
+      page.locator('[data-layout="header"]').evaluate((el) => el.getBoundingClientRect().height),
+    )
+    .toBe(LAYOUT.headerRow[bp]);
   const issues = await page.evaluate(measureLayout, { bp, layout: LAYOUT, sheet });
   expect(issues, issues.join("\n")).toEqual([]);
 }
@@ -93,9 +124,13 @@ for (const lang of LANGS) {
       await open(page, "/", lang);
       const button = page.locator('[data-layout="lang-button"]');
       const box = await button.boundingBox();
-      expect(box && box.width >= 40 && box.height >= 40, "language button tap target >= 40px").toBe(true);
+      expect(box && box.width >= 40 && box.height >= 40, "language button tap target >= 40px").toBe(
+        true,
+      );
       await button.click();
-      const panel = page.locator(breakpoint === "phone" ? '[data-layout="lang-sheet"]' : '[data-layout="lang-popover"]');
+      const panel = page.locator(
+        breakpoint === "phone" ? '[data-layout="lang-sheet"]' : '[data-layout="lang-popover"]',
+      );
       await expect(panel).toBeVisible();
       await expect(panel.locator('[role="option"]')).toHaveCount(7);
       await expect(panel.locator(`[role="option"][data-lang="${lang}"]`)).toBeFocused();

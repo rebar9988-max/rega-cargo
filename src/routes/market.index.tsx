@@ -22,10 +22,21 @@ export const Route = createFileRoute("/market/")({
     page: typeof search.page === "number" && search.page > 0 ? search.page : 1,
     saved: search.saved === "1" || search.saved === true ? "1" : "",
   }),
-  loaderDeps: ({ search }) => search,
+  loaderDeps: ({ search }) => ({
+    q: search.q,
+    category: search.category,
+    brand: search.brand,
+    min: search.min,
+    max: search.max,
+    stock: search.stock,
+    sort: search.sort,
+    page: search.page,
+    saved: search.saved,
+  }),
   loader: ({ deps }) => marketHome({ data: { ...deps, saved: deps.saved === "1" } }),
-  head: () =>
+  head: ({ match }) =>
     seo({
+      lang: match.context.initialLang,
       path: "/market",
       title: "بەراوردی نرخ · R&L",
       description: "بەراوردی نرخی کاڵا لە چەند فرۆشیارێک. بێ پارەدان و بێ ڕیکلام.",

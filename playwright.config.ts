@@ -31,6 +31,7 @@ const WEBKIT = new Set(["iphone", "ipad-portrait", "ipad-landscape"]);
 function project(browser: "chromium" | "webkit", vp: (typeof VIEWPORTS)[number]) {
   return {
     name: `${browser}-${vp.name}`,
+    testIgnore: "**/premium.spec.ts",
     use: {
       ...(browser === "chromium" ? chromium : safari),
       viewport: { width: vp.width, height: vp.height },
@@ -48,7 +49,8 @@ export default defineConfig<LayoutProjectUse>({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 4 : 6,
+  // Leave CPU for the local Worker and WebKit's full-page captures on CI runners.
+  workers: process.env.CI ? 3 : 6,
   timeout: 45_000,
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
   expect: {
@@ -75,6 +77,18 @@ export default defineConfig<LayoutProjectUse>({
   projects: [
     ...VIEWPORTS.map((vp) => project("chromium", vp)),
     ...VIEWPORTS.filter((vp) => WEBKIT.has(vp.name)).map((vp) => project("webkit", vp)),
+    {
+      name: "premium-360",
+      testMatch: "**/premium.spec.ts",
+      use: {
+        ...chromium,
+        viewport: { width: 360, height: 800 },
+        deviceScaleFactor: 1,
+        isMobile: true,
+        hasTouch: true,
+        breakpoint: "phone",
+      },
+    },
   ],
   webServer: BASE_URL
     ? undefined

@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-10",
+  "deployment": "not deployed",
+  "lighthouse": {
+    "method": "Lighthouse default simulated mobile throttling; compiled Worker through an unchanged local HTTPS/HTTP2 reverse proxy",
+    "local_http1_comparison": {
+      "home": 93,
+      "stores": 87,
+      "quote": 89
+    },
+    "note": "HTTP/2 is the production transport. The localhost certificate is trusted only for this preview using --allow-insecure-localhost. No application security setting or audit was disabled. SEO canonical URLs retain the configured live origin.",
+    "local_http1_comparison_stage": "Earlier Step 6 build, before the final home-only bundle split and Safari correction"
+  },
+  "routes": {
+    "home": {
+      "url": "https://localhost:9443/",
+      "fetched": "2026-10-10T12:53:33.944Z",
+      "lighthouse_version": "13.5.0",
+      "scores": {
+        "performance": 94,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 100
+      },
+      "metrics": {
+        "first-contentful-paint": {
+          "value": 1733.25,
+          "display": "1.7 s"
+        },
+        "largest-contentful-paint": {
+          "value": 2549.25,
+          "display": "2.5 s"
+        },
+        "total-blocking-time": {
+          "value": 59,
+          "display": "60 ms"
+        },
+        "speed-index": {
+          "value": 4118.1900520190065,
+          "display": "4.1 s"
+        },
+        "cumulative-layout-shift": {
+          "value": 0,
+          "display": "0"
+        }
+      }
+    },
+    "stores": {
+      "url": "https://localhost:9443/stores",
+      "fetched": "2026-10-10T12:53:49.475Z",
+      "lighthouse_version": "13.5.0",
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 100
+      },
+      "metrics": {
+        "first-contentful-paint": {
+          "value": 1698.002,
+          "display": "1.7 s"
+        },
+        "largest-contentful-paint": {
+          "value": 2360.002,
+          "display": "2.4 s"
+        },
+        "total-blocking-time": {
+          "value": 13.5,
+          "display": "10 ms"
+        },
+        "speed-index": {
+          "value": 1698.002,
+          "display": "1.7 s"
+        },
+        "cumulative-layout-shift": {
+          "value": 0,
+          "display": "0"
+        }
+      }
+    },
+    "quote": {
+      "url": "https://localhost:9443/quote",
+      "fetched": "2026-10-10T12:54:03.079Z",
+      "lighthouse_version": "13.5.0",
+      "scores": {
+        "performance": 96,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 100
+      },
+      "metrics": {
+        "first-contentful-paint": {
+          "value": 1693.691,
+          "display": "1.7 s"
+        },
+        "largest-contentful-paint": {
+          "value": 2455.691,
+          "display": "2.5 s"
+        },
+        "total-blocking-time": {
+          "value": 15,
+          "display": "20 ms"
+        },
+        "speed-index": {
+          "value": 2621.038874169149,
+          "display": "2.6 s"
+        },
+        "cumulative-layout-shift": {
+          "value": 0,
+          "display": "0"
+        }
+      }
+    }
+  }
+}

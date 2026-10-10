@@ -3,6 +3,7 @@ import { rawGet, rawSet } from "./storage";
 type Theme = "light" | "dark";
 const ThemeContext = createContext<{ theme: Theme; setTheme: (value: Theme) => void } | null>(null);
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [ready, setReady] = useState(false);
   const [theme, updateTheme] = useState<Theme>("light");
   useEffect(() => {
     const saved = rawGet("rl-theme-v1");
@@ -13,14 +14,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           ? "dark"
           : "light",
     );
+    setReady(true);
   }, []);
   function setTheme(next: Theme) {
     updateTheme(next);
     rawSet("rl-theme-v1", next);
   }
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
+    if (ready) document.documentElement.dataset.theme = theme;
+  }, [theme, ready]);
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
 }
 export function useTheme() {

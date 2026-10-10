@@ -1,8 +1,8 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Heart, SlidersHorizontal, ArrowUpRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { PremiumHome } from "./premium-home";
-import { DeliveryHub, ServiceSwitch } from "./delivery-hub";
+import type { PremiumHome } from "./premium-home";
+import type { DeliveryHub, ServiceSwitch } from "./delivery-hub";
 import { Shell, PageHeader } from "./shell";
 import { Badge, BottomSheet, Button, Chip, Icon, Select, Skeleton } from "./ui";
 import { Field } from "./field";
@@ -16,13 +16,20 @@ import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
 import { readFavs, STORE_CATEGORIES, STORES, storeById, storeLogo, writeFavs } from "@/lib/stores";
 
+type HomeComponents = {
+  PremiumHome: typeof PremiumHome;
+  DeliveryHub: typeof DeliveryHub;
+  ServiceSwitch: typeof ServiceSwitch;
+};
+type BazaarProps =
+  | { home?: false; initialService?: Service; homeComponents?: never }
+  | { home: true; initialService?: Service; homeComponents: HomeComponents };
+
 export function BazaarPage({
-  home = false,
+  home,
   initialService = "bazaar",
-}: {
-  home?: boolean;
-  initialService?: Service;
-} = {}) {
+  homeComponents,
+}: BazaarProps = {}) {
   const { lang } = useI18n();
   const t = storeCopy(lang),
     c = redesignCopy(lang),
@@ -140,16 +147,16 @@ export function BazaarPage({
   )
     return (
       <Shell>
-        <PremiumHome service={service} onService={chooseService}>
-          {service === "delivery" ? <DeliveryHub embedded /> : null}
-        </PremiumHome>
+        <homeComponents.PremiumHome service={service} onService={chooseService}>
+          {service === "delivery" ? <homeComponents.DeliveryHub embedded /> : null}
+        </homeComponents.PremiumHome>
       </Shell>
     );
   return (
     <Shell search={{ q: params.q ?? "", setQ: (q) => setFilter({ q: q || undefined }) }}>
-      {home ? <ServiceSwitch value={service} onChange={chooseService} /> : null}
+      {home ? <homeComponents.ServiceSwitch value={service} onChange={chooseService} /> : null}
       {home && service === "delivery" ? (
-        <DeliveryHub />
+        <homeComponents.DeliveryHub />
       ) : (
         <>
           <PageHeader kicker={c.marketplace} title={c.storesTitle} lede={t.lede} />
@@ -205,7 +212,11 @@ export function BazaarPage({
                           <h2 id="rl-samples">{c.samples}</h2>
                           <p>{c.samplesBody}</p>
                         </div>
-                        <ul className="rl-results-grid" data-layout="card-grid">
+                        <ul
+                          className="rl-results-grid"
+                          data-layout="card-grid"
+                          data-layout-cols="catalogue"
+                        >
                           {results.goods.map((good, index) => (
                             <li key={good.id} className="rl-product-card" data-good={good.id}>
                               <Link
@@ -254,12 +265,16 @@ export function BazaarPage({
                       </section>
                     ) : null}
                     {results.stores.length ? (
-                      <section aria-labelledby="rl-store-list">
+                      <section aria-labelledby="rl-store-list" className="rl-defer">
                         <div className="rl-result-heading">
                           <h2 id="rl-store-list">{t.storesHeading}</h2>
                           <p>{c.noPartner}</p>
                         </div>
-                        <ul className="rl-results-grid" data-layout="card-grid">
+                        <ul
+                          className="rl-results-grid"
+                          data-layout="card-grid"
+                          data-layout-cols="catalogue"
+                        >
                           {results.stores.map((store) => (
                             <li
                               className="rl-store-card rl-card"

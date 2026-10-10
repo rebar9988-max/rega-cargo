@@ -15,8 +15,9 @@ export const Route = createFileRoute("/quote")({
     w: parseDim(search.w),
     h: parseDim(search.h),
   }),
-  head: () =>
+  head: ({ match }) =>
     seo({
+      lang: match.context.initialLang,
       path: "/quote",
       title: "نرخی ناردن · R&L",
       description:

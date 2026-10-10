@@ -1,5 +1,6 @@
 import type { Lang } from "./langs";
 const en = {
+  carousel: "Image carousel",
   marketplace: "Marketplace",
   designTitle: "R&L design system",
   designLede: "Components, language direction and appearance.",
@@ -122,6 +123,7 @@ const en = {
 export type RedesignCopy = typeof en;
 // TODO(translate-review): native reviewer should review new ckb marketing and accessibility copy.
 const ckb: RedesignCopy = {
+  carousel: "پیشاندانی وێنەکان",
   marketplace: "بازاڕ",
   designTitle: "سیستەمی دیزاینی R&L",
   designLede: "پێکهاتەکان، ئاراستەی زمان و ڕووکار.",
@@ -242,6 +244,7 @@ const ckb: RedesignCopy = {
 };
 // TODO(translate-review): native reviewer should review new ar marketing and accessibility copy.
 const ar: RedesignCopy = {
+  carousel: "عرض شرائح",
   marketplace: "السوق",
   designTitle: "نظام تصميم R&L",
   designLede: "المكونات واتجاه اللغة والمظهر.",

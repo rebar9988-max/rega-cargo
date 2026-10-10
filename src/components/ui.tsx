@@ -2,6 +2,7 @@ import {
   useEffect,
   useId,
   useRef,
+  useState,
   type ButtonHTMLAttributes,
   type HTMLAttributes,
   type InputHTMLAttributes,
@@ -126,6 +127,7 @@ export function Modal({
   return (
     <dialog
       ref={ref}
+      data-layout={className === "rl-mobile-menu" ? "sheet" : undefined}
       className={`rl-modal ${bottomSheet ? "rl-sheet" : ""} ${className}`}
       aria-labelledby={id}
       onCancel={onClose}
@@ -146,4 +148,45 @@ export function Modal({
 }
 export function BottomSheet(props: Omit<Parameters<typeof Modal>[0], "bottomSheet">) {
   return <Modal {...props} bottomSheet />;
+}
+
+/** Mount an expensive offscreen control once, preserving its state thereafter. */
+export function Deferred({
+  children,
+  fallback,
+  className = "",
+}: {
+  children: ReactNode;
+  fallback: ReactNode;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    if (!("IntersectionObserver" in window)) {
+      setReady(true);
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        setReady(true);
+        observer.disconnect();
+      }
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div
+      ref={ref}
+      tabIndex={ready ? undefined : 0}
+      onFocusCapture={() => setReady(true)}
+      className={className}
+      aria-busy={!ready}
+    >
+      {ready ? children : fallback}
+    </div>
+  );
 }
