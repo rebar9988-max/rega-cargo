@@ -1420,6 +1420,27 @@
 }
 
 @media (max-width: 63.999rem) {
+  /* Phones and tablets: like the big shopping apps, the logo row scrolls away and only the
+     search bar stays pinned (sticky with a negative offset, no scroll script). The pinned bar
+     gets a soft shadow so the content scrolls cleanly underneath it. */
+  .rl-site-header {
+    inset-block-start: calc(-1 * (var(--rl-mark-size) + var(--rl-space-1)));
+    transition: box-shadow var(--rl-motion);
+  }
+  .rl-site-header[data-shrunk="true"] {
+    box-shadow: var(--rl-shadow-sm);
+  }
+  .rl-site-header .rl-brand,
+  .rl-site-header .rl-header-actions {
+    transition:
+      opacity var(--rl-motion),
+      visibility var(--rl-motion);
+  }
+  .rl-site-header[data-shrunk="true"] .rl-brand,
+  .rl-site-header[data-shrunk="true"] .rl-header-actions {
+    opacity: 0;
+    visibility: hidden;
+  }
   .rl-site-header[data-compact="true"] .rl-header-row {
     min-block-size: var(--rl-header-mobile-compact);
     padding-block: var(--rl-space-1);
