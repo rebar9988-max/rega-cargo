@@ -96,9 +96,65 @@
   html[dir="rtl"] {
     --safe-start: env(safe-area-inset-right, 0px);
     --safe-end: env(safe-area-inset-left, 0px);
+  }
+  /* Type follows the language's script; the layout direction (html[dir]) is always rtl. */
+  html[data-textdir="rtl"] {
     --rl-font-body: var(--rl-font-arabic), var(--rl-font-latin);
     --rl-leading-heading: 1.5;
     --rl-tracking: 0;
+  }
+  /* Latin-script languages inside the fixed rtl layout: each text block and run takes its
+     direction from its own text (word order and punctuation stay correct) without moving
+     the layout. Alignment stays on the right edge, like the rest of the app. */
+  html[data-textdir="ltr"]
+    :where(
+      p,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      li,
+      dt,
+      dd,
+      td,
+      th,
+      label,
+      legend,
+      summary,
+      figcaption,
+      blockquote,
+      a,
+      button,
+      span,
+      input,
+      textarea,
+      select
+    ) {
+    unicode-bidi: plaintext;
+  }
+  html[data-textdir="ltr"]
+    :where(
+      p,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      li,
+      dt,
+      dd,
+      td,
+      th,
+      label,
+      legend,
+      summary,
+      figcaption,
+      blockquote
+    ) {
+    text-align: right;
   }
   @media (width >= 48rem) {
     :root {
@@ -220,7 +276,7 @@
 @utility search-bar {
   block-size: calc(var(--search-h) + var(--rl-border));
 }
-html[dir="rtl"]
+html[data-textdir="rtl"]
   :is(h1, h2, h3, h4, [class*="tracking-"], [class*="uppercase"]):not(:lang(en)):not(
     [dir="ltr"]
   ):not(bdi) {

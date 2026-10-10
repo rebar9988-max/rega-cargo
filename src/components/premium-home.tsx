@@ -17,7 +17,7 @@ import { redesignCopy } from "@/lib/redesign-copy";
 import { heroCopy } from "@/lib/hero-copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { storeCopy } from "@/lib/store-copy";
-import { langMeta } from "@/lib/langs";
+import { LAYOUT_DIR } from "@/lib/langs";
 import { BRANDS } from "@/lib/catalog";
 import { GOODS } from "@/lib/stores";
 import { CategoryDirectory } from "./category-directory";
@@ -67,7 +67,7 @@ export function PremiumHome({
   function sync() {
     if (!rail.current) return;
     const root = rail.current.getBoundingClientRect();
-    const rtl = langMeta(lang).dir === "rtl";
+    const rtl = LAYOUT_DIR === "rtl";
     let best = 0;
     let distance = Infinity;
     Array.from(rail.current.children).forEach((el, i) => {
@@ -99,10 +99,10 @@ export function PremiumHome({
               go(
                 slide +
                   (e.key === "ArrowRight"
-                    ? langMeta(lang).dir === "rtl"
+                    ? LAYOUT_DIR === "rtl"
                       ? -1
                       : 1
-                    : langMeta(lang).dir === "rtl"
+                    : LAYOUT_DIR === "rtl"
                       ? 1
                       : -1),
               );

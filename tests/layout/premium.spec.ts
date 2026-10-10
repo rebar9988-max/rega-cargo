@@ -94,7 +94,12 @@ test("language switches preserve store query parameters and reload in the select
     expect(new URL(page.url()).searchParams.get("lang")).toBe(lang);
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("html")).toHaveAttribute("lang", lang);
-    await expect(page.locator("html")).toHaveAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+    // The layout stays right-to-left in every language; only the text direction changes.
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-textdir",
+      lang === "ar" ? "rtl" : "ltr",
+    );
   }
 });
 
@@ -117,7 +122,11 @@ for (const lang of ["ckb", "ar", "en"] as const)
         });
         expect(response?.status(), route).toBe(200);
         await expect(page.locator("html")).toHaveAttribute("lang", lang);
-        await expect(page.locator("html")).toHaveAttribute("dir", lang === "en" ? "ltr" : "rtl");
+        await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+        await expect(page.locator("html")).toHaveAttribute(
+          "data-textdir",
+          lang === "en" ? "ltr" : "rtl",
+        );
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
         await expect(
           page.locator("main h1:not([aria-hidden=true])").filter({ visible: true }),

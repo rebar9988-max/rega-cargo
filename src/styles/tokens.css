@@ -84,6 +84,8 @@
 }
 :root[dir="rtl"] {
   --rl-slide-start: -100%;
+}
+:root[data-textdir="rtl"] {
   --rl-font-body: var(--rl-font-arabic), var(--rl-font-latin), system-ui, sans-serif;
   --rl-leading-heading: 1.5;
   --rl-tracking: 0;

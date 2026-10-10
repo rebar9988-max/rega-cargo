@@ -10,7 +10,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { ThemeProvider } from "@/lib/theme";
 import { loadCopy, I18nProvider } from "@/lib/i18n";
 import { validateLocaleSearch } from "@/lib/locale-search";
-import { langMeta } from "@/lib/langs";
+import { LAYOUT_DIR, langMeta } from "@/lib/langs";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { ServiceWorkerSetup } from "@/components/sw-setup";
 import { NotFound } from "@/components/not-found";
@@ -62,7 +62,7 @@ function RootDocument() {
   return (
     <html
       lang={meta.html}
-      dir={meta.dir}
+      dir={LAYOUT_DIR}
       data-textdir={meta.dir}
       data-rl-ai={rlAiEnabled() ? "1" : undefined}
       suppressHydrationWarning
