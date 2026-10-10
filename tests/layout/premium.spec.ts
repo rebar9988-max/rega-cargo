@@ -160,3 +160,59 @@ test("360px filters, favorites, keyboard dialog and banned searches", async ({ p
     await expect(page.locator(".rl-empty-state")).toBeVisible();
   }
 });
+
+const PRIMARY = [
+  "electronics",
+  "sports",
+  "baby",
+  "home",
+  "gaming",
+  "beauty",
+  "auto",
+  "fashion",
+  "pets",
+];
+
+test("catalogue: ten category rows, direct URLs, history, subcategories and honest empty states", async ({
+  page,
+}) => {
+  await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+  const rows = page.locator(".rl-category-row");
+  await expect(rows).toHaveCount(10);
+  // Food awaits owner approval: visible, not a link, lists nothing.
+  await expect(page.locator('.rl-category-row[data-category="food"]')).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  await expect(page.locator('a.rl-category-row[data-category="food"]')).toHaveCount(0);
+  for (const cat of PRIMARY) {
+    await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+    await page.locator(`a.rl-category-row[data-category="${cat}"]`).click();
+    await expect(page).toHaveURL(new RegExp(`cat=${cat}(&|$)`));
+    await expect(page.locator(".rl-subcategories")).toBeVisible();
+    // A published category with no listed store shows the honest empty state, never invented items.
+    const cards = await page.locator("[data-good],[data-store]").count();
+    if (cards === 0) await expect(page.locator(".rl-empty-state")).toBeVisible();
+  }
+  // Subcategory refinement is a real URL and survives reload, back and forward.
+  await page.goto("/stores?lang=en&cat=electronics", { waitUntil: "networkidle" });
+  await page.locator('[data-sub="tablets"]').click();
+  await expect(page).toHaveURL(/sub=tablets/);
+  await expect(page.locator('[data-sub-detail="tablets"]')).toBeVisible();
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(page.locator('[data-sub-detail="tablets"]')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('[data-sub-detail="tablets"]')).toHaveCount(0);
+  // Language and other filters are kept when choosing a category.
+  await page.goto("/stores?lang=ckb&country=DE", { waitUntil: "networkidle" });
+  await page.locator('a.rl-category-row[data-category="pets"]').click();
+  await expect(page).toHaveURL(/cat=pets/);
+  await expect(page).toHaveURL(/country=DE/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "ckb");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  // Banned queries stay empty even inside a category, and a pending category lists nothing.
+  await page.goto("/stores?lang=en&cat=food", { waitUntil: "networkidle" });
+  await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
+  await page.goto("/stores?lang=en&cat=pets&q=vodka", { waitUntil: "networkidle" });
+  await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
+});

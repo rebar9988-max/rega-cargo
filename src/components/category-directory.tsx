@@ -34,10 +34,12 @@ export function CategoryDirectory({
 }) {
   const t = storeCopy(lang);
   const c = catalogueCopy(lang);
+  const Wrapper = heading ? "section" : "div";
   return (
-    <section
+    // With its own heading it is a labelled region; on home the parent section already is one.
+    <Wrapper
       className="rl-catalogue"
-      aria-labelledby={heading ? "rl-catalogue-title" : "rl-home-cats"}
+      {...(heading ? { "aria-labelledby": "rl-catalogue-title" } : {})}
     >
       {heading ? (
         <div className="rl-result-heading">
@@ -75,7 +77,7 @@ export function CategoryDirectory({
         ))}
       </ul>
       <p className="rl-caption">{c.note}</p>
-    </section>
+    </Wrapper>
   );
 }
 

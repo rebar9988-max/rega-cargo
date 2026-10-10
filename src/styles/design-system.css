@@ -289,7 +289,6 @@
   /* Soft 3D button system. One primitive (.rl-button + data-variant) for <button>, <a> and
      <Link>; links keep link semantics. Depth comes from tokens; focus never relies on shadow. */
   .rl-button {
-    position: relative;
     display: inline-flex;
     min-block-size: var(--rl-control-h);
     align-items: center;
@@ -386,6 +385,7 @@
   /* Loading: the label stays visible (forms swap it for "Sending…"), and a small spinner sits in
      the inline-end padding, so the button keeps its geometry and nothing overlaps the text. */
   .rl-button[aria-busy="true"] {
+    position: relative;
     cursor: progress;
   }
   .rl-button[aria-busy="true"]::after {
