@@ -1,5 +1,14 @@
 /* R&L semantic tokens; all components share light/dark foundations. */
 :root {
+  --rl-slide-start: 100%;
+  --rl-mark-size: 3rem;
+  --rl-mark-compact: 2.5rem;
+  --rl-header-expanded: 5.5rem;
+  --rl-header-compact: 4.5rem;
+  --rl-search-width: 40rem;
+  --rl-nav-h: 3.5rem;
+  --rl-menu-ratio: 1;
+  --rl-hero-title-size: var(--text-4xl);
   color-scheme: light;
   --rl-paper: #f7f6f2;
   --rl-surface: #ffffff;
@@ -53,6 +62,7 @@
   --rl-z-modal: 60;
 }
 :root[dir="rtl"] {
+  --rl-slide-start: -100%;
   --rl-font-body: var(--rl-font-arabic), var(--rl-font-latin), system-ui, sans-serif;
   --rl-leading-heading: 1.5;
   --rl-tracking: 0;

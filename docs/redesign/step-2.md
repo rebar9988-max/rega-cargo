@@ -1,0 +1,9 @@
+# Step 2 — Header and navigation
+
+Added a dismissible, remembered corridor/Cologne announcement; sticky header with a compact scroll state; embedded existing search; favorites, account, request and language controls; theme toggle; seven-column category menu; full-screen mobile slide-in menu; five-destination bottom navigation. Menu categories/images come from the existing catalogue, with visible example labels. Existing search/compliance logic remains unchanged. Arrow keys/Home/End move between category triggers, ArrowDown enters a category, Tab reaches links, Escape closes and returns focus. Native mobile dialog traps focus and returns it on close.
+
+Files: components/site-header.tsx and site-mark.tsx; lib/navigation.ts; shell.tsx; search-box.tsx; redesign-copy.ts; token/component styles. The original logo asset remains unchanged. The old footer is retained for Step 3.
+
+Test: http://localhost:8080/ at 1280px and 360px. Open Women/Men/Kids etc; links retain /stores?cat=fashion&who=women and the other existing cat/who values. Favorites: http://localhost:8080/stores?fav=1. Requests: http://localhost:8080/stores/request?intent=buy. Account: http://localhost:8080/account. Bottom navigation also reaches /stores, /quote and /market. Type vodka in search: no product/store suggestions or outbound links appear. Dismiss the announcement and reload; scroll to verify the desktop header compacts.
+
+Validation: lint, typecheck, Node 22 tests (382 passed, 4 skipped), build passed. Browser checks in ckb/ar/en at 360/1280 passed: no overflow or page errors, correct menu links, keyboard entry and Escape focus return, full-width mobile menu and zero banned-query links. Screenshots inspected at /workspace/rega-redesign/step-2; logs: step-2-checks.log and step-2-browser.log. Full-screen CSS specificity was corrected after the first visual check and checks rerun.
