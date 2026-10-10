@@ -133,6 +133,27 @@ for (const lang of ["ckb", "ar", "en"] as const)
         expect(await page.locator("img:not([alt])").count(), `${route}: image descriptions`).toBe(
           0,
         );
+        const logos = page.locator('img[data-brand-logo="official"]');
+        expect(await logos.count(), `${route}: shared official branding`).toBeGreaterThan(0);
+        for (const logo of await logos.all()) {
+          await expect(logo).toHaveJSProperty("complete", true);
+          const artwork = await logo.evaluate((element: HTMLImageElement) => {
+            const bounds = element.getBoundingClientRect();
+            return {
+              src: element.currentSrc,
+              naturalWidth: element.naturalWidth,
+              naturalHeight: element.naturalHeight,
+              width: bounds.width,
+              height: bounds.height,
+              transform: getComputedStyle(element).transform,
+            };
+          });
+          expect(artwork.src).toContain("/brand/official-da41b3010f96-v1/");
+          expect(artwork.naturalWidth).toBeGreaterThan(0);
+          expect(artwork.naturalWidth).toBe(artwork.naturalHeight);
+          expect(artwork.width).toBe(artwork.height);
+          expect(artwork.transform).toBe("none");
+        }
       }
       expect(errors).toEqual([]);
     });

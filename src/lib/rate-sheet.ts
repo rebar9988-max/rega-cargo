@@ -6,6 +6,7 @@
  * was not regenerated (hash in rate-sheet.lock.json).
  */
 import { NUM_LOCALE } from "./numbers.ts";
+import { BRAND_ASSETS } from "./brand-assets.ts";
 import {
   DESTS,
   DUTY_RULES,
@@ -105,7 +106,7 @@ export function rateSheetHtml(data: RateSheetData, assets: string): string {
 * { box-sizing: border-box; }
 body { font-family: Vazirmatn, sans-serif; color: #1b1b1b; font-size: 10.5pt; line-height: 1.6; margin: 0; }
 header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #DB0100; padding-bottom: 8px; }
-header img { width: 44px; height: 44px; border-radius: 10px; }
+header img { width: 44px; height: 44px; object-fit: contain; }
 .tag { direction: ltr; font: 600 8.5pt Vazirmatn, sans-serif; letter-spacing: .06em; color: #DB0100; }
 h1 { font-size: 19pt; line-height: 1.3; margin: 10px 0 2px; }
 h2 { font-size: 12.5pt; margin: 12px 0 6px; }
@@ -123,7 +124,7 @@ td:last-child { text-align: left; }
 footer { margin-top: 12px; border-top: 1px solid #E9ECEF; padding-top: 8px; font-size: 8.5pt; color: #5b6470; }
 </style></head>
 <body>
-<header><div><div class="tag">MOVE SMART. DELIVER FAST.</div><div class="tag">EUROPE ↔ KURDISTAN ↔ IRAQ</div></div><img src="${assets}/rega-logo-168.webp" alt="R&amp;L"></header>
+<header><div><div class="tag">MOVE SMART. DELIVER FAST.</div><div class="tag">EUROPE ↔ KURDISTAN ↔ IRAQ</div></div><img src="${assets}${BRAND_ASSETS.print}" alt="R&amp;L" width="44" height="44"></header>
 <h1>لە دەرگایەکی ئەوروپییەوە بۆ دەرگایەکی کوردی.</h1>
 <p class="muted">نرخەکان بە پێی کێشی حیسابکراو، بە یۆرۆ و دینار. هەمان ژمارەکانی ناو ئەپەکە.</p>
 

@@ -10,22 +10,23 @@
  * takes over immediately; pages stay network first, so nobody gets stuck.
  * Kill switch: replace this file with one that calls self.registration.unregister().
  */
-const VERSION = "rl-sw-v10";
+const VERSION = "rl-sw-v11-brand-da41b3010f96";
 const PAGES = `${VERSION}-pages`;
 const ASSETS = `${VERSION}-assets`;
 const STATIC = `${VERSION}-static`;
 const NAV_TIMEOUT_MS = 3500;
 const OFFLINE = "/offline"; // assets serve /offline.html at /offline (307 otherwise)
-const PRECACHE = ["/", OFFLINE, "/rega-logo-168.webp", "/favicon.png?v=6"];
+const PRECACHE = ["/", OFFLINE, "/brand/official-da41b3010f96-v1/logo-168.webp", "/brand/official-da41b3010f96-v1/icon-32.png"];
 const PUBLIC_PAGES = /^\/(?:|quote|track|stores|contact|customs|ai)\/?$/;
 const NEVER = /^\/(?:api|_serverFn|admin|move|__grok\/(?!icon|manifest))(?:\/|$)/;
 const STATIC_RE = /\.(?:png|jpe?g|webp|avif|svg|ico|woff2?)$/i;
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches
-      .open(PAGES)
-      .then((cache) => Promise.all(PRECACHE.map((url) => cache.add(new Request(url, { cache: "reload" })).catch(() => undefined))))
+    Promise.all(PRECACHE.map((url) =>
+      caches.open(STATIC_RE.test(url.split("?")[0]) ? STATIC : PAGES)
+        .then((cache) => cache.add(new Request(url, { cache: "reload" })))
+        .catch(() => undefined)))
       .then(() => self.skipWaiting()),
   );
 });
