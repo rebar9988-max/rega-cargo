@@ -1,13 +1,12 @@
 # Progress
 
 Use Git history and PR descriptions for detail; record only status and pointers here.
-Snapshot: 2026-10-11 ~15:25 UTC, `main` @ `520905c`.
+Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 ## Active / open PRs
 
 | PR | Branch | Title | State |
 |---|---|---|---|
-| #63 | `claude/rl-cargo-memory-system-eiuw2h` | docs: project-wide persistent memory | open, CI running |
 | #60 | `claude/rl-cargo-design-impl-xvqpm0` | Home: brand-red hero card and parcel-tracking entry (Figma concept) | draft, CI running (earlier runs failed) |
 | #57 | `claude/rl-ai-shopping-hero-k5aeln` | i18n for all 7 languages + product-link layout shift + announcement landmark | open, may overlap #55/#61 (merged) |
 | #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open, likely superseded by #53 |
@@ -25,6 +24,7 @@ Snapshot: 2026-10-11 ~15:25 UTC, `main` @ `520905c`.
 - Native translation review; real legal details (I-5).
 
 ## Completed (recent, merged to `main`)
+- #63 project-wide persistent memory (`CLAUDE.md` lifecycle, `PROJECT_MEMORY.md`, `docs/project-memory/`, memory test); CI verify + layout lock green on `8d68623`, merged as `df8794e`
 - #62 compliance: banned-product filter gaps (percent-encoded links, brands sold by name, disguised spellings)
 - #61 i18n header/footer/home/marketplace copy for ku, de, fa, tr
 - #59 integration inventory and production DB verification report

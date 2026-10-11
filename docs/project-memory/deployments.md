@@ -12,7 +12,8 @@ Procedures (build, secrets, go-live, rollback): [DEPLOY.md](../../DEPLOY.md). De
 
 | When (UTC) | Worker | Version | Notes |
 |---|---|---|---|
-| 2026-10-11 15:11 | `rega-cargo` | `7b92d650` | **Current production** (verified 15:14). Source commit not recorded; `/market` still fails (I-1) |
+| 2026-10-11 15:28 | `rega-cargo` | `10723cf0` | **Current production** (verified 15:36). Another session; source commit not recorded; `/market` still fails (I-1) |
+| 2026-10-11 15:11 | `rega-cargo` | `7b92d650` | Source commit not recorded; `/market` failed (I-1) |
 | 2026-10-11 15:02 | `rega-cargo-staging` | `4eac3268` | Source commit not recorded |
 | 2026-10-11 10:45 | `rega-cargo` | `c20d050d` | Source commit not recorded |
 | 2026-10-11 10:26 | `rega-cargo` | `af8ee256` | PR #58 module-scope fix |
