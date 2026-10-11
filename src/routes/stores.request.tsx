@@ -24,6 +24,7 @@ import { orderStore } from "@/lib/orders/api";
 import { UX_COPY } from "@/lib/ux-copy";
 import { marketCopy } from "@/lib/market-copy";
 import { ContactNote } from "@/components/contact-note";
+import { ProductLinkAssist } from "@/components/product-link-assist";
 
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -171,133 +172,136 @@ function RequestPage() {
             </Link>
           </div>
         ) : (
-          <form onSubmit={submit} className="rl-card rl-request-form">
-            {good ? (
-              <div className="flex items-center gap-3">
-                <img
-                  {...responsiveImage(good.image, "64px")}
-                  alt=""
-                  width={64}
-                  height={64}
-                  decoding="async"
-                  className="size-16 rounded-xl object-cover"
-                />
-                <div>
-                  <p className="font-semibold">{t.goods[good.id]}</p>
-                  <p className="text-sm text-muted">{t.sample}</p>
+          <div className="flex flex-col gap-6">
+            <ProductLinkAssist dest={dest} onUse={setUrl} />
+            <form onSubmit={submit} className="rl-card rl-request-form">
+              {good ? (
+                <div className="flex items-center gap-3">
+                  <img
+                    {...responsiveImage(good.image, "64px")}
+                    alt=""
+                    width={64}
+                    height={64}
+                    decoding="async"
+                    className="size-16 rounded-xl object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold">{t.goods[good.id]}</p>
+                    <p className="text-sm text-muted">{t.sample}</p>
+                  </div>
                 </div>
-              </div>
-            ) : null}
-            {store ? (
-              <p className="font-sans text-sm text-muted">
-                {store.name} · <bdi dir="ltr">{store.host}</bdi>
-              </p>
-            ) : null}
-            <Field label={t.url} hint={t.urlHint}>
-              <input
-                className={controlClass}
-                dir="ltr"
-                type="url"
-                inputMode="url"
-                maxLength={URL_MAX}
-                value={url}
-                onChange={(event) => setUrl(event.target.value)}
-                required={!good}
-              />
-            </Field>
-            {/* Size, colour and quantity share one row on phones too. */}
-            <div className="grid grid-cols-3 gap-x-3 gap-y-4">
-              <Field label={t.size}>
-                <input
-                  className={controlClass}
-                  maxLength={TEXT_MAX.size}
-                  value={size}
-                  onChange={(event) => setSize(event.target.value)}
-                />
-              </Field>
-              <Field label={t.color}>
-                <input
-                  className={controlClass}
-                  maxLength={TEXT_MAX.color}
-                  value={color}
-                  onChange={(event) => setColor(event.target.value)}
-                />
-              </Field>
-              <Field label={t.qty}>
+              ) : null}
+              {store ? (
+                <p className="font-sans text-sm text-muted">
+                  {store.name} · <bdi dir="ltr">{store.host}</bdi>
+                </p>
+              ) : null}
+              <Field label={t.url} hint={t.urlHint}>
                 <input
                   className={controlClass}
                   dir="ltr"
-                  type="number"
-                  inputMode="numeric"
-                  min={QTY_MIN}
-                  max={QTY_MAX}
-                  step={1}
-                  value={qty}
-                  onChange={(event) => setQty(event.target.value)}
+                  type="url"
+                  inputMode="url"
+                  maxLength={URL_MAX}
+                  value={url}
+                  onChange={(event) => setUrl(event.target.value)}
+                  required={!good}
                 />
               </Field>
-            </div>
-            <Field label={t.dest}>
-              <select
-                className={controlClass}
-                value={dest}
-                onChange={(event) => setDest(event.target.value)}
+              {/* Size, colour and quantity share one row on phones too. */}
+              <div className="grid grid-cols-3 gap-x-3 gap-y-4">
+                <Field label={t.size}>
+                  <input
+                    className={controlClass}
+                    maxLength={TEXT_MAX.size}
+                    value={size}
+                    onChange={(event) => setSize(event.target.value)}
+                  />
+                </Field>
+                <Field label={t.color}>
+                  <input
+                    className={controlClass}
+                    maxLength={TEXT_MAX.color}
+                    value={color}
+                    onChange={(event) => setColor(event.target.value)}
+                  />
+                </Field>
+                <Field label={t.qty}>
+                  <input
+                    className={controlClass}
+                    dir="ltr"
+                    type="number"
+                    inputMode="numeric"
+                    min={QTY_MIN}
+                    max={QTY_MAX}
+                    step={1}
+                    value={qty}
+                    onChange={(event) => setQty(event.target.value)}
+                  />
+                </Field>
+              </div>
+              <Field label={t.dest}>
+                <select
+                  className={controlClass}
+                  value={dest}
+                  onChange={(event) => setDest(event.target.value)}
+                >
+                  {DESTS.map((place) => (
+                    <option key={place.id} value={place.id}>
+                      {placeName(place, lang)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t.notesLabel}>
+                <textarea
+                  className={`${controlClass} h-28 py-3`}
+                  maxLength={TEXT_MAX.notes}
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                />
+              </Field>
+              <Field label={rc.phone} hint={rc.phoneHint}>
+                <input
+                  className={controlClass}
+                  dir="ltr"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  maxLength={24}
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                />
+              </Field>
+              <label className="flex items-start gap-3 text-sm leading-relaxed">
+                <input
+                  type="checkbox"
+                  checked={declared}
+                  onChange={(event) => setDeclared(event.target.checked)}
+                  className="mt-0.5 size-6 shrink-0 accent-pine"
+                />
+                <span>{DECLARE_COPY[lang].declare}</span>
+              </label>
+              <ItemsLink />
+              <div aria-live="polite">
+                {error ? (
+                  <p role="alert" className="text-sm text-clay">
+                    {error}
+                  </p>
+                ) : null}
+                {failed && !error ? <ContactNote pre={ux.failPre} post={ux.failPost} /> : null}
+              </div>
+              {warn ? <p className="text-sm text-clay">{warn}</p> : null}
+              <button
+                type="submit"
+                className={`${btnPrimary} disabled:opacity-60`}
+                disabled={busy}
+                aria-busy={busy}
               >
-                {DESTS.map((place) => (
-                  <option key={place.id} value={place.id}>
-                    {placeName(place, lang)}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label={t.notesLabel}>
-              <textarea
-                className={`${controlClass} h-28 py-3`}
-                maxLength={TEXT_MAX.notes}
-                value={notes}
-                onChange={(event) => setNotes(event.target.value)}
-              />
-            </Field>
-            <Field label={rc.phone} hint={rc.phoneHint}>
-              <input
-                className={controlClass}
-                dir="ltr"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                maxLength={24}
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-              />
-            </Field>
-            <label className="flex items-start gap-3 text-sm leading-relaxed">
-              <input
-                type="checkbox"
-                checked={declared}
-                onChange={(event) => setDeclared(event.target.checked)}
-                className="mt-0.5 size-6 shrink-0 accent-pine"
-              />
-              <span>{DECLARE_COPY[lang].declare}</span>
-            </label>
-            <ItemsLink />
-            <div aria-live="polite">
-              {error ? (
-                <p role="alert" className="text-sm text-clay">
-                  {error}
-                </p>
-              ) : null}
-              {failed && !error ? <ContactNote pre={ux.failPre} post={ux.failPost} /> : null}
-            </div>
-            {warn ? <p className="text-sm text-clay">{warn}</p> : null}
-            <button
-              type="submit"
-              className={`${btnPrimary} disabled:opacity-60`}
-              disabled={busy}
-              aria-busy={busy}
-            >
-              {busy ? ux.sending : t.submit}
-            </button>
-          </form>
+                {busy ? ux.sending : t.submit}
+              </button>
+            </form>
+          </div>
         )}
         <aside className="rl-form-aside">
           <div className="rl-card">
