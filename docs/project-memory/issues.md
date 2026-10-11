@@ -7,6 +7,7 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 ### I-1 · OPEN · blocker — production Worker queries the wrong (incomplete) Neon database
 - Symptom: `/market` and every DB-backed page show their error state.
 - Root cause (re-verified 2026-10-11 15:14–15:20 UTC on live version `7b92d650`): the Worker reaches `misty-recipe-03041407/neondb`, which only has `0002_market.sql` (applied 10:31 UTC, most likely by `npm run build` with `DATABASE_URL` set). Live log on every `/market` request: `[market] error: column p.compliance_status does not exist` (added by `0012`) and `[compliance] DB rules unavailable … relation "prohibited_keywords" does not exist` (added by `0011`).
+- Still open on `10723cf0` (15:38 UTC): 4 more probes raised `misty` rollbacks 334→340, `old-cherry` 0.
 - Evidence the target is `misty`: 6 uncached `/market?q=<random>` probes raised `misty/neondb` rollbacks 257→287 (5 per request); `old-cherry/cargo` rollbacks stayed 0. The 10:40 report found both `HYPERDRIVE` and `DATABASE_URL` point there; the app prefers `HYPERDRIVE`.
 - Correct database: `old-cherry-79292410` / `cargo` — all 12 migrations (09:38 UTC), 8 compliance triggers, 378 keywords. Neither database holds customer data, so repointing loses nothing.
 - Why agents cannot fix it: the Cloudflare token cannot read or edit Hyperdrive (`10000`); secret changes and deploys need explicit owner approval (usage policy). Migrating `misty` instead was rejected: it would write to production and entrench the duplicate.
