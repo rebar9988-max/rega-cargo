@@ -10,6 +10,8 @@
 | `misty-recipe-03041407/neondb` (duplicate) | 12 tables, only `0002_market.sql`, no compliance tables, 6 categories. No customer rows |
 | Migration `0014_compliance_brands.sql` | Applied to `cargo` at ~15:24 UTC exactly as `scripts/migrate.mjs` does: one transaction, then a `_migrations` row. Additive only (35 keywords, locked by the trigger) |
 | Hyperdrive config | **Unverifiable with the session token** (`10000 Authentication error` on list and get) |
+| Deploy of `main` `520905c` (#62) | CI green on `main` (run 156). Built with `DATABASE_URL=''`. Staging `bc18ae01`, then production **`10723cf0`** at ~15:33 UTC. Bindings and secrets unchanged after deploy |
+| Live verification after deploy | 72 page loads (12 required routes × ckb/ar/en × 390/1366px): all 200, no console errors, `dir=rtl`, one h1, no overflow. Live JS serves the new rule bundle (`store-copy-D2XceRGO.js`). On staging, the product-link check blocks `Absolut%20Vodka`, `Elfbar`, `v0dka` and an encoded Arabic slug, and allows a clean link. `/market` still shows "Try again" (database blocker below) |
 
 **Remaining blocker (owner action).** Edit Hyperdrive `795013d06b38408e87552686a6045291` so its origin is the `old-cherry-79292410` endpoint, database `cargo` (pooling off), then set the `DATABASE_URL` secret on `rega-cargo` to the same string. Alternatively, grant the Cloudflare token `Account → Hyperdrive → Edit`. No redeploy is needed for Hyperdrive; a secret edit takes effect immediately. Do not delete `misty-recipe-03041407` until `/market` works.
 
