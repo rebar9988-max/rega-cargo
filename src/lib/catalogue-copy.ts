@@ -546,8 +546,96 @@ const tr: CatalogueCopy = {
   },
 };
 
-// Kurmanji (ku) uses English catalogue copy, as its store category labels already do.
-const ALL: Record<Lang, CatalogueCopy> = { en, de, ckb, ar, fa, tr, ku: en };
+// TODO(translate-review): Kurmanji catalogue copy added 2026-10-11 (it used English before); needs native review.
+const ku: CatalogueCopy = {
+  title: "Hemû kategorî",
+  lede: "Deh koma kirînê. Yekê hilbijêre da ku firoşgehên ku wê difiroşin bibînî.",
+  subTitle: "Teng bike",
+  all: "Hemû",
+  searchIdealo: "Bihayan li idealo bide ber hev",
+  requestOnly:
+    "Xwarin, xwarina heywanan û berhemên tenduristiyê bi rêya R&L têne xwestin, da ku em pêşî wan kontrol bikin.",
+  note: "Kategorî firoşgehan nîşan didin, ne stoka zindî.",
+  emptyCategory:
+    "Hêj tu firoşgeha lîsteyî vê kategoriyê nagire. Tu dîsa jî dikarî daxwaza kirînê bişînî.",
+  comingSoon: "Dê were",
+  pendingBody: "Ev kategorî piştî nirxandina berheman vedibe. Hêj tiştek nehatiye lîstekirin.",
+  subs: {
+    electronics: {
+      smartphones: "Têlefonên jîr",
+      computers: "Komputer û laptop",
+      tablets: "Tablet",
+      audio: "Deng û guhdêr",
+      cameras: "Kamera",
+      accessories: "Pêvek",
+    },
+    sports: {
+      fitness: "Fîtnes",
+      cycling: "Bisiklêtsiwarî",
+      camping: "Kampkirin",
+      "outdoor-clothing": "Cilên derve",
+      equipment: "Amûrên werzîşê",
+    },
+    baby: {
+      "baby-clothing": "Cilên pitikan",
+      "kids-clothing": "Cilên zarokan",
+      strollers: "Erebeyên pitikan",
+      essentials: "Pêdiviyên lênêrîna pitikan",
+      accessories: "Pêvekên lênêrîna zarokan",
+    },
+    home: {
+      furniture: "Mobîlya",
+      kitchen: "Metbex",
+      appliances: "Alavên malê",
+      decor: "Xemilandina malê",
+      garden: "Pêdiviyên bexçe",
+    },
+    food: {
+      pantry: "Xwarinên embarê",
+      snacks: "Xwarinên sivik",
+      "coffee-tea": "Qehwe û çay",
+      drinks: "Av, ava mêwe û vexwarinên şirîn",
+      cooking: "Pêkhateyên xwarinçêkirinê",
+    },
+    gaming: {
+      consoles: "Konsolên lîstikan",
+      "video-games": "Lîstikên vîdyoyê",
+      accessories: "Pêvekên lîstikan",
+      educational: "Lîstokên perwerdeyî",
+      "board-games": "Lîstikên maseyê",
+    },
+    beauty: {
+      skincare: "Lênêrîna çermê",
+      haircare: "Lênêrîna porê",
+      cosmetics: "Kozmetîk",
+      hygiene: "Paqijiya kesane",
+      health: "Lênêrîna tenduristiya kesane (bê reçete)",
+    },
+    auto: {
+      accessories: "Pêvekên wesayîtê",
+      "car-care": "Lênêrîna wesayîtê",
+      motorcycle: "Pêvekên motorsîklêtê",
+      tools: "Amûrên lênêrînê",
+      parts: "Parçeyên cîgir",
+    },
+    fashion: {
+      men: "Cilên mêran",
+      women: "Cilên jinan",
+      shoes: "Pêlav",
+      bags: "Çente",
+      accessories: "Pêvekên modayê",
+    },
+    pets: {
+      food: "Xwarina heywanan",
+      accessories: "Pêvekên heywanan",
+      grooming: "Pêdiviyên paqijkirinê",
+      beds: "Nivînên heywanan",
+      toys: "Lîstokên heywanan",
+    },
+  },
+};
+
+const ALL: Record<Lang, CatalogueCopy> = { en, de, ckb, ar, fa, tr, ku };
 
 export function catalogueCopy(lang: Lang): CatalogueCopy {
   return ALL[lang];
