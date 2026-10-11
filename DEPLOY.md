@@ -132,6 +132,9 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
 1. **Postgres.** Create a dedicated Postgres database for Cargo (e.g. Neon free
    tier, Supabase, or any managed Postgres reachable from the internet with
    TLS). Do **not** reuse REGA's database.
+   **Status 2026-10-11:** Neon project `rl-cargo-production` exists (see
+   `docs/architecture/cargo-database.md`). Staging is connected; production is
+   waiting on owner approval for its migration and secret.
 2. **Hyperdrive** (included in Workers Free, query limits apply):
    ```bash
    npx wrangler hyperdrive create rega-cargo-db \
@@ -232,12 +235,18 @@ Apply in filename order with `DATABASE_URL=… npm run db:migrate`:
 3. `0006_phone_limits.sql`, `0007_trust.sql`
 4. `0008_remove_seed.sql` deletes `dev-user` / `seed-*` rows if a previous install had them. Does not drop tables. Safe on an empty database
 5. `0009_orders.sql` quote, store-purchase and tracking tables
+6. `0010_declarations.sql` restricted-items declarations
+7. `0011_compliance.sql`, `0012_product_compliance.sql` permanent banned-product rules (see Compliance)
+8. `0013_customer_requests.sql` customer request quotes and status log
+
+Cargo's Neon project, branches, roles and the step-by-step runbook live in
+`docs/architecture/cargo-database.md`.
 
 `migrations/dev/seed.sql` is applied only by the local PGLite fallback, never by `db:migrate`.
 
 ## Known gaps
 
-1. **No production Postgres yet.** Quote, store requests, tracking, market and phone sign-in return a clear unavailable state (quotes fall back to the contact email) until Hyperdrive or `DATABASE_URL` is set.
+1. **Production Postgres not connected yet.** The dedicated Neon project `rl-cargo-production` exists and staging (`rega-cargo-staging`) is connected to its `staging` branch. Production still returns the unavailable state for quote, store requests, tracking, market and phone sign-in (quotes fall back to the contact email) until its migration is applied and `DATABASE_URL` (or Hyperdrive) is set. See `docs/architecture/cargo-database.md`.
 2. **Phone sign-in stays closed** until WhatsApp or Twilio credentials exist. Turnstile is required in production once a provider is configured.
 3. **Nitro is still `3.0.260610-beta`.** `npm audit` reports high advisories in `undici` / `sharp` via miniflare (build tooling only, not the Worker bundle). Upgrading Nitro to clear them is a breaking beta bump and was not done.
 4. **The Grok preview OAuth secret was removed from the source.** Rotate it at the broker. The rest of the template auth stack stays because the build still imports it; federated sign-in is off unless `GROK_AUTH_CLIENT_SECRET` is set.

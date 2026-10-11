@@ -22,7 +22,7 @@ Screenshot baselines are re-rendered only via the "Cargo quality gate" workflow 
 
 ### Database change
 
-Confirm a dedicated R&L Neon project exists (it does not as of 2026-10-11; never use `rega-platform`) → inspect schema → write a forward-only `migrations/NNNN_*.sql` → test locally against PGLite (`npm test`) → with owner approval, test on a Neon branch → Neon branch/snapshot of production → `npm run db:migrate`.
+Use Neon project `rl-cargo-production` only (never `rega-platform`; see `docs/architecture/cargo-database.md`) → inspect schema → write a forward-only `migrations/NNNN_*.sql` → test locally against PGLite (`npm test`) → with owner approval, test on a Neon branch → Neon branch/snapshot of production → `npm run db:migrate`.
 
 ### Production bug
 
