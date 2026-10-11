@@ -1,10 +1,10 @@
 /* R&L semantic tokens; all components share light/dark foundations. */
 :root {
-  --rl-hero-art-ratio: 1;
+  --rl-hero-art-ratio: 4 / 3;
   --rl-carousel-dot: 0.5rem;
   --rl-logo-width: 7rem;
   --rl-logo-height: 2.5rem;
-  --rl-hero-columns: minmax(0, 1fr) minmax(0, 1fr);
+  --rl-hero-columns: minmax(0, 7fr) minmax(0, 5fr);
   --rl-slide-start: 100%;
   --rl-mark-size: 3rem;
   --rl-mark-compact: 2.5rem;
@@ -14,7 +14,16 @@
   --rl-header-compact: 4.5rem;
   --rl-search-width: 40rem;
   --rl-nav-h: 3.5rem;
-  --rl-hero-title-size: var(--text-4xl);
+  /* Hero: phone 30px, tablet 36px, laptop 48px (stepped, see the md/lg overrides below). The
+     Sorani headline fits two lines in both the fallback and final font at 320px. */
+  --rl-hero-title-size: var(--text-3xl);
+  --rl-hero-title-max: 40rem;
+  --rl-hero-copy-max: 34rem;
+  --rl-hero-primary-h: 3.25rem;
+  --rl-hero-step-icon: 2.5rem;
+  --rl-hero-stop: 3.5rem;
+  --rl-hero-badge-pad: 0.25rem;
+  --rl-hero-badge-dot: 0.375rem;
   color-scheme: light;
   /* Brand red sampled from the official logo background (#DD0303). White on it is 5.1:1. */
   --rl-brand: #dd0303;
@@ -130,8 +139,15 @@
   --rl-footer-intrinsic: 44rem;
   --rl-option-intrinsic: 24rem;
 }
-:root {
-  --rl-mobile-hero-art: 8rem;
+@media (width >= 48rem) {
+  :root {
+    --rl-hero-title-size: var(--text-4xl);
+  }
+}
+@media (width >= 64rem) {
+  :root {
+    --rl-hero-title-size: var(--text-5xl);
+  }
 }
 :root {
   --rl-calc-placeholder: 48rem;

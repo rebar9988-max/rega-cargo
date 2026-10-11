@@ -6,26 +6,61 @@ import {
   Box,
   Check,
   Globe,
+  House,
   PackageCheck,
+  Plane,
   ShieldCheck,
+  ShoppingBag,
   Sparkles,
   Warehouse,
+  type LucideIcon,
 } from "lucide-react";
 import { Button, Chip, Icon, Deferred, Skeleton } from "./ui";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { heroCopy } from "@/lib/hero-copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
-import { storeCopy } from "@/lib/store-copy";
 import { LAYOUT_DIR } from "@/lib/langs";
 import { BRANDS } from "@/lib/catalog";
-import { GOODS } from "@/lib/stores";
-import { responsiveImage } from "@/lib/images";
 import type { Service } from "@/lib/service-choice";
 
 const QuickQuote = lazy(() =>
   import("./quote-panel").then(({ QuotePanel }) => ({ default: QuotePanel })),
 );
+
+const STEP_ICONS: readonly LucideIcon[] = [Globe, Sparkles, House];
+const SHOP_ROUTE: readonly LucideIcon[] = [ShoppingBag, Sparkles, House];
+const SHIP_ROUTE: readonly LucideIcon[] = [Warehouse, Plane, House];
+
+/**
+ * Decorative route from Europe to the customer's door: a vector arc (no photo, no network
+ * request, no layout shift) with three icon stops. It carries no data, so it is hidden from
+ * assistive technology; the copy beside it says what the service does. Drawn start → end and
+ * mirrored with the layout direction.
+ */
+function HeroRoute({ icons }: { icons: readonly LucideIcon[] }) {
+  return (
+    <div className="rl-hero-art" aria-hidden="true">
+      <svg className="rl-hero-route rl-directional" viewBox="0 0 480 360" focusable="false">
+        <defs>
+          <pattern id="rl-route-dots" width="16" height="16" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1" />
+          </pattern>
+        </defs>
+        <rect className="rl-route-grid" width="480" height="360" fill="url(#rl-route-dots)" />
+        <path className="rl-route-shadow" d="M80 272 C 160 48, 320 48, 400 272" />
+        <path className="rl-route-line" d="M80 272 C 160 48, 320 48, 400 272" />
+        <circle className="rl-route-end" cx="400" cy="272" r="6" />
+        <circle className="rl-route-start" cx="80" cy="272" r="6" />
+      </svg>
+      {icons.map((Stop, n) => (
+        <span key={n} className="rl-hero-stop" data-stop={n}>
+          <Icon as={Stop} />
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export function PremiumHome({
   service,
@@ -38,7 +73,6 @@ export function PremiumHome({
 }) {
   const { lang, t } = useI18n();
   const c = redesignCopy(lang);
-  const sc = storeCopy(lang);
   const h = heroCopy(lang);
   const ai = rlAiEnabled();
   // The AI entry opens the existing /ai route; show a busy state while it loads.
@@ -50,9 +84,9 @@ export function PremiumHome({
   const slides = [
     // With AI off for this deployment the first slide keeps its original shopping copy.
     ai
-      ? { title: h.title, body: h.body, image: "sneakers", ai: true }
-      : { title: c.heroTitle, body: c.heroBody, image: "sneakers", ai: false },
-    { title: c.heroShippingTitle, body: c.heroShippingBody, image: "earbuds", ai: false },
+      ? { title: h.title, body: h.body, art: SHOP_ROUTE, ai: true }
+      : { title: c.heroTitle, body: c.heroBody, art: SHOP_ROUTE, ai: false },
+    { title: c.heroShippingTitle, body: c.heroShippingBody, art: SHIP_ROUTE, ai: false },
   ];
   function go(index: number) {
     const at = (index + slides.length) % slides.length;
@@ -110,7 +144,6 @@ export function PremiumHome({
         >
           {slides.map((s, i) => {
             const Heading = i === slide ? "h1" : "h2";
-            const image = GOODS.find((g) => g.id === s.image)!;
             return (
               <div
                 className="rl-hero-slide"
@@ -121,22 +154,38 @@ export function PremiumHome({
                 <div className="page rl-hero-layout">
                   <div className="rl-hero-copy">
                     {s.ai ? (
-                      <p className="rl-eyebrow">{h.eyebrow}</p>
+                      <p className="rl-eyebrow rl-hero-badge">{h.eyebrow}</p>
                     ) : (
-                      <p className="rl-eyebrow">
+                      <p className="rl-eyebrow rl-hero-badge">
                         <bdi lang="en" dir="ltr">
                           {t.brandSub}
                         </bdi>
                       </p>
                     )}
-                    <Heading>{s.title}</Heading>
+                    {/* Each authored line balances on its own, so a narrow screen never
+                        leaves a single orphaned word. */}
+                    <Heading>
+                      {s.title.split("\n").map((line, n) => (
+                        <span key={line} className="rl-hero-line">
+                          {/* Keeps a word break in the accessible name between lines. */}
+                          {n > 0 ? " " : null}
+                          {line}
+                        </span>
+                      ))}
+                    </Heading>
                     <p className="rl-hero-description">{s.body}</p>
                     {s.ai ? (
-                      <ul className="rl-hero-trust">
-                        {h.trust.map((item) => (
-                          <li key={item}>{item}</li>
+                      // Shop globally → discover with AI → receive at your door, in reading order.
+                      <ol className="rl-hero-steps">
+                        {h.trust.map((item, n) => (
+                          <li key={item}>
+                            <span className="rl-hero-step-icon">
+                              <Icon as={STEP_ICONS[n]!} />
+                            </span>
+                            <span>{item}</span>
+                          </li>
                         ))}
-                      </ul>
+                      </ol>
                     ) : (
                       <p className="rl-hero-location">
                         <Icon as={Warehouse} />
@@ -146,7 +195,11 @@ export function PremiumHome({
                     {/* The same actions on every slide, pinned to the bottom of the copy, so
                         they never move or disappear while the slides change. */}
                     <div className="rl-hero-actions" data-ai={ai || undefined}>
-                      <Link to="/stores" className="rl-button rl-hero-shop" data-variant="primary">
+                      <Link
+                        to="/stores"
+                        className="rl-button rl-hero-shop"
+                        data-variant="primary"
+                      >
                         {c.heroShop}
                         <Icon as={ArrowRight} directional />
                       </Link>
@@ -154,6 +207,7 @@ export function PremiumHome({
                         <Link
                           to="/ai"
                           className="rl-button rl-hero-cta"
+                          data-variant="secondary"
                           aria-busy={opening || undefined}
                           aria-label={opening ? `${h.ctaShort}. ${h.ctaOpening}` : undefined}
                         >
@@ -165,31 +219,21 @@ export function PremiumHome({
                         to="/quote"
                         search={{ from: undefined, to: undefined, kg: undefined }}
                         className="rl-button rl-hero-secondary"
+                        data-variant="secondary"
                       >
                         {c.heroShip}
                       </Link>
                     </div>
                   </div>
-                  <figure className="rl-hero-art">
-                    <img
-                      {...responsiveImage(image.image, "(min-width: 1024px) 560px, 128px")}
-                      width={640}
-                      height={640}
-                      alt={sc.goods[image.id]}
-                      loading={i === 0 ? "eager" : "lazy"}
-                      fetchPriority={i === 0 ? "high" : undefined}
-                      decoding="async"
-                    />
-                    <figcaption>{c.exampleTitle}</figcaption>
-                  </figure>
+                  <HeroRoute icons={s.art} />
                 </div>
               </div>
             );
           })}
         </div>
         <div className="page rl-carousel-controls">
-          <div className="rl-row" aria-live="polite">
-            <span>
+          <div className="rl-row rl-carousel-dots" aria-live="polite">
+            <span className="sr-only">
               {c.slide}{" "}
               <bdi dir="ltr">
                 {slide + 1} / {slides.length}
@@ -206,7 +250,7 @@ export function PremiumHome({
               />
             ))}
           </div>
-          <div className="rl-row">
+          <div className="rl-row rl-carousel-arrows">
             <Button variant="ghost" aria-label={c.prevSlide} onClick={() => go(slide - 1)}>
               <Icon as={ArrowLeft} directional />
             </Button>
