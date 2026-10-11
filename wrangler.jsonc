@@ -40,6 +40,8 @@
     // Hard daily cap of identifications across all visitors.
     "RL_AI_ENABLED": "true",
     "RL_AI_DAILY_CAP": "200",
+    // Product-link check (parse + shipping estimate; no provider data yet).
+    "PRODUCT_LINK_ENABLED": "true",
     // Canonical origin for <link rel=canonical>, robots.txt and sitemap.xml.
     // Custom domain attached 2026-10-09 (owner-approved).
     "SITE_URL": "https://cargo.regaplatform.com"
@@ -75,6 +77,7 @@
         "RL_AI_ENABLED": "true",
         // Hard daily cap on AI identifications (all visitors together).
         "RL_AI_DAILY_CAP": "200",
+        // Product-link check (parse + shipping estimate; no provider data). Staging only.
         "PRODUCT_LINK_ENABLED": "true",
         "SITE_URL": "https://rega-cargo-staging.rebar9988.workers.dev",
         // Staging is never indexed (x-robots-tag + robots.txt Disallow: /).

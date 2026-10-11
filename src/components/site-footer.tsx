@@ -8,7 +8,6 @@ import { LANGS } from "@/lib/langs";
 import { SITE_COPY } from "@/lib/site-copy";
 import { ITEMS_COPY } from "@/lib/items-copy";
 import { CONTACT_EMAIL } from "@/lib/contact";
-import { NAV_CATEGORIES } from "@/lib/navigation";
 import { DESIGN_COPY } from "@/lib/design-copy";
 export function SiteFooter() {
   const { lang, t, setLang } = useI18n();
@@ -19,8 +18,10 @@ export function SiteFooter() {
       <div className="page rl-footer-grid">
         <div className="rl-stack">
           <Mark />
-          <p className="rl-footer-slogan" lang="en" dir="ltr">
-            {t.brandSub}
+          <p className="rl-footer-slogan">
+            <bdi lang="en" dir="ltr">
+              {t.brandSub}
+            </bdi>
           </p>
           <p>{DESIGN_COPY[lang].route}</p>
           <p className="rl-row">
@@ -34,11 +35,8 @@ export function SiteFooter() {
         </div>
         <nav aria-label={c.footerShop} className="rl-stack">
           <h2>{c.footerShop}</h2>
-          {NAV_CATEGORIES.map((n) => (
-            <Link key={n.id} to="/stores" search={{ cat: n.cat, who: n.who }}>
-              {c[n.id]}
-            </Link>
-          ))}
+          {/* One link to the marketplace instead of repeating the category list here. */}
+          <Link to="/stores">{c.marketplace}</Link>
           <Link to="/stores" search={{ fav: 1 }}>
             {DESIGN_COPY[lang].wishlist}
           </Link>

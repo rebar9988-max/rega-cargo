@@ -24,7 +24,7 @@ Restyle, don't rewrite logic. Do not break routes, query params, APIs, data mode
 - All values as CSS variables: color, spacing (8px grid), radius (12–16px cards), shadows, type scale, motion. Light + full dark mode.
 - Palette: deep brand red as accent only (buttons, badges, highlights); white/off-white surfaces; near-black text; soft neutral grays.
 - Fonts: Vazirmatn (or Noto Sans Arabic) for Kurdish/Arabic, Inter for Latin/numbers; self-hosted, font-display: swap.
-- CSS logical properties only (margin-inline-start, padding-inline, text-align: start…). Directional icons flip in RTL. lang + dir set on <html> from the active locale.
+- CSS logical properties only (margin-inline-start, padding-inline, text-align: start…). Directional icons flip in RTL. <html lang> follows the active locale; <html dir> is always rtl (owner decision 2026-10-10: Sorani is primary and the layout never mirrors on language switch); data-textdir carries the language's own text direction (fonts, bidi).
 - Motion 150–250ms, respect prefers-reduced-motion.
 
 ## Workflow

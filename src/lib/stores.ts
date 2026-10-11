@@ -1,7 +1,21 @@
 import { getJson, setJson } from "./storage.ts";
 
+/**
+ * Stable category slugs. The first six predate the ten-group catalogue and keep their URLs
+ * (?cat=beauty …); food, gaming, auto and pets complete the ten primary groups (src/lib/catalogue.ts).
+ */
 export type StoreCategory =
-  "beauty" | "fashion" | "electronics" | "home" | "baby" | "sports" | "general";
+  | "beauty"
+  | "fashion"
+  | "electronics"
+  | "home"
+  | "baby"
+  | "sports"
+  | "food"
+  | "gaming"
+  | "auto"
+  | "pets"
+  | "general";
 
 export type StoreNote = "amazon" | "ebay" | "otto" | "zalando" | "shein" | "sephora" | "link";
 
@@ -29,7 +43,19 @@ export const STORES: StoreEntry[] = [
     host: "amazon.de",
     url: "https://www.amazon.de/",
     country: "DE",
-    categories: ["general", "electronics", "home", "baby", "fashion", "beauty", "sports"],
+    categories: [
+      "general",
+      "electronics",
+      "home",
+      "baby",
+      "fashion",
+      "beauty",
+      "sports",
+      "food",
+      "gaming",
+      "auto",
+      "pets",
+    ],
     note: "amazon",
     caution: ["battery", "aerosol"],
   },
@@ -39,7 +65,7 @@ export const STORES: StoreEntry[] = [
     host: "otto.de",
     url: "https://www.otto.de/",
     country: "DE",
-    categories: ["home", "fashion", "electronics", "baby", "sports"],
+    categories: ["home", "fashion", "electronics", "baby", "sports", "gaming"],
     note: "otto",
     caution: ["battery"],
   },
@@ -49,7 +75,7 @@ export const STORES: StoreEntry[] = [
     host: "ebay.de",
     url: "https://www.ebay.de/",
     country: "DE",
-    categories: ["general", "electronics", "fashion", "home", "sports"],
+    categories: ["general", "electronics", "fashion", "home", "sports", "gaming", "auto", "pets"],
     note: "ebay",
     caution: ["battery"],
   },
@@ -69,7 +95,7 @@ export const STORES: StoreEntry[] = [
     host: "dm.de",
     url: "https://www.dm.de/",
     country: "DE",
-    categories: ["beauty", "home", "baby"],
+    categories: ["beauty", "home", "baby", "food", "pets"],
     note: "link",
     caution: ["perfume", "aerosol", "cosmetics"],
   },
@@ -79,7 +105,7 @@ export const STORES: StoreEntry[] = [
     host: "rossmann.de",
     url: "https://www.rossmann.de/",
     country: "DE",
-    categories: ["beauty", "home", "baby"],
+    categories: ["beauty", "home", "baby", "food", "pets"],
     note: "link",
     caution: ["perfume", "aerosol", "cosmetics"],
   },
@@ -129,7 +155,19 @@ export const STORES: StoreEntry[] = [
     host: "idealo.de",
     url: "https://www.idealo.de/",
     country: "DE",
-    categories: ["general", "electronics", "home", "beauty", "fashion", "sports", "baby"],
+    categories: [
+      "general",
+      "electronics",
+      "home",
+      "beauty",
+      "fashion",
+      "sports",
+      "baby",
+      "food",
+      "gaming",
+      "auto",
+      "pets",
+    ],
     note: "link",
     caution: [],
   },
@@ -140,13 +178,18 @@ export function storeLogo(id: string): string {
   return `/store-logos/${id}.svg`;
 }
 
+/** Filter order: the ten primary groups in catalogue order, then the store-wide "general" bucket. */
 export const STORE_CATEGORIES: StoreCategory[] = [
-  "beauty",
-  "fashion",
   "electronics",
-  "home",
-  "baby",
   "sports",
+  "baby",
+  "home",
+  "food",
+  "gaming",
+  "beauty",
+  "auto",
+  "fashion",
+  "pets",
   "general",
 ];
 

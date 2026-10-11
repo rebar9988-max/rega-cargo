@@ -60,3 +60,14 @@ test("viewport meta allows safe areas and never disables zoom", () => {
   const meta = root.match(/name: "viewport", content: "([^"]+)"/)?.[1] ?? "";
   assert.equal(meta, "width=device-width, initial-scale=1, viewport-fit=cover");
 });
+
+test("layout direction is rtl for every language; text direction follows the language", () => {
+  const langs = readFileSync("src/lib/langs.ts", "utf8");
+  assert.match(langs, /export const LAYOUT_DIR = "rtl";/);
+  const root = readFileSync("src/routes/__root.tsx", "utf8");
+  assert.ok(root.includes("dir={LAYOUT_DIR}"), "<html dir> comes from LAYOUT_DIR");
+  assert.ok(root.includes("data-textdir={meta.dir}"), "data-textdir follows the language");
+  const i18n = readFileSync("src/lib/i18n.tsx", "utf8");
+  assert.ok(i18n.includes("root.dir = LAYOUT_DIR;"), "switching language keeps the layout rtl");
+  assert.ok(!/root\.dir = meta\.dir/.test(i18n));
+});

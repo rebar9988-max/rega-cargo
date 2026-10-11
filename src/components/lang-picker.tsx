@@ -127,7 +127,7 @@ export function HeaderLangPicker({ lang, setLang, title }: { lang: Lang; setLang
         data-layout="lang-button"
         aria-haspopup={open === "sheet" ? "dialog" : "listbox"}
         aria-expanded={open !== null}
-        aria-label={`${title}: ${current.name}`}
+        aria-label={`${title}: ${current.name} (${current.code})`}
         onClick={() => {
           if (open) return close(false);
           setOpen(window.matchMedia("(min-width: 768px)").matches ? "popover" : "sheet");

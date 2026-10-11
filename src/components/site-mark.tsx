@@ -1,8 +1,8 @@
-/** The original logo asset is immutable. */
+/** Official R&L logo (owner-supplied artwork, Oct 2026). Never edit the artwork; changed art ships under a new file name. */
 export function Mark({ className = "size-14" }: { className?: string }) {
   return (
     <img
-      src="/rega-logo-168.webp"
+      src="/rl-mark-168.webp"
       alt="R&L"
       width={56}
       height={56}

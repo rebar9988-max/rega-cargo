@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { isLang, langMeta, type Lang } from "@/lib/langs";
+import { LAYOUT_DIR, isLang, langMeta, type Lang } from "@/lib/langs";
 import { getItem, rawGet, rawRemove, setItem } from "@/lib/storage";
 
 export type { Lang };
@@ -97,7 +97,7 @@ export function I18nProvider({
     const root = document.documentElement;
     const scriptChanged = root.dataset.textdir !== meta.dir;
     root.lang = meta.html;
-    root.dir = meta.dir;
+    root.dir = LAYOUT_DIR;
     root.dataset.textdir = meta.dir;
     if (scriptChanged) restyle(root);
     if (ready) setItem("lang", lang);

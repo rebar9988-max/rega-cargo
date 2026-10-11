@@ -123,7 +123,7 @@ td:last-child { text-align: left; }
 footer { margin-top: 12px; border-top: 1px solid #E9ECEF; padding-top: 8px; font-size: 8.5pt; color: #5b6470; }
 </style></head>
 <body>
-<header><div><div class="tag">MOVE SMART. DELIVER FAST.</div><div class="tag">EUROPE ↔ KURDISTAN ↔ IRAQ</div></div><img src="${assets}/rega-logo-168.webp" alt="R&amp;L"></header>
+<header><div><div class="tag">MOVE SMART. DELIVER FAST.</div><div class="tag">EUROPE ↔ KURDISTAN ↔ IRAQ</div></div><img src="${assets}/rl-mark-168.webp" alt="R&amp;L"></header>
 <h1>لە دەرگایەکی ئەوروپییەوە بۆ دەرگایەکی کوردی.</h1>
 <p class="muted">نرخەکان بە پێی کێشی حیسابکراو، بە یۆرۆ و دینار. هەمان ژمارەکانی ناو ئەپەکە.</p>
 

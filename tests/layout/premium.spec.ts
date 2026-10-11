@@ -94,7 +94,12 @@ test("language switches preserve store query parameters and reload in the select
     expect(new URL(page.url()).searchParams.get("lang")).toBe(lang);
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("html")).toHaveAttribute("lang", lang);
-    await expect(page.locator("html")).toHaveAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+    // The layout stays right-to-left in every language; only the text direction changes.
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-textdir",
+      lang === "ar" ? "rtl" : "ltr",
+    );
   }
 });
 
@@ -117,7 +122,11 @@ for (const lang of ["ckb", "ar", "en"] as const)
         });
         expect(response?.status(), route).toBe(200);
         await expect(page.locator("html")).toHaveAttribute("lang", lang);
-        await expect(page.locator("html")).toHaveAttribute("dir", lang === "en" ? "ltr" : "rtl");
+        await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+        await expect(page.locator("html")).toHaveAttribute(
+          "data-textdir",
+          lang === "en" ? "ltr" : "rtl",
+        );
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
         await expect(
           page.locator("main h1:not([aria-hidden=true])").filter({ visible: true }),
@@ -159,4 +168,161 @@ test("360px filters, favorites, keyboard dialog and banned searches", async ({ p
     await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
     await expect(page.locator(".rl-empty-state")).toBeVisible();
   }
+});
+
+const PRIMARY = [
+  "electronics",
+  "sports",
+  "baby",
+  "home",
+  "gaming",
+  "beauty",
+  "auto",
+  "fashion",
+  "pets",
+];
+
+test("catalogue: ten category rows, direct URLs, history, subcategories and honest empty states", async ({
+  page,
+}) => {
+  await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+  const rows = page.locator(".rl-category-row");
+  await expect(rows).toHaveCount(10);
+  // Food awaits owner approval: visible, not a link, lists nothing.
+  await expect(page.locator('.rl-category-row[data-category="food"]')).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  await expect(page.locator('a.rl-category-row[data-category="food"]')).toHaveCount(0);
+  for (const cat of PRIMARY) {
+    await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+    await page.locator(`a.rl-category-row[data-category="${cat}"]`).click();
+    await expect(page).toHaveURL(new RegExp(`cat=${cat}(&|$)`));
+    await expect(page.locator(".rl-subcategories")).toBeVisible();
+    // A published category with no listed store shows the honest empty state, never invented items.
+    const cards = await page.locator("[data-good],[data-store]").count();
+    if (cards === 0) await expect(page.locator(".rl-empty-state")).toBeVisible();
+  }
+  // Subcategory refinement is a real URL and survives reload, back and forward.
+  await page.goto("/stores?lang=en&cat=electronics", { waitUntil: "networkidle" });
+  await page.locator('[data-sub="tablets"]').click();
+  await expect(page).toHaveURL(/sub=tablets/);
+  await expect(page.locator('[data-sub-detail="tablets"]')).toBeVisible();
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(page.locator('[data-sub-detail="tablets"]')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('[data-sub-detail="tablets"]')).toHaveCount(0);
+  // Language and other filters are kept when choosing a category.
+  await page.goto("/stores?lang=ckb&country=DE", { waitUntil: "networkidle" });
+  await page.locator('a.rl-category-row[data-category="pets"]').click();
+  await expect(page).toHaveURL(/cat=pets/);
+  await expect(page).toHaveURL(/country=DE/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "ckb");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  // Banned queries stay empty even inside a category, and a pending category lists nothing.
+  await page.goto("/stores?lang=en&cat=food", { waitUntil: "networkidle" });
+  await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
+  await page.goto("/stores?lang=en&cat=pets&q=vodka", { waitUntil: "networkidle" });
+  await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
+});
+
+test("hero: the AI call to action opens the existing assistant in the chosen language", async ({
+  page,
+}) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const cta = page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-cta");
+    await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute("href", new RegExp(`^/ai(\\?lang=${lang})?$`));
+    // Visible without scrolling on a phone, and a comfortable touch target.
+    const box = await cta.boundingBox();
+    expect(box!.y + box!.height, lang).toBeLessThanOrEqual(800);
+    expect(box!.height, lang).toBeGreaterThanOrEqual(44);
+    await cta.click();
+    await expect(page).toHaveURL(/\/ai/);
+    await expect(page.locator("html")).toHaveAttribute("lang", lang);
+    await expect(page.locator("main h1")).toBeVisible();
+  }
+  // Keyboard: the CTA is reachable and activates with Enter.
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  await page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-cta").focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/ai/);
+});
+
+test("hero: the marketplace, AI and shipping buttons stay in place on every slide", async ({
+  page,
+}) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const slides = page.locator(".rl-hero-slide");
+    const count = await slides.count();
+    expect(count).toBeGreaterThan(1);
+    const shop = page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-shop");
+    await expect(shop).toHaveAttribute("href", new RegExp(`^/stores(\\?lang=${lang})?$`));
+    const first = await shop.boundingBox();
+    expect(first!.y + first!.height, lang).toBeLessThanOrEqual(800);
+    for (let i = 0; i < count; i++) {
+      const slide = slides.nth(i);
+      await expect(slide.locator(".rl-hero-shop")).toHaveCount(1);
+      await expect(slide.locator(".rl-hero-secondary")).toHaveCount(1);
+      const box = await slide.locator(".rl-hero-shop").boundingBox();
+      const own = await slide.boundingBox();
+      // Same vertical position on every slide (relative to its own slide).
+      expect(Math.round(box!.y - own!.y), `${lang} slide ${i + 1}`).toBe(
+        Math.round(first!.y - (await slides.first().boundingBox())!.y),
+      );
+    }
+  }
+});
+
+test("marketplace toolbar: filter button and audience chips share one row", async ({ page }) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+    const filters = await page.locator(".rl-market-toolbar .rl-mobile-filters").boundingBox();
+    const chips = page.locator(".rl-market-toolbar .rl-chip");
+    await expect(chips).toHaveCount(3);
+    for (let i = 0; i < 3; i++) {
+      const chip = await chips.nth(i).boundingBox();
+      expect(
+        Math.abs(chip!.y + chip!.height / 2 - (filters!.y + filters!.height / 2)),
+        lang,
+      ).toBeLessThan(2);
+      expect(chip!.height, lang).toBeGreaterThanOrEqual(44);
+    }
+    // The layout is rtl in every language: the filter button sits at the start (right) edge.
+    const width = page.viewportSize()!.width;
+    expect(Math.round(filters!.x + filters!.width), lang).toBeGreaterThan(width - 32);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(overflow, lang).toBe(0);
+  }
+});
+
+test("compact forms and store cards at 360px", async ({ page }) => {
+  // Quote: length, width and height share one row.
+  await page.goto("/quote?lang=ckb", { waitUntil: "networkidle" });
+  const dims = page.locator(".rl-quote-card .col-span-2 input");
+  await expect(dims).toHaveCount(3);
+  const ys = await dims.evaluateAll((els) =>
+    els.map((e) => Math.round(e.getBoundingClientRect().top)),
+  );
+  expect(new Set(ys).size).toBe(1);
+  // Order request: size, colour and quantity share one row.
+  await page.goto("/stores/request?store=zalando&intent=buy&lang=ckb", {
+    waitUntil: "networkidle",
+  });
+  const row = page.locator("form .grid-cols-3 input");
+  await expect(row).toHaveCount(3);
+  const ry = await row.evaluateAll((els) =>
+    els.map((e) => Math.round(e.getBoundingClientRect().top)),
+  );
+  expect(new Set(ry).size).toBe(1);
+  // Store cards: one primary action, the domain links to the store's own site.
+  await page.goto("/stores?lang=ckb", { waitUntil: "networkidle" });
+  const card = page.locator("[data-store=zalando]");
+  await expect(card.locator(".rl-button[data-variant=primary]")).toHaveCount(1);
+  await expect(card.locator("a.rl-store-site")).toHaveAttribute("href", /zalando/);
+  await expect(card.locator("a.rl-store-site")).toHaveAttribute("target", "_blank");
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  expect(overflow).toBe(0);
 });

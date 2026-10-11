@@ -2,6 +2,8 @@
 export type BazaarSearch = {
   q?: string;
   cat?: string;
+  /** Subcategory id within `cat` (src/lib/catalogue.ts); a search refinement, not a stock filter. */
+  sub?: string;
   fav?: 1;
   who?: string;
   store?: string;
@@ -14,6 +16,7 @@ export function validateBazaarSearch(search: Record<string, unknown>): BazaarSea
   return {
     q: str(search.q),
     cat: str(search.cat),
+    sub: str(search.sub),
     // Plain `fav=1` (the router parses it as the number 1); old links sent `fav=%221%22` ("1").
     fav: search.fav === 1 || search.fav === "1" ? 1 : undefined,
     who: str(search.who),

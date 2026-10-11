@@ -79,12 +79,6 @@
       inline-size var(--rl-motion),
       block-size var(--rl-motion);
   }
-  .rl-brand-name {
-    display: none;
-    font-family: var(--rl-font-latin);
-    font-size: var(--text-2xl);
-    font-weight: var(--rl-weight-semibold);
-  }
   .rl-header-actions {
     display: flex;
     align-items: center;
@@ -128,13 +122,35 @@
   }
   .rl-mega-grid {
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: var(--rl-space-3);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--rl-space-4) var(--rl-space-3);
     padding-block: var(--rl-space-4);
+  }
+  .rl-mega-column {
+    display: grid;
+    align-content: start;
+    gap: var(--rl-space-1);
   }
   .rl-mega-grid h2 {
     font-size: var(--text-sm);
     font-weight: var(--rl-weight-semibold);
+  }
+  .rl-mega-grid h2 a,
+  .rl-mega-pending {
+    display: flex;
+    align-items: center;
+    gap: var(--rl-space-1);
+  }
+  .rl-mega-pending {
+    color: var(--rl-muted);
+  }
+  .rl-mega-pending .rl-badge,
+  .rl-mobile-menu-link .rl-badge {
+    white-space: nowrap;
+  }
+  .rl-mega-column > a {
+    color: var(--rl-muted);
+    padding-block: var(--rl-space-0);
   }
   .rl-mega-grid a {
     font-size: var(--text-sm);
@@ -142,23 +158,6 @@
   .rl-mega-grid a:hover {
     color: var(--rl-accent);
     text-decoration: underline;
-  }
-  .rl-menu-image {
-    inline-size: 100%;
-    aspect-ratio: var(--rl-menu-ratio);
-    object-fit: cover;
-    border-radius: var(--rl-radius-sm);
-  }
-  .rl-menu-image-note {
-    display: block;
-    font-size: var(--text-xs);
-    color: var(--rl-muted);
-    margin-block-start: var(--rl-space-1);
-  }
-  .rl-menu-more {
-    display: flex;
-    align-items: center;
-    gap: var(--rl-space-1);
   }
   .rl-modal.rl-mobile-menu {
     inset-inline: 0;
@@ -174,6 +173,7 @@
   }
   .rl-mobile-menu-link {
     display: flex;
+    gap: var(--rl-space-2);
     align-items: center;
     justify-content: space-between;
     min-block-size: var(--rl-control-h);
@@ -235,9 +235,6 @@
       inline-size: var(--rl-mark-compact);
       block-size: var(--rl-mark-compact);
     }
-    .rl-brand-name {
-      display: inline;
-    }
     .rl-header-search {
       grid-row: 1;
       grid-column: auto;
@@ -260,14 +257,19 @@
       align-items: center;
       gap: var(--rl-space-1);
       min-block-size: var(--rl-control-h);
+      padding-inline: var(--rl-space-2);
+      border-radius: var(--rl-radius-sm);
       font-size: var(--text-sm);
+      font-weight: var(--rl-weight-semibold);
       white-space: nowrap;
+    }
+    .rl-category-trigger:hover {
+      background: var(--rl-raised);
     }
     .rl-category-trigger[aria-expanded="true"] {
       color: var(--rl-accent);
     }
     .rl-nav-service {
-      margin-inline-start: auto;
       font-size: var(--text-sm);
     }
     .rl-desktop-only {
@@ -278,12 +280,14 @@
       display: none;
     }
     .rl-page-header {
-      padding-block: var(--rl-space-8);
+      padding-block: var(--rl-space-6);
     }
     .rl-page-header h1 {
       font-size: var(--text-5xl);
     }
   }
+  /* Soft 3D button system. One primitive (.rl-button + data-variant) for <button>, <a> and
+     <Link>; links keep link semantics. Depth comes from tokens; focus never relies on shadow. */
   .rl-button {
     display: inline-flex;
     min-block-size: var(--rl-control-h);
@@ -292,18 +296,29 @@
     gap: var(--rl-space-1);
     padding-inline: var(--rl-space-3);
     padding-block: var(--rl-space-1);
-    border: var(--rl-border) solid transparent;
+    border: var(--rl-border) solid var(--rl-line);
     border-radius: var(--rl-radius-sm);
+    background: var(--rl-surface);
+    color: var(--rl-ink);
+    box-shadow: var(--rl-button-shadow);
     font-size: var(--text-sm);
     font-weight: var(--rl-weight-semibold);
     text-align: center;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     transition:
-      background var(--rl-motion) var(--rl-ease),
-      border-color var(--rl-motion) var(--rl-ease);
+      transform var(--rl-motion-button) var(--rl-ease),
+      box-shadow var(--rl-motion-button) var(--rl-ease),
+      background-color var(--rl-motion-button) var(--rl-ease),
+      border-color var(--rl-motion-button) var(--rl-ease);
   }
-  .rl-button[data-variant="primary"] {
+  .rl-button[data-variant="primary"],
+  .rl-button.rl-grad {
     background: var(--rl-action);
     color: var(--rl-on-action);
+    border-color: var(--rl-action-active);
+    box-shadow: var(--rl-button-highlight), var(--rl-button-shadow);
   }
   .rl-button[data-variant="secondary"] {
     background: var(--rl-surface);
@@ -313,13 +328,90 @@
   .rl-button[data-variant="ghost"] {
     color: var(--rl-ink);
     background: transparent;
+    border-color: transparent;
+    box-shadow: none;
   }
-  .rl-button:hover {
-    filter: brightness(0.94);
+  .rl-button[data-variant="danger"] {
+    background: var(--rl-surface);
+    color: var(--rl-danger);
+    border-color: currentColor;
   }
-  .rl-button:disabled {
+  @media (hover: hover) and (pointer: fine) {
+    .rl-button:hover:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+      transform: translateY(var(--rl-button-lift));
+      box-shadow: var(--rl-button-shadow-hover);
+      border-color: var(--rl-control-line);
+    }
+    .rl-button[data-variant="primary"]:hover:not(
+        :disabled,
+        [aria-disabled="true"],
+        [aria-busy="true"]
+      ),
+    .rl-button.rl-grad:hover:not(:disabled) {
+      background: var(--rl-action-hover);
+      border-color: var(--rl-action-active);
+      box-shadow: var(--rl-button-highlight), var(--rl-button-shadow-hover);
+    }
+    .rl-button[data-variant="ghost"]:hover:not(:disabled) {
+      transform: none;
+      box-shadow: none;
+      border-color: transparent;
+      background: var(--rl-raised);
+    }
+  }
+  .rl-button:active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) {
+    transform: translateY(0);
+    box-shadow: var(--rl-button-shadow-pressed);
+  }
+  .rl-button[data-variant="primary"]:active:not(:disabled, [aria-busy="true"]),
+  .rl-button.rl-grad:active:not(:disabled) {
+    background: var(--rl-action-active);
+    box-shadow: var(--rl-button-shadow-pressed);
+  }
+  .rl-button[data-variant="ghost"]:active:not(:disabled) {
+    box-shadow: none;
+    background: var(--rl-raised);
+  }
+  .rl-button:focus-visible {
+    outline: var(--rl-focus) solid var(--rl-accent);
+    outline-offset: var(--rl-focus);
+  }
+  .rl-button:disabled,
+  .rl-button[aria-disabled="true"] {
     opacity: 0.5;
     cursor: not-allowed;
+    box-shadow: none;
+  }
+  /* Loading: the label stays visible (forms swap it for "Sending…"), and a small spinner sits in
+     the inline-end padding, so the button keeps its geometry and nothing overlaps the text. */
+  .rl-button[aria-busy="true"] {
+    position: relative;
+    cursor: progress;
+  }
+  .rl-button[aria-busy="true"]::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--rl-space-1);
+    margin-block: auto;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: var(--rl-radius-pill);
+    animation: rl-spin 700ms linear infinite;
+  }
+  @keyframes rl-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rl-button,
+    .rl-button:hover,
+    .rl-button:active {
+      transform: none !important;
+    }
   }
   .rl-control {
     inline-size: 100%;
@@ -364,6 +456,10 @@
     color: var(--rl-success);
   }
   .rl-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--rl-space-1);
     min-block-size: var(--rl-control-h);
     padding-inline: var(--rl-space-2);
     border: var(--rl-border) solid var(--rl-line);
@@ -482,8 +578,11 @@
 }
 
 @layer components {
+  /* Hero: one badge, a balanced headline, one supporting paragraph, the three-step journey and
+     one clear action hierarchy (primary marketplace, two quiet secondaries). Sizes come from the
+     type scale and --rl-hero-* tokens; the art is vector and appears from the laptop breakpoint. */
   .rl-hero-carousel {
-    background: var(--rl-surface);
+    background: linear-gradient(to bottom, var(--rl-surface), var(--rl-hero-tint));
     border-block-end: var(--rl-border) solid var(--rl-line);
   }
   .rl-hero-rail {
@@ -496,6 +595,10 @@
   .rl-hero-rail::-webkit-scrollbar {
     display: none;
   }
+  .rl-hero-rail:focus-visible {
+    outline: var(--rl-focus) solid var(--rl-accent);
+    outline-offset: calc(var(--rl-focus) * -1);
+  }
   .rl-hero-slide {
     flex: 0 0 100%;
     min-inline-size: 0;
@@ -504,37 +607,154 @@
   }
   .rl-hero-layout {
     display: grid;
-    align-items: center;
+    block-size: 100%;
+    align-items: stretch;
     gap: var(--rl-space-4);
-    padding-block: var(--rl-space-4);
+    padding-block: var(--rl-space-3) var(--rl-space-2);
+  }
+  /* Slides share the tallest slide's height and the actions sit at the bottom of the copy, so
+     the buttons stay in exactly the same place on every slide. */
+  .rl-hero-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-inline-size: 0;
+  }
+  .rl-hero-copy > :not(.rl-hero-actions) {
+    align-self: start;
+  }
+  /* Badge row: the badge may wrap; the small globe keeps its size at the row's end. */
+  .rl-hero-top {
+    align-self: stretch !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--rl-space-2);
+  }
+  .rl-hero-mini {
+    position: relative;
+    flex-shrink: 0;
+    inline-size: var(--rl-hero-mini);
+    block-size: var(--rl-hero-mini);
+  }
+  .rl-hero-mini svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+  .rl-hero-mini .rl-globe-wire,
+  .rl-hero-mini .rl-globe-orbit {
+    stroke-width: 1;
+  }
+  .rl-hero-mini .rl-globe-orbit {
+    stroke-dasharray: 3 3;
+  }
+  /* The plane rides the orbit's upper end, inline-end of the globe. */
+  .rl-hero-mini-plane {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    display: grid;
+    place-items: center;
+    inline-size: var(--rl-hero-mini-plane);
+    block-size: var(--rl-hero-mini-plane);
+    border-radius: var(--rl-radius-pill);
+    background: var(--rl-surface);
+    border: var(--rl-border) solid var(--rl-line);
+    box-shadow: var(--rl-shadow-sm);
+    color: var(--rl-accent);
+  }
+  .rl-hero-mini-plane .rl-icon {
+    inline-size: var(--rl-hero-mini-icon);
+    block-size: var(--rl-hero-mini-icon);
+  }
+  .rl-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rl-space-1);
+    padding-block: var(--rl-hero-badge-pad);
+    padding-inline: var(--rl-space-1) var(--rl-space-2);
+    min-inline-size: 0;
+    /* Reads as a pill on one line and as a rounded tag if a long label wraps. */
+    border-radius: var(--rl-radius-card);
+    background: var(--rl-soft-accent);
+    color: var(--rl-accent);
+    line-height: var(--rl-leading);
+  }
+  .rl-hero-badge::before {
+    content: "";
+    inline-size: var(--rl-hero-badge-dot);
+    block-size: var(--rl-hero-badge-dot);
+    margin-inline-start: var(--rl-hero-badge-pad);
+    border-radius: var(--rl-radius-pill);
+    background: var(--rl-brand);
+    flex-shrink: 0;
   }
   .rl-hero-copy h1,
   .rl-hero-copy h2 {
-    font-size: var(--text-4xl);
+    font-size: var(--rl-hero-title-size);
     line-height: var(--rl-leading-heading);
-    font-weight: var(--rl-weight-semibold);
+    font-weight: var(--rl-weight-bold);
     letter-spacing: var(--rl-tracking);
     white-space: pre-line;
-    margin-block-start: var(--rl-space-3);
+    text-wrap: balance;
+    max-inline-size: var(--rl-hero-title-max);
+    margin-block-start: var(--rl-space-2);
+  }
+  .rl-hero-line {
+    display: block;
+    text-wrap: balance;
+  }
+  .rl-hero-line + .rl-hero-line {
+    color: var(--rl-accent);
   }
   .rl-hero-description {
     color: var(--rl-muted);
-    max-inline-size: var(--rl-reading);
-    margin-block-start: var(--rl-space-3);
+    max-inline-size: var(--rl-hero-copy-max);
+    margin-block-start: var(--rl-space-1);
+    text-wrap: pretty;
   }
-  .rl-hero-actions {
+  /* The journey: three equal columns joined by a hairline, icon above label. */
+  .rl-hero-steps {
+    list-style: none;
+    margin: var(--rl-space-3) 0 0;
+    padding: 0;
+    align-self: stretch !important;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--rl-space-1);
-    margin-block-start: var(--rl-space-4);
-  }
-  .rl-hero-actions .rl-button {
-    padding-inline: var(--rl-space-2);
-  }
-  .rl-hero-secondary {
+    max-inline-size: var(--rl-hero-copy-max);
+    position: relative;
     color: var(--rl-ink);
-    background: var(--rl-surface);
-    border-color: var(--rl-control-line);
+    font-size: var(--text-xs);
+    font-weight: var(--rl-weight-semibold);
+    text-align: center;
+  }
+  .rl-hero-steps::before {
+    content: "";
+    position: absolute;
+    inset-block-start: calc(var(--rl-hero-step-icon) / 2);
+    inset-inline: calc(100% / 6);
+    border-block-start: var(--rl-border) dashed var(--rl-control-line);
+  }
+  .rl-hero-steps li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--rl-space-1);
+    min-inline-size: 0;
+    text-align: center;
+    text-wrap: balance;
+  }
+  .rl-hero-step-icon {
+    display: grid;
+    place-items: center;
+    inline-size: var(--rl-hero-step-icon);
+    block-size: var(--rl-hero-step-icon);
+    border-radius: var(--rl-radius-sm);
+    background: var(--rl-soft-accent);
+    color: var(--rl-accent);
   }
   .rl-hero-location {
     display: flex;
@@ -544,32 +764,140 @@
     color: var(--rl-muted);
     font-size: var(--text-sm);
   }
+  .rl-hero-location .rl-icon {
+    color: var(--rl-accent);
+  }
+  /* One primary action (marketplace), then two equal, quieter actions side by side. */
+  .rl-hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--rl-space-1);
+    margin-block-start: auto;
+    padding-block-start: var(--rl-space-3);
+  }
+  .rl-hero-actions .rl-button {
+    min-block-size: var(--rl-control-h);
+    padding-inline: var(--rl-space-1);
+    font-size: var(--text-sm);
+    text-align: center;
+    border-radius: var(--rl-radius-sm);
+  }
+  .rl-hero-actions .rl-hero-shop {
+    min-block-size: var(--rl-hero-primary-h);
+    font-size: var(--text-base);
+  }
+  @media (width >= 48rem) {
+    .rl-hero-actions .rl-button {
+      padding-inline: var(--rl-space-2);
+      font-size: var(--text-base);
+    }
+  }
+  .rl-hero-shop,
+  .rl-hero-actions:not([data-ai]) .rl-hero-secondary {
+    grid-column: 1 / -1;
+  }
+  /* The primary arrow sits in a small white disc, a tactile cue that the button moves forward. */
+  .rl-hero-shop .rl-icon {
+    box-sizing: content-box;
+    padding: var(--rl-hero-cta-icon-pad);
+    border-radius: var(--rl-radius-pill);
+    background: var(--rl-on-action);
+    color: var(--rl-action);
+  }
+  .rl-hero-actions .rl-hero-cta .rl-icon {
+    color: var(--rl-accent);
+  }
+  /* Art: a quiet panel with a dotted grid, the route arc and three icon stops. */
   .rl-hero-art {
+    display: none;
+    position: relative;
     min-inline-size: 0;
-  }
-  .rl-hero-art img {
-    inline-size: 100%;
     aspect-ratio: var(--rl-hero-art-ratio);
-    object-fit: cover;
     border-radius: var(--rl-radius-card);
+    background: var(--rl-paper);
+    border: var(--rl-border) solid var(--rl-line);
+    overflow: hidden;
   }
-  .rl-hero-art figcaption {
-    font-size: var(--text-xs);
-    color: var(--rl-muted);
-    margin-block-start: var(--rl-space-1);
+  .rl-hero-route {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+  #rl-route-dots circle {
+    fill: var(--rl-line);
+  }
+  .rl-globe-hi {
+    stop-color: var(--rl-globe-hi);
+  }
+  .rl-globe-base {
+    stop-color: var(--rl-brand);
+  }
+  .rl-globe-low {
+    stop-color: var(--rl-action-active);
+  }
+  .rl-globe-shadow {
+    fill: var(--rl-line);
+  }
+  .rl-globe-wire {
+    fill: none;
+    stroke: var(--rl-on-action);
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .rl-globe-orbit {
+    fill: none;
+    stroke: var(--rl-control-line);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 8;
+  }
+  .rl-hero-stop {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    inline-size: var(--rl-hero-stop);
+    block-size: var(--rl-hero-stop);
+    border-radius: var(--rl-radius-card);
+    background: var(--rl-surface);
+    border: var(--rl-border) solid var(--rl-line);
+    box-shadow: var(--rl-shadow-lg);
+    color: var(--rl-ink);
+  }
+  .rl-hero-stop .rl-icon {
+    inline-size: var(--rl-space-3);
+    block-size: var(--rl-space-3);
+  }
+  /* Stops sit on the orbit (viewBox 480×360): its far start, its upper arc, its far end. */
+  .rl-hero-stop[data-stop="0"] {
+    inset-inline-start: calc(9.6% - var(--rl-hero-stop) / 2);
+    inset-block-start: calc(63.3% - var(--rl-hero-stop) / 2);
+  }
+  .rl-hero-stop[data-stop="1"] {
+    inset-inline-start: calc(27% - var(--rl-hero-stop) / 2);
+    inset-block-start: calc(41.8% - var(--rl-hero-stop) / 2);
+    color: var(--rl-accent);
+  }
+  .rl-hero-stop[data-stop="2"] {
+    inset-inline-start: calc(90.4% - var(--rl-hero-stop) / 2);
+    inset-block-start: calc(36.7% - var(--rl-hero-stop) / 2);
+    color: var(--rl-accent);
   }
   .rl-carousel-controls {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--rl-space-2);
-    padding-block-end: var(--rl-space-2);
+    padding-block-end: var(--rl-space-1);
     color: var(--rl-muted);
     font-size: var(--text-xs);
   }
+  .rl-carousel-dots,
+  .rl-carousel-arrows {
+    gap: var(--rl-space-0);
+  }
   .rl-carousel-dot {
     position: relative;
-    inline-size: var(--rl-control-h);
+    inline-size: var(--rl-space-5);
     block-size: var(--rl-control-h);
     display: grid;
     place-items: center;
@@ -579,10 +907,28 @@
     inline-size: var(--rl-carousel-dot);
     block-size: var(--rl-carousel-dot);
     border-radius: var(--rl-radius-pill);
-    background: var(--rl-control-line);
+    background: var(--rl-line);
+    transition:
+      inline-size var(--rl-motion) var(--rl-ease),
+      background-color var(--rl-motion) var(--rl-ease);
   }
   .rl-carousel-dot[aria-pressed="true"]::after {
-    background: var(--rl-accent);
+    inline-size: var(--rl-space-3);
+    background: var(--rl-brand);
+  }
+  .rl-carousel-dot:focus-visible {
+    outline: var(--rl-focus) solid var(--rl-accent);
+    outline-offset: calc(var(--rl-focus) * -1);
+    border-radius: var(--rl-radius-sm);
+  }
+  .rl-carousel-arrows .rl-button {
+    inline-size: var(--rl-control-h);
+    padding-inline: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rl-carousel-dot::after {
+      transition: none;
+    }
   }
   .rl-section-heading {
     display: flex;
@@ -663,30 +1009,6 @@
     font-size: var(--text-sm);
     color: var(--rl-muted);
     max-inline-size: var(--rl-reading);
-  }
-  .rl-category-tiles {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--rl-space-3) var(--rl-space-2);
-  }
-  .rl-category-tiles img {
-    inline-size: 100%;
-    aspect-ratio: var(--rl-tile-ratio);
-    object-fit: cover;
-    border-radius: var(--rl-radius-card);
-    transition: filter var(--rl-motion);
-  }
-  .rl-category-tiles a:hover img {
-    filter: brightness(0.95);
-  }
-  .rl-category-tiles span {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--rl-space-1);
-    min-block-size: var(--rl-control-h);
-    font-size: var(--text-sm);
-    font-weight: var(--rl-weight-semibold);
   }
   .rl-brand-section {
     background: var(--rl-surface);
@@ -794,6 +1116,17 @@
   .rl-footer-slogan {
     font-weight: var(--rl-weight-semibold);
   }
+  /* Phones: brand block on top, the link groups side by side in two columns. */
+  @media (width < 48rem) {
+    .rl-footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--rl-space-3);
+    }
+    .rl-footer-grid > :first-child,
+    .rl-footer-grid > :last-child {
+      grid-column: 1 / -1;
+    }
+  }
   .rl-footer-note {
     border-block-start: var(--rl-border) solid var(--rl-line);
     padding-block: var(--rl-space-3);
@@ -812,9 +1145,6 @@
     .rl-quick-options {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-    .rl-category-tiles {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
     .rl-logo-strip {
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
@@ -830,18 +1160,30 @@
     .rl-hero-layout {
       grid-template-columns: var(--rl-hero-columns);
       gap: var(--rl-space-8);
-      padding-block: var(--rl-space-6);
+      padding-block: var(--rl-space-8) var(--rl-space-4);
     }
-    .rl-hero-copy h1,
-    .rl-hero-copy h2 {
-      font-size: var(--text-6xl);
+    .rl-hero-copy {
+      justify-content: center;
     }
     .rl-hero-actions {
-      display: flex;
       gap: var(--rl-space-2);
+      margin-block-start: 0;
+      padding-block-start: var(--rl-space-4);
+      max-inline-size: var(--rl-hero-copy-max);
+    }
+    .rl-hero-art {
+      display: block;
+      align-self: center;
+    }
+    .rl-hero-mini {
+      display: none;
     }
     .rl-hero-description {
       font-size: var(--text-lg);
+      margin-block-start: var(--rl-space-2);
+    }
+    .rl-hero-steps {
+      font-size: var(--text-sm);
     }
     .rl-quick-calc {
       padding-block: var(--rl-space-4);
@@ -870,24 +1212,77 @@
 }
 
 .rl-marketplace {
+  padding-block-start: var(--rl-space-3);
   padding-block-end: var(--rl-space-8);
 }
+/* Filter button and audience chips share one row; the chips scroll sideways if they ever
+   outgrow it, so the row never wraps or overflows the page. */
 .rl-market-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--rl-space-2);
-  margin-block-end: var(--rl-space-3);
+  gap: var(--rl-space-1);
+  margin-block-end: var(--rl-space-2);
+}
+.rl-market-toolbar .rl-mobile-filters {
+  flex: none;
+  padding-inline: var(--rl-space-2);
+  border-radius: var(--rl-radius-pill);
+  font-size: var(--text-sm);
 }
 .rl-chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: var(--rl-space-1);
 }
+/* Phones: the filter button is a round icon button (its label stays for screen readers) so
+   the three audience chips fit beside it without scrolling. */
+@media (width < 28rem) {
+  .rl-market-toolbar .rl-mobile-filters {
+    min-inline-size: var(--rl-control-h);
+    padding-inline: 0;
+  }
+  .rl-audience-chips .rl-chip {
+    flex: 1 0 auto;
+    padding-inline: var(--rl-space-1);
+  }
+  .rl-filters-label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+.rl-audience-chips {
+  flex: 1;
+  min-inline-size: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+.rl-audience-chips::-webkit-scrollbar {
+  display: none;
+}
+.rl-audience-chips .rl-chip {
+  flex: none;
+}
 .rl-partner-note {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
   color: var(--rl-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   margin-block-end: var(--rl-space-4);
+}
+/* Long category lists stay at three lines so store cards in a row line up. */
+.rl-store-categories {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 .rl-market-layout {
   display: grid;
@@ -1033,8 +1428,40 @@
   font-size: var(--text-sm);
   padding-inline: var(--rl-space-1);
 }
-.rl-store-card > .rl-button[data-variant="secondary"] {
+.rl-store-card > .rl-store-primary {
   margin-block-start: auto;
+}
+.rl-store-card > .rl-badge {
+  align-self: start;
+}
+.rl-store-site {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rl-space-0);
+  min-block-size: var(--rl-control-h);
+  color: var(--rl-ink);
+  font-weight: var(--rl-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.rl-store-site:hover {
+  color: var(--rl-accent);
+}
+.rl-store-links {
+  display: flex;
+  justify-content: center;
+}
+.rl-store-links .rl-text-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rl-space-0);
+  min-block-size: var(--rl-control-h);
+  color: var(--rl-ink);
+  font-weight: var(--rl-weight-medium);
+}
+.rl-store-links .rl-text-action:hover {
+  color: var(--rl-accent);
+  text-decoration: underline;
 }
 .rl-store-card details {
   color: var(--rl-muted);
@@ -1298,6 +1725,27 @@
 }
 
 @media (max-width: 63.999rem) {
+  /* Phones and tablets: like the big shopping apps, the logo row scrolls away and only the
+     search bar stays pinned (sticky with a negative offset, no scroll script). The pinned bar
+     gets a soft shadow so the content scrolls cleanly underneath it. */
+  .rl-site-header {
+    inset-block-start: calc(-1 * (var(--rl-mark-size) + var(--rl-space-1)));
+    transition: box-shadow var(--rl-motion);
+  }
+  .rl-site-header[data-shrunk="true"] {
+    box-shadow: var(--rl-shadow-sm);
+  }
+  .rl-site-header .rl-brand,
+  .rl-site-header .rl-header-actions {
+    transition:
+      opacity var(--rl-motion),
+      visibility var(--rl-motion);
+  }
+  .rl-site-header[data-shrunk="true"] .rl-brand,
+  .rl-site-header[data-shrunk="true"] .rl-header-actions {
+    opacity: 0;
+    visibility: hidden;
+  }
   .rl-site-header[data-compact="true"] .rl-header-row {
     min-block-size: var(--rl-header-mobile-compact);
     padding-block: var(--rl-space-1);
@@ -1322,21 +1770,6 @@
 .rl-quote-option.rl-defer {
   contain-intrinsic-block-size: auto var(--rl-option-intrinsic);
 }
-@media (max-width: 63.999rem) {
-  .rl-hero-art {
-    display: flex;
-    align-items: center;
-    gap: var(--rl-space-3);
-  }
-  .rl-hero-art img {
-    inline-size: var(--rl-mobile-hero-art);
-    flex-shrink: 0;
-  }
-  .rl-hero-art figcaption {
-    margin-block-start: 0;
-    font-size: var(--text-sm);
-  }
-}
 .rl-calc-placeholder {
   min-block-size: var(--rl-calc-placeholder);
   display: flex;
@@ -1348,10 +1781,114 @@
   inline-size: 100%;
   min-block-size: var(--rl-control-h);
 }
-@media (width < 28rem) {
-  /* The Sorani headline fits two lines in both the fallback and final font at 360px. */
-  html[lang="ckb"] .rl-hero-copy h1,
-  html[lang="ckb"] .rl-hero-copy h2 {
-    font-size: var(--text-3xl);
+/* Catalogue: ten primary categories (icon, name, directional chevron) and subcategory chips. */
+.rl-catalogue {
+  margin-block-end: var(--rl-space-6);
+}
+.rl-category-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-card);
+  background: var(--rl-surface);
+  box-shadow: var(--rl-shadow-sm);
+  overflow: hidden;
+}
+.rl-category-list li + li {
+  border-block-start: var(--rl-border) solid var(--rl-line);
+}
+.rl-category-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-2);
+  min-block-size: var(--rl-space-7);
+  padding-block: var(--rl-space-1);
+  padding-inline: var(--rl-space-2);
+  color: var(--rl-ink);
+  text-decoration: none;
+  transition: background-color var(--rl-motion-fast) var(--rl-ease);
+}
+a.rl-category-row:focus-visible {
+  outline: var(--rl-focus) solid var(--rl-accent);
+  outline-offset: calc(var(--rl-focus) * -1);
+}
+.rl-category-row[aria-disabled="true"] {
+  color: var(--rl-muted);
+}
+@media (hover: hover) and (pointer: fine) {
+  a.rl-category-row:hover {
+    background: var(--rl-soft-accent);
   }
+}
+a.rl-category-row:active {
+  background: var(--rl-raised);
+}
+.rl-category-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  inline-size: var(--rl-control-h);
+  block-size: var(--rl-control-h);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-soft-accent);
+  color: var(--rl-accent);
+}
+.rl-category-name {
+  flex: 1;
+  min-inline-size: 0;
+  font-weight: var(--rl-weight-semibold);
+  overflow-wrap: anywhere;
+}
+.rl-category-chevron {
+  color: var(--rl-muted);
+}
+.rl-subcategories {
+  display: grid;
+  gap: var(--rl-space-2);
+  margin-block-end: var(--rl-space-4);
+}
+.rl-subcategory-head {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-2);
+}
+.rl-subcategory-head h2 {
+  font-size: var(--text-2xl);
+  font-weight: var(--rl-weight-semibold);
+}
+.rl-subcategory-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rl-subcategory-chips .rl-chip {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.rl-subcategory-chips .rl-chip[aria-current="true"] {
+  color: var(--rl-accent);
+  border-color: var(--rl-accent);
+  background: var(--rl-soft-accent);
+}
+.rl-subcategory-detail {
+  display: grid;
+  gap: var(--rl-space-2);
+  justify-items: start;
+}
+@media (width >= 48rem) {
+  .rl-category-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .rl-category-list li:nth-child(2) {
+    border-block-start: 0;
+  }
+  .rl-category-list li:nth-child(even) {
+    border-inline-start: var(--rl-border) solid var(--rl-line);
+  }
+}
+.rl-subcategory-head .rl-badge {
+  margin-inline-start: auto;
 }
