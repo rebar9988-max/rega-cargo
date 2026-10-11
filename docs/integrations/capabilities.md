@@ -9,6 +9,8 @@ the live connector list. A name in this table does not mean the tool is connecte
 | Local quality gate | `npm run typecheck`, `npm test`, `npm run lint`, `DATABASE_URL='' npm run build`, `npm run cf:dry-run` | — | Same steps as `.github/workflows/quality.yml` |
 | Layout lock | GitHub CI `layout lock` job | `npm run test:layout:geometry` locally | Baselines are only valid from the official Playwright image (CI or `npm run test:layout:update`) |
 | Worker deployments, bindings, custom domains | Cloudflare REST API with the env token (read-only GETs) | `npx wrangler deployments list` | The token **cannot read Hyperdrive** |
+| Live Worker logs | `npx wrangler tail rega-cargo --format json` | — | Works with the env token. The observability REST API is denied |
+| Which database a binding really reaches | `wrangler dev --remote` against the built config (no production traffic), then compare `pg_stat_database` (`xact_commit`, `xact_rollback`) and `pg_stat_user_tables` counters across Neon projects before and after uncached `/market?q=<random>` probes | — | Read-only. Never print connection strings |
 | Worker bundle validation | `npm run cf:dry-run` | — | No deploy |
 | Production deploy | `npm run deploy` (DEPLOY.md) | — | **Owner approval only.** Never from an unmerged branch |
 | Database schema and migrations | Neon MCP `get_database_tables`, `describe_table_schema`, read-only `run_sql` on project `old-cherry-79292410` | `npm run db:migrate` (only with an approved `DATABASE_URL`) | Make a Neon branch or snapshot before any migration (DEPLOY.md) |

@@ -2,6 +2,22 @@
 
 Every check below was read-only. Nothing was deployed, migrated, created or deleted.
 
+## Recovery pass (10:05–10:40 UTC): read this first
+
+**Production database features are down, and both configured connections point at the empty duplicate database.**
+
+| Fact | Evidence |
+|---|---|
+| Live version `55cc4430` (deployed 10:05 UTC by another session) binds `HYPERDRIVE` (`795013d0…`) as well as the `DATABASE_URL` secret. The app prefers `HYPERDRIVE` | Cloudflare `workers/scripts/rega-cargo/settings`; `src/lib/db-config.server.ts` |
+| Every DB-backed page fails with `Disallowed operation called within global scope` (`/market` renders its "try again" state) | `wrangler tail rega-cargo` during `/market` requests. Reproduced locally with `wrangler dev` and a local Hyperdrive binding |
+| Cause: `db.ts`, `auth/server.ts` and `auth/verify.server.ts` read `HYPERDRIVE.connectionString` at module scope. workerd forbids that, because modules (even dynamic imports) evaluate in global scope | Stack trace: `resolveDatabaseUrl` ← `db-*.mjs` module body |
+| Hyperdrive `795013d0…` → **`misty-recipe-03041407`, database `neondb` (empty)** | `wrangler dev --remote` with the real binding: `relation "offers" does not exist`. Over 20 probes, `misty/neondb` rollbacks went 8→18. `old-cherry` and `rega-platform` counters did not change |
+| `DATABASE_URL` secret → **also the empty `misty/neondb`** | Same remote probe without the Hyperdrive binding: same missing-relation errors. Only `misty/neondb` rollbacks rose. `old-cherry` (`cargo` and `postgres`) rollbacks stayed at 0 |
+| The real schema is **`old-cherry-79292410`, database `cargo`** (not `neondb`). No production connection references it | `pg_stat_database` and `_migrations` on `old-cherry` |
+| The bundled banned-products list still applies when the DB rules are unreachable | Preview log: `[compliance] DB rules unavailable, using bundled list` |
+
+Not deployed: the code fix alone would make production reach the empty database. The earlier "22/22 clean" browser result below is still true for console and network, but `/market` was already showing its server-rendered error state.
+
 ## Source control: GitHub
 
 - Authenticated as `rebar9988-max`. Repo `rebar9988-max/rega-cargo`.
@@ -32,8 +48,8 @@ All five steps were run on `cd42937`.
 
 | Project | Name | PG | Tables | Assessment |
 |---|---|---|---|---|
-| `old-cherry-79292410` | rl-cargo-production | 17 | 28 | **The live Cargo schema** |
-| `misty-recipe-03041407` | rl-cargo-production | 18 | 0 | **Empty duplicate** with the same name, created 13 min later |
+| `old-cherry-79292410` | rl-cargo-production | 17 | 28 (database `cargo`) | **The real Cargo schema** |
+| `misty-recipe-03041407` | rl-cargo-production | 18 | 0 (database `neondb`) | **Empty duplicate**. Currently the target of both production connections |
 | `lucky-glitter-73195208` | rega-platform | 18 | — | REGA platform. Not Cargo, not touched |
 
 Read-only query on `old-cherry-79292410`:
@@ -60,8 +76,8 @@ Read-only query on `old-cherry-79292410`:
 
 ## Open items for the owner
 
-1. **Duplicate Neon project** `misty-recipe-03041407` (empty). Delete it in the Neon console if it was created by mistake. If the Hyperdrive config points at it, production would see an empty database after the next deploy. Check that before deploying `main`.
-2. **Production lags `main`** (Hyperdrive binding not deployed). Verify the Hyperdrive config's origin host in the dashboard. It should be the `old-cherry-79292410` endpoint. Then deploy per DEPLOY.md.
-3. **Cloudflare token scope**: add `Hyperdrive: Read` if agents should verify Hyperdrive.
+1. **Repoint production at `old-cherry-79292410`, database `cargo`** (blocker). In the Cloudflare dashboard, go to Hyperdrive, open config `795013d06b38408e87552686a6045291` and edit the origin. Set the host to the `old-cherry` endpoint from the Neon console (Connect, pooling off), the database to `cargo`, and use that project's role and password. Then run `npx wrangler secret put DATABASE_URL` with the same `cargo` connection string, so the fallback matches. Only then merge and deploy the module-scope fix.
+2. **Cloudflare token scope**: add `Hyperdrive: Edit` (or at least `Read`) and `Workers Observability: Read` if agents should verify or repair this without a dashboard visit.
+3. **Duplicate Neon project** `misty-recipe-03041407`: leave it in place until item 1 is done. Afterwards, delete it in the Neon console if nothing else uses it. Its `neondb` was still receiving failing queries during this pass, possibly from `rega-cargo-staging`, whose `DATABASE_URL` was not checked.
 4. **Sentry**: create a project and add the SDK only if you want error monitoring beyond Workers observability. That needs a new dependency.
 5. **Google Drive** is connected but disabled in chat. Seven connectors have incomplete connections. None is needed for Cargo today.
