@@ -24,6 +24,7 @@ import { orderStore } from "@/lib/orders/api";
 import { UX_COPY } from "@/lib/ux-copy";
 import { marketCopy } from "@/lib/market-copy";
 import { ContactNote } from "@/components/contact-note";
+import { ProductLinkAssist } from "@/components/product-link-assist";
 
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -171,6 +172,8 @@ function RequestPage() {
             </Link>
           </div>
         ) : (
+          <div className="flex flex-col gap-6">
+          <ProductLinkAssist dest={dest} onUse={setUrl} />
           <form onSubmit={submit} className="rl-card rl-request-form">
             {good ? (
               <div className="flex items-center gap-3">
@@ -297,6 +300,7 @@ function RequestPage() {
               {busy ? ux.sending : t.submit}
             </button>
           </form>
+          </div>
         )}
         <aside className="rl-form-aside">
           <div className="rl-card">
