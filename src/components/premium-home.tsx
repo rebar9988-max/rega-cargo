@@ -80,6 +80,43 @@ function HeroRoute({ icons }: { icons: readonly LucideIcon[] }) {
   );
 }
 
+/**
+ * Phone/tablet companion of HeroRoute: a small globe with an orbit and a plane, sitting at the
+ * end of the badge row so it adds no more than the row's own height. Decorative only.
+ */
+function MiniGlobe() {
+  return (
+    <div className="rl-hero-mini" aria-hidden="true">
+      <svg className="rl-directional" viewBox="0 0 56 56" focusable="false">
+        <defs>
+          <radialGradient id="rl-mini-globe-fill" cx="35%" cy="30%" r="75%">
+            <stop offset="0" className="rl-globe-hi" />
+            <stop offset="0.55" className="rl-globe-base" />
+            <stop offset="1" className="rl-globe-low" />
+          </radialGradient>
+        </defs>
+        <circle cx="28" cy="28" r="20" fill="url(#rl-mini-globe-fill)" />
+        <g className="rl-globe-wire">
+          <ellipse cx="28" cy="28" rx="7" ry="20" />
+          <ellipse cx="28" cy="28" rx="14" ry="20" />
+          <ellipse cx="28" cy="28" rx="20" ry="4" />
+        </g>
+        <ellipse
+          className="rl-globe-orbit"
+          cx="28"
+          cy="28"
+          rx="27"
+          ry="9"
+          transform="rotate(-14 28 28)"
+        />
+      </svg>
+      <span className="rl-hero-mini-plane">
+        <Icon as={Plane} />
+      </span>
+    </div>
+  );
+}
+
 export function PremiumHome({
   service,
   onService,
@@ -171,15 +208,18 @@ export function PremiumHome({
               >
                 <div className="page rl-hero-layout">
                   <div className="rl-hero-copy">
-                    {s.ai ? (
-                      <p className="rl-eyebrow rl-hero-badge">{h.eyebrow}</p>
-                    ) : (
-                      <p className="rl-eyebrow rl-hero-badge">
-                        <bdi lang="en" dir="ltr">
-                          {t.brandSub}
-                        </bdi>
-                      </p>
-                    )}
+                    <div className="rl-hero-top">
+                      {s.ai ? (
+                        <p className="rl-eyebrow rl-hero-badge">{h.eyebrow}</p>
+                      ) : (
+                        <p className="rl-eyebrow rl-hero-badge">
+                          <bdi lang="en" dir="ltr">
+                            {t.brandSub}
+                          </bdi>
+                        </p>
+                      )}
+                      <MiniGlobe />
+                    </div>
                     {/* Each authored line balances on its own, so a narrow screen never
                         leaves a single orphaned word. */}
                     <Heading>

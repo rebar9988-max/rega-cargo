@@ -623,13 +623,60 @@
   .rl-hero-copy > :not(.rl-hero-actions) {
     align-self: start;
   }
+  /* Badge row: the badge may wrap; the small globe keeps its size at the row's end. */
+  .rl-hero-top {
+    align-self: stretch !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--rl-space-2);
+  }
+  .rl-hero-mini {
+    position: relative;
+    flex-shrink: 0;
+    inline-size: var(--rl-hero-mini);
+    block-size: var(--rl-hero-mini);
+  }
+  .rl-hero-mini svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+  .rl-hero-mini .rl-globe-wire,
+  .rl-hero-mini .rl-globe-orbit {
+    stroke-width: 1;
+  }
+  .rl-hero-mini .rl-globe-orbit {
+    stroke-dasharray: 3 3;
+  }
+  /* The plane rides the orbit's upper end, inline-end of the globe. */
+  .rl-hero-mini-plane {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    display: grid;
+    place-items: center;
+    inline-size: var(--rl-hero-mini-plane);
+    block-size: var(--rl-hero-mini-plane);
+    border-radius: var(--rl-radius-pill);
+    background: var(--rl-surface);
+    border: var(--rl-border) solid var(--rl-line);
+    box-shadow: var(--rl-shadow-sm);
+    color: var(--rl-accent);
+  }
+  .rl-hero-mini-plane .rl-icon {
+    inline-size: var(--rl-hero-mini-icon);
+    block-size: var(--rl-hero-mini-icon);
+  }
   .rl-hero-badge {
     display: inline-flex;
     align-items: center;
     gap: var(--rl-space-1);
     padding-block: var(--rl-hero-badge-pad);
     padding-inline: var(--rl-space-1) var(--rl-space-2);
-    border-radius: var(--rl-radius-pill);
+    min-inline-size: 0;
+    /* Reads as a pill on one line and as a rounded tag if a long label wraps. */
+    border-radius: var(--rl-radius-card);
     background: var(--rl-soft-accent);
     color: var(--rl-accent);
     line-height: var(--rl-leading);
@@ -1127,6 +1174,9 @@
     .rl-hero-art {
       display: block;
       align-self: center;
+    }
+    .rl-hero-mini {
+      display: none;
     }
     .rl-hero-description {
       font-size: var(--text-lg);

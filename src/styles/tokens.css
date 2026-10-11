@@ -25,6 +25,9 @@
   --rl-hero-badge-pad: 0.25rem;
   --rl-hero-badge-dot: 0.375rem;
   --rl-hero-cta-icon-pad: 0.25rem;
+  --rl-hero-mini: 4rem;
+  --rl-hero-mini-plane: 1.75rem;
+  --rl-hero-mini-icon: 1rem;
   /* Hero wash: white into a barely-there brand tint; globe highlight for the art. */
   --rl-hero-tint: #fff5f5;
   --rl-globe-hi: #ff4d4d;
