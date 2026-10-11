@@ -144,6 +144,8 @@ for (const lang of LANGS) {
       await open(page, "/", lang);
       await page.locator('input[type="search"]').first().click();
       await expect(page.locator('input[type="search"][aria-expanded="true"]')).toBeVisible();
+      // The suggestion list mounts lazily; capture the sheet only once its content is there.
+      await expect(page.locator('[role="group"][aria-labelledby="rl-g-cats"]')).toBeVisible();
       await settle(page);
       await geometry(page, breakpoint, true);
       await expect(page).toHaveScreenshot(`search-${lang}.png`, shot(page, true));
