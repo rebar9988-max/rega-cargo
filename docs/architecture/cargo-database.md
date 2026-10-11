@@ -76,30 +76,45 @@ block 5432; there, use Neon's WebSocket driver or the Neon SQL editor.
 7. **Verify** that `https://cargo.regaplatform.com/track?id=RG-TEST-0000-0000` returns "not found" (not "unavailable"), that `/`, `/stores`, `/quote` and `/market` load without console errors, and that `npx wrangler tail rega-cargo` shows no exceptions.
 8. **Roll back** with `npx wrangler secret delete DATABASE_URL --name rega-cargo` (back to the unavailable state) or `npx wrangler rollback <version> --name rega-cargo`. Data stays in Neon.
 
-After the setup, reset the `cargo_owner` password (Neon console → Roles). All
-branches started with the same owner password, and it was handled during setup.
+See "`cargo_owner` credential" below for the rotation procedure.
 
-## Hyperdrive (target; blocked on token permission)
+## Hyperdrive (PR #54, not merged)
 
-The Cloudflare API token in the dev environment can manage Worker secrets but
-gets `Authentication error [code: 10000]` on `/hyperdrive/configs`. The owner
-needs to add **Account → Hyperdrive → Edit** to that token, or run these steps
-from their own login:
+Status 2026-10-11: another session created Hyperdrive config
+`795013d06b38408e87552686a6045291` and opened PR #54 ("Enable Hyperdrive database
+binding for production"), which adds the production-only binding and stops
+`env.*` from inheriting bindings, so staging cannot pick up production's database.
+This session did not touch that PR.
 
-```bash
-npx wrangler hyperdrive create rega-cargo-db --connection-string="<cargo_app production URL>"
-npx wrangler hyperdrive create rega-cargo-db-staging --connection-string="<cargo_app staging URL>"
-```
+- The dev-environment Cloudflare token cannot see Hyperdrive: list **and** get-by-id both return `Authentication error 10000`, while Workers scripts, deployments, settings and tails return 200. Adding **Account → Hyperdrive → Edit** to the token is what lets a session create or inspect configs.
+- Read-only review of PR #54 (separate worktree, nothing pushed): build passes and the dry run shows `env.HYPERDRIVE (795013d0…)`. The branch predates #53, so alone it lacks `PRODUCT_LINK_ENABLED`, but a trial merge with `main` has no conflicts and keeps both the binding and the flag (202 root tests and 198 further tests passed, 0 failures).
+- `src/lib/db-config.server.ts` already prefers `HYPERDRIVE` over `DATABASE_URL`, so no code change is needed.
 
-Then add the bindings in a reviewed PR: `"hyperdrive": [{ "binding": "HYPERDRIVE", "id": "<id>" }]`
-at the top level, and the staging id under `env.staging`. After deploy and
-verification, remove the `DATABASE_URL` secrets. The code needs no change,
-because `HYPERDRIVE` already takes priority.
+**Before merging #54 (owner, 1 minute):** run `npx wrangler hyperdrive get 795013d06b38408e87552686a6045291` and confirm the origin host starts with `ep-long-mud-banlg0tm` (production branch of `rl-cargo-production`), database `cargo`, and user `cargo_app`, not `cargo_owner` and not any `rega-platform` host. A config pointing anywhere else must not be bound.
+
+**After the merge and deploy:** check that `/track?id=RG-TEST-0000-0000` still answers "not found", then remove the production `DATABASE_URL` secret with `npx wrangler secret delete DATABASE_URL --name rega-cargo` (a final cleanup, which does not change data), and note the version id first as the rollback target.
+
+## `cargo_owner` credential: exposure audit and rotation procedure
+
+Audit 2026-10-11 (read-only):
+
+- The owner password is not in git (history searched), not in tracked docs, not in `/tmp`, and not in Wrangler logs. Temporary URL files in the sandbox were deleted. It appeared only in Neon MCP tool output inside the 2026-10-11 chat sessions, and it is also retrievable by anyone with access to the Neon project.
+- It is **not** used by any Worker. `rega-cargo` and `rega-cargo-staging` connect as `cargo_app`. `pg_stat_activity` on production shows exactly two sessions: `cargo_app` (the Worker pool) and `cargo_owner` (the Neon MCP query itself).
+- The same owner password exists on three branches (`production`, `staging`, `dev-migration-check`), because the branches were created from one parent.
+
+Why it was not rotated through the MCP: `reset_postgres_role_password` returns the new password in its tool output, which would only move the exposure into the same chat. Changing it with SQL (`ALTER ROLE`) would leave Neon's stored copy stale and break the Neon MCP's own connection to that branch.
+
+Safe procedure (owner, about 2 minutes, nothing deployed depends on it):
+
+1. Neon console → project `rl-cargo-production` → **Roles** → `cargo_owner` → **Reset password**, once per branch (`production`, `staging`, `dev-migration-check`). Do not paste the new value anywhere.
+2. Verify nothing broke: `/track?id=RG-TEST-0000-0000` on both Workers still answers "not found" (they use `cargo_app`).
+3. Next session that needs migrations fetches the current value with the Neon MCP `get_connection_string` and pipes it to a 0600 file, never into chat or Git.
+4. Optional cleanup: delete the `dev-migration-check` branch (delete `staging` first, since it was created from it) once no longer needed.
 
 ## Known limitations
 
 - Without Hyperdrive, every query opens a new TLS connection to Neon's pooler. That works but adds latency. Hyperdrive removes it.
-- Worker logs: `wrangler tail` returned no events from the cloud sandbox, so Worker logs were not inspected there. Check `wrangler tail rega-cargo` or the Cloudflare dashboard from another machine.
+- Worker logs: `wrangler tail rega-cargo --format json` works from the cloud sandbox. It prints **pretty-printed multi-line JSON, not one object per line**, so parse it with a streaming JSON decoder. A 2026-10-11 session first read it line by line, saw nothing and wrongly concluded the tail was blocked. Verified result: 7 events on version `fef8d4c2`, all outcome `ok`, 0 exceptions, 0 warn/error logs.
 - Writes (quotes, store requests, market) need a signed-in phone user. Phone sign-in stays closed until WhatsApp or Twilio credentials exist, so end-to-end write flows cannot be tested in a browser yet.
 - Free plan: autoscaling 0.25 CU, branch logical size limit 1 GiB (as reported by Neon), compute suspends when idle, so the first query after idle is slower.
 - A superuser or table owner can still bypass compliance triggers. The app role `cargo_app` cannot.

@@ -246,7 +246,7 @@ Cargo's Neon project, branches, roles and the step-by-step runbook live in
 
 ## Known gaps
 
-1. **Hyperdrive is not set up yet.** Production and staging use Neon's pooler through a `DATABASE_URL` secret (connected 2026-10-11; `rega-cargo` version `83d4c246-cca8-4f73-ae77-4061e360982b`). Every query opens a new TLS connection until Hyperdrive is added; the Cloudflare token lacks Hyperdrive permission. Phone sign-in is still closed, so write flows are unused. See `docs/architecture/cargo-database.md`.
+1. **Hyperdrive is not live yet.** Production and staging use Neon's pooler through a `DATABASE_URL` secret (connected 2026-10-11). A Hyperdrive config exists and its production-only binding is in open PR #54; review it with the pre-merge check in `docs/architecture/cargo-database.md` before merging. Until then every query opens a new TLS connection. The dev-environment Cloudflare token cannot read Hyperdrive. Phone sign-in is still closed, so write flows are unused.
 2. **Phone sign-in stays closed** until WhatsApp or Twilio credentials exist. Turnstile is required in production once a provider is configured.
 3. **Nitro is still `3.0.260610-beta`.** `npm audit` reports high advisories in `undici` / `sharp` via miniflare (build tooling only, not the Worker bundle). Upgrading Nitro to clear them is a breaking beta bump and was not done.
 4. **The Grok preview OAuth secret was removed from the source.** Rotate it at the broker. The rest of the template auth stack stays because the build still imports it; federated sign-in is off unless `GROK_AUTH_CLIENT_SECRET` is set.
