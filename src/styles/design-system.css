@@ -582,7 +582,7 @@
      one clear action hierarchy (primary marketplace, two quiet secondaries). Sizes come from the
      type scale and --rl-hero-* tokens; the art is vector and appears from the laptop breakpoint. */
   .rl-hero-carousel {
-    background: var(--rl-surface);
+    background: linear-gradient(to bottom, var(--rl-surface), var(--rl-hero-tint));
     border-block-end: var(--rl-border) solid var(--rl-line);
   }
   .rl-hero-rail {
@@ -658,6 +658,9 @@
     display: block;
     text-wrap: balance;
   }
+  .rl-hero-line + .rl-hero-line {
+    color: var(--rl-accent);
+  }
   .rl-hero-description {
     color: var(--rl-muted);
     max-inline-size: var(--rl-hero-copy-max);
@@ -702,10 +705,8 @@
     place-items: center;
     inline-size: var(--rl-hero-step-icon);
     block-size: var(--rl-hero-step-icon);
-    border-radius: var(--rl-radius-pill);
-    background: var(--rl-surface);
-    border: var(--rl-border) solid var(--rl-line);
-    box-shadow: var(--rl-shadow-sm);
+    border-radius: var(--rl-radius-sm);
+    background: var(--rl-soft-accent);
     color: var(--rl-accent);
   }
   .rl-hero-location {
@@ -748,6 +749,14 @@
   .rl-hero-actions:not([data-ai]) .rl-hero-secondary {
     grid-column: 1 / -1;
   }
+  /* The primary arrow sits in a small white disc, a tactile cue that the button moves forward. */
+  .rl-hero-shop .rl-icon {
+    box-sizing: content-box;
+    padding: var(--rl-hero-cta-icon-pad);
+    border-radius: var(--rl-radius-pill);
+    background: var(--rl-on-action);
+    color: var(--rl-action);
+  }
   .rl-hero-actions .rl-hero-cta .rl-icon {
     color: var(--rl-accent);
   }
@@ -771,23 +780,29 @@
   #rl-route-dots circle {
     fill: var(--rl-line);
   }
-  .rl-route-shadow,
-  .rl-route-line {
+  .rl-globe-hi {
+    stop-color: var(--rl-globe-hi);
+  }
+  .rl-globe-base {
+    stop-color: var(--rl-brand);
+  }
+  .rl-globe-low {
+    stop-color: var(--rl-action-active);
+  }
+  .rl-globe-shadow {
+    fill: var(--rl-line);
+  }
+  .rl-globe-wire {
     fill: none;
-    stroke-linecap: round;
+    stroke: var(--rl-on-action);
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
   }
-  .rl-route-shadow {
-    stroke: var(--rl-soft-accent);
-    stroke-width: 12;
-  }
-  .rl-route-line {
-    stroke: var(--rl-brand);
-    stroke-width: 2;
+  .rl-globe-orbit {
+    fill: none;
+    stroke: var(--rl-control-line);
+    stroke-width: 1.5;
     stroke-dasharray: 6 8;
-  }
-  .rl-route-start,
-  .rl-route-end {
-    fill: var(--rl-brand);
   }
   .rl-hero-stop {
     position: absolute;
@@ -805,21 +820,19 @@
     inline-size: var(--rl-space-3);
     block-size: var(--rl-space-3);
   }
-  /* Stops sit on the arc's start, apex and end (viewBox 480×360). */
+  /* Stops sit on the orbit (viewBox 480×360): its far start, its upper arc, its far end. */
   .rl-hero-stop[data-stop="0"] {
-    inset-inline-start: calc(16.667% - var(--rl-hero-stop) / 2);
-    inset-block-start: calc(75.556% - var(--rl-hero-stop) / 2);
+    inset-inline-start: calc(9.6% - var(--rl-hero-stop) / 2);
+    inset-block-start: calc(63.3% - var(--rl-hero-stop) / 2);
   }
   .rl-hero-stop[data-stop="1"] {
-    inset-inline-start: calc(50% - var(--rl-hero-stop) / 2);
-    inset-block-start: calc(28.889% - var(--rl-hero-stop) / 2);
-    background: var(--rl-action);
-    border-color: var(--rl-action-active);
-    color: var(--rl-on-action);
+    inset-inline-start: calc(27% - var(--rl-hero-stop) / 2);
+    inset-block-start: calc(41.8% - var(--rl-hero-stop) / 2);
+    color: var(--rl-accent);
   }
   .rl-hero-stop[data-stop="2"] {
-    inset-inline-start: calc(83.333% - var(--rl-hero-stop) / 2);
-    inset-block-start: calc(75.556% - var(--rl-hero-stop) / 2);
+    inset-inline-start: calc(90.4% - var(--rl-hero-stop) / 2);
+    inset-block-start: calc(36.7% - var(--rl-hero-stop) / 2);
     color: var(--rl-accent);
   }
   .rl-carousel-controls {

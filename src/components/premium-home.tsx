@@ -29,14 +29,14 @@ const QuickQuote = lazy(() =>
 );
 
 const STEP_ICONS: readonly LucideIcon[] = [Globe, Sparkles, House];
-const SHOP_ROUTE: readonly LucideIcon[] = [ShoppingBag, Sparkles, House];
+const SHOP_ROUTE: readonly LucideIcon[] = [ShoppingBag, Plane, House];
 const SHIP_ROUTE: readonly LucideIcon[] = [Warehouse, Plane, House];
 
 /**
- * Decorative route from Europe to the customer's door: a vector arc (no photo, no network
- * request, no layout shift) with three icon stops. It carries no data, so it is hidden from
- * assistive technology; the copy beside it says what the service does. Drawn start → end and
- * mirrored with the layout direction.
+ * Decorative globe with an orbit and three icon stops (origin, flight, door): vector only (no
+ * photo, no network request, no layout shift) and no brand or product imagery. It carries no
+ * data, so it is hidden from assistive technology; the copy beside it says what the service
+ * does. Mirrored with the layout direction.
  */
 function HeroRoute({ icons }: { icons: readonly LucideIcon[] }) {
   return (
@@ -46,12 +46,30 @@ function HeroRoute({ icons }: { icons: readonly LucideIcon[] }) {
           <pattern id="rl-route-dots" width="16" height="16" patternUnits="userSpaceOnUse">
             <circle cx="2" cy="2" r="1" />
           </pattern>
+          <radialGradient id="rl-globe-fill" cx="35%" cy="30%" r="75%">
+            <stop offset="0" className="rl-globe-hi" />
+            <stop offset="0.55" className="rl-globe-base" />
+            <stop offset="1" className="rl-globe-low" />
+          </radialGradient>
         </defs>
         <rect className="rl-route-grid" width="480" height="360" fill="url(#rl-route-dots)" />
-        <path className="rl-route-shadow" d="M80 272 C 160 48, 320 48, 400 272" />
-        <path className="rl-route-line" d="M80 272 C 160 48, 320 48, 400 272" />
-        <circle className="rl-route-end" cx="400" cy="272" r="6" />
-        <circle className="rl-route-start" cx="80" cy="272" r="6" />
+        <ellipse className="rl-globe-shadow" cx="240" cy="318" rx="120" ry="12" />
+        <circle cx="240" cy="180" r="112" fill="url(#rl-globe-fill)" />
+        <g className="rl-globe-wire">
+          <ellipse cx="240" cy="180" rx="40" ry="112" />
+          <ellipse cx="240" cy="180" rx="80" ry="112" />
+          <ellipse cx="240" cy="180" rx="112" ry="20" />
+          <ellipse cx="240" cy="124" rx="97" ry="16" />
+          <ellipse cx="240" cy="236" rx="97" ry="16" />
+        </g>
+        <ellipse
+          className="rl-globe-orbit"
+          cx="240"
+          cy="180"
+          rx="200"
+          ry="64"
+          transform="rotate(-14 240 180)"
+        />
       </svg>
       {icons.map((Stop, n) => (
         <span key={n} className="rl-hero-stop" data-stop={n}>
