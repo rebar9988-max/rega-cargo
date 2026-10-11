@@ -97,9 +97,104 @@ function tokenMatches(token: string, want: string, last: boolean): boolean {
   return variants(token).includes(want) && (last || ARABIC.test(token));
 }
 
+const PERCENT = /%[0-9a-f]{2}/i;
+const PERCENT_RUN = /(?:%[0-9a-f]{2})+/gi;
+
+/**
+ * Links keep product names percent-encoded ("Absolut%20Vodka", Arabic/Kurdish slugs), which would
+ * otherwise hide them from the token match. The decoded copy is appended, never substituted, so
+ * a match on either form counts. Up to three passes undo double encoding (%2556); malformed
+ * sequences stay as they are.
+ */
+export function withDecodedUrlText(text: string): string {
+  let decoded = text;
+  for (let pass = 0; pass < 3 && PERCENT.test(decoded); pass += 1) {
+    const next = decoded.replace(PERCENT_RUN, (run) => {
+      try {
+        return decodeURIComponent(run);
+      } catch {
+        return run;
+      }
+    });
+    if (next === decoded) break;
+    decoded = next;
+  }
+  return decoded === text ? text : `${text} \n ${decoded}`;
+}
+
+/** Characters that render as nothing; ZWNJ/ZWJ also, since a word split by one still reads whole. */
+const INVISIBLE =
+  /\u034F|\u17B4|\u17B5|[\u00AD\u061C\u115F\u1160\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF]/g;
+/** Cyrillic and Greek letters that look like Latin ones (vоdka with a Cyrillic о). */
+const LOOKALIKE: Record<string, string> = {
+  а: "a",
+  в: "b",
+  е: "e",
+  ё: "e",
+  к: "k",
+  м: "m",
+  н: "h",
+  о: "o",
+  р: "p",
+  с: "c",
+  т: "t",
+  у: "y",
+  х: "x",
+  ѕ: "s",
+  і: "i",
+  ї: "i",
+  ј: "j",
+  ԁ: "d",
+  ԛ: "q",
+  ԝ: "w",
+  ɡ: "g",
+  α: "a",
+  β: "b",
+  ε: "e",
+  η: "n",
+  ι: "i",
+  κ: "k",
+  ν: "v",
+  ο: "o",
+  ρ: "p",
+  τ: "t",
+  υ: "u",
+  χ: "x",
+};
+const LOOKALIKE_RE = new RegExp(`[${Object.keys(LOOKALIKE).join("")}]`, "g");
+const LEET: Record<string, string> = {
+  "0": "o",
+  "1": "i",
+  "3": "e",
+  "4": "a",
+  "5": "s",
+  "@": "a",
+  $: "s",
+};
+const LEET_RE = /(?<=\p{L})[01345@$](?=\p{L})/gu;
+const LETTER_DIGIT = /(?<=\p{L})(?=\p{Nd})|(?<=\p{Nd})(?=\p{L})/gu;
+const SPELLED = /(?<![\p{L}\p{Nd}])(?:\p{L}[\s.\-_*·]+){2,}\p{L}(?![\p{L}\p{Nd}])/gu;
+
+/**
+ * A second spelling of `text` with common disguises undone, appended (never substituted) so it
+ * can only add matches: invisible characters removed, look-alike letters mapped to Latin, a
+ * single digit or @/$ between letters read as a letter (v0dka), digits split off words
+ * (vodka70cl), and spelled-out letters joined (v o d k a, v.o.d.k.a).
+ */
+export function withUndisguisedText(text: string): string {
+  const lower = text.normalize("NFKC").toLowerCase();
+  const out = lower
+    .replace(INVISIBLE, "")
+    .replace(LOOKALIKE_RE, (ch) => LOOKALIKE[ch]!)
+    .replace(LEET_RE, (ch) => LEET[ch]!)
+    .replace(LETTER_DIGIT, " ")
+    .replace(SPELLED, (run) => run.replace(/[\s.\-_*·]+/g, ""));
+  return out === lower ? text : `${text} \n ${out}`;
+}
+
 /** Every rule matched in `text` (alcohol rules downgraded to review in alcohol-free wording). */
 export function findMatches(text: string, rules: CompiledRules = BUNDLED_RULES): Match[] {
-  const raw = String(text ?? "")
+  const raw = withUndisguisedText(withDecodedUrlText(String(text ?? "")))
     .normalize("NFKC")
     .toLowerCase();
   const norm = normalizeText(raw);
