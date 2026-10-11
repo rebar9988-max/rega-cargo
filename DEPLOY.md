@@ -132,9 +132,9 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
 1. **Postgres.** Create a dedicated Postgres database for Cargo (e.g. Neon free
    tier, Supabase, or any managed Postgres reachable from the internet with
    TLS). Do **not** reuse REGA's database.
-   **Status 2026-10-11:** Neon project `rl-cargo-production` exists (see
-   `docs/architecture/cargo-database.md`). Staging is connected; production is
-   waiting on owner approval for its migration and secret.
+   **Status 2026-10-11:** Neon project `rl-cargo-production` exists and both
+   `rega-cargo` and `rega-cargo-staging` are connected through a `DATABASE_URL`
+   secret (see `docs/architecture/cargo-database.md`). Hyperdrive is still to do.
 2. **Hyperdrive** (included in Workers Free, query limits apply):
    ```bash
    npx wrangler hyperdrive create rega-cargo-db \
@@ -246,7 +246,7 @@ Cargo's Neon project, branches, roles and the step-by-step runbook live in
 
 ## Known gaps
 
-1. **Production Postgres not connected yet.** The dedicated Neon project `rl-cargo-production` exists and staging (`rega-cargo-staging`) is connected to its `staging` branch. Production still returns the unavailable state for quote, store requests, tracking, market and phone sign-in (quotes fall back to the contact email) until its migration is applied and `DATABASE_URL` (or Hyperdrive) is set. See `docs/architecture/cargo-database.md`.
+1. **Hyperdrive is not set up yet.** Production and staging use Neon's pooler through a `DATABASE_URL` secret (connected 2026-10-11; `rega-cargo` version `83d4c246-cca8-4f73-ae77-4061e360982b`). Every query opens a new TLS connection until Hyperdrive is added; the Cloudflare token lacks Hyperdrive permission. Phone sign-in is still closed, so write flows are unused. See `docs/architecture/cargo-database.md`.
 2. **Phone sign-in stays closed** until WhatsApp or Twilio credentials exist. Turnstile is required in production once a provider is configured.
 3. **Nitro is still `3.0.260610-beta`.** `npm audit` reports high advisories in `undici` / `sharp` via miniflare (build tooling only, not the Worker bundle). Upgrading Nitro to clear them is a breaking beta bump and was not done.
 4. **The Grok preview OAuth secret was removed from the source.** Rotate it at the broker. The rest of the template auth stack stays because the build still imports it; federated sign-in is off unless `GROK_AUTH_CLIENT_SECRET` is set.

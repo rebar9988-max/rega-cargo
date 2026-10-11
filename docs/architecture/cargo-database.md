@@ -28,11 +28,11 @@ rega-cargo-staging.*.workers.dev → Worker    ├─ pg (node-postgres) → Neo
 | Owner role (migrations only) | `cargo_owner`                                                                                                                                                  |
 | Runtime role (Workers)       | `cargo_app`: `SELECT, INSERT, UPDATE, DELETE` on `public` tables, sequence usage. No `CREATE`, no `TRUNCATE`, no DDL. Created per branch with its own password |
 
-| Branch                 | Id                       | Endpoint                 | State                                                                                      |
-| ---------------------- | ------------------------ | ------------------------ | ------------------------------------------------------------------------------------------ |
-| `production` (default) | `br-raspy-snow-bagdgpk4` | `ep-long-mud-banlg0tm`   | **Empty. Migrations not applied, no `cargo_app` yet** (waiting on owner approval)          |
-| `staging`              | `br-lively-sea-ba6u1qzn` | `ep-dry-water-baph7vmu`  | All 12 migrations, `cargo_app` role. Wired to Worker `rega-cargo-staging` (`DATABASE_URL`) |
-| `dev-migration-check`  | `br-broad-sun-bajwlo1d`  | `ep-wild-grass-bax26md7` | Migration test branch (parent of `staging`). Disposable                                    |
+| Branch                 | Id                       | Endpoint                 | State                                                                                                                                   |
+| ---------------------- | ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `production` (default) | `br-raspy-snow-bagdgpk4` | `ep-long-mud-banlg0tm`   | **Live.** All 12 migrations applied 2026-10-11, own `cargo_app` role (separate password). Wired to Worker `rega-cargo` (`DATABASE_URL`) |
+| `staging`              | `br-lively-sea-ba6u1qzn` | `ep-dry-water-baph7vmu`  | All 12 migrations, `cargo_app` role. Wired to Worker `rega-cargo-staging` (`DATABASE_URL`)                                              |
+| `dev-migration-check`  | `br-broad-sun-bajwlo1d`  | `ep-wild-grass-bax26md7` | Migration test branch (parent of `staging`). Disposable                                                                                 |
 
 **Never use `rega-platform` (`lucky-glitter-73195208`).** That is REGA's database.
 Before any write, check that the host starts with one of the endpoints above.
@@ -44,9 +44,12 @@ If ownership is unclear, stop.
 - 28 tables, including `shipment_requests`, `tracking_events`, `request_quotes`, `request_status_log`, `declarations`, `products`, `offers`, `phone_users`, `phone_sessions`, `rate_counters`, `compliance_audit_log`. Foreign keys and indexes are present.
 - Compliance seed: 8 prohibited categories, 378 keywords. Row guards, truncate guards and `products_compliance_unpublish` are installed. Neon's owner role was allowed to create the `compliance_no_drop` / `compliance_no_alter` event triggers.
 - `cargo_app`: insert = yes, truncate = no, `CREATE` on schema = no.
-- Live probe: `https://rega-cargo-staging.rebar9988.workers.dev/track?id=RG-TEST-0000-0000` returns `notfound`, so the Worker queried the database. Production returns `unavailable` (no database).
+- Live probe: `/track?id=RG-TEST-0000-0000` returns `notfound` on staging and, since the production connection, on `https://cargo.regaplatform.com` too (it returned `unavailable` before), so both Workers query the database.
+- Production after connection: 12 migrations, `cargo_app` can insert but not truncate or run DDL, 378 keywords and 8 categories, 0 orders and 0 users (nothing was written). An idempotent re-run applied 0.
+- Browser check of production (390px, Playwright): `/`, `/stores`, `/stores?cat=electronics`, `/stores/request?store=amazon&intent=buy`, `/quote`, `/market` (via its normal 307), `/track`, `/ai`, `/impressum`, `/privacy`, `/terms` all 200 with no console errors, no HTTP errors and no horizontal overflow.
+- Write-and-read round trip (insert, read back, delete) done as `cargo_app` on **staging** only. No test rows were written to production.
 
-## Runbook: connect production (needs owner approval)
+## Runbook: connect production (done 2026-10-11 with owner approval; kept for rebuilds)
 
 Run from a machine that can reach Neon on TCP 5432. Claude cloud sandboxes
 block 5432; there, use Neon's WebSocket driver or the Neon SQL editor.
@@ -66,7 +69,7 @@ block 5432; there, use Neon's WebSocket driver or the Neon SQL editor.
    ALTER DEFAULT PRIVILEGES FOR ROLE cargo_owner IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO cargo_app;
    ALTER DEFAULT PRIVILEGES FOR ROLE cargo_owner IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO cargo_app;
    ```
-5. **Record the current Worker version** with `npx wrangler deployments list --name rega-cargo`. On 2026-10-11 it was `b76e69e0-db16-42ac-93b5-fe350dda38fc`.
+5. **Record the current Worker version** with `npx wrangler deployments list --name rega-cargo`. Before the 2026-10-11 connection it was `b76e69e0-db16-42ac-93b5-fe350dda38fc` (rollback target); the secret change created `83d4c246-cca8-4f73-ae77-4061e360982b` with the same code.
 6. **Set the secret** (pipe it; do not type it into shell history):
    `npx wrangler secret put DATABASE_URL --name rega-cargo < cargo-app-prod.url`
    This creates a new Worker version with the same code.
@@ -96,6 +99,7 @@ because `HYPERDRIVE` already takes priority.
 ## Known limitations
 
 - Without Hyperdrive, every query opens a new TLS connection to Neon's pooler. That works but adds latency. Hyperdrive removes it.
+- Worker logs: `wrangler tail` returned no events from the cloud sandbox, so Worker logs were not inspected there. Check `wrangler tail rega-cargo` or the Cloudflare dashboard from another machine.
 - Writes (quotes, store requests, market) need a signed-in phone user. Phone sign-in stays closed until WhatsApp or Twilio credentials exist, so end-to-end write flows cannot be tested in a browser yet.
 - Free plan: autoscaling 0.25 CU, branch logical size limit 1 GiB (as reported by Neon), compute suspends when idle, so the first query after idle is slower.
 - A superuser or table owner can still bypass compliance triggers. The app role `cargo_app` cannot.
