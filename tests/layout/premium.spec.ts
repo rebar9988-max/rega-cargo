@@ -94,7 +94,12 @@ test("language switches preserve store query parameters and reload in the select
     expect(new URL(page.url()).searchParams.get("lang")).toBe(lang);
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("html")).toHaveAttribute("lang", lang);
-    await expect(page.locator("html")).toHaveAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+    // The layout stays right-to-left in every language; only the text direction changes.
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-textdir",
+      lang === "ar" ? "rtl" : "ltr",
+    );
   }
 });
 
@@ -117,7 +122,11 @@ for (const lang of ["ckb", "ar", "en"] as const)
         });
         expect(response?.status(), route).toBe(200);
         await expect(page.locator("html")).toHaveAttribute("lang", lang);
-        await expect(page.locator("html")).toHaveAttribute("dir", lang === "en" ? "ltr" : "rtl");
+        await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+        await expect(page.locator("html")).toHaveAttribute(
+          "data-textdir",
+          lang === "en" ? "ltr" : "rtl",
+        );
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
         await expect(
           page.locator("main h1:not([aria-hidden=true])").filter({ visible: true }),
@@ -158,5 +167,138 @@ test("360px filters, favorites, keyboard dialog and banned searches", async ({ p
     await page.goto(`/stores?lang=en&q=${encodeURIComponent(q)}`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
     await expect(page.locator(".rl-empty-state")).toBeVisible();
+  }
+});
+
+const PRIMARY = [
+  "electronics",
+  "sports",
+  "baby",
+  "home",
+  "gaming",
+  "beauty",
+  "auto",
+  "fashion",
+  "pets",
+];
+
+test("catalogue: ten category rows, direct URLs, history, subcategories and honest empty states", async ({
+  page,
+}) => {
+  await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+  const rows = page.locator(".rl-category-row");
+  await expect(rows).toHaveCount(10);
+  // Food awaits owner approval: visible, not a link, lists nothing.
+  await expect(page.locator('.rl-category-row[data-category="food"]')).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  await expect(page.locator('a.rl-category-row[data-category="food"]')).toHaveCount(0);
+  for (const cat of PRIMARY) {
+    await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+    await page.locator(`a.rl-category-row[data-category="${cat}"]`).click();
+    await expect(page).toHaveURL(new RegExp(`cat=${cat}(&|$)`));
+    await expect(page.locator(".rl-subcategories")).toBeVisible();
+    // A published category with no listed store shows the honest empty state, never invented items.
+    const cards = await page.locator("[data-good],[data-store]").count();
+    if (cards === 0) await expect(page.locator(".rl-empty-state")).toBeVisible();
+  }
+  // Subcategory refinement is a real URL and survives reload, back and forward.
+  await page.goto("/stores?lang=en&cat=electronics", { waitUntil: "networkidle" });
+  await page.locator('[data-sub="tablets"]').click();
+  await expect(page).toHaveURL(/sub=tablets/);
+  await expect(page.locator('[data-sub-detail="tablets"]')).toBeVisible();
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(page.locator('[data-sub-detail="tablets"]')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('[data-sub-detail="tablets"]')).toHaveCount(0);
+  // Language and other filters are kept when choosing a category.
+  await page.goto("/stores?lang=ckb&country=DE", { waitUntil: "networkidle" });
+  await page.locator('a.rl-category-row[data-category="pets"]').click();
+  await expect(page).toHaveURL(/cat=pets/);
+  await expect(page).toHaveURL(/country=DE/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "ckb");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  // Banned queries stay empty even inside a category, and a pending category lists nothing.
+  await page.goto("/stores?lang=en&cat=food", { waitUntil: "networkidle" });
+  await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
+  await page.goto("/stores?lang=en&cat=pets&q=vodka", { waitUntil: "networkidle" });
+  await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
+});
+
+test("hero: the AI call to action opens the existing assistant in the chosen language", async ({
+  page,
+}) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const cta = page.locator(".rl-ai-hero .rl-ai-hero-cta");
+    await expect(cta).toHaveCount(1);
+    await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute("data-variant", "primary");
+    await expect(cta).toHaveAttribute("href", new RegExp(`^/ai(\\?lang=${lang})?$`));
+    // Visible without scrolling on a phone, and a comfortable touch target.
+    const box = await cta.boundingBox();
+    expect(box!.y + box!.height, lang).toBeLessThanOrEqual(800);
+    expect(box!.height, lang).toBeGreaterThanOrEqual(44);
+    await cta.click();
+    await expect(page).toHaveURL(/\/ai/);
+    await expect(page.locator("html")).toHaveAttribute("lang", lang);
+    await expect(page.locator("main h1")).toBeVisible();
+    // Back returns to the homepage with the hero in place.
+    await page.goBack();
+    await expect(page.locator(".rl-ai-hero h1")).toBeVisible();
+    await page.goForward();
+    await expect(page).toHaveURL(/\/ai/);
+  }
+  // Keyboard: the CTA is reachable and activates with Enter.
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  await page.locator(".rl-ai-hero-cta").focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/ai/);
+});
+
+test("hero: one static section right under the header, same place in every language", async ({
+  page,
+}) => {
+  await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+  // No carousel, no slides: exactly one hero, and it is the first section in <main>.
+  await expect(page.locator(".rl-ai-hero")).toHaveCount(1);
+  await expect(page.locator(".rl-hero-slide, .rl-carousel-dot")).toHaveCount(0);
+  await expect(page.locator("main section").first()).toHaveClass(/rl-ai-hero/);
+  const heroTop = async () => (await page.locator(".rl-ai-hero").boundingBox())!.y;
+  const ctaCenter = async () => {
+    const b = (await page.locator(".rl-ai-hero-cta").boundingBox())!;
+    return b.x + b.width / 2;
+  };
+  const top = await heroTop();
+  const center = await ctaCenter();
+  for (const lang of ["ckb", "ar", "fa", "en", "de", "tr", "ku"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    expect(Math.round(await heroTop()), lang).toBe(Math.round(top));
+    // The CTA stays centred whatever the text direction.
+    expect(Math.abs((await ctaCenter()) - center), lang).toBeLessThanOrEqual(1);
+    // The header does not overlap the hero, and nothing scrolls sideways.
+    const header = await page.locator("header").first().boundingBox();
+    expect(header!.y + header!.height, lang).toBeLessThanOrEqual(Math.ceil(await heroTop()));
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+      lang,
+    ).toBeLessThanOrEqual(360);
+    // A refresh renders the same hero in the same place.
+    await page.reload({ waitUntil: "networkidle" });
+    expect(Math.round(await heroTop()), `${lang} reload`).toBe(Math.round(top));
+  }
+});
+
+test("hero: the marketplace and shipping buttons sit under the AI action", async ({ page }) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const shop = page.locator(".rl-ai-hero .rl-hero-shop");
+    await expect(shop).toHaveAttribute("href", new RegExp(`^/stores(\\?lang=${lang})?$`));
+    await expect(page.locator(".rl-ai-hero .rl-hero-secondary")).toHaveCount(1);
+    const cta = (await page.locator(".rl-ai-hero-cta").boundingBox())!;
+    const box = (await shop.boundingBox())!;
+    expect(box.y, lang).toBeGreaterThanOrEqual(cta.y + cta.height);
   }
 });

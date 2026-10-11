@@ -8,6 +8,14 @@ export const LANGS = [
   { id: "tr", code: "TR", name: "Türkçe", short: "Türkçe", dir: "ltr", html: "tr" },
 ] as const;
 
+/**
+ * Page layout direction. Sorani is the app's primary language, so the layout stays
+ * right-to-left for every locale (owner decision 2026-10-10): switching language never moves
+ * the header, menu or grids. Each language's own text direction (`dir` above) still drives
+ * fonts and the bidi direction of its text.
+ */
+export const LAYOUT_DIR = "rtl";
+
 export type Lang = (typeof LANGS)[number]["id"];
 
 export function isLang(value: string | null | undefined): value is Lang {

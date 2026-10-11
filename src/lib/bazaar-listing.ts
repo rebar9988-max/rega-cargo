@@ -1,4 +1,5 @@
 import { isProhibitedQuery } from "./compliance/check.ts";
+import { isPublishedCategory } from "./catalogue.ts";
 import { GOODS, STORES, type Good, type StoreEntry } from "./stores.ts";
 import type { BazaarSearch } from "./bazaar-search.ts";
 
@@ -28,6 +29,9 @@ export function selectBazaar({
 }) {
   const query = (params.q ?? "").trim().toLowerCase();
   if (isProhibitedQuery(query)) return { goods: [], stores: [], blocked: true };
+  // A category awaiting owner approval lists nothing, even by direct URL.
+  if (params.cat && !isPublishedCategory(params.cat))
+    return { goods: [], stores: [], blocked: false };
   const audience = AUDIENCE_GOODS[params.who ?? ""];
   const categories = AUDIENCE_CATEGORIES[params.who ?? ""];
   const common = (store: StoreEntry) =>

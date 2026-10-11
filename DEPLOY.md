@@ -33,6 +33,24 @@ npx wrangler deploy      # deploy the last build
 For `npm run cf:dev`, put local-only values in `.output/server/.dev.vars`
 (git-ignored), e.g. `BETTER_AUTH_SECRET=...` and `DATABASE_URL=postgres://...`.
 
+## Brand logo, colour and buttons
+
+- **Logo:** the owner-supplied R&L artwork (red field, white globe/arrow/R&L). Source: `public/rl-logo.png`. Derived files: `public/rl-mark-168.webp` (header, footer, offline page, rate-sheet PDF), `favicon.*`, `apple-touch-icon.png`, `icon-192/512.png`, `og.jpg`. The artwork is only cropped and resized, never redrawn. Changed art ships under a new file name (cache rules in `public/_headers`); bump the `sw.js` `VERSION` with it. It sits once, at the inline-start of the header, and is never mirrored or paired with a text wordmark.
+- **Red:** `--rl-brand` `#dd0303`, sampled from the logo. Buttons use it (white text 5.1:1); red text, links and focus rings use `--rl-accent` `#b80000` (6.9:1 on white). Dark mode uses a light red accent for text. All in `src/styles/tokens.css`.
+- **Soft 3D buttons:** one primitive, `.rl-button` + `data-variant` (`primary | secondary | ghost | danger`), used by `<Button>`, `<a>` and `<Link>`. Depth tokens are `--rl-button-*`. Hover lift (1px) applies only on fine-pointer hover devices; focus is an outline, not a shadow; `aria-busy` shows a spinner without changing size; reduced motion removes movement. `<Button loading>` also blocks a second submit.
+
+## Catalogue
+
+Ten primary groups live in `src/lib/catalogue.ts` (order, subcategories, search terms) with labels in `src/lib/store-copy.ts` and `src/lib/catalogue-copy.ts`. The original six slugs (`beauty, fashion, electronics, home, baby, sports`) and their `?cat=` URLs are unchanged; `food, gaming, auto, pets` were added. Subcategories are `?sub=` refinements: they link to the public idealo.de search, or are request-only. They carry no products, prices or counts. No database change: `/market` still uses its own `categories` table.
+
+**Held back until the owner approves:** `food` and the `beauty/health` and `pets/food` subcategories (food safety / halal / health). They show "Coming soon", are not linked, and are excluded from filters, search and store cards. To publish, edit `PENDING_APPROVAL_*` in `src/lib/catalogue.ts`. `src/lib/catalogue.test.ts` covers this and the permanent product ban.
+
+**Navigation:** the header "All categories" panel, the mobile menu, the footer, the home directory and the `/stores` directory all read the same ten groups (`src/lib/navigation.ts` → `catalogue.ts`). The old seven-item audience/sample-photo menu was removed; the Women/Men/Kids chips on `/stores` (`?who=`) are unchanged.
+
+New Sorani, Arabic and Persian strings carry `TODO(translate-review)`; Kurmanji (`ku`) uses English catalogue copy until reviewed.
+
+**Layout baselines:** colours and buttons changed, so `tests/layout/__screenshots__` must be re-rendered in CI (run the "Cargo quality gate" workflow with `update_baselines`), then committed. Geometry checks (`--ignore-snapshots`) pass without it.
+
 ## Brand typography
 
 - **Brand font for Arabic script (ckb, ar, fa): Noto Sans Arabic** (v2.012, SIL OFL 1.1), approved by the owner on **Oct 9 2026**. It replaces Vazirmatn, which stays only as a fallback in the font stack and is not downloaded.

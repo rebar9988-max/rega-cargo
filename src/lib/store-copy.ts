@@ -86,12 +86,16 @@ const en: StoreCopy = {
   storesHeading: "Stores",
   goods: goodsEn,
   categories: {
-    beauty: "Cosmetics and care",
-    fashion: "Fashion",
     electronics: "Electronics",
-    home: "Home",
-    baby: "Baby and family",
-    sports: "Sports",
+    sports: "Sports & Outdoor",
+    baby: "Baby & Kids",
+    home: "Home & Garden",
+    food: "Food & Beverages",
+    gaming: "Gaming & Toys",
+    beauty: "Beauty, Personal Care & Health",
+    auto: "Automotive & Motorcycle",
+    fashion: "Fashion & Accessories",
+    pets: "Pet Supplies",
     general: "General",
   },
   notes: {
@@ -144,7 +148,8 @@ const en: StoreCopy = {
   cautionTitle: "May not fly",
   submit: "Send order",
   invalidUrl: "Enter a full https link, or leave it empty for a bazaar order.",
-  wrongHost: "This link is not on that store's official site. Paste a link from the store's own website.",
+  wrongHost:
+    "This link is not on that store's official site. Paste a link from the store's own website.",
   sentTitle: "Order saved on this device",
   sentBody: "No purchase was made and no price was confirmed.",
   serviceLater: "This service is not available yet. Email 2233rega@gmail.com.",
@@ -183,12 +188,17 @@ const ckb: StoreCopy = {
     ball: "تۆپی پێ",
   },
   categories: {
-    beauty: "جوانکاری و چاودێری",
-    fashion: "جلوبەرگ",
+    // TODO(translate-review): broadened names for the ten-group catalogue.
     electronics: "ئەلیکترۆنی",
-    home: "ماڵ",
-    baby: "منداڵ و خێزان",
-    sports: "وەرزش",
+    sports: "وەرزش و دەرەوە",
+    baby: "کۆرپە و منداڵ",
+    home: "ماڵ و باخچە",
+    food: "خۆراک و خواردنەوە",
+    gaming: "گەیمینگ و یاری",
+    beauty: "جوانکاری، چاودێری و تەندروستی",
+    auto: "ئۆتۆمبێل و ماتۆڕ",
+    fashion: "جلوبەرگ و ئێکسسوار",
+    pets: "پێداویستی ئاژەڵی ماڵی",
     general: "گشتی",
   },
   notes: {
@@ -276,12 +286,17 @@ const ar: StoreCopy = {
     ball: "كرة قدم",
   },
   categories: {
-    beauty: "تجميل وعناية",
-    fashion: "أزياء",
+    // TODO(translate-review): broadened names for the ten-group catalogue.
     electronics: "إلكترونيات",
-    home: "منزل",
-    baby: "طفل وعائلة",
-    sports: "رياضة",
+    sports: "رياضة وأنشطة خارجية",
+    baby: "الرضع والأطفال",
+    home: "المنزل والحديقة",
+    food: "طعام ومشروبات",
+    gaming: "ألعاب الفيديو والألعاب",
+    beauty: "تجميل وعناية شخصية وصحة",
+    auto: "سيارات ودراجات نارية",
+    fashion: "أزياء وإكسسوارات",
+    pets: "مستلزمات الحيوانات الأليفة",
     general: "عام",
   },
   notes: {
@@ -370,12 +385,16 @@ const de: StoreCopy = {
     ball: "Fußball",
   },
   categories: {
-    beauty: "Kosmetik und Pflege",
-    fashion: "Mode",
-    electronics: "Elektronik",
-    home: "Haushalt",
-    baby: "Baby und Familie",
-    sports: "Sport",
+    electronics: "Elektroartikel",
+    sports: "Sport & Outdoor",
+    baby: "Baby & Kind",
+    home: "Haus & Garten",
+    food: "Essen & Trinken",
+    gaming: "Gaming & Spielen",
+    beauty: "Drogerie & Gesundheit",
+    auto: "Auto & Motorrad",
+    fashion: "Mode & Accessoires",
+    pets: "Tierbedarf",
     general: "Allgemein",
   },
   notes: {
@@ -471,7 +490,8 @@ const ku: StoreCopy = {
   sentTitle: "Siparîş li ser vî amûrî hate tomarkirin",
   sentBody: "Tu kirîn nehat kirin û tu biha nehat piştrastkirin.",
   serviceLater: "Ev xizmet hê ne amade ye. E-name 2233rega@gmail.com.",
-  wrongHost: "Ev girêdan ne li ser malpera fermî ya wê firoşgehê ye. Girêdanekê ji malpera firoşgehê bi xwe binivîse.",
+  wrongHost:
+    "Ev girêdan ne li ser malpera fermî ya wê firoşgehê ye. Girêdanekê ji malpera firoşgehê bi xwe binivîse.",
 };
 
 const fa: StoreCopy = {
@@ -506,12 +526,17 @@ const fa: StoreCopy = {
     ball: "توپ فوتبال",
   },
   categories: {
-    beauty: "آرایشی و مراقبتی",
-    fashion: "مد و پوشاک",
+    // TODO(translate-review): broadened names for the ten-group catalogue.
     electronics: "الکترونیک",
-    home: "خانه",
-    baby: "کودک و خانواده",
-    sports: "ورزش",
+    sports: "ورزش و فضای باز",
+    baby: "نوزاد و کودک",
+    home: "خانه و باغ",
+    food: "خوراک و نوشیدنی",
+    gaming: "گیمینگ و اسباب‌بازی",
+    beauty: "زیبایی، مراقبت شخصی و سلامت",
+    auto: "خودرو و موتورسیکلت",
+    fashion: "مد و اکسسوری",
+    pets: "لوازم حیوانات خانگی",
     general: "عمومی",
   },
   notes: {
@@ -579,6 +604,19 @@ const tr: StoreCopy = {
   order: "Sipariş et",
   sample: "Örnek, canlı stok değil",
   storesHeading: "Mağazalar",
+  categories: {
+    electronics: "Elektronik",
+    sports: "Spor ve outdoor",
+    baby: "Bebek ve çocuk",
+    home: "Ev ve bahçe",
+    food: "Gıda ve içecek",
+    gaming: "Oyun ve oyuncak",
+    beauty: "Güzellik, kişisel bakım ve sağlık",
+    auto: "Otomobil ve motosiklet",
+    fashion: "Moda ve aksesuar",
+    pets: "Evcil hayvan ürünleri",
+    general: "Genel",
+  },
   goods: {
     perfume: "Parfüm",
     cream: "Yüz kremi",
@@ -608,7 +646,8 @@ const tr: StoreCopy = {
   sentTitle: "Sipariş bu cihazda saklandı",
   sentBody: "Satın alma yapılmadı ve fiyat onaylanmadı.",
   serviceLater: "Bu hizmet henüz yok. E-posta 2233rega@gmail.com.",
-  wrongHost: "Bu bağlantı o mağazanın resmi sitesinde değil. Mağazanın kendi sitesinden bir bağlantı yapıştırın.",
+  wrongHost:
+    "Bu bağlantı o mağazanın resmi sitesinde değil. Mağazanın kendi sitesinden bir bağlantı yapıştırın.",
 };
 
 const ALL: Record<Lang, StoreCopy> = { en, ckb, ar, de, ku, fa, tr };

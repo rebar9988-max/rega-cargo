@@ -54,7 +54,9 @@ function DesignPage() {
               </Button>
               <Button variant="secondary">{c.secondary}</Button>
               <Button variant="ghost">{c.ghost}</Button>
+              <Button variant="danger">{c.danger}</Button>
               <Button disabled>{c.primary}</Button>
+              <Button loading>{c.loading}</Button>
             </div>
           </Card>
           <Card className="rl-stack">
