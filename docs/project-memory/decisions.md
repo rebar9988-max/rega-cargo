@@ -4,6 +4,7 @@ Append new decisions at the top. Format: date — decision — who/where (source
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-11 | Correct production database is `old-cherry-79292410` / `cargo`; `misty-recipe-03041407` is an incomplete duplicate. Fix by repointing, never by migrating `misty` | verified evidence, issues I-1 |
 | 2026-10-11 | Project-wide memory system: `CLAUDE.md` entry → `PROJECT_MEMORY.md` → `docs/project-memory/`. Memory links to DEPLOY.md / docs/integrations / docs/redesign instead of duplicating them | this memory PR |
 | 2026-10-11 | Chat replies to the owner are always in Sorani (ckb); code, commits, identifiers stay in their original language | owner, PR #56 (`CLAUDE.md`) |
 | 2026-10-11 | Production database is Neon via Cloudflare Hyperdrive binding `HYPERDRIVE` (fallback `DATABASE_URL`). Connection string read only inside a request (workerd forbids global-scope I/O) | PR #54, PR #58 |

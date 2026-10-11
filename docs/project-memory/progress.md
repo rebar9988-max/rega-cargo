@@ -1,12 +1,13 @@
 # Progress
 
 Use Git history and PR descriptions for detail; record only status and pointers here.
-Snapshot: 2026-10-11 ~15:10 UTC, `main` @ `f5cfccb`.
+Snapshot: 2026-10-11 ~15:25 UTC, `main` @ `520905c`.
 
 ## Active / open PRs
 
 | PR | Branch | Title | State |
 |---|---|---|---|
+| #63 | `claude/rl-cargo-memory-system-eiuw2h` | docs: project-wide persistent memory | open, CI running |
 | #60 | `claude/rl-cargo-design-impl-xvqpm0` | Home: brand-red hero card and parcel-tracking entry (Figma concept) | draft, CI running (earlier runs failed) |
 | #57 | `claude/rl-ai-shopping-hero-k5aeln` | i18n for all 7 languages + product-link layout shift + announcement landmark | open, may overlap #55/#61 (merged) |
 | #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open, likely superseded by #53 |
@@ -19,7 +20,7 @@ Snapshot: 2026-10-11 ~15:10 UTC, `main` @ `f5cfccb`.
 
 ## Pending (owner or approval needed)
 - Repoint production DB (issues I-1) — blocker for market, requests, tracking, accounts.
-- Choose phone sign-in provider (I-3); Turnstile keys.
+- Choose phone sign-in provider (I-3); Turnstile keys; enable auth (I-6).
 - Approve held catalogue groups (`food`, `beauty/health`, `pets/food`).
 - Native translation review; real legal details (I-5).
 

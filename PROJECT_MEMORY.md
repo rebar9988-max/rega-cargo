@@ -6,25 +6,27 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-11 ~15:10 UTC**, against `main` @ `f5cfccb`
+- Last memory update: **2026-10-11 ~15:25 UTC**, against `main` @ `520905c` (+ memory PR #63)
 
-## Current state (verified 2026-10-11 ~15:08 UTC)
+## Current state (verified 2026-10-11 15:14–15:20 UTC)
 
 | Area | State | Evidence |
 |---|---|---|
 | Public pages | `/`, `/stores`, `/quote`, `/ai`, `/robots.txt` return 200; `<html lang="ckb" dir="rtl">` | `curl` against production |
 | R&L AI | On (`/api/ai/status` → `{"enabled":true}`) | production |
-| Live Worker version | `c20d050d`, deployed 2026-10-11 10:45 UTC (wrangler) | Cloudflare API |
-| **Production database** | **BROKEN — blocker.** `HYPERDRIVE` and `DATABASE_URL` both reach the empty duplicate Neon project `misty-recipe-03041407/neondb` (12 market tables, no compliance tables). `/market` shows its "try again" error state | Now: `misty/neondb` 255 rollbacks, `old-cherry/cargo` 0 (Neon SQL); `/market` HTML. Per-binding mapping: verification-report.md (10:40 UTC). See [issues.md](docs/project-memory/issues.md) (I-1) |
-| Real schema | `old-cherry-79292410`, database `cargo`: 12/12 migrations (latest `0013`), 378 prohibited keywords, 0 products | Neon read-only SQL |
-| Banned-products protection | Holds in production via the bundled list in `src/lib/compliance/rules.ts` | earlier `wrangler tail` (verification-report.md) |
-| `main` CI | Run 153 on `f5cfccb`: success | GitHub Actions |
+| Live Worker version | `7b92d650`, deployed 2026-10-11 15:11 UTC (source commit not recorded) | Cloudflare API |
+| **Production database** | **BROKEN — blocker (I-1).** The Worker queries `misty-recipe-03041407/neondb`, which only has `0002_market.sql`. `/market` renders its error state; logs: `column p.compliance_status does not exist`, `relation "prohibited_keywords" does not exist` | 6 uncached `/market` probes: `misty/neondb` rollbacks 257→287, `old-cherry/cargo` stayed 0; `wrangler tail` (7/7 requests) |
+| Correct database | `old-cherry-79292410`, database `cargo`: 12/12 migrations (09:38 UTC), 8 compliance triggers, 378 banned keywords | Neon read-only SQL |
+| Customer data | **None in either database** (0 products, users, requests, orders) — repointing loses nothing | `pg_stat_user_tables` on both |
+| Hyperdrive config `795013d0…` | Origin cannot be read by agents (API and `wrangler hyperdrive get`: `Authentication error 10000`) | Cloudflare |
+| Sign-in | Worker logs `auth is disabled (VITE_AUTH_ENABLED=false)`; Better Auth fails closed and phone codes cannot be sent, so nobody can sign in (I-3, I-6) | `wrangler tail` |
+| Banned-products protection | Holds via the bundled list in `src/lib/compliance/rules.ts` | `wrangler tail`: "using bundled list" |
 
 ## Next safe continuation point
 
-1. **Owner action (blocker):** repoint Hyperdrive config `795013d0…` and the `DATABASE_URL` secret at `old-cherry-79292410` / `cargo` — exact steps in [verification-report.md](docs/integrations/verification-report.md#open-items-for-the-owner). Agents cannot do this: the Cloudflare token cannot read/edit Hyperdrive, and secret changes need owner approval.
-2. After that: re-verify `/market` loads, `wrangler tail` is clean, and the `old-cherry` counters move.
-3. Open PRs to review/land — see [progress.md](docs/project-memory/progress.md).
+1. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").
+2. After the owner's change: run the verification recipe in [deployments.md](docs/project-memory/deployments.md) ("Which database does production use?") and the post-deploy checklist; record results here.
+3. Open PRs — see [progress.md](docs/project-memory/progress.md).
 
 ## Memory map
 
