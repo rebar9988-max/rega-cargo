@@ -169,3 +169,23 @@ test("percent-encoded product names in links are still blocked", () => {
   assert.equal(d(link("Ginger%20Tea")), "allow");
   assert.equal(d("100%25 cotton %ZZ shirt"), "allow");
 });
+
+test("brands sold by name alone are blocked, without catching ordinary words", () => {
+  for (const s of [
+    "Marlboro Gold",
+    "Elfbar 600",
+    "Geek Bar Pulse",
+    "Lost Mary BM600",
+    "IQOS Terea Amber",
+    "Smirnoff Ice",
+    "Jagermeister 0,7l",
+    "Jack Daniel's Old No. 7",
+    "Johnnie Walker Black Label",
+    "Heineken 6x0,33",
+    "Corona Extra",
+    "Jamón ibérico",
+  ])
+    assert.equal(d(s), "block", s);
+  for (const s of ["Velo city bike", "Guinness World Records 2026", "Corona virus test kit", "Walker boots"])
+    assert.equal(d(s), "allow", s);
+});
