@@ -16,7 +16,13 @@ Every check below was read-only. Nothing was deployed, migrated, created or dele
 | The real schema is **`old-cherry-79292410`, database `cargo`** (not `neondb`). No production connection references it | `pg_stat_database` and `_migrations` on `old-cherry` |
 | The bundled banned-products list still applies when the DB rules are unreachable | Preview log: `[compliance] DB rules unavailable, using bundled list` |
 
-Not deployed: the code fix alone would make production reach the empty database. The earlier "22/22 clean" browser result below is still true for console and network, but `/market` was already showing its server-rendered error state.
+### Update 10:40 UTC
+
+- PR #58 (another session) fixed the module-scope crash the same way and was deployed as version `af8ee256` at 10:26 UTC. Production now **does reach the database, and it is the wrong one**. The live log (`wrangler tail`) shows `column p.compliance_status does not exist` and `relation "prohibited_keywords" does not exist` on `/market`. `/market` still shows its error state.
+- At 10:31:51 UTC something applied `0002_market.sql` to `misty-recipe-03041407/neondb`, and nothing after it. That database now has 12 market tables and 6 categories, but no compliance tables, triggers or blocklist, and 0 products. The likely cause: `npm run build` runs `db:migrate` whenever `DATABASE_URL` is set. No one in this session wrote to either database.
+- Banned-product protection still holds in production through the bundled list (`[compliance] DB rules unavailable, using bundled list`), and there are no products to leak.
+
+This session deployed nothing, because no deploy is safe until the connection is repointed. The earlier "22/22 clean" browser result below is still true for console and network, but `/market` was already showing its server-rendered error state.
 
 ## Source control: GitHub
 
