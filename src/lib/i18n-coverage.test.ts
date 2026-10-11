@@ -4,6 +4,8 @@ import { LANGS } from "./langs.ts";
 import { SEO_MESSAGES } from "./seo-messages.ts";
 import { productLinkCopy } from "./product-link/copy.ts";
 import { redesignCopy } from "./redesign-copy.ts";
+import { storeCopy } from "./store-copy.ts";
+import { catalogueCopy } from "./catalogue-copy.ts";
 
 const ids = LANGS.map((l) => l.id);
 const others = ids.filter((id) => id !== "en");
@@ -92,4 +94,48 @@ test("redesign copy has no English left in ku, de, fa and tr", () => {
 
 test("the not-an-official-partner note stays in every language (hard rule 2)", () => {
   for (const id of ids) assert.match(redesignCopy(id).noPartner, /R&L/, `${id}.noPartner`);
+});
+
+test("store and catalogue copy are translated in every language", () => {
+  const en = new Map(leaves(storeCopy("en")));
+  const enCat = new Map(leaves(catalogueCopy("en")));
+  // Words that are the same in these languages (loanwords).
+  const sharedCat: Record<string, string[]> = {
+    de: [
+      ".subs.electronics.smartphones",
+      ".subs.electronics.tablets",
+      ".subs.sports.fitness",
+      ".subs.sports.camping",
+      ".subs.food.snacks",
+    ],
+    tr: [".subs.sports.fitness"],
+  };
+  for (const id of others) {
+    const store = leaves(storeCopy(id));
+    assert.deepEqual(
+      store.map(([k]) => k),
+      [...en.keys()],
+      `${id}: store keys`,
+    );
+    for (const [k, v] of store)
+      if (/[A-Za-z]{4,}/.test(en.get(k) ?? "") && v === en.get(k) && !/^[A-Z0-9 .&\-+/@]+$/.test(v))
+        assert.fail(`${id} store${k} is still English: ${v}`);
+    const cat = leaves(catalogueCopy(id));
+    assert.deepEqual(
+      cat.map(([k]) => k),
+      [...enCat.keys()],
+      `${id}: catalogue keys`,
+    );
+    for (const [k, v] of cat)
+      if (
+        /[A-Za-z]{4,}/.test(enCat.get(k) ?? "") &&
+        v === enCat.get(k) &&
+        !(sharedCat[id] ?? []).includes(k)
+      )
+        assert.fail(`${id} catalogue${k} is still English: ${v}`);
+  }
+});
+
+test("the not-an-official-partner badge on store cards names R&L in every language (hard rule 2)", () => {
+  for (const id of ids) assert.match(storeCopy(id).notPartner, /R&L/, `${id}.notPartner`);
 });
