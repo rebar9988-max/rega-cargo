@@ -97,9 +97,34 @@ function tokenMatches(token: string, want: string, last: boolean): boolean {
   return variants(token).includes(want) && (last || ARABIC.test(token));
 }
 
+const PERCENT = /%[0-9a-f]{2}/i;
+const PERCENT_RUN = /(?:%[0-9a-f]{2})+/gi;
+
+/**
+ * Links keep product names percent-encoded ("Absolut%20Vodka", Arabic/Kurdish slugs), which would
+ * otherwise hide them from the token match. The decoded copy is appended, never substituted, so
+ * a match on either form counts. Up to three passes undo double encoding (%2556); malformed
+ * sequences stay as they are.
+ */
+export function withDecodedUrlText(text: string): string {
+  let decoded = text;
+  for (let pass = 0; pass < 3 && PERCENT.test(decoded); pass += 1) {
+    const next = decoded.replace(PERCENT_RUN, (run) => {
+      try {
+        return decodeURIComponent(run);
+      } catch {
+        return run;
+      }
+    });
+    if (next === decoded) break;
+    decoded = next;
+  }
+  return decoded === text ? text : `${text} \n ${decoded}`;
+}
+
 /** Every rule matched in `text` (alcohol rules downgraded to review in alcohol-free wording). */
 export function findMatches(text: string, rules: CompiledRules = BUNDLED_RULES): Match[] {
-  const raw = String(text ?? "")
+  const raw = withDecodedUrlText(String(text ?? ""))
     .normalize("NFKC")
     .toLowerCase();
   const norm = normalizeText(raw);

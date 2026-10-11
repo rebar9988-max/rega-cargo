@@ -150,3 +150,22 @@ test("search queries: any prohibited word (block or review) means no results", (
   for (const q of ["nivea", "ginger", "hamburg", "rossmann", "dm", "douglas", "iphone"])
     assert.ok(!isProhibitedQuery(q), q);
 });
+
+test("percent-encoded product names in links are still blocked", () => {
+  const link = (slug: string) => `https://www.amazon.de/${slug}/dp/B08N5WRWNW`;
+  for (const slug of [
+    "Absolut%20Vodka%200,7l",
+    "%56%6F%64%6B%61",
+    "%2556%256F%2564%256B%2561",
+    encodeURIComponent("فودكا"),
+    encodeURIComponent("جگەرە"),
+    encodeURIComponent("لحم الخنزير"),
+  ])
+    assert.equal(d(link(slug)), "block", slug);
+  assert.equal(d("https://www.zalando.de/search?q=red%20wine"), "block");
+  assert.ok(isProhibitedQuery("%76%6F%64%6B%61"));
+  // Decoding adds text, it never hides or invents a match.
+  assert.equal(d(link("Nivea%20Soft%20Creme")), "allow");
+  assert.equal(d(link("Ginger%20Tea")), "allow");
+  assert.equal(d("100%25 cotton %ZZ shirt"), "allow");
+});
