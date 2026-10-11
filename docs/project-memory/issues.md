@@ -4,6 +4,18 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ## Open
 
+### I-1 / I-2 · 16:10 UTC evidence supersedes universal permission/data assumptions below
+- This session's authorized Cloudflare connector successfully reads Hyperdrive origin; it still resolves to misty-recipe/neondb. CLI authentication is unavailable, and edit permission was not exercised or assumed.
+- Intended Cargo production now has 13 migration records / 413 keywords after another operator's 0014; existing staging remains 12 / 378. Exact accessible-table counts are zero for application records, but external identity/other schemas/later writes are not covered. Repointing safety cannot be inferred solely from those counts.
+- No database, credential or binding changed in this work. Reuse the existing targets, perform the connected preview/authentication/rollback checks, coordinate both existing connection paths, and preserve both projects. Do not run the duplicate's broad legacy cleanup or delete a database as part of this repair.
+- The owner has already authorized autonomous safe incremental execution here. Blocking gaps are verified zero-cost Actions/Workers allowances, connected preview and release/rollback readiness; do not ask the owner to repeat routine authorization. See [the dated audit](../ai/audit-2026-10-11.md).
+
+### I-7 · FIXED IN DRAFT #68, NOT DEPLOYED · AI usage and output reliability
+Provider errors/timeouts/unusable output previously reopened the global budget; stale UTC refunds erased newer state. Malformed envelopes and storage/refund failures escaped classified responses; origin validation omitted the scheme. Localized decimal digits also escaped formatted-price filtering. Minimal repairs and failing-before-fix regressions are in [the audit](../ai/audit-2026-10-11.md). Preserve the existing model/prompt/contracts; do not label production fixed until the gated release is verified.
+
+### I-8 · PARTLY FIXED IN DRAFT #68 · visual harness reliability
+Identical in-place layout-config writes caused reloads and truncated JSON reads; atomic publication/skip-unchanged fixes that proven defect. Workerd tests now use Wrangler's actual locked runtime. Separate intermittent WebKit networkidle waits remain unconfirmed: a full repeat passes with existing retries, and the original-config diagnostic passes, but all earlier failures remain disclosed. No snapshot/assertion/timeout/CI weakening.
+
 ### I-1 · OPEN · blocker — production Worker queries the wrong (incomplete) Neon database
 - Symptom: `/market` and every DB-backed page show their error state.
 - Root cause (re-verified 2026-10-11 15:14–15:20 UTC on live version `7b92d650`): the Worker reaches `misty-recipe-03041407/neondb`, which only has `0002_market.sql` (applied 10:31 UTC, most likely by `npm run build` with `DATABASE_URL` set). Live log on every `/market` request: `[market] error: column p.compliance_status does not exist` (added by `0012`) and `[compliance] DB rules unavailable … relation "prohibited_keywords" does not exist` (added by `0011`).

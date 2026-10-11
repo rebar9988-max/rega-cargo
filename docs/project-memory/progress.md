@@ -3,6 +3,12 @@
 Use Git history and PR descriptions for detail; record only status and pointers here.
 Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
+Continuation checkpoint (16:10 UTC): main memory changes through `486e442` are preserved in the fix branch. [Draft #68](https://github.com/rebar9988-max/rega-cargo/pull/68), branch `fix/rl-ai-budget-hardening-20261011`, contains tested P0 AI and verification repairs (`e430bbf`, `f210498`). It targets the dedicated review base, is unmerged and has no remote Actions run. The [audit](../ai/audit-2026-10-11.md) records actual tests, an earlier failed full visual run, the passing full repeat with three flaky cases, final 41-pass focused run, byte-identical public assets and all blockers. No database or deployment change was made by this work.
+
+Additional open PRs inspected: #64 marketplace translations, #65 database recovery documentation, #66 store/catalogue translations. Their files were left untouched. Do not close or merge them based on assumed overlap.
+
+Memory follow-up quality gate: Node 22 **436 passed, zero failed, four existing skips** (including all five memory guards); typecheck/lint/empty-DB build pass. No runtime/dependency/workflow change after tested `f210498`; no new screenshot baseline. Draft #68 remains unmerged/undeployed with no remote CI run.
+
 ## Active / open PRs
 
 | PR | Branch | Title | State |

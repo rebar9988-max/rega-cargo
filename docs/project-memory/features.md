@@ -10,7 +10,7 @@ Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 | `/stores/request?store=..&intent=buy\|ship` | `routes/stores.request.tsx`, `lib/orders/` | degraded | Needs DB; mandatory prohibited-items declaration |
 | `/quote` | `routes/quote.tsx`, `components/quote-panel.tsx`, `lib/corridor.ts` | live (pricing) / degraded (saving) | Chargeable weight = max(actual, volumetric); EUR + IQD |
 | `/market`, `/market/$slug`, `/market/sell` | `routes/market*.tsx`, `lib/market/` | **degraded** | Shows error state until DB is repointed (issues I-1) |
-| `/ai` (R&L AI product identification) | `routes/ai.tsx`, `components/ai-page.tsx`, `server/routes/api/ai/*` | live | Daily cap 200, Turnstile when configured, upload needs consent |
+| `/ai` (R&L AI product identification) | `routes/ai.tsx`, `components/ai-page.tsx`, `server/routes/api/ai/*` | UI/status live; inference unverified in this audit | Provider/model, cap 200 and consent preserved. P0 safety repairs in draft #68 are locally tested, not deployed |
 | Product-link check | `lib/product-link/` | gated → on (`PRODUCT_LINK_ENABLED=true`) | SSRF-safe URL parsing, shipping estimate |
 | Search + autocomplete | `lib/search/`, `components/search-*.tsx` | live | Compliance-screened |
 | Banned-products filter | `lib/compliance/`, migrations `0011`, `0012` | live (bundled list) | Permanent, no off switch; DB rules add on top when reachable |
@@ -25,3 +25,5 @@ Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 | SEO (canonical, alternates, sitemap of locale URLs) | `lib/seo*.ts`, `server/routes/sitemap.xml.ts` | live | |
 | Legacy host redirect + self-unregistering SW | `scripts/legacy-host.mjs` | live | workers.dev → custom domain |
 | Error monitoring (Sentry) | — | planned (not approved) | Would need a new dependency |
+
+AI continuation: [#68 audit](../ai/audit-2026-10-11.md) records guarded output/usage repairs and actual live verification limits. Product-link parsing honestly reports unavailable product details; a configured flag is not evidence of live prices or an external provider. No new chat/RAG/recommendation/agent/shipment-AI pipeline was enabled. Postgres vector/trigram/unaccent extensions are available but not installed; verified data, billing and safe preview are still prerequisites.

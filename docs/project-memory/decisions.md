@@ -4,6 +4,10 @@ Append new decisions at the top. Format: date — decision — who/where (source
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-11 | Owner authorized autonomous incremental upgrades without routine questions; preserve working AI/UI/data and enforce zero-new-cost, authorization and release gates. Existing task authorization can satisfy routine approval; it does not waive the gates | owner master directive and continuation instruction; draft #68 |
+| 2026-10-11 | Use a dedicated unchanged-main review base for draft #68 while private Actions billing guard is inaccessible; no workflow/protection change, no merge/deploy. Retarget only after cost/current-main quality gates | [AI audit](../ai/audit-2026-10-11.md) |
+| 2026-10-11 | Preserve all provider attempts in the existing global cap, ignore stale UTC state mutations, sanitize localized formatted prices, reuse atomic layout publication and the locked Wrangler test runtime | draft #68; failing-before-fix regressions |
+| 2026-10-11 | Session permissions differ: connector Hyperdrive reads work here, CLI auth does not. Keep both database projects; exact empty accessible-table counts do not prove external identity/data-loss safety | dated read-only evidence in draft #68; supersedes broad earlier assumptions |
 | 2026-10-11 | Correct production database is `old-cherry-79292410` / `cargo`; `misty-recipe-03041407` is an incomplete duplicate. Fix by repointing, never by migrating `misty` | verified evidence, issues I-1 |
 | 2026-10-11 | Project-wide memory system: `CLAUDE.md` entry → `PROJECT_MEMORY.md` → `docs/project-memory/`. Memory links to DEPLOY.md / docs/integrations / docs/redesign instead of duplicating them | this memory PR |
 | 2026-10-11 | Chat replies to the owner are always in Sorani (ckb); code, commits, identifiers stay in their original language | owner, PR #56 (`CLAUDE.md`) |

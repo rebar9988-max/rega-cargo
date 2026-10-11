@@ -7,8 +7,8 @@ claude.ai account/session, not the repo — **re-check every session; never assu
 
 | Integration | Status (last verified) | Use for |
 |---|---|---|
-| GitHub MCP | working, 2026-10-11 (branches, PRs, Actions runs) | PRs, CI, logs. No `gh` CLI in cloud sessions |
-| Cloudflare REST API (env token) | working, partial scope, re-verified 2026-10-11 15:14 (deployments, bindings, `wrangler tail`). **Cannot read/edit Hyperdrive** (API and `wrangler hyperdrive get`) | Read-only Worker checks |
+| GitHub MCP / CLI | session-dependent; this session's `gh` can read refs/PRs/Actions and publish draft #68 | Actions billing-usage/protection reads return 403; no allowance or zero-spend guarantee inferred |
+| Cloudflare REST / connector | session-dependent; this session's connector read Worker settings/deployments, Hyperdrive origin (GET 200) and bounded privacy-safe telemetry | Billing/usage reads fail 10000. Hyperdrive edit/credential rollback not verified; earlier token failures remain historical, not universal |
 | Wrangler CLI | via `npm ci`; `cf:dry-run` used in CI | Bundle check, `tail`. Deploy = owner approval |
 | Neon MCP | working, **write mode**, re-verified 2026-10-11 15:20 (read-only SQL on `old-cherry`, `misty`) | Schema/data checks. Writes = owner approval |
 | Workers AI (`AI` binding) | live in production, 2026-10-11 (`/api/ai/status`) | R&L AI identification |
@@ -19,5 +19,6 @@ claude.ai account/session, not the repo — **re-check every session; never assu
 | Supabase, Lovable, TinyFish, Canva, Adobe | available but **not used** (other stack, metered, or marketing only) | — |
 | WhatsApp / Twilio / Turnstile | **not configured** in production | Phone sign-in stays closed |
 
-Free-tier constraints: Neon free projects (0.25–2 CU, 1 GiB/branch), Workers + Hyperdrive on the
-current plan (staging `limits.cpu_ms` implies Workers Paid on that account — verify before relying on it).
+Neon `free_v3`, three existing branches / limit ten, and bounded usage were independently verified in this session. Current official Free limits are 100 CU-hours/month/project, 1 GB/project and 5 GB transfer/month/project; exhaustion suspends/fails operations rather than automatically upgrading. No branch, compute, extension, credential or paid plan was created. See [the audit](../ai/audit-2026-10-11.md) for the dated evidence.
+
+Cloudflare `standard` usage model and staging CPU limits do not establish billing/free quota or actual AI neurons. No paid inference, new provider or top-up was activated. CLI auth is unavailable here; the prior session's CLI availability must not be generalized.
