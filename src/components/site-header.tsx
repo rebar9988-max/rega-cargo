@@ -88,9 +88,9 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
   return (
     <>
       {announce ? (
-        <div className="rl-announcement">
+        <section className="rl-announcement" aria-labelledby="rl-announcement-text">
           <div className="page rl-announcement-inner">
-            <p>{c.announcement}</p>
+            <p id="rl-announcement-text">{c.announcement}</p>
             <button
               type="button"
               aria-label={c.dismiss}
@@ -103,7 +103,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
               <Icon as={X} />
             </button>
           </div>
-        </div>
+        </section>
       ) : null}
       <header ref={wrap} className="rl-site-header" data-shrunk={shrunk} aria-label={c.navigation}>
         <div className="page rl-header-row" data-layout="header">
