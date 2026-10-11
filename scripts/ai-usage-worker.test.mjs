@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
 import { test } from "node:test";
-import { build } from "esbuild";
-import { Miniflare } from "miniflare";
+
+// Resolve from Wrangler itself: an unrelated root Miniflare copy may be older
+// than the runtime actually used by the locked deployment toolchain.
+const wranglerRequire = createRequire(import.meta.resolve("wrangler/package.json"));
+const { build } = wranglerRequire("esbuild");
+const { Miniflare, convertV4MiniflareOptions } = wranglerRequire("miniflare");
 
 // Exercise the production Durable Object in workerd, using existing Wrangler tooling.
 // This harness has no AI binding, remote resources, credentials or persistent database.
@@ -29,13 +34,13 @@ test("AI usage Durable Object keeps budgets across refunds, concurrency and UTC 
     external: ["cloudflare:workers"],
     write: false,
   });
-  const mf = new Miniflare({
+  const mf = new Miniflare(convertV4MiniflareOptions({
     modules: true,
     script: bundle.outputFiles[0].text,
     compatibilityDate: "2025-09-15",
     compatibilityFlags: ["nodejs_compat"],
     durableObjects: { RL_AI_USAGE: { className: "RlAiUsage", useSQLite: true } },
-  });
+  }));
   const input = (day, visitor = "a", cap = 2) => ({
     day, hour: `${day}T23`, visitor, dailyCap: cap, perVisitorHourly: 20,
   });

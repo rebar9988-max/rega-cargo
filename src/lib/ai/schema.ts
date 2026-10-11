@@ -53,7 +53,9 @@ const STORE_RE = new RegExp(
     .join("|")})(?![\\p{L}\\p{N}])`,
   "giu",
 );
-const PRICE_RE = /(?:[€$£¥]\s?\d[\d.,]*|\d[\d.,]*\s?(?:€|eur|euro|usd|\$|iqd|dinar|tl|try|£))/gi;
+// Price tags may use Arabic/Persian decimal digits and separators even when
+// the model was asked to answer in English. Preserve ordinary model numbers.
+const PRICE_RE = /(?:[€$£¥]\s*\p{Nd}[\p{Nd}.,\u066b\u066c]*|\p{Nd}[\p{Nd}.,\u066b\u066c]*\s*(?:€|eur|euro|usd|\$|iqd|dinar|tl|try|£))/giu;
 
 /** Plain text only: no tags, no control chars, no links, no prices. */
 export function cleanText(value: unknown, max: number): string {

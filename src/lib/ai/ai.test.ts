@@ -119,6 +119,25 @@ test("model output is treated as untrusted: HTML, links and prices are stripped"
   assert.equal(cleanText("a\u202Eb\u0000c", 10), "a b c");
 });
 
+test("formatted prices with localized decimal digits never reach AI result fields", () => {
+  for (const text of ["€١٢٣", "١٢٣ EUR", "٢٥٬٠٠٠ IQD", "$۱۲۳٫۴۵", "۱۲۳   TL", "£१२३", "१२३ USD", "€   12.50"]) {
+    assert.equal(cleanText(text, 80), "", text);
+  }
+  const out = parseIdentifyOutput({
+    ...good,
+    brand: "€١٢٣",
+    model: "٢٥٬٠٠٠ IQD",
+    visibleText: ["Widget", "۱۲۳ EUR"],
+    attributes: ["blue", "$۱۲۳٫۴۵"],
+  });
+  assert.ok(out);
+  assert.equal(out.brand, null);
+  assert.equal(out.model, null);
+  assert.deepEqual(out.visibleText, ["Widget"]);
+  assert.deepEqual(out.attributes, ["blue"]);
+  assert.equal(cleanText("Model ۱۲۳ blue", 80), "Model ۱۲۳ blue");
+});
+
 test("unusable output is rejected; fenced JSON and both reply shapes are accepted", () => {
   assert.equal(parseIdentifyOutput("I think it's a kettle"), null);
   assert.equal(parseIdentifyOutput({ brand: "x" }), null);
