@@ -75,6 +75,8 @@
         "RL_AI_ENABLED": "true",
         // Hard daily cap on AI identifications (all visitors together).
         "RL_AI_DAILY_CAP": "200",
+        // Product-link check (parse + shipping estimate; no provider data). Staging only.
+        "PRODUCT_LINK_ENABLED": "true",
         "SITE_URL": "https://rega-cargo-staging.rebar9988.workers.dev",
         // Staging is never indexed (x-robots-tag + robots.txt Disallow: /).
         "RL_NOINDEX": "1"
