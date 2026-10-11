@@ -47,7 +47,7 @@ Ten primary groups live in `src/lib/catalogue.ts` (order, subcategories, search 
 
 **Navigation:** the header "All categories" panel, the mobile menu, the footer, the home directory and the `/stores` directory all read the same ten groups (`src/lib/navigation.ts` → `catalogue.ts`). The old seven-item audience/sample-photo menu was removed; the Women/Men/Kids chips on `/stores` (`?who=`) are unchanged.
 
-New Sorani, Arabic and Persian strings carry `TODO(translate-review)`; Kurmanji (`ku`) uses English catalogue copy until reviewed.
+New Sorani, Arabic and Persian strings carry `TODO(translate-review)`. Kurmanji (`ku`), German, Persian and Turkish homepage, store, marketplace, catalogue, product-link and SEO copy were drafted without a native reviewer (`src/lib/translations/*`, also `TODO(translate-review)`). Run `node --experimental-strip-types scripts/i18n-audit.mjs --raw` for the per-language coverage report; `src/lib/i18n-coverage.test.ts` fails on missing or empty keys and on new English fallbacks.
 
 **Layout baselines:** colours and buttons changed, so `tests/layout/__screenshots__` must be re-rendered in CI (run the "Cargo quality gate" workflow with `update_baselines`), then committed. Geometry checks (`--ignore-snapshots`) pass without it.
 

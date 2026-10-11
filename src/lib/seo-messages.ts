@@ -1,5 +1,7 @@
 // Existing localized metadata, separated from full page copy for the initial bundle.
 import type { Lang } from "./langs";
+// TODO(translate-review): ku, de, fa, tr (and the Arabic /market description) metadata was drafted
+// without a native reviewer, matching the homepage wording in translations/redesign.ts.
 export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; description: string }>> = {
   // TODO(translate-review): review new Sorani marketing metadata alongside redesign-copy.ts.
   ckb: {
@@ -47,29 +49,29 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
   },
   ku: {
     "/": {
-      title: "R&L · Your European find. Your next delivery.",
+      title: "R&L · Tiştê te yê ji Ewropayê. Gihandina te ya nû.",
       description:
-        "Discover European stores. We buy or receive your order in Cologne, then arrange shipping to Kurdistan and Iraq.",
+        "Firoşgehên Ewropayê bibîne. Em daxwaza te li Kolnê dikirin an werdigirin, paşê şandinê ber bi Kurdistan û Îraqê ve saz dikin.",
     },
     "/stores": {
-      title: "Marketplace · R&L",
+      title: "Bazar · R&L",
       description:
         "Wêneyan bibîne û ya ku ji te re xweş e siparîş bike. Ev mînak in, ne stoka zindî. Tiştek nayê kirîn heta ku hûn bihayekî piştrast erê bikin.",
     },
     "/stores/request": {
-      title: "Product link · R&L",
+      title: "Lînka berhemê · R&L",
       description:
-        "Send the request. We confirm availability and the full cost before you approve anything.",
+        "Daxwazê bişîne. Em berî ku tu tiştek bipejirînî berdestbûn û lêçûna tevahî piştrast dikin.",
     },
     "/quote": {
-      title: "Plan your shipment · R&L",
+      title: "Şandina xwe plan bike · R&L",
       description:
-        "Chargeable weight is the greater of actual and volumetric weight. The divisor depends on the shipping mode.",
+        "Giraniya hesabkirî ya mezintir e di navbera giraniya rast û ya hecmî de. Dabeşker bi awayê şandinê ve girêdayî ye.",
     },
     "/market": {
       title: "Bazar · R&L",
       description:
-        "One product, several sellers. The cheapest total is first. No payment, no ads, no paid place.",
+        "Berhemek, gelek firoşkar. Tevahiya herî erzan pêşî ye. Bê dayîn, bê reklam, bê cihê bi pere.",
     },
     "/ai": {
       title: "Wêneyê berhemekê bigire. Bizane ew çi ye. · R&L",
@@ -91,12 +93,12 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
   },
   de: {
     "/": {
-      title: "R&L · Your European find. Your next delivery.",
+      title: "R&L · Dein Fund aus Europa. Deine nächste Lieferung.",
       description:
-        "Discover European stores. We buy or receive your order in Cologne, then arrange shipping to Kurdistan and Iraq.",
+        "Entdecke europäische Shops. Wir kaufen oder empfangen deine Bestellung in Köln und organisieren den Versand nach Kurdistan und in den Irak.",
     },
     "/stores": {
-      title: "Marketplace · R&L",
+      title: "Marktplatz · R&L",
       description:
         "Sehen Sie die Bilder und bestellen Sie, was Ihnen gefällt. Das sind Beispiele, kein Live-Lager. Gekauft wird erst nach einem bestätigten Preis.",
     },
@@ -106,14 +108,14 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "Senden Sie die Bestellung. Wir bestätigen Verfügbarkeit und den vollen Preis, bevor Sie zustimmen.",
     },
     "/quote": {
-      title: "Plan your shipment · R&L",
+      title: "Plane deine Sendung · R&L",
       description:
-        "Chargeable weight is the greater of actual and volumetric weight. The divisor depends on the shipping mode.",
+        "Abrechnungsgewicht ist das höhere von tatsächlichem und Volumengewicht. Der Divisor hängt von der Versandart ab.",
     },
     "/market": {
       title: "Marktplatz · R&L",
       description:
-        "One product, several sellers. The cheapest total is first. No payment, no ads, no paid place.",
+        "Ein Produkt, mehrere Verkäufer. Die günstigste Gesamtsumme steht oben. Keine Zahlung, keine Werbung, keine bezahlten Plätze.",
     },
     "/ai": {
       title: "Produkt fotografieren. Erfahren, was es ist. · R&L",
@@ -201,7 +203,7 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
     "/market": {
       title: "السوق · R&L",
       description:
-        "One product, several sellers. The cheapest total is first. No payment, no ads, no paid place.",
+        "منتج واحد وعدة بائعين. أرخص إجمالي يظهر أولاً. بلا دفع ولا إعلانات ولا مكان مدفوع.",
     },
     "/ai": {
       title: "صوّر منتجًا. اعرف ما هو. · R&L",
@@ -223,12 +225,12 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
   },
   fa: {
     "/": {
-      title: "R&L · Your European find. Your next delivery.",
+      title: "R&L · یافته اروپایی شما. تحویل بعدی شما.",
       description:
-        "Discover European stores. We buy or receive your order in Cologne, then arrange shipping to Kurdistan and Iraq.",
+        "فروشگاه‌های اروپایی را کشف کنید. ما سفارش شما را در کلن می‌خریم یا دریافت می‌کنیم و ارسال به کردستان و عراق را ترتیب می‌دهیم.",
     },
     "/stores": {
-      title: "Marketplace · R&L",
+      title: "بازار · R&L",
       description:
         "عکس‌ها را ببین و هر چه دوست داری سفارش بده. اینها نمونه است، موجودی زندهٔ فروشگاه نیست. تا قیمت قطعی را تأیید نکنی چیزی خریده نمی‌شود.",
     },
@@ -238,9 +240,9 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "درخواست را بفرست. پیش از آنکه چیزی را تأیید کنی، موجود بودن و هزینهٔ کامل را تأیید می‌کنیم.",
     },
     "/quote": {
-      title: "Plan your shipment · R&L",
+      title: "ارسال خود را برنامه‌ریزی کنید · R&L",
       description:
-        "Chargeable weight is the greater of actual and volumetric weight. The divisor depends on the shipping mode.",
+        "وزن قابل محاسبه، بیشتر از وزن واقعی و وزن حجمی است. مقسوم‌علیه به نوع ارسال بستگی دارد.",
     },
     "/market": {
       title: "بازار · R&L",
@@ -267,29 +269,29 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
   },
   tr: {
     "/": {
-      title: "R&L · Your European find. Your next delivery.",
+      title: "R&L · Avrupa'dan bulduğun ürün. Sıradaki teslimatın.",
       description:
-        "Discover European stores. We buy or receive your order in Cologne, then arrange shipping to Kurdistan and Iraq.",
+        "Avrupa mağazalarını keşfet. Siparişini Köln'de satın alır veya teslim alırız, ardından Kürdistan ve Irak'a gönderimi ayarlarız.",
     },
     "/stores": {
-      title: "Marketplace · R&L",
+      title: "Pazar · R&L",
       description:
         "Resimlere bak ve beğendiğini sipariş et. Bunlar örnektir, canlı stok değildir. Onaylı fiyat olmadan hiçbir şey satın alınmaz.",
     },
     "/stores/request": {
-      title: "Product link · R&L",
+      title: "Ürün bağlantısı · R&L",
       description:
-        "Send the request. We confirm availability and the full cost before you approve anything.",
+        "Talebi gönder. Sen herhangi bir şeyi onaylamadan önce stok durumunu ve toplam maliyeti doğrularız.",
     },
     "/quote": {
-      title: "Plan your shipment · R&L",
+      title: "Gönderini planla · R&L",
       description:
-        "Chargeable weight is the greater of actual and volumetric weight. The divisor depends on the shipping mode.",
+        "Ücrete esas ağırlık, gerçek ve hacimsel ağırlıktan büyük olanıdır. Bölen, gönderi türüne göre değişir.",
     },
     "/market": {
       title: "Pazar · R&L",
       description:
-        "One product, several sellers. The cheapest total is first. No payment, no ads, no paid place.",
+        "Tek ürün, birden çok satıcı. En ucuz toplam en üstte. Ödeme yok, reklam yok, ücretli sıralama yok.",
     },
     "/ai": {
       title: "Ürünün fotoğrafını çekin. Ne olduğunu görün. · R&L",

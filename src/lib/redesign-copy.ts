@@ -1,4 +1,5 @@
 import type { Lang } from "./langs";
+import * as extra from "./translations/redesign.ts";
 const en = {
   carousel: "Image carousel",
   marketplace: "Marketplace",
@@ -343,7 +344,15 @@ const ar: RedesignCopy = {
     },
   ],
 };
-const messages: Partial<Record<Lang, RedesignCopy>> = { en, ckb, ar };
+const messages: Partial<Record<Lang, RedesignCopy>> = {
+  en,
+  ckb,
+  ar,
+  ku: extra.ku,
+  de: extra.de,
+  fa: extra.fa,
+  tr: extra.tr,
+};
 export function redesignCopy(lang: Lang): RedesignCopy {
   return messages[lang] ?? en;
 }

@@ -1,3 +1,4 @@
+import * as extra from "./translations/store.ts";
 import type { Lang } from "@/lib/langs";
 import type { GoodId, StoreCategory, StoreCaution, StoreNote } from "@/lib/stores";
 
@@ -492,6 +493,7 @@ const ku: StoreCopy = {
   serviceLater: "Ev xizmet hê ne amade ye. E-name 2233rega@gmail.com.",
   wrongHost:
     "Ev girêdan ne li ser malpera fermî ya wê firoşgehê ye. Girêdanekê ji malpera firoşgehê bi xwe binivîse.",
+  ...extra.ku,
 };
 
 const fa: StoreCopy = {
@@ -648,6 +650,7 @@ const tr: StoreCopy = {
   serviceLater: "Bu hizmet henüz yok. E-posta 2233rega@gmail.com.",
   wrongHost:
     "Bu bağlantı o mağazanın resmi sitesinde değil. Mağazanın kendi sitesinden bir bağlantı yapıştırın.",
+  ...extra.tr,
 };
 
 const ALL: Record<Lang, StoreCopy> = { en, ckb, ar, de, ku, fa, tr };

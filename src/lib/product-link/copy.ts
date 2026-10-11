@@ -1,4 +1,5 @@
 import type { Lang } from "../langs.ts";
+import * as extra from "./translations.ts";
 
 export type ProductLinkCopy = {
   title: string;
@@ -104,9 +105,21 @@ const ar: ProductLinkCopy = {
   },
 };
 
-// TODO(translate-review): ku, de, fa and tr use English until reviewed.
 export function productLinkCopy(lang: Lang): ProductLinkCopy {
-  if (lang === "ckb") return ckb;
-  if (lang === "ar") return ar;
-  return en;
+  switch (lang) {
+    case "ckb":
+      return ckb;
+    case "ar":
+      return ar;
+    case "ku":
+      return extra.ku;
+    case "de":
+      return extra.de;
+    case "fa":
+      return extra.fa;
+    case "tr":
+      return extra.tr;
+    default:
+      return en;
+  }
 }
