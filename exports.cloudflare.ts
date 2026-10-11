@@ -14,12 +14,16 @@ export class RlAiUsage extends DurableObject {
   }
   private async roll(day: string) {
     const storage = this.ctx.storage;
-    if ((await storage.get<string>("current-day")) !== day) {
+    const currentDay = await storage.get<string>("current-day");
+    // Delayed RPC calls must never roll state back to a previous UTC day.
+    if (currentDay && day < currentDay) return false;
+    if (currentDay !== day) {
       const hmac = await storage.get<string>("hmac");
       await storage.deleteAll();
       await storage.put("current-day", day);
       if (hmac) await storage.put("hmac", hmac);
     }
+    return true;
   }
   private async secret() {
     const storage = this.ctx.storage;
@@ -31,11 +35,13 @@ export class RlAiUsage extends DurableObject {
     return secret;
   }
   async consume(input: UsageInput) {
-    await this.roll(input.day);
+    if (!(await this.roll(input.day))) return { ok: false, reason: "daily_cap" as const };
     return consumeUsage(this.store(), input);
   }
   async refund(input: UsageInput) {
-    await this.roll(input.day);
+    // An inference started yesterday may fail after today's first request.
+    // Its refund must neither clear today's state nor create a new day.
+    if ((await this.ctx.storage.get<string>("current-day")) !== input.day) return;
     await refundUsage(this.store(), input);
   }
   async issue(now: number) {

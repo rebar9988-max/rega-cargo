@@ -146,9 +146,13 @@ export function parseIdentifyOutput(content: unknown): IdentifyResult | null {
 /** Pulls the assistant text out of an OpenAI-style or legacy Workers AI reply. */
 export function extractModelContent(reply: unknown): unknown {
   if (!reply || typeof reply !== "object") return reply;
-  const r = reply as { response?: unknown; choices?: Array<{ message?: { content?: unknown } }> };
-  if (r.choices?.[0]?.message && "content" in r.choices[0].message)
-    return r.choices[0].message.content;
+  const r = reply as { response?: unknown; choices?: unknown };
+  const choice: unknown = Array.isArray(r.choices) ? r.choices[0] : undefined;
+  const message = choice && typeof choice === "object" && "message" in choice
+    ? choice.message
+    : undefined;
+  if (message && typeof message === "object" && "content" in message)
+    return message.content;
   if ("response" in r) return r.response;
   return undefined;
 }

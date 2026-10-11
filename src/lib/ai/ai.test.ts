@@ -384,3 +384,114 @@ test("AI text never names a shop, a price or a link", () => {
   assert.equal(cleanText("eBay seller says 20 EUR", 80), "seller says");
   assert.equal(cleanText("Admiral cream", 80), "Admiral cream");
 });
+
+test("failed provider attempts remain bounded after visitor refunds", async (t) => {
+  for (const failure of ["model_error", "timeout", "invalid_output"] as const) {
+    await t.test(failure, async () => {
+      const store = memoryUsageStore();
+      let calls = 0;
+      const deps = {
+        env: {
+          ...on,
+          AI: {
+            async run() {
+              calls += 1;
+              if (failure === "model_error") throw new Error("provider failed");
+              if (failure === "timeout") return new Promise(() => {});
+              return { response: "not JSON" };
+            },
+          },
+        },
+        skipGate: true,
+        usage: storeLimiter(store),
+        timeoutMs: 5,
+        now: () => new Date("2026-10-11T12:00:00Z"),
+      };
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const response = await handleIdentify(upload({ consent: "1" }), deps);
+        assert.equal(response.status, failure === "timeout" ? 504 : 502);
+        assert.equal((await response.json()).error, failure);
+      }
+      // Refunds still restore the visitor's allowance, but cannot undo provider work.
+      assert.equal(store.data.get("day:2026-10-11"), 0);
+      const capped = await handleIdentify(upload({ consent: "1" }), deps);
+      assert.equal(capped.status, 429);
+      assert.equal((await capped.json()).error, "daily_cap");
+      assert.equal(calls, 2);
+    });
+  }
+});
+
+test("attempt budget carries existing usage forward and resets on the next UTC day", async () => {
+  const store = memoryUsageStore();
+  const input = { day: "2026-10-11", hour: "2026-10-11T23", visitor: "a", dailyCap: 2, perVisitorHourly: 10 };
+  store.data.set("day:2026-10-11", 1);
+  assert.equal((await consumeUsage(store, input)).ok, true);
+  await refundUsage(store, input);
+  assert.deepEqual(await consumeUsage(store, input), { ok: false, reason: "daily_cap" });
+  assert.equal((await consumeUsage(store, { ...input, day: "2026-10-12", hour: "2026-10-12T00" })).ok, true);
+});
+
+test("malformed provider envelopes produce invalid_output instead of throwing", async () => {
+  for (const reply of [
+    { choices: [{ message: 42 }] },
+    { choices: [{ message: "content" }] },
+    { choices: [null] },
+    { choices: "not an array" },
+    { response: null },
+  ]) {
+    const response = await handleIdentify(upload({ consent: "1" }), {
+      env: { ...on, AI: mockAi(reply) }, skipGate: true, usage: storeLimiter(memoryUsageStore()),
+    });
+    assert.equal(response.status, 502);
+    assert.equal((await response.json()).error, "invalid_output");
+  }
+  assert.equal(extractModelContent({ choices: [{ message: 42 }], response: "{}" }), "{}");
+});
+
+test("a refund outage keeps the original classified provider failure", async () => {
+  const response = await handleIdentify(upload({ consent: "1" }), {
+    env: { ...on, AI: mockAi(new Error("provider secret must not appear")) },
+    skipGate: true,
+    usage: {
+      async consume() { return { ok: true, used: 1 }; },
+      async refund() { throw new Error("storage secret must not appear"); },
+    },
+  });
+  assert.equal(response.status, 502);
+  assert.deepEqual(await response.json(), { ok: false, error: "model_error" });
+});
+
+test("origin validation includes the protocol and port before inference", async () => {
+  const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
+  const deps = { env: { ...on, AI: mockAi({ response: JSON.stringify(good) }, calls) }, skipGate: true, usage: storeLimiter(memoryUsageStore()) };
+  for (const origin of ["http://rl.test", "https://rl.test:444", "null"]) {
+    assert.equal((await handleIdentify(upload({ consent: "1", origin }), deps)).status, 403);
+  }
+  assert.equal(calls.length, 0);
+  assert.equal((await handleIdentify(upload({ consent: "1", origin: "https://rl.test:443" }), deps)).status, 200);
+});
+
+test("unavailable AI or usage storage fails before any provider invocation", async () => {
+  const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
+  const ai = mockAi({ response: JSON.stringify(good) }, calls);
+  for (const deps of [
+    { env: { ...on, AI: ai }, skipGate: true },
+    { env: on, usage: storeLimiter(memoryUsageStore()), skipGate: true },
+    { env: { ...on, AI: ai }, skipGate: true, usage: { async consume(): Promise<never> { throw new Error("private storage diagnostics"); } } },
+  ]) {
+    const response = await handleIdentify(upload({ consent: "1" }), deps);
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
+  }
+  assert.equal(calls.length, 0);
+});
+
+test("prohibited model results never expose a product, price or recommendation", async () => {
+  const response = await handleIdentify(upload({ consent: "1" }), {
+    env: { ...on, AI: mockAi({ response: JSON.stringify({ ...good, model: "Vape pod", visibleText: ["Nicotine"], attributes: ["Buy now at https://evil.test for €20"] }) }) },
+    skipGate: true, usage: storeLimiter(memoryUsageStore()),
+  });
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: false, error: "no_result" });
+});

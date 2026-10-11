@@ -95,7 +95,7 @@ function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return request.headers.get("sec-fetch-site") !== "cross-site";
   try {
-    return new URL(origin).host === new URL(request.url).host;
+    return new URL(origin).origin === new URL(request.url).origin;
   } catch {
     return false;
   }
@@ -220,9 +220,22 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
     perVisitorDaily: PER_VISITOR_DAILY,
     reserve: dailyCap > NEW_VISITOR_RESERVE ? NEW_VISITOR_RESERVE : 0,
   };
-  const decision = await deps.usage.consume(usageInput);
+  let decision: UsageDecision;
+  try {
+    decision = await deps.usage.consume(usageInput);
+  } catch {
+    // Never start paid-capable provider work without a confirmed budget slot.
+    return json({ ok: false, error: "unavailable" }, 503);
+  }
   if (!decision.ok) return json({ ok: false, error: decision.reason }, 429);
-  const refund = () => deps.usage?.refund?.(usageInput);
+  const refund = async () => {
+    try {
+      await deps.usage?.refund?.(usageInput);
+    } catch {
+      // A refund is best effort. Keep the consumed budget and the original,
+      // classified provider error; never expose storage diagnostics to clients.
+    }
+  };
 
   const started = Date.now();
   let reply: unknown;
