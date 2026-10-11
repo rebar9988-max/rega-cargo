@@ -4,6 +4,7 @@ import { LANGS } from "./langs.ts";
 import { SEO_MESSAGES } from "./seo-messages.ts";
 import { productLinkCopy } from "./product-link/copy.ts";
 import { redesignCopy } from "./redesign-copy.ts";
+import { marketCopy } from "./market-copy.ts";
 
 const ids = LANGS.map((l) => l.id);
 const others = ids.filter((id) => id !== "en");
@@ -92,4 +93,19 @@ test("redesign copy has no English left in ku, de, fa and tr", () => {
 
 test("the not-an-official-partner note stays in every language (hard rule 2)", () => {
   for (const id of ids) assert.match(redesignCopy(id).noPartner, /R&L/, `${id}.noPartner`);
+});
+
+test("marketplace copy is translated in every language (only words shared with English may match)", () => {
+  const en = marketCopy("en") as Record<string, string>;
+  // Same word in German: "Name" is the German word too.
+  const shared: Record<string, string[]> = { de: ["name"] };
+  for (const id of others) {
+    const c = marketCopy(id) as Record<string, string>;
+    assert.deepEqual(Object.keys(c).sort(), Object.keys(en).sort(), `${id}: keys`);
+    for (const [k, v] of Object.entries(c)) {
+      assert.ok(v.trim(), `${id}.${k} empty`);
+      if (/[A-Za-z]{4,}/.test(en[k]) && v === en[k] && !(shared[id] ?? []).includes(k))
+        assert.fail(`${id}.${k} is still English: ${v}`);
+    }
+  }
 });
