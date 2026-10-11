@@ -11,10 +11,10 @@
   Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=()
 # Cloudflare Workers static-assets headers (merged with the /assets/* rule
 # Nitro generates). Image URLs are not content-hashed, so changed artwork must
-# ship under a new file name (e.g. *-640.webp, rega-logo-168.webp).
+# ship under a new file name (e.g. *-640.webp, rl-mark-168.webp).
 /bazaar/*
   cache-control: public, max-age=2592000, stale-while-revalidate=604800
-/rega-logo-168.webp
+/rl-mark-168.webp
   cache-control: public, max-age=2592000, stale-while-revalidate=604800
 /favicon.png
   cache-control: public, max-age=86400, stale-while-revalidate=604800

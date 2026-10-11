@@ -1,24 +1,21 @@
-import { lazy, Suspense, useRef, useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { lazy, Suspense, type ReactNode } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  ArrowLeft,
   ArrowRight,
   Box,
   Check,
   Globe,
   PackageCheck,
   ShieldCheck,
+  Sparkles,
   Warehouse,
 } from "lucide-react";
-import { Button, Chip, Icon, Deferred, Skeleton } from "./ui";
+import { Chip, Icon, Deferred, Skeleton } from "./ui";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
-import { storeCopy } from "@/lib/store-copy";
-import { langMeta } from "@/lib/langs";
+import { heroCopy } from "@/lib/hero-copy";
+import { rlAiEnabled } from "@/lib/ai/flag";
 import { BRANDS } from "@/lib/catalog";
-import { GOODS } from "@/lib/stores";
-import { NAV_CATEGORIES } from "@/lib/navigation";
-import { responsiveImage } from "@/lib/images";
 import type { Service } from "@/lib/service-choice";
 
 const QuickQuote = lazy(() =>
@@ -36,146 +33,69 @@ export function PremiumHome({
 }) {
   const { lang, t } = useI18n();
   const c = redesignCopy(lang);
-  const sc = storeCopy(lang);
-  const [slide, setSlide] = useState(0);
-  const rail = useRef<HTMLDivElement>(null);
-  const slides = [
-    { title: c.heroTitle, body: c.heroBody, image: "sneakers" },
-    { title: c.heroShippingTitle, body: c.heroShippingBody, image: "earbuds" },
-  ];
-  function go(index: number) {
-    const at = (index + slides.length) % slides.length;
-    setSlide(at);
-    rail.current?.children[at]?.scrollIntoView({
-      block: "nearest",
-      inline: "start",
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-    });
-  }
-  function sync() {
-    if (!rail.current) return;
-    const root = rail.current.getBoundingClientRect();
-    const rtl = langMeta(lang).dir === "rtl";
-    let best = 0;
-    let distance = Infinity;
-    Array.from(rail.current.children).forEach((el, i) => {
-      const box = el.getBoundingClientRect();
-      const d = Math.abs(rtl ? root.right - box.right : root.left - box.left);
-      if (d < distance) {
-        distance = d;
-        best = i;
-      }
-    });
-    setSlide(best);
-  }
+  const h = heroCopy(lang);
+  const ai = rlAiEnabled();
+  // The AI entry opens the existing /ai route; show a busy state while it loads.
+  const opening = useRouterState({
+    select: (state) => state.status === "pending" && state.location.pathname === "/ai",
+  });
   return (
     <>
-      <section
-        className="rl-hero-carousel"
-        aria-label={c.heroShop}
-        aria-roledescription={c.carousel}
-      >
-        <div
-          ref={rail}
-          className="rl-hero-rail"
-          onScroll={sync}
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.target !== e.currentTarget) return;
-            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-              e.preventDefault();
-              go(
-                slide +
-                  (e.key === "ArrowRight"
-                    ? langMeta(lang).dir === "rtl"
-                      ? -1
-                      : 1
-                    : langMeta(lang).dir === "rtl"
-                      ? 1
-                      : -1),
-              );
-            }
-          }}
-        >
-          {slides.map((s, i) => {
-            const Heading = i === slide ? "h1" : "h2";
-            const image = GOODS.find((g) => g.id === s.image)!;
-            return (
-              <div
-                className="rl-hero-slide"
-                key={s.title}
-                inert={i !== slide}
-                aria-hidden={i !== slide}
+      {/* The AI hero is one static section directly under the header: no slides, no autoplay,
+          nothing inserted above it. It is server-rendered with fixed copy and is centred, so it
+          sits in the same place and keeps the same hierarchy in every language. */}
+      <section className="rl-ai-hero" aria-labelledby="rl-hero-title">
+        <div className="page rl-ai-hero-inner">
+          {ai ? (
+            <p className="rl-ai-hero-badge">
+              <Icon as={Sparkles} />
+              <span>{h.eyebrow}</span>
+            </p>
+          ) : (
+            <p className="rl-eyebrow" lang="en" dir="ltr">
+              {t.brandSub}
+            </p>
+          )}
+          <h1 id="rl-hero-title">{ai ? h.title : c.heroTitle}</h1>
+          <p className="rl-ai-hero-subtitle">{ai ? h.subtitle : c.heroBody}</p>
+          <div className="rl-ai-hero-actions" data-ai={ai || undefined}>
+            {/* With AI off for this deployment the marketplace is the primary action, so the
+                hero never links to an assistant that is not there. */}
+            {ai ? (
+              <Link
+                to="/ai"
+                className="rl-button rl-ai-hero-cta"
+                data-variant="primary"
+                aria-busy={opening || undefined}
+                aria-label={opening ? `${h.cta}. ${h.ctaOpening}` : undefined}
               >
-                <div className="page rl-hero-layout">
-                  <div className="rl-hero-copy">
-                    <p className="rl-eyebrow" lang="en" dir="ltr">
-                      {t.brandSub}
-                    </p>
-                    <Heading>{s.title}</Heading>
-                    <p className="rl-hero-description">{s.body}</p>
-                    <div className="rl-hero-actions">
-                      <Link to="/stores" className="rl-button rl-grad">
-                        {c.heroShop}
-                        <Icon as={ArrowRight} directional />
-                      </Link>
-                      <Link
-                        to="/quote"
-                        search={{ from: undefined, to: undefined, kg: undefined }}
-                        className="rl-button rl-hero-secondary"
-                      >
-                        {c.heroShip}
-                      </Link>
-                    </div>
-                    <p className="rl-hero-location">
-                      <Icon as={Warehouse} />
-                      {c.warehouse}
-                    </p>
-                  </div>
-                  <figure className="rl-hero-art">
-                    <img
-                      {...responsiveImage(image.image, "(min-width: 1024px) 560px, 128px")}
-                      width={640}
-                      height={640}
-                      alt={sc.goods[image.id]}
-                      loading={i === 0 ? "eager" : "lazy"}
-                      fetchPriority={i === 0 ? "high" : undefined}
-                      decoding="async"
-                    />
-                    <figcaption>{c.exampleTitle}</figcaption>
-                  </figure>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="page rl-carousel-controls">
-          <div className="rl-row" aria-live="polite">
-            <span>
-              {c.slide}{" "}
-              <bdi dir="ltr">
-                {slide + 1} / {slides.length}
-              </bdi>
-            </span>
-            {slides.map((s, i) => (
-              <button
-                key={s.title}
-                type="button"
-                className="rl-carousel-dot"
-                aria-label={`${c.slide} ${i + 1}`}
-                aria-pressed={i === slide}
-                onClick={() => go(i)}
-              />
-            ))}
+                <Icon as={Sparkles} />
+                {h.cta}
+              </Link>
+            ) : null}
+            <div className="rl-ai-hero-more">
+              <Link
+                to="/stores"
+                className="rl-button rl-hero-shop"
+                data-variant={ai ? "secondary" : "primary"}
+              >
+                {c.heroShop}
+                <Icon as={ArrowRight} directional />
+              </Link>
+              <Link
+                to="/quote"
+                search={{ from: undefined, to: undefined, kg: undefined }}
+                className="rl-button rl-hero-secondary"
+                data-variant="secondary"
+              >
+                {c.heroShip}
+              </Link>
+            </div>
           </div>
-          <div className="rl-row">
-            <Button variant="ghost" aria-label={c.prevSlide} onClick={() => go(slide - 1)}>
-              <Icon as={ArrowLeft} directional />
-            </Button>
-            <Button variant="ghost" aria-label={c.nextSlide} onClick={() => go(slide + 1)}>
-              <Icon as={ArrowRight} directional />
-            </Button>
-          </div>
+          <p className="rl-hero-location">
+            <Icon as={Warehouse} />
+            {c.warehouse}
+          </p>
         </div>
       </section>
       <section className="page rl-section rl-stack" aria-labelledby="rl-home-calc">
@@ -222,42 +142,8 @@ export function PremiumHome({
         </Deferred>
         {children}
       </section>
-      <section className="page rl-section rl-defer" aria-labelledby="rl-home-cats">
-        <div className="rl-section-heading">
-          <div>
-            <p className="rl-eyebrow">{c.categories}</p>
-            <h2 id="rl-home-cats">{c.curated}</h2>
-          </div>
-          <Link to="/stores" className="rl-text-link">
-            {c.browse}
-            <Icon as={ArrowRight} directional />
-          </Link>
-        </div>
-        <ul className="rl-category-tiles">
-          {NAV_CATEGORIES.map((n) => {
-            const image = GOODS.find((g) => g.id === n.image)!;
-            return (
-              <li key={n.id}>
-                <Link to="/stores" search={{ cat: n.cat, who: n.who }}>
-                  <img
-                    {...responsiveImage(image.image, "(min-width: 1024px) 160px, 42vw")}
-                    width={320}
-                    height={320}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <span>
-                    {c[n.id]}
-                    <Icon as={ArrowRight} directional />
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-        <p className="rl-caption">{c.samplesBody}</p>
-      </section>
+      {/* The category list lives in one place, the marketplace (/stores); the hero's primary
+          button and the bottom bar lead there. */}
       <section className="rl-brand-section rl-defer">
         <div className="page rl-section">
           <div className="rl-section-heading">
