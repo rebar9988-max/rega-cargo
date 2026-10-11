@@ -1,5 +1,5 @@
 import { getRequest } from "@tanstack/react-start/server";
-import { resolveDatabaseUrl } from "../db-config.server";
+import { hasDatabaseConfig } from "../db-config.server";
 import { auth, authConfigured } from "./server";
 
 /**
@@ -13,7 +13,7 @@ import { auth, authConfigured } from "./server";
  */
 
 /** True when a real database is configured server-side. */
-const databaseConfigured = Boolean(resolveDatabaseUrl());
+const databaseConfigured = hasDatabaseConfig();
 
 /** Re-export so callers can branch on it without importing `server.ts`. */
 export { authConfigured };
