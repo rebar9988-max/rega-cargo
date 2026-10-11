@@ -186,6 +186,36 @@ test("brands sold by name alone are blocked, without catching ordinary words", (
     "Jamón ibérico",
   ])
     assert.equal(d(s), "block", s);
-  for (const s of ["Velo city bike", "Guinness World Records 2026", "Corona virus test kit", "Walker boots"])
+  for (const s of [
+    "Velo city bike",
+    "Guinness World Records 2026",
+    "Corona virus test kit",
+    "Walker boots",
+  ])
+    assert.equal(d(s), "allow", s);
+});
+
+test("disguised spellings are still blocked", () => {
+  for (const s of [
+    "vo​dka",
+    "vod­ka",
+    "‮vodka",
+    "vоdka",
+    "v0dka",
+    "v o d k a",
+    "v.o.d.k.a",
+    "vodka70cl",
+    "فودكا٧٠",
+    "سج‌ائر",
+    "جگە‌رە",
+  ])
+    assert.equal(d(s), "block", JSON.stringify(s));
+  for (const s of [
+    "Samsung Galaxy A54 5G",
+    "Size: S M L XL",
+    "U S B C cable",
+    "3M tape",
+    "شاي و قهوة",
+  ])
     assert.equal(d(s), "allow", s);
 });
