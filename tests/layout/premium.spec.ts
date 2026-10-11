@@ -297,3 +297,32 @@ test("marketplace toolbar: filter button and audience chips share one row", asyn
     expect(overflow, lang).toBe(0);
   }
 });
+
+test("compact forms and store cards at 360px", async ({ page }) => {
+  // Quote: length, width and height share one row.
+  await page.goto("/quote?lang=ckb", { waitUntil: "networkidle" });
+  const dims = page.locator(".rl-quote-card .col-span-2 input");
+  await expect(dims).toHaveCount(3);
+  const ys = await dims.evaluateAll((els) =>
+    els.map((e) => Math.round(e.getBoundingClientRect().top)),
+  );
+  expect(new Set(ys).size).toBe(1);
+  // Order request: size, colour and quantity share one row.
+  await page.goto("/stores/request?store=zalando&intent=buy&lang=ckb", {
+    waitUntil: "networkidle",
+  });
+  const row = page.locator("form .grid-cols-3 input");
+  await expect(row).toHaveCount(3);
+  const ry = await row.evaluateAll((els) =>
+    els.map((e) => Math.round(e.getBoundingClientRect().top)),
+  );
+  expect(new Set(ry).size).toBe(1);
+  // Store cards: one primary action, the domain links to the store's own site.
+  await page.goto("/stores?lang=ckb", { waitUntil: "networkidle" });
+  const card = page.locator("[data-store=zalando]");
+  await expect(card.locator(".rl-button[data-variant=primary]")).toHaveCount(1);
+  await expect(card.locator("a.rl-store-site")).toHaveAttribute("href", /zalando/);
+  await expect(card.locator("a.rl-store-site")).toHaveAttribute("target", "_blank");
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  expect(overflow).toBe(0);
+});

@@ -329,7 +329,17 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
                                   : store.country === "INT"
                                     ? t.international
                                     : store.country}{" "}
-                                · <bdi dir="ltr">{store.host}</bdi>
+                                ·{" "}
+                                <a
+                                  href={store.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="rl-store-site"
+                                  aria-label={`${t.open} · ${store.host}`}
+                                >
+                                  <bdi dir="ltr">{store.host}</bdi>
+                                  <Icon as={ArrowUpRight} directional />
+                                </a>
                               </p>
                               <p className="rl-muted rl-store-categories">
                                 {store.categories
@@ -337,31 +347,6 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
                                   .map((category) => t.categories[category])
                                   .join(" · ")}
                               </p>
-                              <a
-                                href={store.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="rl-button"
-                                data-variant="secondary"
-                              >
-                                {t.open}
-                                <Icon as={ArrowUpRight} directional />
-                              </a>
-                              <Link
-                                to="/stores/request"
-                                search={{ store: store.id, intent: "buy", item: undefined }}
-                                className="rl-button"
-                                data-variant="primary"
-                              >
-                                {t.assist}
-                              </Link>
-                              <Link
-                                to="/stores/request"
-                                search={{ store: store.id, intent: "ship", item: undefined }}
-                                className="rl-text-action"
-                              >
-                                {t.shipOwn}
-                              </Link>
                               <details>
                                 <summary>{t.external}</summary>
                                 <p>{t.notes[store.note]}</p>
@@ -369,6 +354,25 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
                                   <p key={caution}>{t.cautions[caution]}</p>
                                 ))}
                               </details>
+                              {/* One primary action; "I bought it myself" is a quiet link under it
+                                  and the store's own site is the linked domain above. */}
+                              <Link
+                                to="/stores/request"
+                                search={{ store: store.id, intent: "buy", item: undefined }}
+                                className="rl-button rl-store-primary"
+                                data-variant="primary"
+                              >
+                                {t.assist}
+                              </Link>
+                              <div className="rl-store-links">
+                                <Link
+                                  to="/stores/request"
+                                  search={{ store: store.id, intent: "ship", item: undefined }}
+                                  className="rl-text-action"
+                                >
+                                  {t.shipOwn}
+                                </Link>
+                              </div>
                             </li>
                           ))}
                         </ul>

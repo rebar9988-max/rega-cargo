@@ -205,7 +205,8 @@ function RequestPage() {
                 required={!good}
               />
             </Field>
-            <div className="grid gap-4 md:grid-cols-3">
+            {/* Size, colour and quantity share one row on phones too. */}
+            <div className="grid grid-cols-3 gap-x-3 gap-y-4">
               <Field label={t.size}>
                 <input
                   className={controlClass}
