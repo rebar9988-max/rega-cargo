@@ -1592,8 +1592,9 @@
   min-block-size: var(--rl-control-h);
 }
 @media (width < 28rem) {
-  /* The Sorani headline fits two lines in both the fallback and final font at 360px. */
-  html[lang="ckb"] .rl-ai-hero h1 {
+  /* Inside the hero card's padding every headline keeps the same line count in the fallback
+     and the final font at 360px (the Sorani one fits two lines). */
+  .rl-ai-hero h1 {
     font-size: var(--text-3xl);
   }
 }
