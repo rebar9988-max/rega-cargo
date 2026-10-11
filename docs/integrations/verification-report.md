@@ -1,6 +1,6 @@
 # Integration verification report: 2026-10-11
 
-## Status at 15:30 UTC: read this first
+## Status at 15:25 UTC: read this first
 
 | Check | Verified result |
 |---|---|
@@ -8,7 +8,7 @@
 | Which database production uses | **Still `misty-recipe-03041407/neondb` (wrong).** Five live `/market` requests added rollbacks there (314 → 316); `old-cherry-79292410/cargo` rollbacks stayed at 0. `/market` shows "Try again" |
 | `old-cherry-79292410/cargo` (intended) | 28 tables, migrations `0002`–`0014`, 413 locked compliance keywords, 0 unlocked, 0 products, 6 categories. No customer rows in any table |
 | `misty-recipe-03041407/neondb` (duplicate) | 12 tables, only `0002_market.sql`, no compliance tables, 6 categories. No customer rows |
-| Migration `0014_compliance_brands.sql` | Applied to `cargo` at ~15:28 UTC exactly as `scripts/migrate.mjs` does: one transaction, then a `_migrations` row. Additive only (35 keywords, locked by the trigger) |
+| Migration `0014_compliance_brands.sql` | Applied to `cargo` at ~15:24 UTC exactly as `scripts/migrate.mjs` does: one transaction, then a `_migrations` row. Additive only (35 keywords, locked by the trigger) |
 | Hyperdrive config | **Unverifiable with the session token** (`10000 Authentication error` on list and get) |
 
 **Remaining blocker (owner action).** Edit Hyperdrive `795013d06b38408e87552686a6045291` so its origin is the `old-cherry-79292410` endpoint, database `cargo` (pooling off), then set the `DATABASE_URL` secret on `rega-cargo` to the same string. Alternatively, grant the Cloudflare token `Account → Hyperdrive → Edit`. No redeploy is needed for Hyperdrive; a secret edit takes effect immediately. Do not delete `misty-recipe-03041407` until `/market` works.
