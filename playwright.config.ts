@@ -49,6 +49,13 @@ export default defineConfig<LayoutProjectUse>({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
+  // Stop before the 25-minute "layout lock" job limit in quality.yml. A job-level timeout
+  // cancels the step and skips the report upload, leaving reviewers with no diffs; a
+  // Playwright timeout fails the step, writes the HTML report and the upload still runs.
+  globalTimeout: process.env.CI ? 19 * 60_000 : 0,
+  // Stale baselines fail almost every screenshot (twice, with the retry); past this many
+  // the cause is clear from the report and the fix is the update_baselines dispatch.
+  maxFailures: process.env.CI ? 60 : 0,
   // Leave CPU for the local Worker and WebKit's full-page captures on CI runners.
   workers: process.env.CI ? 3 : 6,
   timeout: 45_000,
