@@ -1,10 +1,12 @@
 /* R&L semantic tokens; all components share light/dark foundations. */
 :root {
-  --rl-hero-art-ratio: 1;
-  --rl-carousel-dot: 0.5rem;
+  /* Homepage AI hero: reading width, CTA column width and heights (8px grid). */
+  --rl-ai-hero-width: 46rem;
+  --rl-ai-hero-cta-width: 28rem;
+  --rl-ai-hero-cta-h: 3.5rem;
+  --rl-ai-hero-badge-h: 2rem;
   --rl-logo-width: 7rem;
   --rl-logo-height: 2.5rem;
-  --rl-hero-columns: minmax(0, 1fr) minmax(0, 1fr);
   --rl-slide-start: 100%;
   --rl-mark-size: 3rem;
   --rl-mark-compact: 2.5rem;
@@ -131,7 +133,6 @@
   --rl-option-intrinsic: 24rem;
 }
 :root {
-  --rl-mobile-hero-art: 8rem;
 }
 :root {
   --rl-calc-placeholder: 48rem;
