@@ -33,9 +33,9 @@ import { betterAuth } from "better-auth";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { getCookie } from "@tanstack/react-start/server";
 import { randomBytes } from "node:crypto";
-import { Client, Pool, type ClientConfig } from "pg";
+import { Pool } from "pg";
 import { ensureDbReady, getPglite } from "../db";
-import { hasDatabaseConfig, isWorkersRuntime, resolveDatabaseUrl } from "../db-config.server";
+import { isWorkersRuntime, resolveDatabaseUrl } from "../db-config.server";
 import { emailAndPasswordEnabled } from "./email-password";
 import { pgliteDialect } from "./pglite-dialect";
 import {
@@ -128,6 +128,8 @@ const trustedOrigins: string[] = explicitBaseURL
       ...LOCAL_DEV_ORIGINS,
     ];
 
+const databaseUrl = resolveDatabaseUrl();
+
 // Real Postgres when `DATABASE_URL` is set (deployed apps), else the app's
 // embedded PGLite (preview) via a Kysely dialect — so Better Auth persists to the
 // SAME DB as app data, including email/password users. Both use the Better Auth
@@ -136,19 +138,11 @@ const trustedOrigins: string[] = explicitBaseURL
 // Workers: `maxUses: 1` closes each pg client after one checkout so no socket
 // outlives the request that opened it (workerd forbids cross-request I/O);
 // Hyperdrive does the real pooling.
-// Workers: the connection string is read per client (inside the request) via a
-// Client subclass, because workerd forbids reading the Hyperdrive binding's
-// connection string in module scope, where this Pool is built.
-class RequestScopedClient extends Client {
-  constructor(config?: ClientConfig) {
-    super({ ...config, connectionString: resolveDatabaseUrl() });
-  }
-}
-const database = hasDatabaseConfig()
+const database = databaseUrl
   ? new Pool(
       isWorkersRuntime()
-        ? { Client: RequestScopedClient, maxUses: 1, idleTimeoutMillis: 1 }
-        : { connectionString: resolveDatabaseUrl() },
+        ? { connectionString: databaseUrl, maxUses: 1, idleTimeoutMillis: 1 }
+        : { connectionString: databaseUrl },
     )
   : { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
 

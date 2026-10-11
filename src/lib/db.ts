@@ -1,5 +1,5 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
-import { hasDatabaseConfig, isWorkersRuntime, resolveDatabaseUrl } from "./db-config.server";
+import { isWorkersRuntime, resolveDatabaseUrl } from "./db-config.server";
 
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite";
@@ -7,10 +7,8 @@ export type DbSource = "neon" | "pglite";
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
 // On Cloudflare Workers this is the Hyperdrive binding (or a DATABASE_URL
-// secret) — see db-config.server.ts. Only presence is checked here: the URL
-// itself is resolved when a connection opens, because workerd forbids reading
-// the Hyperdrive connection string in module (global) scope.
-const databaseConfigured = hasDatabaseConfig();
+// secret) — see db-config.server.ts.
+const databaseUrl = resolveDatabaseUrl();
 
 /**
  * Active backend: real **Neon** when `DATABASE_URL` is set (deployed / configured
@@ -18,7 +16,7 @@ const databaseConfigured = hasDatabaseConfig();
  * the app has a working database even with nothing configured — the live preview
  * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
  */
-export const dbSource: DbSource = databaseConfigured ? "neon" : "pglite";
+export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
@@ -105,7 +103,7 @@ function createWorkersSql(): Promise<Sql> {
       }) as typeof types.getTypeParser,
     };
     return toSql(async <T>(text: string, params: unknown[]) => {
-      const client = new Client({ connectionString: resolveDatabaseUrl(), types: typeParsers });
+      const client = new Client({ connectionString: databaseUrl, types: typeParsers });
       await client.connect();
       try {
         const res = await client.query(text, params);
@@ -130,7 +128,7 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const pool = new Pool({ connectionString: resolveDatabaseUrl() });
+    const pool = new Pool({ connectionString: databaseUrl });
     return toSql(async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
