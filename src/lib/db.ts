@@ -7,8 +7,10 @@ export type DbSource = "neon" | "pglite";
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
 // On Cloudflare Workers this is the Hyperdrive binding (or a DATABASE_URL
-// secret) — see db-config.server.ts.
-const databaseUrl = resolveDatabaseUrl();
+// secret) — see db-config.server.ts. Resolved per call, never at module load:
+// workerd evaluates lazily imported chunks in global scope, where reading
+// `HYPERDRIVE.connectionString` throws "Disallowed operation called within
+// global scope".
 
 /**
  * Active backend: real **Neon** when `DATABASE_URL` is set (deployed / configured
@@ -16,7 +18,9 @@ const databaseUrl = resolveDatabaseUrl();
  * the app has a working database even with nothing configured — the live preview
  * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
  */
-export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
+export function dbSource(): DbSource {
+  return resolveDatabaseUrl() ? "neon" : "pglite";
+}
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
@@ -103,7 +107,7 @@ function createWorkersSql(): Promise<Sql> {
       }) as typeof types.getTypeParser,
     };
     return toSql(async <T>(text: string, params: unknown[]) => {
-      const client = new Client({ connectionString: databaseUrl, types: typeParsers });
+      const client = new Client({ connectionString: resolveDatabaseUrl(), types: typeParsers });
       await client.connect();
       try {
         const res = await client.query(text, params);
@@ -128,7 +132,7 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const pool = new Pool({ connectionString: databaseUrl });
+    const pool = new Pool({ connectionString: resolveDatabaseUrl() });
     return toSql(async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
@@ -229,7 +233,8 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
-  if (dbSource === "pglite" && isWorkersRuntime()) {
+  const source = dbSource();
+  if (source === "pglite" && isWorkersRuntime()) {
     // PGLite needs its WASM + data files from the filesystem; neither exists in
     // a Worker, and an in-memory DB would not persist anyway.
     throw new Error(
@@ -237,7 +242,7 @@ async function createSql(): Promise<Sql> {
         "DATABASE_URL secret) for the rega-cargo Worker — see DEPLOY.md.",
     );
   }
-  return dbSource === "neon" ? createNeonSql() : createPgliteSql();
+  return source === "neon" ? createNeonSql() : createPgliteSql();
 }
 
 /**
@@ -261,7 +266,7 @@ export function getSql(): Promise<Sql> {
  * Kysely dialect). Throws when `DATABASE_URL` is set (that path uses Neon).
  */
 export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
-  if (dbSource !== "pglite") {
+  if (dbSource() !== "pglite") {
     throw new Error("getPglite() is only available on the PGLite fallback (no DATABASE_URL)");
   }
   await getSql();
@@ -281,7 +286,8 @@ export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite
  * module kick it off immediately (see bottom of file).
  */
 export function ensureDbReady(): Promise<void> {
-  if (dbSource !== "pglite" || isWorkersRuntime()) return Promise.resolve();
+  // Runtime check first: on Workers this runs at module load (via auth/server.ts).
+  if (isWorkersRuntime() || dbSource() !== "pglite") return Promise.resolve();
   return getSql().then(() => undefined);
 }
 
@@ -290,7 +296,7 @@ export function ensureDbReady(): Promise<void> {
 const globalBoot = globalThis as typeof globalThis & {
   __pgBootstrapPromise__?: Promise<void>;
 };
-if (typeof window === "undefined" && dbSource === "pglite" && !isWorkersRuntime()) {
+if (typeof window === "undefined" && !isWorkersRuntime() && dbSource() === "pglite") {
   globalBoot.__pgBootstrapPromise__ ??= ensureDbReady().catch((err) => {
     globalBoot.__pgBootstrapPromise__ = undefined;
     console.error("[db] PGLite bootstrap failed:", err);
