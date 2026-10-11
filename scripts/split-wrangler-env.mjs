@@ -7,17 +7,49 @@
 //   2. write one flattened file per environment, e.g.
 //      .output/server/wrangler.staging.json, deployed with an explicit `-c`.
 // Flattening follows Wrangler semantics: keys set in the environment replace
-// the top-level value; everything else (main, assets, compatibility, …) is
-// inherited.
+// the top-level value; vars and bindings are never inherited (so staging can't
+// pick up production's database); everything else (main, assets,
+// compatibility, …) is inherited.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// Wrangler's non-inheritable keys (vars + bindings).
+const NON_INHERITABLE = [
+  "define",
+  "vars",
+  "ai",
+  "analytics_engine_datasets",
+  "browser",
+  "d1_databases",
+  "dispatch_namespaces",
+  "durable_objects",
+  "hyperdrive",
+  "images",
+  "kv_namespaces",
+  "mtls_certificates",
+  "pipelines",
+  "queues",
+  "r2_buckets",
+  "ratelimits",
+  "secrets_store_secrets",
+  "send_email",
+  "services",
+  "tail_consumers",
+  "unsafe",
+  "vectorize",
+  "version_metadata",
+  "workflows",
+];
+
 export function splitEnvironments(config) {
   const { env = {}, ...base } = config;
+  const inheritable = Object.fromEntries(
+    Object.entries(base).filter(([key]) => !NON_INHERITABLE.includes(key)),
+  );
   const environments = {};
   for (const [name, overrides] of Object.entries(env)) {
-    environments[name] = { ...base, ...overrides };
+    environments[name] = { ...inheritable, ...overrides };
   }
   return { production: base, environments };
 }
