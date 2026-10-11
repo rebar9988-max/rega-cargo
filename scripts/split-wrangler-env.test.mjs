@@ -37,6 +37,17 @@ test("staging is flattened: own name/vars/bindings, inherited main/assets/compat
   assert.equal("env" in staging, false);
 });
 
+test("bindings are not inherited by environments", () => {
+  const { production, environments } = splitEnvironments({
+    ...generated,
+    hyperdrive: [{ binding: "HYPERDRIVE", id: "prod-db" }],
+  });
+  assert.deepEqual(production.hyperdrive, [{ binding: "HYPERDRIVE", id: "prod-db" }]);
+  assert.ok(!("hyperdrive" in environments.staging));
+  // Production vars are not leaked either; staging keeps only its own.
+  assert.deepEqual(environments.staging.vars, { RL_AI_ENABLED: "true" });
+});
+
 test("repo config: production has AI on with cap; staging is a separate worker with no routes", () => {
   const src = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
   const json = JSON.parse(src.replace(/^\s*\/\/.*$/gm, ""));
@@ -57,5 +68,8 @@ test("repo config: production has AI on with cap; staging is a separate worker w
   assert.equal(environments.staging.workers_dev, true);
   assert.equal(environments.staging.preview_urls, true);
   assert.equal(environments.staging.vars.RL_AI_ENABLED, "true");
+  assert.deepEqual(production.hyperdrive, [
+    { binding: "HYPERDRIVE", id: "795013d06b38408e87552686a6045291" },
+  ]);
   assert.ok(!("hyperdrive" in environments.staging));
 });
