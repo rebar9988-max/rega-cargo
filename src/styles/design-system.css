@@ -582,15 +582,27 @@
      Centred copy keeps the same position and hierarchy in RTL and LTR text; long translations
      wrap. No fixed heights: the block grows with its text, so nothing is clipped. */
   .rl-ai-hero {
-    background: var(--rl-surface);
-    border-block-end: var(--rl-border) solid var(--rl-line);
+    padding-block-start: var(--rl-space-2);
   }
+  /* The hero is a brand-red card inside the page gutter; every colour inside it comes from the
+     --rl-hero-* / --rl-on-hero tokens so contrast holds in light and dark mode. */
   .rl-ai-hero-inner {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     padding-block: var(--rl-space-4) var(--rl-space-3);
+    padding-inline: var(--rl-space-2);
+    border-radius: var(--rl-radius-card);
+    background: var(--rl-hero-card);
+    color: var(--rl-on-hero);
+    box-shadow: var(--rl-shadow-sm);
+  }
+  .rl-ai-hero-inner :focus-visible {
+    outline-color: var(--rl-on-hero);
+  }
+  .rl-ai-hero-inner .rl-eyebrow {
+    color: var(--rl-on-hero);
   }
   /* Set on each child: the base layer aligns Latin-script blocks to the right edge. */
   .rl-ai-hero-inner > * {
@@ -603,10 +615,9 @@
     gap: var(--rl-space-1);
     min-block-size: var(--rl-ai-hero-badge-h);
     padding-inline: var(--rl-space-2);
-    border: var(--rl-border) solid var(--rl-line);
     border-radius: var(--rl-radius-pill);
-    background: var(--rl-paper);
-    color: var(--rl-accent);
+    background: var(--rl-on-hero);
+    color: var(--rl-hero-ink);
     font-size: var(--text-xs);
     font-weight: var(--rl-weight-semibold);
   }
@@ -616,14 +627,14 @@
     line-height: var(--rl-leading-heading);
     font-weight: var(--rl-weight-bold);
     letter-spacing: var(--rl-tracking);
-    color: var(--rl-ink);
+    color: var(--rl-on-hero);
     white-space: pre-line;
     text-wrap: balance;
     overflow-wrap: anywhere;
   }
   .rl-ai-hero-subtitle {
     margin-block-start: var(--rl-space-2);
-    color: var(--rl-muted);
+    color: var(--rl-on-hero);
     font-size: var(--text-base);
     text-wrap: balance;
   }
@@ -679,8 +690,69 @@
     align-items: center;
     gap: var(--rl-space-1);
     margin-block-start: var(--rl-space-3);
-    color: var(--rl-muted);
+    color: var(--rl-on-hero);
     font-size: var(--text-sm);
+  }
+  /* Buttons on the red card: the primary is white with red type (Figma "Explore action" 1:11),
+     the secondaries are outlined in white. Hover keeps the colours and only lifts. */
+  .rl-ai-hero-inner .rl-button[data-variant="primary"],
+  .rl-ai-hero-inner .rl-button[data-variant="primary"]:hover {
+    background: var(--rl-on-hero);
+    color: var(--rl-hero-ink);
+    border-color: var(--rl-on-hero);
+  }
+  .rl-ai-hero-inner .rl-button[data-variant="secondary"],
+  .rl-ai-hero-inner .rl-button[data-variant="secondary"]:hover {
+    background: transparent;
+    color: var(--rl-on-hero);
+    border-color: var(--rl-on-hero);
+    box-shadow: none;
+  }
+  /* Parcel tracking entry: one white card, icon tile, title and a link to /track. */
+  .rl-track-entry {
+    padding-block-start: var(--rl-space-2);
+  }
+  .rl-track-card {
+    display: grid;
+    grid-template-columns: var(--rl-track-icon) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--rl-space-1) var(--rl-space-2);
+    padding: var(--rl-space-2);
+    border: var(--rl-border) solid var(--rl-line);
+    border-radius: var(--rl-radius-card);
+    background: var(--rl-surface);
+    box-shadow: var(--rl-shadow-sm);
+  }
+  .rl-track-icon {
+    display: grid;
+    place-items: center;
+    inline-size: var(--rl-track-icon);
+    block-size: var(--rl-track-icon);
+    border-radius: var(--rl-radius-sm);
+    background: var(--rl-soft-accent);
+    color: var(--rl-accent);
+  }
+  .rl-track-copy {
+    min-inline-size: 0;
+  }
+  .rl-track-copy h2 {
+    font-size: var(--text-base);
+    font-weight: var(--rl-weight-semibold);
+    line-height: var(--rl-leading-heading);
+    text-wrap: balance;
+  }
+  .rl-track-link {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-block-size: var(--rl-control-h);
+  }
+  @media (width >= 48rem) {
+    .rl-track-card {
+      grid-template-columns: var(--rl-track-icon) minmax(0, 1fr) auto;
+    }
+    .rl-track-link {
+      grid-column: auto;
+    }
   }
   .rl-section-heading {
     display: flex;

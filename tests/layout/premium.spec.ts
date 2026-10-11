@@ -303,6 +303,24 @@ test("hero: the marketplace and shipping buttons sit under the AI action", async
   }
 });
 
+test("home: the parcel card only links to tracking and invents no shipment", async ({ page }) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const card = page.locator(".rl-track-card");
+    await expect(card).toHaveCount(1);
+    await expect(card.locator("a")).toHaveAttribute(
+      "href",
+      new RegExp(`^/track(\\?lang=${lang})?$`),
+    );
+    // No parcel number, status or progress bar unless a real shipment is looked up on /track.
+    await expect(card).not.toContainText(/RL-\d/);
+    await expect(card.locator("[role=progressbar], progress")).toHaveCount(0);
+    // The hero card's white primary keeps readable red type in both themes.
+    const cta = page.locator(".rl-ai-hero-cta");
+    await expect(cta).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  }
+});
+
 test("marketplace toolbar: filter button and audience chips share one row", async ({ page }) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
