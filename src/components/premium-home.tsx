@@ -1,121 +1,26 @@
-import { lazy, Suspense, useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  ArrowLeft,
   ArrowRight,
   Box,
   Check,
   Globe,
-  House,
   PackageCheck,
-  Plane,
   ShieldCheck,
-  ShoppingBag,
   Sparkles,
   Warehouse,
-  type LucideIcon,
 } from "lucide-react";
-import { Button, Chip, Icon, Deferred, Skeleton } from "./ui";
+import { Chip, Icon, Deferred, Skeleton } from "./ui";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { heroCopy } from "@/lib/hero-copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
-import { LAYOUT_DIR } from "@/lib/langs";
 import { BRANDS } from "@/lib/catalog";
 import type { Service } from "@/lib/service-choice";
 
 const QuickQuote = lazy(() =>
   import("./quote-panel").then(({ QuotePanel }) => ({ default: QuotePanel })),
 );
-
-const STEP_ICONS: readonly LucideIcon[] = [Globe, Sparkles, House];
-const SHOP_ROUTE: readonly LucideIcon[] = [ShoppingBag, Plane, House];
-const SHIP_ROUTE: readonly LucideIcon[] = [Warehouse, Plane, House];
-
-/**
- * Decorative globe with an orbit and three icon stops (origin, flight, door): vector only (no
- * photo, no network request, no layout shift) and no brand or product imagery. It carries no
- * data, so it is hidden from assistive technology; the copy beside it says what the service
- * does. Mirrored with the layout direction.
- */
-function HeroRoute({ icons }: { icons: readonly LucideIcon[] }) {
-  return (
-    <div className="rl-hero-art" aria-hidden="true">
-      <svg className="rl-hero-route rl-directional" viewBox="0 0 480 360" focusable="false">
-        <defs>
-          <pattern id="rl-route-dots" width="16" height="16" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="1" />
-          </pattern>
-          <radialGradient id="rl-globe-fill" cx="35%" cy="30%" r="75%">
-            <stop offset="0" className="rl-globe-hi" />
-            <stop offset="0.55" className="rl-globe-base" />
-            <stop offset="1" className="rl-globe-low" />
-          </radialGradient>
-        </defs>
-        <rect className="rl-route-grid" width="480" height="360" fill="url(#rl-route-dots)" />
-        <ellipse className="rl-globe-shadow" cx="240" cy="318" rx="120" ry="12" />
-        <circle cx="240" cy="180" r="112" fill="url(#rl-globe-fill)" />
-        <g className="rl-globe-wire">
-          <ellipse cx="240" cy="180" rx="40" ry="112" />
-          <ellipse cx="240" cy="180" rx="80" ry="112" />
-          <ellipse cx="240" cy="180" rx="112" ry="20" />
-          <ellipse cx="240" cy="124" rx="97" ry="16" />
-          <ellipse cx="240" cy="236" rx="97" ry="16" />
-        </g>
-        <ellipse
-          className="rl-globe-orbit"
-          cx="240"
-          cy="180"
-          rx="200"
-          ry="64"
-          transform="rotate(-14 240 180)"
-        />
-      </svg>
-      {icons.map((Stop, n) => (
-        <span key={n} className="rl-hero-stop" data-stop={n}>
-          <Icon as={Stop} />
-        </span>
-      ))}
-    </div>
-  );
-}
-
-/**
- * Phone/tablet companion of HeroRoute: a small globe with an orbit and a plane, sitting at the
- * end of the badge row so it adds no more than the row's own height. Decorative only.
- */
-function MiniGlobe() {
-  return (
-    <div className="rl-hero-mini" aria-hidden="true">
-      <svg className="rl-directional" viewBox="0 0 56 56" focusable="false">
-        <defs>
-          <radialGradient id="rl-mini-globe-fill" cx="35%" cy="30%" r="75%">
-            <stop offset="0" className="rl-globe-hi" />
-            <stop offset="0.55" className="rl-globe-base" />
-            <stop offset="1" className="rl-globe-low" />
-          </radialGradient>
-        </defs>
-        <circle cx="28" cy="28" r="20" fill="url(#rl-mini-globe-fill)" />
-        <g className="rl-globe-wire">
-          <ellipse cx="28" cy="28" rx="7" ry="20" />
-          <ellipse cx="28" cy="28" rx="14" ry="20" />
-          <ellipse cx="28" cy="28" rx="20" ry="4" />
-        </g>
-        <ellipse
-          className="rl-globe-orbit"
-          cx="28"
-          cy="28"
-          rx="27"
-          ry="9"
-          transform="rotate(-14 28 28)"
-        />
-      </svg>
-      <span className="rl-hero-mini-plane">
-        <Icon as={Plane} />
-      </span>
-    </div>
-  );
-}
 
 export function PremiumHome({
   service,
@@ -134,188 +39,63 @@ export function PremiumHome({
   const opening = useRouterState({
     select: (state) => state.status === "pending" && state.location.pathname === "/ai",
   });
-  const [slide, setSlide] = useState(0);
-  const rail = useRef<HTMLDivElement>(null);
-  const slides = [
-    // With AI off for this deployment the first slide keeps its original shopping copy.
-    ai
-      ? { title: h.title, body: h.body, art: SHOP_ROUTE, ai: true }
-      : { title: c.heroTitle, body: c.heroBody, art: SHOP_ROUTE, ai: false },
-    { title: c.heroShippingTitle, body: c.heroShippingBody, art: SHIP_ROUTE, ai: false },
-  ];
-  function go(index: number) {
-    const at = (index + slides.length) % slides.length;
-    setSlide(at);
-    rail.current?.children[at]?.scrollIntoView({
-      block: "nearest",
-      inline: "start",
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-    });
-  }
-  function sync() {
-    if (!rail.current) return;
-    const root = rail.current.getBoundingClientRect();
-    const rtl = LAYOUT_DIR === "rtl";
-    let best = 0;
-    let distance = Infinity;
-    Array.from(rail.current.children).forEach((el, i) => {
-      const box = el.getBoundingClientRect();
-      const d = Math.abs(rtl ? root.right - box.right : root.left - box.left);
-      if (d < distance) {
-        distance = d;
-        best = i;
-      }
-    });
-    setSlide(best);
-  }
   return (
     <>
-      <section
-        className="rl-hero-carousel"
-        aria-label={c.heroShop}
-        aria-roledescription={c.carousel}
-      >
-        <div
-          ref={rail}
-          className="rl-hero-rail"
-          onScroll={sync}
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.target !== e.currentTarget) return;
-            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-              e.preventDefault();
-              go(
-                slide +
-                  (e.key === "ArrowRight"
-                    ? LAYOUT_DIR === "rtl"
-                      ? -1
-                      : 1
-                    : LAYOUT_DIR === "rtl"
-                      ? 1
-                      : -1),
-              );
-            }
-          }}
-        >
-          {slides.map((s, i) => {
-            const Heading = i === slide ? "h1" : "h2";
-            return (
-              <div
-                className="rl-hero-slide"
-                key={s.title}
-                inert={i !== slide}
-                aria-hidden={i !== slide}
+      {/* The AI hero is one static section directly under the header: no slides, no autoplay,
+          nothing inserted above it. It is server-rendered with fixed copy and is centred, so it
+          sits in the same place and keeps the same hierarchy in every language. */}
+      <section className="rl-ai-hero" aria-labelledby="rl-hero-title">
+        <div className="page rl-ai-hero-inner">
+          {ai ? (
+            <p className="rl-ai-hero-badge">
+              <Icon as={Sparkles} />
+              <span>{h.eyebrow}</span>
+            </p>
+          ) : (
+            <p className="rl-eyebrow" lang="en" dir="ltr">
+              {t.brandSub}
+            </p>
+          )}
+          <h1 id="rl-hero-title">{ai ? h.title : c.heroTitle}</h1>
+          <p className="rl-ai-hero-subtitle">{ai ? h.subtitle : c.heroBody}</p>
+          <div className="rl-ai-hero-actions" data-ai={ai || undefined}>
+            {/* With AI off for this deployment the marketplace is the primary action, so the
+                hero never links to an assistant that is not there. */}
+            {ai ? (
+              <Link
+                to="/ai"
+                className="rl-button rl-ai-hero-cta"
+                data-variant="primary"
+                aria-busy={opening || undefined}
+                aria-label={opening ? `${h.cta}. ${h.ctaOpening}` : undefined}
               >
-                <div className="page rl-hero-layout">
-                  <div className="rl-hero-copy">
-                    <div className="rl-hero-top">
-                      {s.ai ? (
-                        <p className="rl-eyebrow rl-hero-badge">{h.eyebrow}</p>
-                      ) : (
-                        <p className="rl-eyebrow rl-hero-badge">
-                          <bdi lang="en" dir="ltr">
-                            {t.brandSub}
-                          </bdi>
-                        </p>
-                      )}
-                      <MiniGlobe />
-                    </div>
-                    {/* Each authored line balances on its own, so a narrow screen never
-                        leaves a single orphaned word. */}
-                    <Heading>
-                      {s.title.split("\n").map((line, n) => (
-                        <span key={line} className="rl-hero-line">
-                          {/* Keeps a word break in the accessible name between lines. */}
-                          {n > 0 ? " " : null}
-                          {line}
-                        </span>
-                      ))}
-                    </Heading>
-                    <p className="rl-hero-description">{s.body}</p>
-                    {s.ai ? (
-                      // Shop globally → discover with AI → receive at your door, in reading order.
-                      <ol className="rl-hero-steps">
-                        {h.trust.map((item, n) => (
-                          <li key={item}>
-                            <span className="rl-hero-step-icon">
-                              <Icon as={STEP_ICONS[n]!} />
-                            </span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    ) : (
-                      <p className="rl-hero-location">
-                        <Icon as={Warehouse} />
-                        {c.warehouse}
-                      </p>
-                    )}
-                    {/* The same actions on every slide, pinned to the bottom of the copy, so
-                        they never move or disappear while the slides change. */}
-                    <div className="rl-hero-actions" data-ai={ai || undefined}>
-                      <Link
-                        to="/stores"
-                        className="rl-button rl-hero-shop"
-                        data-variant="primary"
-                      >
-                        {c.heroShop}
-                        <Icon as={ArrowRight} directional />
-                      </Link>
-                      {ai ? (
-                        <Link
-                          to="/ai"
-                          className="rl-button rl-hero-cta"
-                          data-variant="secondary"
-                          aria-busy={opening || undefined}
-                          aria-label={opening ? `${h.ctaShort}. ${h.ctaOpening}` : undefined}
-                        >
-                          <Icon as={Sparkles} />
-                          {h.ctaShort}
-                        </Link>
-                      ) : null}
-                      <Link
-                        to="/quote"
-                        search={{ from: undefined, to: undefined, kg: undefined }}
-                        className="rl-button rl-hero-secondary"
-                        data-variant="secondary"
-                      >
-                        {c.heroShip}
-                      </Link>
-                    </div>
-                  </div>
-                  <HeroRoute icons={s.art} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="page rl-carousel-controls">
-          <div className="rl-row rl-carousel-dots" aria-live="polite">
-            <span className="sr-only">
-              {c.slide}{" "}
-              <bdi dir="ltr">
-                {slide + 1} / {slides.length}
-              </bdi>
-            </span>
-            {slides.map((s, i) => (
-              <button
-                key={s.title}
-                type="button"
-                className="rl-carousel-dot"
-                aria-label={`${c.slide} ${i + 1}`}
-                aria-pressed={i === slide}
-                onClick={() => go(i)}
-              />
-            ))}
+                <Icon as={Sparkles} />
+                {h.cta}
+              </Link>
+            ) : null}
+            <div className="rl-ai-hero-more">
+              <Link
+                to="/stores"
+                className="rl-button rl-hero-shop"
+                data-variant={ai ? "secondary" : "primary"}
+              >
+                {c.heroShop}
+                <Icon as={ArrowRight} directional />
+              </Link>
+              <Link
+                to="/quote"
+                search={{ from: undefined, to: undefined, kg: undefined }}
+                className="rl-button rl-hero-secondary"
+                data-variant="secondary"
+              >
+                {c.heroShip}
+              </Link>
+            </div>
           </div>
-          <div className="rl-row rl-carousel-arrows">
-            <Button variant="ghost" aria-label={c.prevSlide} onClick={() => go(slide - 1)}>
-              <Icon as={ArrowLeft} directional />
-            </Button>
-            <Button variant="ghost" aria-label={c.nextSlide} onClick={() => go(slide + 1)}>
-              <Icon as={ArrowRight} directional />
-            </Button>
-          </div>
+          <p className="rl-hero-location">
+            <Icon as={Warehouse} />
+            {c.warehouse}
+          </p>
         </div>
       </section>
       <section className="page rl-section rl-stack" aria-labelledby="rl-home-calc">

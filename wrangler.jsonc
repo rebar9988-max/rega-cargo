@@ -24,10 +24,13 @@
   // and must never be listed here.
   "routes": [{ "pattern": "cargo.regaplatform.com", "custom_domain": true }],
 
-  // Database (Postgres). Create a Hyperdrive config pointing at the production
-  // Postgres and uncomment — see DEPLOY.md. Until then DB-backed pages (market,
-  // move, admin, phone sign-in) return a "Database not configured" error.
-  // "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "<hyperdrive-config-id>" }],
+  // Database (Postgres) via Hyperdrive — see DEPLOY.md. Production only:
+  // staging has no database (bindings are not inherited by env.staging).
+  // For `wrangler dev` / `npm run cf:dev`, point the binding at a local
+  // Postgres with the env var
+  // CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE=postgres://…
+  // (never commit a connection string here).
+  "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "795013d06b38408e87552686a6045291" }],
 
   // Plain (non-secret) runtime vars. Secrets are set with `wrangler secret put`
   // (see DEPLOY.md) and must NEVER be added here.
@@ -40,6 +43,8 @@
     // Hard daily cap of identifications across all visitors.
     "RL_AI_ENABLED": "true",
     "RL_AI_DAILY_CAP": "200",
+    // Product-link check (parse + shipping estimate; no provider data yet).
+    "PRODUCT_LINK_ENABLED": "true",
     // Canonical origin for <link rel=canonical>, robots.txt and sitemap.xml.
     // Custom domain attached 2026-10-09 (owner-approved).
     "SITE_URL": "https://cargo.regaplatform.com"
@@ -75,6 +80,7 @@
         "RL_AI_ENABLED": "true",
         // Hard daily cap on AI identifications (all visitors together).
         "RL_AI_DAILY_CAP": "200",
+        "PRODUCT_LINK_ENABLED": "true",
         "SITE_URL": "https://rega-cargo-staging.rebar9988.workers.dev",
         // Staging is never indexed (x-robots-tag + robots.txt Disallow: /).
         "RL_NOINDEX": "1"

@@ -231,8 +231,10 @@ test("hero: the AI call to action opens the existing assistant in the chosen lan
 }) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    const cta = page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-cta");
+    const cta = page.locator(".rl-ai-hero .rl-ai-hero-cta");
+    await expect(cta).toHaveCount(1);
     await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute("data-variant", "primary");
     await expect(cta).toHaveAttribute("href", new RegExp(`^/ai(\\?lang=${lang})?$`));
     // Visible without scrolling on a phone, and a comfortable touch target.
     const box = await cta.boundingBox();
@@ -242,37 +244,62 @@ test("hero: the AI call to action opens the existing assistant in the chosen lan
     await expect(page).toHaveURL(/\/ai/);
     await expect(page.locator("html")).toHaveAttribute("lang", lang);
     await expect(page.locator("main h1")).toBeVisible();
+    // Back returns to the homepage with the hero in place.
+    await page.goBack();
+    await expect(page.locator(".rl-ai-hero h1")).toBeVisible();
+    await page.goForward();
+    await expect(page).toHaveURL(/\/ai/);
   }
   // Keyboard: the CTA is reachable and activates with Enter.
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
-  await page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-cta").focus();
+  await page.locator(".rl-ai-hero-cta").focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/ai/);
 });
 
-test("hero: the marketplace, AI and shipping buttons stay in place on every slide", async ({
+test("hero: one static section right under the header, same place in every language", async ({
   page,
 }) => {
+  await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+  // No carousel, no slides: exactly one hero, and it is the first section in <main>.
+  await expect(page.locator(".rl-ai-hero")).toHaveCount(1);
+  await expect(page.locator(".rl-hero-slide, .rl-carousel-dot")).toHaveCount(0);
+  await expect(page.locator("main section").first()).toHaveClass(/rl-ai-hero/);
+  const heroTop = async () => (await page.locator(".rl-ai-hero").boundingBox())!.y;
+  const ctaCenter = async () => {
+    const b = (await page.locator(".rl-ai-hero-cta").boundingBox())!;
+    return b.x + b.width / 2;
+  };
+  const top = await heroTop();
+  const center = await ctaCenter();
+  for (const lang of ["ckb", "ar", "fa", "en", "de", "tr", "ku"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    expect(Math.round(await heroTop()), lang).toBe(Math.round(top));
+    // The CTA stays centred whatever the text direction.
+    expect(Math.abs((await ctaCenter()) - center), lang).toBeLessThanOrEqual(1);
+    // The header does not overlap the hero, and nothing scrolls sideways.
+    const header = await page.locator("header").first().boundingBox();
+    expect(header!.y + header!.height, lang).toBeLessThanOrEqual(Math.ceil(await heroTop()));
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+      lang,
+    ).toBeLessThanOrEqual(360);
+    // A refresh renders the same hero in the same place.
+    await page.reload({ waitUntil: "networkidle" });
+    expect(Math.round(await heroTop()), `${lang} reload`).toBe(Math.round(top));
+  }
+});
+
+test("hero: the marketplace and shipping buttons sit under the AI action", async ({ page }) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    const slides = page.locator(".rl-hero-slide");
-    const count = await slides.count();
-    expect(count).toBeGreaterThan(1);
-    const shop = page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-shop");
+    const shop = page.locator(".rl-ai-hero .rl-hero-shop");
     await expect(shop).toHaveAttribute("href", new RegExp(`^/stores(\\?lang=${lang})?$`));
-    const first = await shop.boundingBox();
-    expect(first!.y + first!.height, lang).toBeLessThanOrEqual(800);
-    for (let i = 0; i < count; i++) {
-      const slide = slides.nth(i);
-      await expect(slide.locator(".rl-hero-shop")).toHaveCount(1);
-      await expect(slide.locator(".rl-hero-secondary")).toHaveCount(1);
-      const box = await slide.locator(".rl-hero-shop").boundingBox();
-      const own = await slide.boundingBox();
-      // Same vertical position on every slide (relative to its own slide).
-      expect(Math.round(box!.y - own!.y), `${lang} slide ${i + 1}`).toBe(
-        Math.round(first!.y - (await slides.first().boundingBox())!.y),
-      );
-    }
+    await expect(page.locator(".rl-ai-hero .rl-hero-secondary")).toHaveCount(1);
+    const cta = (await page.locator(".rl-ai-hero-cta").boundingBox())!;
+    const box = (await shop.boundingBox())!;
+    expect(box.y, lang).toBeGreaterThanOrEqual(cta.y + cta.height);
   }
 });
 

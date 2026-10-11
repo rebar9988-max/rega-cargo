@@ -1,3 +1,4 @@
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 
 /**
@@ -9,6 +10,18 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = Number(process.env.LAYOUT_PORT ?? 8788);
 /** Point the suite at a deployed URL (e.g. staging) instead of the local worker. */
 const BASE_URL = process.env.LAYOUT_BASE_URL;
+
+/**
+ * The layout lock renders the no-database state its baselines were captured in, so the
+ * local worker runs from a copy of the built config without the production Hyperdrive
+ * binding (`wrangler dev` refuses one without a local Postgres connection string).
+ */
+const BUILT_CONFIG = ".output/server/wrangler.json";
+const LAYOUT_CONFIG = ".output/server/wrangler.layout.json";
+if (!BASE_URL && existsSync(BUILT_CONFIG)) {
+  const { hyperdrive: _hyperdrive, ...config } = JSON.parse(readFileSync(BUILT_CONFIG, "utf8"));
+  writeFileSync(LAYOUT_CONFIG, `${JSON.stringify(config, null, 2)}\n`);
+}
 
 export type Breakpoint = "phone" | "tablet" | "laptop";
 export type LayoutProjectUse = { breakpoint: Breakpoint };
@@ -49,6 +62,13 @@ export default defineConfig<LayoutProjectUse>({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
+  // Stop before the 25-minute "layout lock" job limit in quality.yml. A job-level timeout
+  // cancels the step and skips the report upload, leaving reviewers with no diffs; a
+  // Playwright timeout fails the step, writes the HTML report and the upload still runs.
+  globalTimeout: process.env.CI ? 19 * 60_000 : 0,
+  // Stale baselines fail almost every screenshot (twice, with the retry); past this many
+  // the cause is clear from the report and the fix is the update_baselines dispatch.
+  maxFailures: process.env.CI ? 60 : 0,
   // Leave CPU for the local Worker and WebKit's full-page captures on CI runners.
   workers: process.env.CI ? 3 : 6,
   timeout: 45_000,
@@ -93,8 +113,8 @@ export default defineConfig<LayoutProjectUse>({
   webServer: BASE_URL
     ? undefined
     : {
-        // Built worker served locally by wrangler (no Cloudflare credentials needed).
-        command: `npx wrangler dev --config .output/server/wrangler.json --port ${PORT} --local --show-interactive-dev-session=false`,
+        // Built worker served locally by wrangler (no Cloudflare credentials, no database).
+        command: `npx wrangler dev --config ${LAYOUT_CONFIG} --port ${PORT} --local --show-interactive-dev-session=false`,
         url: `http://localhost:${PORT}/`,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
