@@ -150,3 +150,72 @@ test("search queries: any prohibited word (block or review) means no results", (
   for (const q of ["nivea", "ginger", "hamburg", "rossmann", "dm", "douglas", "iphone"])
     assert.ok(!isProhibitedQuery(q), q);
 });
+
+test("percent-encoded product names in links are still blocked", () => {
+  const link = (slug: string) => `https://www.amazon.de/${slug}/dp/B08N5WRWNW`;
+  for (const slug of [
+    "Absolut%20Vodka%200,7l",
+    "%56%6F%64%6B%61",
+    "%2556%256F%2564%256B%2561",
+    encodeURIComponent("فودكا"),
+    encodeURIComponent("جگەرە"),
+    encodeURIComponent("لحم الخنزير"),
+  ])
+    assert.equal(d(link(slug)), "block", slug);
+  assert.equal(d("https://www.zalando.de/search?q=red%20wine"), "block");
+  assert.ok(isProhibitedQuery("%76%6F%64%6B%61"));
+  // Decoding adds text, it never hides or invents a match.
+  assert.equal(d(link("Nivea%20Soft%20Creme")), "allow");
+  assert.equal(d(link("Ginger%20Tea")), "allow");
+  assert.equal(d("100%25 cotton %ZZ shirt"), "allow");
+});
+
+test("brands sold by name alone are blocked, without catching ordinary words", () => {
+  for (const s of [
+    "Marlboro Gold",
+    "Elfbar 600",
+    "Geek Bar Pulse",
+    "Lost Mary BM600",
+    "IQOS Terea Amber",
+    "Smirnoff Ice",
+    "Jagermeister 0,7l",
+    "Jack Daniel's Old No. 7",
+    "Johnnie Walker Black Label",
+    "Heineken 6x0,33",
+    "Corona Extra",
+    "Jamón ibérico",
+  ])
+    assert.equal(d(s), "block", s);
+  for (const s of [
+    "Velo city bike",
+    "Guinness World Records 2026",
+    "Corona virus test kit",
+    "Walker boots",
+  ])
+    assert.equal(d(s), "allow", s);
+});
+
+test("disguised spellings are still blocked", () => {
+  for (const s of [
+    "vo​dka",
+    "vod­ka",
+    "‮vodka",
+    "vоdka",
+    "v0dka",
+    "v o d k a",
+    "v.o.d.k.a",
+    "vodka70cl",
+    "فودكا٧٠",
+    "سج‌ائر",
+    "جگە‌رە",
+  ])
+    assert.equal(d(s), "block", JSON.stringify(s));
+  for (const s of [
+    "Samsung Galaxy A54 5G",
+    "Size: S M L XL",
+    "U S B C cable",
+    "3M tape",
+    "شاي و قهوة",
+  ])
+    assert.equal(d(s), "allow", s);
+});
