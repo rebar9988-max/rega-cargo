@@ -9,6 +9,7 @@ import { promisify } from "node:util";
 import {
   APP_ENV_REL_PATH,
   mergeAppEnv,
+  withCiDefaults,
   parseAppEnv,
   projectRoot,
   readAppEnv,
@@ -146,4 +147,10 @@ test("the CLI still runs when invoked through a symlinked path", async () => {
     PRINT_FLAG,
   ]);
   assert.equal(stdout, "false");
+});
+
+test("Workers Builds defaults sign-in off; an explicit value or a non-CI build is untouched", () => {
+  assert.equal(withCiDefaults({ WORKERS_CI: "1" }).VITE_AUTH_ENABLED, "false");
+  assert.equal(withCiDefaults({ WORKERS_CI: "1", VITE_AUTH_ENABLED: "true" }).VITE_AUTH_ENABLED, "true");
+  assert.equal(withCiDefaults({ PATH: "/usr/bin" }).VITE_AUTH_ENABLED, undefined);
 });
