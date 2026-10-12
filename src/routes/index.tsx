@@ -2,13 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
 import { BazaarPage } from "@/components/bazaar-page";
 import { PremiumHome } from "@/components/premium-home";
-import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
+import { Shell } from "@/components/shell";
 import { validateBazaarSearch } from "@/lib/bazaar-search";
-import { initialService } from "@/lib/service-initial";
 
 export const Route = createFileRoute("/")({
   validateSearch: validateBazaarSearch,
-  loader: async () => ({ service: await initialService() }),
   head: ({ match }) =>
     seo({
       lang: match.context.initialLang,
@@ -21,12 +19,21 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { service } = Route.useLoaderData();
+  const params = Route.useSearch();
+  // Preserve existing home-search URLs without mixing the catalogue with shipping.
+  if (
+    params.q ||
+    params.cat ||
+    params.sub ||
+    params.fav ||
+    params.who ||
+    params.store ||
+    params.country
+  )
+    return <BazaarPage home />;
   return (
-    <BazaarPage
-      home
-      initialService={service}
-      homeComponents={{ PremiumHome, DeliveryHub, ServiceSwitch }}
-    />
+    <Shell>
+      <PremiumHome />
+    </Shell>
   );
 }

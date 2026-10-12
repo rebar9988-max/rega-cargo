@@ -1,0 +1,229 @@
+/* The shipping experience is scoped separately from the store catalogue. */
+.rl-shipping-header {
+  padding-block: var(--rl-space-4);
+  display: grid;
+  gap: var(--rl-space-3);
+}
+.rl-shipping-intro .rl-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+}
+.rl-shipping-intro h1 {
+  font-size: var(--text-3xl);
+  font-weight: var(--rl-weight-bold);
+  line-height: var(--rl-leading-heading);
+  margin-block-start: var(--rl-space-1);
+}
+.rl-shipping-intro .rl-page-lede {
+  max-inline-size: var(--rl-reading);
+  margin-block-start: var(--rl-space-2);
+}
+.rl-shipping-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--rl-space-1);
+  list-style: none;
+}
+.rl-shipping-steps a {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rl-space-1);
+  block-size: 100%;
+  padding-block: var(--rl-space-2);
+  padding-inline: var(--rl-space-2);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--rl-weight-medium);
+  transition: border-color var(--rl-motion) var(--rl-ease);
+}
+.rl-shipping-steps a:hover {
+  border-color: var(--rl-accent);
+}
+.rl-shipping-steps .rl-icon {
+  color: var(--rl-muted);
+}
+.rl-shipping-step-number {
+  color: var(--rl-accent);
+  font-size: var(--text-xs);
+}
+.rl-shipping-steps a > span:last-child {
+  flex-basis: 100%;
+}
+.rl-shipping-content {
+  padding-block-end: var(--rl-space-8);
+}
+.rl-shipping-layout {
+  display: grid;
+  align-items: start;
+  gap: var(--rl-space-4);
+}
+.rl-shipping-page .rl-quote-card {
+  padding-block: var(--rl-space-3);
+  padding-inline: var(--rl-space-3);
+  min-inline-size: 0;
+  box-shadow: var(--rl-shadow-sm);
+}
+.rl-shipping-fieldset {
+  min-inline-size: 0;
+  margin-block-start: var(--rl-space-3);
+  padding-block-start: var(--rl-space-2);
+}
+.rl-shipping-page .rl-shipping-fieldset + .rl-shipping-fieldset {
+  border-block-start: var(--rl-border) solid var(--rl-line);
+  margin-block-start: var(--rl-space-4);
+}
+.rl-shipping-group-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--rl-space-1);
+  font-size: var(--text-base);
+  font-weight: var(--rl-weight-semibold);
+  line-height: var(--rl-leading);
+  padding-block-end: var(--rl-space-1);
+  scroll-margin-block-start: var(--rl-header-mobile);
+}
+.rl-shipping-group-title .rl-icon {
+  color: var(--rl-accent);
+}
+.rl-shipping-group-title bdi {
+  font-size: var(--text-xs);
+  color: var(--rl-muted);
+}
+.rl-shipping-route-fields {
+  display: grid;
+  gap: var(--rl-space-2);
+}
+.rl-shipping-parcel-fields {
+  margin-block-start: var(--rl-space-1);
+}
+.rl-shipping-fieldset[id] {
+  scroll-margin-block-start: var(--rl-header-mobile);
+}
+.rl-shipping-content-label {
+  border-block-start: var(--rl-border) solid var(--rl-line);
+  padding-block-start: var(--rl-space-3);
+  margin-block-start: var(--rl-space-1);
+  font-size: var(--text-sm);
+  font-weight: var(--rl-weight-semibold);
+}
+.rl-shipping-page .rl-control {
+  background: var(--rl-paper);
+  border-color: var(--rl-control-line);
+  border-radius: var(--rl-radius-sm);
+}
+.rl-shipping-results {
+  min-inline-size: 0;
+}
+.rl-shipping-results > .rl-shipping-group-title {
+  margin-block-end: var(--rl-space-2);
+}
+.rl-shipping-page .rl-quote-option {
+  background: var(--rl-surface);
+  padding-block: var(--rl-space-3);
+  padding-inline: var(--rl-space-3);
+  box-shadow: var(--rl-shadow-sm);
+}
+.rl-shipping-page .rl-quote-option h2 {
+  font-size: var(--text-lg);
+}
+.rl-shipping-page .rl-quote-option .rl-price {
+  align-items: end;
+}
+.rl-shipping-page .rl-quote-option .rl-price strong {
+  font-size: var(--text-2xl);
+}
+.rl-shipping-page .rl-quote-option .rl-button {
+  flex: 1;
+}
+.rl-shipping-page .rl-weight-explanation {
+  margin-block: var(--rl-space-3) 0;
+  background: var(--rl-surface);
+}
+.rl-shipping-page .rl-weight-explanation summary {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+  font-size: var(--text-sm);
+  font-weight: var(--rl-weight-semibold);
+  cursor: pointer;
+  min-block-size: var(--rl-control-h);
+}
+.rl-shipping-page .rl-weight-explanation summary::after {
+  content: "+";
+  margin-inline-start: auto;
+  color: var(--rl-accent);
+}
+.rl-shipping-page .rl-weight-explanation[open] summary::after {
+  content: "−";
+}
+.rl-shipping-track {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rl-space-2);
+  margin-block-start: var(--rl-space-4);
+  padding-block: var(--rl-space-3);
+  padding-inline: var(--rl-space-3);
+  background: var(--rl-surface);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-card);
+}
+.rl-shipping-track > div {
+  flex: 1;
+  min-inline-size: 0;
+}
+.rl-shipping-track h2 {
+  font-size: var(--text-base);
+  font-weight: var(--rl-weight-semibold);
+  margin-block-start: var(--rl-space-1);
+}
+.rl-shipping-track > a {
+  flex-basis: 100%;
+}
+.rl-shipping-track-icon {
+  display: grid;
+  place-items: center;
+  inline-size: var(--rl-space-6);
+  block-size: var(--rl-space-6);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-soft-accent);
+  color: var(--rl-accent);
+}
+@media (min-width: 48rem) {
+  .rl-shipping-header {
+    padding-block: var(--rl-space-5);
+  }
+  .rl-shipping-intro h1 {
+    font-size: var(--text-4xl);
+  }
+  .rl-shipping-steps {
+    max-inline-size: var(--rl-reading);
+    gap: var(--rl-space-2);
+  }
+  .rl-shipping-steps a > span:last-child {
+    flex-basis: auto;
+  }
+  .rl-shipping-route-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .rl-shipping-track > a {
+    flex-basis: auto;
+  }
+}
+@media (min-width: 64rem) {
+  .rl-shipping-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--rl-space-4);
+  }
+  .rl-shipping-page .rl-quote-card {
+    position: sticky;
+    inset-block-start: var(--rl-filter-sticky);
+    padding-block: var(--rl-space-4);
+    padding-inline: var(--rl-space-4);
+  }
+}

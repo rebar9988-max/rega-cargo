@@ -45,6 +45,11 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - Re-verified 2026-10-12 18:36 UTC on `main` @ `a7ee020` (run 186, job 114954290650): same annotation; runs 165–187 all end in 3–6 s. Repo rulesets/branch protection are unavailable on this plan (API 403 "Upgrade to GitHub Pro"), so `main` has no required checks. Account billing endpoints are not reachable from agent sessions, so "failed payment" vs "spending limit/quota" is not distinguishable here.
 - Mitigation (PR #77, does not unblock): docs-only changes skip the ~10 min layout job, draft PRs skip CI until ready, superseded PR runs cancel; `main` and manual runs are never cancelled.
 
+### I-10 · Shipping calculator and service choice mixed with the homepage/catalogue
+- Root cause: `PremiumHome` rendered the quick calculator unconditionally, while `BazaarPage` owned delivery preference state and could mount `DeliveryHub` in place of the catalogue.
+- Source fix in PR #72 on `claude/separate-shipping-bazaar`: dedicated `ShippingPage` on `/quote`, catalogue-only `BazaarPage`, and navigation from home to each service. Responsive shipping restyle; pricing/booking logic preserved.
+- Not merged/deployed. [Verification](../redesign/shipping-separation.md).
+
 ## Closed
 
 ### C-5 · FIXED 2026-10-12 — `npm audit` highs in build tooling (undici/sharp via miniflare) [was I-4]
