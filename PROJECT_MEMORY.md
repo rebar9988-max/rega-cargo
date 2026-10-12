@@ -7,11 +7,13 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
 - Last memory update: **2026-10-12 ~19:10 UTC**, against `main` @ `5b7c97e` (I-7 re-verified; CI minutes PR #77)
+- Figma workflow verification: **2026-10-12**, initial inspection `main` @ `54e505b`, final review base `0b19931`; [evidence and permanent policy](docs/integrations/figma-workflow.md) on `claude/figma-workflow-20261012`, pending authorized merge. Historical production/database observations below retain their original dates; this task's read-only HTTP smoke is recorded in the workflow report.
 
 ## Current state (verified 2026-10-11 15:14–15:38 UTC)
 
 | Area | State | Evidence |
 |---|---|---|
+| Official Figma workflow (2026-10-12) | GitHub access PASS; Figma auth and existing mobile design file access PASS. Starter/View denies Code Connect; no paid changes. Policy persisted for review on the documentation branch, pending merge | [real tool tests, file/node references and scope](docs/integrations/figma-workflow.md) |
 | Public pages | All AGENTS.md required routes return 200 (`/`, `/stores`, `?cat=`, `?fav=1`, `/stores/request`, `/quote`, `/ai`, legal pages); `<html lang="ckb" dir="rtl">` | `curl` against production, 15:36 |
 | R&L AI | On (`/api/ai/status` → `{"enabled":true}`) | production |
 | Live Worker version | `4242774e`, deployed 2026-10-12 18:37 UTC from `main` @ `a7ee020` (PR #75, Nitro bump); previous `5a2c2ecc` | `wrangler deploy` output, `wrangler deployments list` |

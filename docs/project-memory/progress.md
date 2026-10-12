@@ -3,6 +3,18 @@
 Use Git history and PR descriptions for detail; record only status and pointers here.
 Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
+## Official Figma verification (2026-10-12)
+
+GitHub and official Figma authentication/file reads passed against `main`
+`54e505b`; the existing mobile concept was inspected, including its screenshot
+and empty local component/variable/style inventory. Code Connect access failed
+on the current Starter/View plan; no upgrade, duplicate file or application
+change was made. Permanent policy and [verification evidence](../integrations/figma-workflow.md)
+are recorded in [Draft PR #73](https://github.com/rebar9988-max/rega-cargo/pull/73)
+on `claude/figma-workflow-20261012`, rebased onto `main` `0b19931`, pending authorized merge.
+The open-PR snapshot below is historical; the live list was checked without
+altering unrelated work.
+
 ## Active / open PRs
 
 | PR | Branch | Title | State |

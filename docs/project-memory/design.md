@@ -3,6 +3,12 @@
 Authoritative rules: [AGENTS.md](../../AGENTS.md) "DESIGN SYSTEM RULES". Implementation detail:
 [DEPLOY.md](../../DEPLOY.md) "Brand logo", "Brand typography", "Layout lock". Redesign history: [docs/redesign/](../redesign/README.md).
 
+Official visual workspace: Figma. [Verified workflow and file/node references](../integrations/figma-workflow.md)
+were tested through the official Figma MCP on 2026-10-12. Reuse the existing mobile
+concept; the repository remains authoritative for implementation. Current Code
+Connect access is denied by Starter/View entitlements; documented correspondences
+are not published mappings. Branding and the layout lock below take precedence.
+
 ## Never change
 - **Logo**: owner-supplied red/white R&L artwork, source `public/rl-logo.png`; derived `rl-mark-168.webp`, favicons, icons, `og.jpg`. Only cropped/resized, never redrawn, mirrored or paired with a wordmark. New art ships under a new filename and a bumped `sw.js` `VERSION`.
 - Red is an **accent only**: `--rl-brand #dd0303` (buttons), `--rl-accent #b80000` (text/links/focus). White/off-white surfaces, near-black text.

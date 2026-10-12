@@ -33,3 +33,14 @@ Restyle, don't rewrite logic. Do not break routes, query params, APIs, data mode
 - If a change would break a route, logic, data or a hard rule, stop and explain.
 - Existing locale identity is ckb = Sorani and ku = Kurmanji. Preserve existing language IDs and saved preferences. Never silently relabel Kurmanji as Sorani.
 - Catalogue photographs are examples, not evidence of available inventory. Prices, stock and extra product images may only be displayed when backed by data.
+
+## Official Figma design workflow
+Figma is R&L Cargo’s preferred official visual design workspace. Use the official Figma MCP integration for relevant UI/UX tasks whenever available. The GitHub repository remains authoritative for executable implementation. Preserve all established branding, architecture, accessibility requirements, and working functionality. Never make unnecessary redesigns or duplicate existing components.
+
+- Start with the existing code, tokens and [verified design references](docs/integrations/figma-workflow.md). Reuse the existing Figma file; do not create duplicate files or integrations.
+- Verify the session's official Figma connection with `whoami` and a real read of the relevant file/node. Saved references are discovery hints, not proof of current authentication or permissions. Follow the installed Figma skills before their corresponding tools.
+- Reuse existing components, typography, variables and layouts. The concept does not override the original logo, red/white identity, current fonts, real-data rules or the fixed RTL layout/text-direction policy above.
+- Use Code Connect only when existing permissions and entitlements support it. Otherwise keep documented design-to-code references; never claim they are published Code Connect mappings. Never activate paid services or upgrades.
+- Never activate payments or subscriptions, upgrade seats/plans, change payment methods or raise spending limits. Preserve the CI minutes and draft-PR safeguards in CLAUDE.md; connection recovery must not change billing.
+- For UI changes, run the quality gate and relevant accessibility, responsive, visual-regression and real-browser checks in desktop/tablet/mobile, light/dark and RTL/LTR text locales. Preserve screenshot baselines unless a visual change is authorized.
+- If Figma is unavailable or limited, record the actual failure, preserve the implementation and continue safely with repository components. Store verified file/node links and mappings in project documentation, never credentials. Repository instructions do not persist OAuth or guarantee future access; merging and deployment still require authorization.
