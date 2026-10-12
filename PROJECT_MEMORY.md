@@ -28,6 +28,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 ## Next safe continuation point
 
+- PR #79 (draft, 2026-10-12): simplified `/stores/request`. Before merge: run the full quality gate and re-render `stores-request-*` baselines in the official image; owner approves merge/deploy.
 - Complete the authorized PR #72 merge/deployment and post-release checks; see [verification](docs/redesign/shipping-separation.md).
 
 1. **Owner action (I-7)** — GitHub Actions stays blocked by billing (owner chose not to pay; included minutes reset next billing cycle). Until then run the full quality gate locally in the official Playwright image before any merge (decision 2026-10-12). Once Actions runs again, re-run CI on `main` (newest head) and confirm `scope`, `verify` and `layout lock` are green; a docs-only push must show `layout lock` as skipped.
