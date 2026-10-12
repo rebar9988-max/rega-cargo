@@ -4,6 +4,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    # ready_for_review: a draft (which GitHub cannot merge) skips CI until it is
+    # marked ready, which then runs the full gate on its head.
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
       update_baselines:
@@ -13,15 +16,17 @@ on:
 permissions:
   contents: read
 # Actions minutes are a paid quota on this private repo. A newer push to the same PR
-# cancels the run it supersedes; pushes to main always run to completion.
+# cancels the run it supersedes. Pushes to main and manual runs get a group of
+# their own (run_id), so they are never cancelled or replaced while queued.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   # Decides whether the ~10 minute layout job is needed. Changes that touch only
   # Markdown or docs/ cannot move the layout, so they skip it (verify still runs,
   # including the project-memory link checks). Manual runs always render.
   scope:
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -47,6 +52,7 @@ jobs:
           git diff --name-only "$BASE" HEAD | head -50
 
   verify:
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
