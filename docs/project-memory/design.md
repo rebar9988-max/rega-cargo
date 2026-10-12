@@ -20,6 +20,9 @@ Breakpoints phone <768 · tablet 768–1023 · laptop ≥1024; content max 1200p
 Guards: `src/lib/layout-lock.test.ts` (in `npm test`) and `tests/layout/` Playwright (Chromium + WebKit) with screenshot baselines in `tests/layout/__screenshots__/`.
 **A baseline change is a design change.** Re-render only in the official image (CI workflow `update_baselines`, or `npm run test:layout:update`), never from a local browser.
 
+## Header and category strip (phones/tablets, 2026-10-12, branch `claude/header-category-strip`)
+Below 1024px the header is one 64px brand-red row (menu, logo, search button, language, account) and the ten primary categories sit directly under it as a horizontally scrollable strip (`CategoryStrip` in `components/site-header.tsx`): icon above a two-line label, active category from `?cat=` (soft tile + 3px red underline), `food` visible but not a link, "More" opens the menu sheet. The search button focuses the existing (visually hidden) field in the same tap. Desktop header row and mega menu are unchanged. Owner reference: chat screenshot 2026-10-12. Label box is a fixed two lines with one line height for every script so pages sit at the same height in every language.
+
 ## Content rules that affect design
 - No fake data (prices, ratings, stock, reviews, delivery promises). Catalogue photos are labelled examples.
 - Store/brand logos keep a visible "not an official partner" note.
