@@ -1695,9 +1695,12 @@
     line-clamp: 2;
     overflow: hidden;
     max-inline-size: 100%;
+    /* Always two lines tall with one line height for every script, so the strip (and the
+       page under it) sits at the same height in every language. */
+    block-size: calc(var(--text-sm) * var(--rl-strip-label-leading) * 2);
     font-size: var(--text-sm);
     font-weight: var(--rl-weight-medium);
-    line-height: var(--rl-leading-heading);
+    line-height: var(--rl-strip-label-leading);
     text-align: center;
     overflow-wrap: anywhere;
   }

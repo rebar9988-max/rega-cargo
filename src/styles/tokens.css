@@ -24,6 +24,7 @@
   --rl-strip-icon: 3.5rem;
   --rl-strip-glyph: 1.75rem;
   --rl-strip-indicator: 3px;
+  --rl-strip-label-leading: 1.45;
   /* Icons and focus rings on the brand-red header row. */
   --rl-on-brand: #ffffff;
   --rl-on-brand-hover: rgb(255 255 255 / 0.14);
