@@ -1663,10 +1663,9 @@
     flex-direction: column;
     align-items: center;
     gap: var(--rl-space-1);
-    /* Short names keep a steady rhythm; long ones widen their item instead of being cut. */
+    /* Fixed width: a web-font swap never moves the row, and every name fits in three lines. */
+    inline-size: var(--rl-strip-item);
     min-inline-size: var(--rl-strip-item);
-    max-inline-size: var(--rl-strip-item-max);
-    padding-inline: var(--rl-space-0);
     padding-block-end: var(--rl-space-2);
     color: var(--rl-ink);
     text-decoration: none;
@@ -1693,13 +1692,13 @@
   .rl-category-strip-label {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: var(--rl-strip-label-lines);
+    line-clamp: var(--rl-strip-label-lines);
     overflow: hidden;
     max-inline-size: 100%;
-    /* Always two lines tall with one line height for every script, so the strip (and the
+    /* Always three lines tall with one line height for every script, so the strip (and the
        page under it) sits at the same height in every language. */
-    block-size: calc(var(--text-sm) * var(--rl-strip-label-leading) * 2);
+    block-size: calc(var(--text-sm) * var(--rl-strip-label-leading) * var(--rl-strip-label-lines));
     font-size: var(--text-sm);
     font-weight: var(--rl-weight-medium);
     line-height: var(--rl-strip-label-leading);

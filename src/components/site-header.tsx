@@ -414,7 +414,7 @@ function CategoryStrip({
       box.scrollLeft += itemRect.left + itemRect.width / 2 - (boxRect.left + boxRect.width / 2);
     }
     reveal();
-    // Item widths follow the label text, so check again once the web fonts have loaded.
+    // Layout can still settle while the web fonts load, so check again once they have.
     let live = true;
     void document.fonts?.ready.then(() => {
       if (live) reveal();

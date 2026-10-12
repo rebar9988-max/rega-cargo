@@ -486,7 +486,7 @@ test("header category strip: directly under the header, swipeable, active state,
   await expect(page.locator('[data-layout="category-strip"] [aria-current="page"]')).toHaveCount(1);
   await expect(pets).toBeInViewport();
   // A direct link to a category far down the strip also opens with it in view, and no name
-  // is cut off in any language (long names widen their item instead).
+  // is cut off in any language (fixed-width items, up to three lines).
   await page.goto("/stores?lang=en&cat=beauty", { waitUntil: "networkidle" });
   await expect(
     page.locator('[data-layout="category-strip"] a[data-category="beauty"]'),
