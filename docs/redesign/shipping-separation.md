@@ -1,6 +1,6 @@
 # Dedicated shipping and bazaar pages
 
-2026-10-12 · branch `claude/separate-shipping-bazaar` · source change, not deployed.
+2026-10-12 · [PR #72](https://github.com/rebar9988-max/rega-cargo/pull/72) · branch `claude/separate-shipping-bazaar` · source change, not deployed.
 
 ## Behavior
 
@@ -19,7 +19,7 @@ Run in `mcr.microsoft.com/playwright:v1.63.0-noble` with Node 22.23.3:
 - `npm run cf:dry-run`: passed; no deployment.
 - Focused browser checks: 5 passed, including separation with saved service preferences, parameter restoration, rate recalculation, saved-quote persistence/removal, invalid dimensions and mobile form geometry.
 - Affected screenshot baselines re-rendered in the official image: 123 passed, 12 expected menu skips.
-- Full Chromium/WebKit layout and screenshot suite: pending.
+- Full Chromium/WebKit layout and screenshot suite: 386 passed, 12 expected menu skips, 0 failed (6.9 minutes); includes the 360px light/dark ckb/ar/en checks.
 
 The initial host Node 24 run hit the repository's known AI ReadableStream test failure. The authoritative Node 22 run passed; no AI code was changed.
 

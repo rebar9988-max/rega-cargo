@@ -44,7 +44,7 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ### I-9 · Shipping calculator and service choice mixed with the homepage/catalogue
 - Root cause: `PremiumHome` rendered the quick calculator unconditionally, while `BazaarPage` owned delivery preference state and could mount `DeliveryHub` in place of the catalogue.
-- Source fix on `claude/separate-shipping-bazaar`: dedicated `ShippingPage` on `/quote`, catalogue-only `BazaarPage`, and navigation from home to each service. Responsive shipping restyle; pricing/booking logic preserved.
+- Source fix in PR #72 on `claude/separate-shipping-bazaar`: dedicated `ShippingPage` on `/quote`, catalogue-only `BazaarPage`, and navigation from home to each service. Responsive shipping restyle; pricing/booking logic preserved.
 - Not merged/deployed. [Verification](../redesign/shipping-separation.md).
 
 ## Closed

@@ -25,3 +25,7 @@ Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 | SEO (canonical, alternates, sitemap of locale URLs) | `lib/seo*.ts`, `server/routes/sitemap.xml.ts` | live | |
 | Legacy host redirect + self-unregistering SW | `scripts/legacy-host.mjs` | live | workers.dev → custom domain |
 | Error monitoring (Sentry) | — | planned (not approved) | Would need a new dependency |
+
+## Pending source change: shipping separation ([PR #72](https://github.com/rebar9988-max/rega-cargo/pull/72), 2026-10-12)
+
+The home calculator and tracking entry move to a dedicated `components/shipping-page.tsx` on `/quote`, with `styles/shipping.css`. `/stores` and legacy filtered home URLs stay catalogue-only. Home navigation continues to link to shopping and shipping. Quote parameters, calculation, local device saves and booking APIs remain supported; this is not a backend recovery. See [verification](../redesign/shipping-separation.md). Not merged or deployed.
