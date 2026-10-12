@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-11 ~15:40 UTC**, against `main` @ `df8794e` (memory merged in PR #63)
+- Last memory update: **2026-10-12 ~06:40 UTC**, against `main` @ `486e442` (PR #60 session)
 
 ## Current state (verified 2026-10-11 15:14–15:38 UTC)
 
@@ -20,13 +20,16 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 | Customer data | **None in either database** (0 products, users, requests, orders) — repointing loses nothing | `pg_stat_user_tables` on both |
 | Hyperdrive config `795013d0…` | Origin cannot be read by agents (API and `wrangler hyperdrive get`: `Authentication error 10000`) | Cloudflare |
 | Sign-in | Worker logs `auth is disabled (VITE_AUTH_ENABLED=false)`; Better Auth fails closed and phone codes cannot be sent, so nobody can sign in (I-3, I-6) | `wrangler tail` |
+| GitHub Actions | **BROKEN — blocker for merging (I-7).** No job starts since ~15:38 UTC 2026-10-11 (3 s failures, no runner), on `main` too | Actions API, 2026-10-12 06:27–06:30 |
+| Production smoke (2026-10-12 06:20) | Live `10723cf0`: all required routes 200, `/api/ai/status` enabled, banned searches (vodka, cigarettes, vape, pork bacon) list nothing | `curl` |
 | Banned-products protection | Holds via the bundled list in `src/lib/compliance/rules.ts` | `wrangler tail`: "using bundled list" |
 
 ## Next safe continuation point
 
-1. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").
-2. After the owner's change: run the verification recipe in [deployments.md](docs/project-memory/deployments.md) ("Which database does production use?") and the post-deploy checklist; record results here.
-3. Open PRs — see [progress.md](docs/project-memory/progress.md).
+1. **Owner action (blocker, I-7)** — restore GitHub Actions (billing/Actions settings), re-run CI on PR #60 head `bed4c9d`; if green, mark ready, merge, deploy `main` with `--message <sha>` and run the post-deploy checklist.
+2. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").
+3. After the owner's change: run the verification recipe in [deployments.md](docs/project-memory/deployments.md) ("Which database does production use?") and the post-deploy checklist; record results here.
+4. Open PRs — see [progress.md](docs/project-memory/progress.md).
 
 ## Memory map
 
