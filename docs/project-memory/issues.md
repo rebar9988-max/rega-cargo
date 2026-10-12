@@ -4,6 +4,15 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ## Open
 
+### I-10 · OPEN · GitHub Actions cannot start: account billing/spending gate
+The existing main verify check's annotation explicitly reports failed recent payments or a spending limit requiring an increase. Read-only API evidence was rechecked in this task. No billing, plan or CI/protection setting was changed. Keep the chat/#68 releases gated; resolve the owner's existing account issue before current-commit quality checks and merge. [Chat audit](../ai/chat-audit-2026-10-12.md).
+
+### I-11 · FIXED LOCALLY, NOT DEPLOYED · tablet chat launcher overlap
+The first new browser assertion failed on 820px tablet: the launcher switched to desktop spacing at 768px while existing navigation remains until 1024px. The chat CSS now preserves safe bottom spacing until 1024px. The assertion was retained. [Chat audit](../ai/chat-audit-2026-10-12.md).
+
+### I-12 · FIXED LOCALLY, NOT DEPLOYED · first-click hydration and lazy dialog focus
+SSR could show an enabled launcher before handlers attached, and separate loading/loaded dialog scopes could lose keyboard focus. The launcher now waits for hydration; one persistent dialog owns both states. The final 90-case suite includes deliberately delayed entry/chunk regressions and passes without retries. [Chat audit](../ai/chat-audit-2026-10-12.md).
+
 ### I-9 · OPEN · TinyFish cannot perform the requested dashboard recovery at zero new cost
 At 2026-10-12 06:04–06:07 UTC, the wallet reports -$0.008 unchanged, paid Agent/Browser rates and no confirmed Cloudflare/GitHub sign-in in either profile. Zero-rate Search/Fetch verified official billing requirements; no paid run or login/profile change was made. Cloudflare billing 10000 and GitHub billing 403 remain open, while Hyperdrive reads still show `neondb`. See [the concrete recovery sequence](../ai/access-recovery-2026-10-12.md). No top-up request or spending-limit change is authorized by this investigation.
 

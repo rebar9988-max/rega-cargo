@@ -21,7 +21,7 @@ type WorkerEnv = IdentifyEnv & {
   RL_LIMIT?: { limit(input: { key: string }): Promise<{ success: boolean }> };
 };
 
-export function aiEnv(): IdentifyDeps {
+export function aiEnv({ failClosed = false }: { failClosed?: boolean } = {}): IdentifyDeps {
   const raw = ((globalThis as { __env__?: WorkerEnv }).__env__ ?? {}) as WorkerEnv;
   const env: IdentifyEnv = {
     RL_AI_ENABLED: raw.RL_AI_ENABLED ?? process.env.RL_AI_ENABLED,
@@ -47,7 +47,7 @@ export function aiEnv(): IdentifyDeps {
           try {
             return (await raw.RL_LIMIT!.limit({ key: `ai:${ip}` })).success;
           } catch {
-            return true;
+            return !failClosed;
           }
         }
       : undefined,

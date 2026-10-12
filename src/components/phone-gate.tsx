@@ -411,6 +411,7 @@ function PhoneDialog({
             className={`${btnPrimary} mt-6 w-full`}
             onClick={async () => {
               await phoneLeave();
+              window.dispatchEvent(new Event("rl-session-changed"));
               navigator.serviceWorker?.controller?.postMessage("rl-sign-out");
               onUser(null);
             }}

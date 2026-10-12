@@ -6,7 +6,15 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-12 06:06–06:07 UTC access recheck**, PR [#68](https://github.com/rebar9988-max/rega-cargo/pull/68); main remains `486e442`. AI runtime fixes are committed as `e430bbf` / `f210498`, not deployed.
+- Last memory update: **2026-10-12 assistant verification**, stacked chat branch plus PR [#68](https://github.com/rebar9988-max/rega-cargo/pull/68); main memory changes through `486e442` preserved. AI runtime fixes are committed as `e430bbf` / `f210498`, not deployed.
+
+- Previous access checkpoint: 2026-10-12 06:06–06:07 UTC; [recovery evidence](docs/ai/access-recovery-2026-10-12.md) retained.
+
+## Premium assistant continuation (2026-10-12)
+
+Incremental chat work is in draft [#69](https://github.com/rebar9988-max/rega-cargo/pull/69), branch `feat/rl-premium-chat-20261011`, stacked on #68 (`40d7337`, including the concurrent access-recovery documentation). See [the chat audit](docs/ai/chat-audit-2026-10-12.md) for architecture, screenshots, actual checks and release gaps. Seven-language UI, source-grounded search/comparison, shipping/support navigation, safe product links and the existing authenticated order handler are connected. No new gateway/provider/database/dependency or production release exists. Full unit suite: 451 pass, zero fail, four existing skips; final focused Chromium/WebKit suite: 90/90 pass without retries; four empty-panel and one dynamic-conversation axe checks have zero violations. Baseline review is recorded in the audit.
+
+Fresh live desktop/mobile checks on 2026-10-12 confirm 18 page visits with 200/correct locale/no overflow, AI enabled, and a still-degraded marketplace. GitHub's existing verify annotation explicitly reports an account billing/spending gate; required CI cannot start. Local review and draft #69 are complete. Resolve that gate before retarget/merge/deploy; #69 has no remote quality result because it targets #68’s feature branch. Do not interpret successful page responses as successful private order reads or a deployed conversational chatbot.
 
 ## Current state (dated evidence from 2026-10-11 15:14–16:10 UTC; quality follow-up below)
 
