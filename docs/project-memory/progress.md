@@ -9,7 +9,6 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 | PR | Branch | Title | State |
 |---|---|---|---|
-| #78 | `claude/header-category-strip` | Header: compact red bar + swipeable category strip on phones and tablets | open 2026-10-12; local gate on `bdba5ec`: typecheck, lint 0 errors, `npm test` 417/0, build, cf dry-run 4806.88 KiB, official-image layout lock 387 passed / 12 skipped (screenshot compare). Hosted CI blocked (I-7). Not deployed — needs owner approval |
 | #77 | `claude/ci-minutes-recovery` | ci: spend fewer Actions minutes (docs-only skips layout, drafts wait, superseded PR runs cancel) | open 2026-10-12; workflow-only, no Worker change; local verify gate green (417 tests); hosted CI cannot start (I-7) |
 | #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open; verified 2026-10-12: all its design commits are ancestors of `main` (via #60) and its product-link part is in `main` via #53, so nothing unique remains. Owner decides whether to close; not touched |
 | #49 | `claude/rega-cargo-clone-oyhxb4` | Official R&L logo, soft 3D buttons, ten-group catalogue | draft; verified 2026-10-12: its commits are ancestors of `main`; logo files byte-identical. Nothing unique remains. Not touched |
@@ -26,6 +25,8 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 - Native translation review; real legal details (I-5).
 
 ## Completed (recent, merged to `main`)
+- #78 header: brand-red bar + swipeable category strip on phones/tablets; merged `bd03131` by the owner, deployed `2e724d37` (staging `ca679d77` first); local gate (official-image layout lock 387/12/0)
+- #72 shipping/bazaar separation; merged `3c7ad5a`, deployed `12dcd05e`
 - #75 Nitro 3.0.260903-beta (clears the 5 npm audit highs, supersedes #4); merged `a7ee020`, deployed `4242774e`; reduced local gate
 - #57 product-link layout-shift fix (CLS 0.26 -> 0.001) and named announcement landmark; merged `361f954`, deployed `5a2c2ecc`; reduced local gate (decisions.md)
 - #60 home hero as a brand-red card + parcel-tracking entry (Figma "Mobile Home Concept", read-only View seat); merged as `9ba82e9` on the local quality gate (GitHub Actions blocked, I-7; owner decision 2026-10-12), deployed to production `853e698b`
