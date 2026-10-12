@@ -88,3 +88,8 @@ export async function verifyQuote(token: unknown, secret: string, now = Date.now
     return null;
   }
 }
+
+/** Idempotency key for booking a verified token: one request per signed quote. */
+export function quoteBookingKey(token: string): string {
+  return `quote:${token.split(".")[1] ?? ""}`;
+}
