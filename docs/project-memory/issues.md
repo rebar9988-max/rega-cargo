@@ -54,6 +54,7 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 ### I-11 · OPEN · blocks build/deploy from cloud chat sessions — no npm registry or Cloudflare API egress
 - Seen 2026-10-12 ~21:10 UTC in a Claude cloud chat session (PR #79): `registry.npmjs.org`, `registry.yarnpkg.com`, `cdn.jsdelivr.net` and `api.cloudflare.com` are refused by the session's egress policy (`curl` 000 / proxy `connect_rejected`); only GitHub is reachable. No `CLOUDFLARE_API_TOKEN` is present and `wrangler` is not installed.
 - Effect: `npm ci` fails, so typecheck, lint, build, `cf:dry-run` and Playwright cannot run there, and `wrangler deploy` is impossible. Only dependency-free `node --test` files run.
+- Re-verified 2026-10-12 ~21:20 UTC from a separate remote agent environment launched from the same chat: npm and `api.cloudflare.com` refused, no `CLOUDFLARE_*` variables. So no environment reachable from cloud chat can build or deploy.
 - Not a repo bug. Work-around: run the gate and the deploy from an environment with npm + Cloudflare egress and the owner's token (earlier sessions had both), e.g. Claude Code on the owner's machine.
 
 ## Closed
