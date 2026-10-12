@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { QUOTE_TTL_MS, priceQuote, signQuote, timingSafeEqual, verifyQuote } from "./quote-token.ts";
-import { newTrackingId, normalizeTrackingId } from "./orders/tracking-id.ts";
+import { QUOTE_TTL_MS, priceQuote, quoteBookingKey, signQuote, timingSafeEqual, verifyQuote } from "./quote-token.ts";
+import { newTrackingId, normalizeTrackingId, publicTrackingId } from "./orders/tracking-id.ts";
 
 const SECRET = "x".repeat(40);
 const input = { fromId: "ber", toId: "ebl", mode: "economy", kg: 3.2, l: 40, w: 30, h: 20 };
@@ -52,4 +52,23 @@ test("tracking ids are random, well-formed and accepted by the lookup", () => {
   }
   assert.equal(normalizeTrackingId("RG-48291"), "RG-48291");
   assert.equal(normalizeTrackingId("'; drop"), null);
+});
+
+test("public tracking lookup refuses short, enumerable legacy codes", () => {
+  const id = newTrackingId();
+  assert.equal(publicTrackingId(id.toLowerCase()), id);
+  assert.equal(publicTrackingId("RG-48291"), null);
+  assert.equal(publicTrackingId("RG-ABCD"), null);
+  assert.equal(publicTrackingId("RG-ABCD-EFGH"), null);
+  assert.equal(publicTrackingId("RG-IIII-OOOO-LLLL"), null);
+});
+
+test("a signed quote maps to one stable booking key", async () => {
+  const priced = priceQuote(input);
+  assert.ok(priced);
+  const a = await signQuote(priced, SECRET, 1_000);
+  const b = await signQuote(priced, SECRET, 2_000);
+  assert.equal(quoteBookingKey(a.token), quoteBookingKey(a.token));
+  assert.notEqual(quoteBookingKey(a.token), quoteBookingKey(b.token));
+  assert.match(quoteBookingKey(a.token), /^quote:[A-Za-z0-9_-]{43}$/);
 });
