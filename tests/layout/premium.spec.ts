@@ -366,12 +366,17 @@ test("compact forms and store cards at 360px", async ({ page }) => {
     els.map((e) => Math.round(e.getBoundingClientRect().top)),
   );
   expect(new Set(ys).size).toBe(1);
-  // Order request: size, colour and quantity share one row.
+  // Order request: four numbered steps, a − 1 + stepper, tappable cities; size and colour are
+  // folded away and share one row once opened.
   await page.goto("/stores/request?store=zalando&intent=buy&lang=ckb", {
     waitUntil: "networkidle",
   });
-  const row = page.locator("form .grid-cols-3 input");
-  await expect(row).toHaveCount(3);
+  await expect(page.locator("form .rl-easy-step")).toHaveCount(4);
+  await expect(page.locator(".rl-easy-qty-btn")).toHaveCount(2);
+  await expect(page.locator(".rl-easy-city")).toHaveCount(5);
+  await page.locator(".rl-easy-more summary").click();
+  const row = page.locator("form .rl-easy-more .grid-cols-2 input");
+  await expect(row).toHaveCount(2);
   const ry = await row.evaluateAll((els) =>
     els.map((e) => Math.round(e.getBoundingClientRect().top)),
   );
@@ -386,19 +391,15 @@ test("compact forms and store cards at 360px", async ({ page }) => {
   expect(overflow).toBe(0);
 });
 
-test("product link: the panel is in the server HTML and the request form never shifts", async ({
+test("request form: one link field, no separate check panel, and no layout shift", async ({
   page,
   request,
 }) => {
   for (const lang of ["ckb", "en"]) {
-    // Server-rendered: the flag is stamped on <html> and the panel precedes the form in the HTML,
-    // so nothing is inserted above the form after load.
+    // The simplified form has a single link field; the separate link-check panel is gone.
     const html = await (await request.get(`/stores/request?intent=buy&lang=${lang}`)).text();
-    expect(html, lang).toContain('data-rl-plink="1"');
-    const panel = html.indexOf("data-product-link");
-    const form = html.indexOf('class="rl-card rl-request-form"');
-    expect(panel, `${lang} panel in HTML`).toBeGreaterThan(-1);
-    expect(form, `${lang} form in HTML`).toBeGreaterThan(panel);
+    expect(html, `${lang} form in HTML`).toContain('class="rl-card rl-request-form"');
+    expect(html, `${lang} no panel`).not.toContain("data-product-link");
 
     await page.addInitScript(() => {
       const state = window as typeof window & { shift: number };
@@ -411,7 +412,7 @@ test("product link: the panel is in the server HTML and the request form never s
       }).observe({ type: "layout-shift", buffered: true });
     });
     await page.goto(`/stores/request?intent=buy&lang=${lang}`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-product-link]")).toBeVisible();
+    await expect(page.locator("form input[type=url]")).toHaveCount(1);
     await page.waitForTimeout(500);
     expect(
       await page.evaluate(() => (window as typeof window & { shift: number }).shift),

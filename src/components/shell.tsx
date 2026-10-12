@@ -41,14 +41,15 @@ export function PageHeader({
   title,
   lede,
 }: {
-  kicker: string;
+  /** Optional small line above the title. */
+  kicker?: string;
   title: string;
   lede: string;
 }) {
   return (
     <header className="rl-page-header">
       <div className="page">
-        <p className="rl-eyebrow">{kicker}</p>
+        {kicker ? <p className="rl-eyebrow">{kicker}</p> : null}
         <h1>{title}</h1>
         <p className="rl-page-lede">{lede}</p>
       </div>
