@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-12 conversational assistant checkpoint
+
+Premium conversational extension: implemented locally on `feat/rl-premium-chat-20261011`, stacked on draft #68; full 451-pass regression suite plus typecheck/lint/empty-DB build/dry run. Final focused visual/interaction suite: 90 pass without retries; full preceding suite: 449 pass, three pass on existing retries, twelve skips. Baseline review and draft PR finalization are recorded in the chat audit. Fresh GitHub state unchanged through main `486e442`, #68 `f896a00`; no active jobs cancelled. Release remains blocked by the verified Actions account billing gate and existing backend/auth gaps. [Evidence](../ai/chat-audit-2026-10-12.md).
+
 Use Git history and PR descriptions for detail; record only status and pointers here.
 
 2026-10-12: owner-requested TinyFish investigation completed within verified zero-rate Search/Fetch. Negative wallet balance and unconfirmed authenticated profiles block paid browser automation; no top-up or new profile was created. Fresh read-only checks preserve the existing Hyperdrive/billing blockers and production version. [Concrete steps and evidence](../ai/access-recovery-2026-10-12.md) are recorded in this same draft #68; runtime remains unchanged, and no remote CI/merge/deploy is claimed.

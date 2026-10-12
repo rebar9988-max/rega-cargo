@@ -14,6 +14,7 @@ import { LAYOUT_DIR, langMeta } from "@/lib/langs";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { ServiceWorkerSetup } from "@/components/sw-setup";
 import { NotFound } from "@/components/not-found";
+import { ChatLauncher } from "@/components/chat-launcher";
 import "../styles.css";
 
 export const Route = createRootRoute({
@@ -96,6 +97,7 @@ function RootDocument() {
               localeExplicit={localeExplicit}
             >
               <Outlet />
+              <ChatLauncher />
             </I18nProvider>
           </ThemeProvider>
         </AuthProvider>

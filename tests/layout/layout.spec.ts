@@ -39,6 +39,11 @@ async function open(page: Page, path: string, lang: string) {
 
 /** Load every image (incl. lazy ones below the fold) and the web fonts before measuring. */
 async function settle(page: Page) {
+  // SSR controls can be visible before their event handlers attach. The chat
+  // launcher becomes enabled after root hydration, so captures wait for the
+  // interactive page instead of freezing partially hydrated image geometry.
+  const launcher = page.locator(".rl-chat-launcher");
+  if (await launcher.count()) await expect(launcher).toBeEnabled();
   const deferred = page.locator(".rl-deferred-calculator");
   if (await deferred.count()) {
     // Network idle can precede hydration; the router then resets the initial scroll.

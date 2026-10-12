@@ -1,5 +1,9 @@
 # Features and status (verified 2026-10-11)
 
+## 2026-10-12 conversational assistant checkpoint
+
+The new seven-language conversational panel is implemented on `feat/rl-premium-chat-20261011` (stacked on #68), **not deployed**. Catalogue/approved marketplace search and two-query comparison, shipping/support/account links, canonical product-link analysis and authorized request events reuse existing paths. Live marketplace data, phone auth, product-provider data and unrestricted natural-language answer generation remain qualified as described in the [chat audit](../ai/chat-audit-2026-10-12.md).
+
 Status: **live** = works in production · **degraded** = deployed but its backend is unavailable · **gated** = code exists, off until configured/approved · **planned**.
 Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 

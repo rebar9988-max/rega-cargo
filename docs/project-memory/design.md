@@ -1,5 +1,9 @@
 # Design and brand
 
+## 2026-10-12 conversational assistant checkpoint
+
+The chat adds an unchanged official mark, token-based red/white and full dark surfaces, suggested questions, native seven-language select, bounded bubbles/cards, focus-trapped dialog and lazy panel. Mobile uses VisualViewport/safe areas; launcher clears the bottom navigation until its existing 1024px breakpoint. Root RTL and locale IDs stay unchanged. Reviewed captures and accessibility scope: [chat audit](../ai/chat-audit-2026-10-12.md).
+
 Authoritative rules: [AGENTS.md](../../AGENTS.md) "DESIGN SYSTEM RULES". Implementation detail:
 [DEPLOY.md](../../DEPLOY.md) "Brand logo", "Brand typography", "Layout lock". Redesign history: [docs/redesign/](../redesign/README.md).
 

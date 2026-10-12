@@ -1,5 +1,9 @@
 # Architecture (verified 2026-10-11 on `main` @ `f5cfccb`)
 
+## 2026-10-12 conversational assistant checkpoint
+
+The incremental conversational extension reuses the AI binding/model/gate and #68 global budget: `server/routes/api/ai/chat.ts`, `src/lib/ai/chat*.ts`, `components/chat-launcher.tsx`/`chat-panel.tsx`. Strict intent planning, SSE progress/results, existing domain reads and session-only client memory; no new bindings, migrations or provider architecture. See [chat audit](../ai/chat-audit-2026-10-12.md).
+
 Detail lives in [DEPLOY.md](../../DEPLOY.md); this file is the map.
 
 ## Stack

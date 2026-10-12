@@ -1,5 +1,9 @@
 # Integrations — status summary
 
+## 2026-10-12 conversational assistant checkpoint
+
+Cargo still has one configured inference provider (Workers AI/Gemma), not a configured Grok inference gateway. Chat uses that existing binding/global budget and existing search, marketplace, link adapter and owner/staff request handler. No connector or paid provider activated. Product details remain `not_configured`, and fresh public browser checks still show marketplace failure. See [chat audit](../ai/chat-audit-2026-10-12.md).
+
 Full inventory, capability map and usage policy: [docs/integrations/](../integrations/inventory.md)
 ([capabilities](../integrations/capabilities.md), [usage policy](../integrations/usage-policy.md),
 [verification report](../integrations/verification-report.md)). Connector state belongs to the
