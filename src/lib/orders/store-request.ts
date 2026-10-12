@@ -40,11 +40,22 @@ export function cleanField(value: unknown, max: number): string {
     .slice(0, max);
 }
 
-/** Phone / WhatsApp number in E.164 (spaces, dashes, dots and brackets are ignored; 00 → +). */
+/** Arabic-Indic (U+0660..U+0669) and Persian/Kurdish (U+06F0..U+06F9) digits → ASCII, as typed on Kurdish keyboards. */
+export function westernDigits(value: string): string {
+  return value.replace(/[\u0660-\u0669\u06f0-\u06f9]/g, (d) => String((d.charCodeAt(0) & 0xf) % 10));
+}
+
+/**
+ * Phone / WhatsApp number in E.164. Spaces, dashes, dots and brackets are ignored; 00 → +;
+ * Kurdish/Arabic digits are accepted; an Iraqi mobile written locally (07xx xxx xxxx, or
+ * 7xx xxx xxxx) becomes +9647xx… so customers never have to know the international format.
+ */
 export function normalizePhone(value: unknown): string | null {
   if (typeof value !== "string") return null;
-  let raw = value.normalize("NFKC").replace(/[\s\-().]/g, "");
+  let raw = westernDigits(value.normalize("NFKC")).replace(/[\s\-().\u200e\u200f]/g, "");
   if (raw.startsWith("00")) raw = `+${raw.slice(2)}`;
+  if (/^07\d{9}$/.test(raw)) raw = `+964${raw.slice(1)}`;
+  else if (/^7\d{9}$/.test(raw)) raw = `+964${raw}`;
   return E164.test(raw) ? raw : null;
 }
 

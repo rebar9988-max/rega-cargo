@@ -43,12 +43,19 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - Fix (owner): GitHub → Settings (account `rebar9988-max`) → Billing and plans → fix the failed payment method or raise the Actions spending limit (or wait for the included minutes to reset next cycle); then re-run the latest run. Until then no PR has a green quality gate, so none should be merged.
 - Evidence: `gh api repos/rebar9988-max/rega-cargo/check-runs/114690493529/annotations`; Actions API `get_workflow_job` / `list_workflow_runs`.
 - Re-verified 2026-10-12 18:36 UTC on `main` @ `a7ee020` (run 186, job 114954290650): same annotation; runs 165–187 all end in 3–6 s. Repo rulesets/branch protection are unavailable on this plan (API 403 "Upgrade to GitHub Pro"), so `main` has no required checks. Account billing endpoints are not reachable from agent sessions, so "failed payment" vs "spending limit/quota" is not distinguishable here.
+- Re-verified 2026-10-12 20:54 UTC on `main` @ `bd03131` (run 38307188869): `verify` and `scope` not started, same billing annotation.
 - Mitigation (PR #77, does not unblock): docs-only changes skip the ~10 min layout job, draft PRs skip CI until ready, superseded PR runs cancel; `main` and manual runs are never cancelled.
 
 ### I-10 · Shipping calculator and service choice mixed with the homepage/catalogue
 - Root cause: `PremiumHome` rendered the quick calculator unconditionally, while `BazaarPage` owned delivery preference state and could mount `DeliveryHub` in place of the catalogue.
 - Source fix in PR #72 on `claude/separate-shipping-bazaar`: dedicated `ShippingPage` on `/quote`, catalogue-only `BazaarPage`, and navigation from home to each service. Responsive shipping restyle; pricing/booking logic preserved.
 - Not merged/deployed. [Verification](../redesign/shipping-separation.md).
+
+### I-11 · OPEN · blocks build/deploy from cloud chat sessions — no npm registry or Cloudflare API egress
+- Seen 2026-10-12 ~21:10 UTC in a Claude cloud chat session (PR #79): `registry.npmjs.org`, `registry.yarnpkg.com`, `cdn.jsdelivr.net` and `api.cloudflare.com` are refused by the session's egress policy (`curl` 000 / proxy `connect_rejected`); only GitHub is reachable. No `CLOUDFLARE_API_TOKEN` is present and `wrangler` is not installed.
+- Effect: `npm ci` fails, so typecheck, lint, build, `cf:dry-run` and Playwright cannot run there, and `wrangler deploy` is impossible. Only dependency-free `node --test` files run.
+- Re-verified 2026-10-12 ~21:20 UTC from a separate remote agent environment launched from the same chat: npm and `api.cloudflare.com` refused, no `CLOUDFLARE_*` variables. So no environment reachable from cloud chat can build or deploy.
+- Not a repo bug. Work-around: run the gate and the deploy from an environment with npm + Cloudflare egress and the owner's token (earlier sessions had both), e.g. Claude Code on the owner's machine.
 
 ## Closed
 

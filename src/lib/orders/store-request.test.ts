@@ -69,4 +69,15 @@ describe("request validation", () => {
     assert.equal(normalizePhone("0049 151 2345678"), "+491512345678");
     assert.equal(normalizePhone("+0 123"), null);
   });
+  it("accepts Iraqi mobiles written locally and Kurdish/Arabic digits", () => {
+    assert.equal(normalizePhone("0750 123 4567"), "+9647501234567");
+    assert.equal(normalizePhone("750-123-4567"), "+9647501234567");
+    assert.equal(normalizePhone("٠٧٥٠١٢٣٤٥٦٧"), "+9647501234567");
+    assert.equal(normalizePhone("۰۷۵۰ ۱۲۳ ۴۵۶۷"), "+9647501234567");
+    assert.equal(normalizePhone("+964 750 123 4567"), "+9647501234567");
+    // Other short or malformed local numbers are still refused, never guessed.
+    assert.equal(normalizePhone("0750 123"), null);
+    assert.equal(normalizePhone("066 123 4567"), null);
+    assert.equal(validateStoreRequest({ ...base, phone: "٠٧٧٠١٢٣٤٥٦٧" }, null).ok, true);
+  });
 });

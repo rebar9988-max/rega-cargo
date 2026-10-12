@@ -1,0 +1,349 @@
+/* Simplified purchase request (/stores/request): numbered steps, large touch targets,
+   one calm card. Tokens only; logical properties only. */
+.rl-easy {
+  --rl-easy-touch: 3.5rem;
+  --rl-easy-n: 1.75rem;
+  --rl-easy-icon: 1.125rem;
+  --rl-easy-paste-room: 7.5rem;
+  --rl-easy-qty-width: 16rem;
+  --rl-easy-note-h: 1.5rem;
+  --rl-easy-link-h: 2.5rem;
+  --rl-easy-check: 1.375rem;
+  --rl-easy-check-row: 2.75rem;
+  --rl-easy-check-nudge: 0.125rem;
+}
+.rl-easy .rl-request-form {
+  gap: var(--rl-space-4);
+}
+.rl-easy-step {
+  display: grid;
+  gap: var(--rl-space-1);
+  min-inline-size: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.rl-easy-step-head {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+  margin-block-end: var(--rl-space-1);
+  padding: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--rl-weight-semibold);
+  color: var(--rl-ink);
+}
+.rl-easy-step-n {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--rl-easy-n);
+  block-size: var(--rl-easy-n);
+  border-radius: var(--rl-radius-pill);
+  background: var(--rl-soft-accent);
+  color: var(--rl-accent);
+  font-family: var(--rl-font-latin), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--rl-weight-bold);
+}
+.rl-easy-step-icon {
+  display: inline-flex;
+  color: var(--rl-muted);
+}
+.rl-easy-step-icon svg,
+.rl-easy-paste svg,
+.rl-easy-icon-btn svg,
+.rl-easy-ok svg,
+.rl-easy-more-chevron {
+  inline-size: var(--rl-easy-icon);
+  block-size: var(--rl-easy-icon);
+}
+.rl-easy .rl-control {
+  min-block-size: var(--rl-easy-touch);
+  font-size: var(--text-base);
+}
+.rl-easy .rl-control::placeholder {
+  color: var(--rl-muted);
+  opacity: 0.6;
+}
+.rl-easy .rl-control[aria-invalid="true"] {
+  border-color: var(--rl-accent);
+}
+.rl-easy .rl-control:focus-visible,
+.rl-easy-paste:focus-visible,
+.rl-easy-icon-btn:focus-visible,
+.rl-easy-qty-btn:focus-visible,
+.rl-easy-city:focus-within,
+.rl-easy-more summary:focus-visible {
+  outline: var(--rl-focus) solid var(--rl-accent);
+  outline-offset: var(--rl-focus);
+}
+.rl-easy-note {
+  min-block-size: var(--rl-easy-note-h);
+  font-size: var(--text-sm);
+  line-height: var(--rl-leading);
+  color: var(--rl-muted);
+}
+.rl-easy-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+  color: var(--rl-success);
+  font-weight: var(--rl-weight-medium);
+}
+
+/* Link field: the paste button sits inside the field's row so one tap fills it. The row is LTR
+   (a URL is LTR), so the button and the field's end padding share the same edge. */
+.rl-easy-link {
+  position: relative;
+  direction: ltr;
+  display: flex;
+  align-items: center;
+}
+.rl-easy-link .rl-control {
+  padding-inline-start: var(--rl-space-2);
+  padding-inline-end: var(--rl-easy-paste-room);
+}
+.rl-easy-paste,
+.rl-easy-icon-btn {
+  position: absolute;
+  inset-inline-end: var(--rl-space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rl-space-1);
+  min-block-size: calc(var(--rl-easy-touch) - var(--rl-space-2));
+  border-radius: var(--rl-radius-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--rl-weight-semibold);
+  transition: background-color var(--rl-motion-fast) var(--rl-ease);
+}
+.rl-easy-paste {
+  padding-inline: var(--rl-space-2);
+  background: var(--rl-soft-accent);
+  color: var(--rl-accent);
+}
+.rl-easy-icon-btn {
+  min-inline-size: calc(var(--rl-easy-touch) - var(--rl-space-2));
+  color: var(--rl-muted);
+}
+.rl-easy-icon-btn:hover {
+  background: var(--rl-raised);
+}
+/* Quantity: − 1 + with big, thumb-sized buttons. */
+.rl-easy-qty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rl-space-2);
+  inline-size: 100%;
+  max-inline-size: var(--rl-easy-qty-width);
+  padding: var(--rl-space-1);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-pill);
+  background: var(--rl-paper);
+  direction: ltr;
+}
+.rl-easy-qty-btn {
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--rl-easy-touch);
+  block-size: var(--rl-easy-touch);
+  border-radius: var(--rl-radius-pill);
+  background: var(--rl-surface);
+  color: var(--rl-ink);
+  box-shadow: var(--rl-button-shadow);
+  transition: transform var(--rl-motion-fast) var(--rl-ease);
+}
+.rl-easy-qty-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.rl-easy-qty-btn:disabled {
+  opacity: 0.35;
+  box-shadow: none;
+}
+.rl-easy-qty-btn svg {
+  inline-size: var(--rl-icon);
+  block-size: var(--rl-icon);
+}
+.rl-easy-qty-value {
+  min-inline-size: 2ch;
+  text-align: center;
+  font-family: var(--rl-font-latin), sans-serif;
+  font-size: var(--text-2xl);
+  font-weight: var(--rl-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Cities: tap a name, no dropdown. */
+.rl-easy-cities {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rl-space-1);
+}
+.rl-easy-city {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--rl-easy-touch);
+  padding-inline: var(--rl-space-2);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-surface);
+  color: var(--rl-ink);
+  font-size: var(--text-base);
+  font-weight: var(--rl-weight-medium);
+  cursor: pointer;
+  transition:
+    border-color var(--rl-motion-fast) var(--rl-ease),
+    background-color var(--rl-motion-fast) var(--rl-ease);
+}
+/* An odd last city (5 cities, 2 columns) takes the full row instead of sitting alone. */
+.rl-easy-city:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+.rl-easy-city input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.rl-easy-city[data-on] {
+  border-color: var(--rl-accent);
+  background: var(--rl-soft-accent);
+  color: var(--rl-accent);
+  font-weight: var(--rl-weight-semibold);
+  box-shadow: inset 0 0 0 1px var(--rl-accent);
+}
+
+/* Optional details stay folded away. */
+.rl-easy-more {
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-paper);
+}
+.rl-easy-more summary {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+  min-block-size: var(--rl-easy-touch);
+  padding-inline: var(--rl-space-2);
+  border-radius: var(--rl-radius-sm);
+  font-weight: var(--rl-weight-medium);
+  cursor: pointer;
+  list-style: none;
+}
+.rl-easy-more summary::-webkit-details-marker {
+  display: none;
+}
+.rl-easy-more-chevron {
+  margin-inline-start: auto;
+  color: var(--rl-muted);
+  transition: transform var(--rl-motion) var(--rl-ease);
+}
+.rl-easy-more[open] .rl-easy-more-chevron {
+  transform: rotate(180deg);
+}
+.rl-easy-more-body {
+  display: grid;
+  gap: var(--rl-space-2);
+  padding-inline: var(--rl-space-2);
+  padding-block-end: var(--rl-space-2);
+}
+
+.rl-easy-send {
+  inline-size: 100%;
+  min-block-size: var(--rl-easy-touch);
+  font-size: var(--text-lg);
+}
+/* Contents declaration: one small checkbox, unchecked by default, required to send. */
+.rl-easy-declare {
+  display: grid;
+  gap: var(--rl-space-1);
+  justify-items: start;
+}
+.rl-easy-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rl-space-2);
+  min-block-size: var(--rl-easy-check-row);
+  font-size: var(--text-sm);
+  line-height: var(--rl-leading);
+  color: var(--rl-ink);
+  cursor: pointer;
+}
+.rl-easy-check input {
+  flex: none;
+  inline-size: var(--rl-easy-check);
+  block-size: var(--rl-easy-check);
+  margin-block-start: var(--rl-easy-check-nudge);
+  accent-color: var(--rl-action);
+  cursor: pointer;
+}
+.rl-easy-check input:focus-visible {
+  outline: var(--rl-focus) solid var(--rl-accent);
+  outline-offset: var(--rl-focus);
+}
+.rl-easy-check input[aria-invalid="true"] {
+  outline: var(--rl-focus) solid var(--rl-accent);
+}
+
+/* Aside: how it works, three short lines. */
+.rl-easy-how {
+  display: grid;
+  gap: var(--rl-space-2);
+  margin-block-start: var(--rl-space-2);
+  list-style: none;
+  padding: 0;
+}
+.rl-easy-how li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rl-space-2);
+  line-height: var(--rl-leading);
+}
+.rl-easy-quote {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--rl-easy-link-h);
+  margin-block-start: var(--rl-space-2);
+  color: var(--rl-accent);
+  font-size: var(--text-sm);
+  font-weight: var(--rl-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: var(--rl-underline-offset);
+}
+
+.rl-easy-item {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-2);
+}
+.rl-easy-done {
+  display: grid;
+  justify-items: center;
+  gap: var(--rl-space-2);
+  text-align: center;
+  padding-block: var(--rl-space-6);
+}
+.rl-easy-done-icon {
+  inline-size: var(--rl-space-8);
+  block-size: var(--rl-space-8);
+  color: var(--rl-success);
+}
+
+@media (min-width: 48rem) {
+  .rl-easy-cities {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .rl-easy-city:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rl-easy-qty-btn,
+  .rl-easy-more-chevron,
+  .rl-easy-city {
+    transition: none;
+  }
+}

@@ -182,6 +182,24 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
    Note: a code rollback (`wrangler rollback`) to a version before the redirect
    would serve the app on the old host again.
 
+## Automatic deploys (Cloudflare Workers Builds)
+
+Owner decision 2026-10-12: deploys run on Cloudflare's own build servers, connected to this
+repo, so no laptop and no GitHub Actions minutes are needed. Settings (Workers & Pages →
+`rega-cargo` → Settings → Build):
+
+| Setting | Value |
+| --- | --- |
+| Repository / production branch | `rebar9988-max/rega-cargo` / `main` |
+| Build command | `npm run typecheck && npm test && npm run build` |
+| Deploy command | `npx wrangler deploy` |
+| Non-production branch builds | on, deploy command `npm run cf:dry-run` (gate only, uploads nothing) |
+| Build variables | `NODE_VERSION=22`, `VITE_AUTH_ENABLED=false` (keeps today's sign-in behaviour) |
+
+`DATABASE_URL` is deliberately **not** a build variable, so builds never run migrations.
+A failing typecheck or test stops the build, and nothing is deployed. Every PR branch
+gets the same gate as a GitHub check. Rollback is unchanged (see "Rollback").
+
 ## Rollback
 
 * **Bad deploy:** `npx wrangler deployments list --name rega-cargo` then

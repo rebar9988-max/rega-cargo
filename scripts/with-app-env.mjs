@@ -66,6 +66,17 @@ export function mergeAppEnv(appEnv, processEnv) {
 }
 
 /**
+ * Cloudflare Workers Builds (`WORKERS_CI` set) builds production with no app-env file. Every
+ * production build so far ran with `VITE_AUTH_ENABLED=false` (sign-in is off until a provider is
+ * chosen, issues I-3/I-6), so default to that there instead of silently turning sign-in UI on.
+ * An explicit value (a build variable in the dashboard) still wins; outside CI nothing changes.
+ */
+export function withCiDefaults(env) {
+  if (!env.WORKERS_CI || env.VITE_AUTH_ENABLED !== undefined) return env;
+  return { ...env, VITE_AUTH_ENABLED: "false" };
+}
+
+/**
  * Translate a child's `exit` `(code, signal)` into this process's exit status.
  *
  * Do not re-raise the signal with `process.kill(process.pid, signal)`: under
@@ -110,7 +121,7 @@ function main(argv) {
     console.error("usage: node scripts/with-app-env.mjs <command> [args…]");
     process.exit(2);
   }
-  const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
+  const env = withCiDefaults(mergeAppEnv(readAppEnv(projectRoot()), process.env));
   const child = spawn(command, args, { stdio: "inherit", env });
   // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
