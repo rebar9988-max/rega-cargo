@@ -21,6 +21,7 @@
   --rl-header-mobile-compact: 4rem;
   /* Header category strip (phones and tablets). */
   --rl-strip-item: 5.5rem;
+  --rl-strip-item-max: 7.5rem;
   --rl-strip-icon: 3.5rem;
   --rl-strip-glyph: 1.75rem;
   --rl-strip-indicator: 3px;

@@ -404,13 +404,24 @@ function CategoryStrip({
   const list = useRef<HTMLUListElement>(null);
   // Keep the selected category in view without scrolling the page or animating on load.
   useIsoLayoutEffect(() => {
-    const box = list.current;
-    const item = box?.querySelector<HTMLElement>('[aria-current="page"]');
-    if (!box || !item) return;
-    const boxRect = box.getBoundingClientRect();
-    const itemRect = item.getBoundingClientRect();
-    if (itemRect.left >= boxRect.left && itemRect.right <= boxRect.right) return;
-    box.scrollLeft += itemRect.left + itemRect.width / 2 - (boxRect.left + boxRect.width / 2);
+    function reveal() {
+      const box = list.current;
+      const item = box?.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!box || !item) return;
+      const boxRect = box.getBoundingClientRect();
+      const itemRect = item.getBoundingClientRect();
+      if (itemRect.left >= boxRect.left && itemRect.right <= boxRect.right) return;
+      box.scrollLeft += itemRect.left + itemRect.width / 2 - (boxRect.left + boxRect.width / 2);
+    }
+    reveal();
+    // Item widths follow the label text, so check again once the web fonts have loaded.
+    let live = true;
+    void document.fonts?.ready.then(() => {
+      if (live) reveal();
+    });
+    return () => {
+      live = false;
+    };
   }, [current]);
   return (
     <nav className="rl-category-strip" aria-label={label} data-layout="category-strip">

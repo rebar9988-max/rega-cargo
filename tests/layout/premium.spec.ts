@@ -485,6 +485,21 @@ test("header category strip: directly under the header, swipeable, active state,
   await expect(pets).toHaveAttribute("aria-current", "page");
   await expect(page.locator('[data-layout="category-strip"] [aria-current="page"]')).toHaveCount(1);
   await expect(pets).toBeInViewport();
+  // A direct link to a category far down the strip also opens with it in view, and no name
+  // is cut off in any language (long names widen their item instead).
+  await page.goto("/stores?lang=en&cat=beauty", { waitUntil: "networkidle" });
+  await expect(
+    page.locator('[data-layout="category-strip"] a[data-category="beauty"]'),
+  ).toBeInViewport();
+  for (const lang of ["ckb", "ku", "de", "en", "ar", "fa", "tr"]) {
+    await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    const cut = await page.$$eval(".rl-category-strip-label", (els) =>
+      els.filter((el) => el.scrollHeight > el.clientHeight + 1).map((el) => el.textContent),
+    );
+    expect(cut, lang).toEqual([]);
+  }
+  await page.goto("/stores?lang=en&cat=pets", { waitUntil: "networkidle" });
   // "More" opens the full menu; the header search button opens the search field.
   await page.locator('[data-layout="category-strip"] button').click();
   await expect(page.locator('[data-layout="sheet"]')).toBeVisible();

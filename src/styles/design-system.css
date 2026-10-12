@@ -1663,8 +1663,10 @@
     flex-direction: column;
     align-items: center;
     gap: var(--rl-space-1);
-    inline-size: var(--rl-strip-item);
+    /* Short names keep a steady rhythm; long ones widen their item instead of being cut. */
     min-inline-size: var(--rl-strip-item);
+    max-inline-size: var(--rl-strip-item-max);
+    padding-inline: var(--rl-space-0);
     padding-block-end: var(--rl-space-2);
     color: var(--rl-ink);
     text-decoration: none;
