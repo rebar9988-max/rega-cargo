@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-12 ~21:15 UTC**, against `main` @ `bd03131` (PR #78 released as `2e724d37`)
+- Last memory update: **2026-10-12 ~21:15 UTC**, against `main` @ `bd03131` (PR #78 released as `2e724d37`, redeployed from `248fe11` as `1ec140d1`)
 
 ## Current state (verified 2026-10-11 15:14–15:38 UTC)
 
@@ -14,7 +14,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 |---|---|---|
 | Public pages | All AGENTS.md required routes return 200 (`/`, `/stores`, `?cat=`, `?fav=1`, `/stores/request`, `/quote`, `/ai`, legal pages); `<html lang="ckb" dir="rtl">` | `curl` against production, 15:36 |
 | R&L AI | On (`/api/ai/status` → `{"enabled":true}`) | production |
-| Live Worker version | `2e724d37`, deployed 2026-10-12 21:04 UTC from `main` @ `bd03131` (PR #78, header category strip); previous `12dcd05e` (PR #72, `3c7ad5a`) | `wrangler deploy` output, `wrangler deployments list` |
+| Live Worker version | `1ec140d1`, deployed 2026-10-12 21:13 UTC from `main` @ `248fe11` (PR #78 code + PR #80 memory docs; same Worker code as `2e724d37`); before PR #78: `12dcd05e` | `wrangler deploy` output, `wrangler deployments list` |
 | **Production database** | **BROKEN — blocker (I-1).** The Worker queries `misty-recipe-03041407/neondb`, which only has `0002_market.sql`. `/market` renders its error state; logs: `column p.compliance_status does not exist`, `relation "prohibited_keywords" does not exist` | `7b92d650`: 6 probes, `misty/neondb` rollbacks 257→287; `10723cf0`: 4 probes, 334→340; `old-cherry/cargo` rollbacks 0 throughout; `wrangler tail` (7/7 requests) |
 | Correct database | `old-cherry-79292410`, database `cargo`: 12/12 migrations (09:38 UTC), 8 compliance triggers, 378 banned keywords | Neon read-only SQL |
 | Customer data | **None in either database** (0 products, users, requests, orders) — repointing loses nothing | `pg_stat_user_tables` on both |
