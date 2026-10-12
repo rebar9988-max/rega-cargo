@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
-import { QuotePanel } from "@/components/quote-panel";
-import { PageHeader, Shell } from "@/components/shell";
-import { DeliveryTabs } from "@/components/delivery-hub";
-import { useI18n } from "@/lib/i18n";
+import { ShippingPage } from "@/components/shipping-page";
 import { parseDim, parseFrom, parseKg, parseTo, type QuoteSearch } from "@/lib/quote-search";
 
 export const Route = createFileRoute("/quote")({
@@ -27,19 +24,11 @@ export const Route = createFileRoute("/quote")({
 });
 
 function QuotePage() {
-  const { t } = useI18n();
   const { from, to, kg, l, w, h } = Route.useSearch();
   return (
-    <Shell>
-      <DeliveryTabs active="/quote" />
-      <PageHeader kicker={t.quoteKicker} title={t.quoteTitle} lede={t.quoteLede} />
-      <div className="page rl-quote-page">
-        <QuotePanel
-          key={`${from}-${to}-${kg}-${l}-${w}-${h}`}
-          variant="full"
-          initial={{ from, to, kg: kg === undefined ? undefined : String(kg), l, w, h }}
-        />
-      </div>
-    </Shell>
+    <ShippingPage
+      key={`${from}-${to}-${kg}-${l}-${w}-${h}`}
+      initial={{ from, to, kg: kg === undefined ? undefined : String(kg), l, w, h }}
+    />
   );
 }

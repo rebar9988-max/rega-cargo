@@ -1,5 +1,6 @@
 import { Price, Icon } from "./ui";
-import { Scale, Package } from "lucide-react";
+import { MapPin, Scale, Package, Truck } from "lucide-react";
+import { shippingCopy } from "@/lib/shipping-copy";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { NUM_LOCALE } from "@/lib/numbers";
 import { QUOTE_LIMITS, dimInRange, kgInRange, parseKg } from "@/lib/quote-search";
@@ -69,6 +70,7 @@ export function QuotePanel({
 }) {
   const { t, lang } = useI18n();
   const c = redesignCopy(lang);
+  const sc = shippingCopy(lang);
   const [fromId, setFromId] = useState(getOrigin(initial?.from).id);
   const [toId, setToId] = useState(getDest(initial?.to).id);
   const [kg, setKg] = useState(
@@ -301,375 +303,407 @@ export function QuotePanel({
 
   return (
     <div className={variant === "compact" ? "rl-card rl-quote-card" : "rl-quote-stack"}>
-      <div className={variant === "full" ? "rl-card rl-quote-card" : ""}>
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold tracking-widest text-pine">{t.waybill}</p>
-          <p className="text-xs text-muted">
-            <bdi dir="ltr">EUR · IQD</bdi>
-          </p>
-        </div>
-        <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <Field label={t.from}>
-            <select
-              className={controlClass}
-              value={fromId}
-              onChange={(event) => setFromId(event.target.value)}
-            >
-              {ORIGINS.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {placeName(item, lang)} — {countryName(item, lang)}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label={t.to}>
-            <select
-              className={controlClass}
-              value={toId}
-              onChange={(event) => setToId(event.target.value)}
-            >
-              {DESTS.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {placeName(item, lang)}
-                </option>
-              ))}
-            </select>
-          </Field>
-        </div>
-
-        {variant === "compact" ? (
-          <div className="mt-5">
-            <div className="flex items-end justify-between gap-3">
-              <span className="text-sm font-medium">{t.weight}</span>
-              <bdi dir="ltr" className="text-lg font-semibold tabular-nums">
-                {Number.isFinite(weight) ? weight.toFixed(1) : "—"} {t.kg}
-              </bdi>
-            </div>
-            <input
-              className="mt-2 h-12 w-full"
-              type="range"
-              min={0.5}
-              max={30}
-              step={0.1}
-              value={Math.min(30, Math.max(0.5, Number.isFinite(weight) ? weight : 3.2))}
-              aria-label={t.weight}
-              onChange={(event) => setKg(event.target.value)}
-            />
-            <p className="text-sm text-muted">
-              <bdi dir="ltr">
-                {SAMPLE_BOX.l} × {SAMPLE_BOX.w} × {SAMPLE_BOX.h} {t.cm}
-              </bdi>
+      <div className={variant === "full" ? "rl-shipping-layout" : ""}>
+        <div className={variant === "full" ? "rl-card rl-quote-card" : undefined}>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold tracking-widest text-pine">{t.waybill}</p>
+            <p className="text-xs text-muted">
+              <bdi dir="ltr">EUR · IQD</bdi>
             </p>
           </div>
-        ) : (
-          // Phones too: weight and pieces side by side, the three dimensions in one row.
-          <div className="mt-4 grid grid-cols-6 gap-x-3 gap-y-4">
-            <Field label={`${t.weight} (${t.kg})`} className="col-span-3">
+          <fieldset
+            className="rl-shipping-fieldset"
+            id={variant === "full" ? "shipping-route" : undefined}
+          >
+            {variant === "full" ? (
+              <legend className="rl-shipping-group-title">
+                <Icon as={MapPin} />
+                <bdi dir="ltr">01</bdi>
+                {sc.route}
+              </legend>
+            ) : null}
+            <div className="rl-shipping-route-fields">
+              <Field label={t.from}>
+                <select
+                  className={controlClass}
+                  value={fromId}
+                  onChange={(event) => setFromId(event.target.value)}
+                >
+                  {ORIGINS.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {placeName(item, lang)} — {countryName(item, lang)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t.to}>
+                <select
+                  className={controlClass}
+                  value={toId}
+                  onChange={(event) => setToId(event.target.value)}
+                >
+                  {DESTS.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {placeName(item, lang)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </div>
+          </fieldset>
+
+          {variant === "compact" ? (
+            <div className="mt-5">
+              <div className="flex items-end justify-between gap-3">
+                <span className="text-sm font-medium">{t.weight}</span>
+                <bdi dir="ltr" className="text-lg font-semibold tabular-nums">
+                  {Number.isFinite(weight) ? weight.toFixed(1) : "—"} {t.kg}
+                </bdi>
+              </div>
               <input
-                className={controlClass}
-                dir="ltr"
-                inputMode="decimal"
-                aria-invalid={!weightOk}
-                value={kg}
+                className="mt-2 h-12 w-full"
+                type="range"
+                min={0.5}
+                max={30}
+                step={0.1}
+                value={Math.min(30, Math.max(0.5, Number.isFinite(weight) ? weight : 3.2))}
+                aria-label={t.weight}
                 onChange={(event) => setKg(event.target.value)}
               />
-            </Field>
-            <Field label={t.pieces} className="col-span-3">
-              <input
-                className={controlClass}
-                dir="ltr"
-                inputMode="numeric"
-                value={pieces}
-                onChange={(event) => setPieces(event.target.value)}
-              />
-            </Field>
-            <Field label={`${t.length} (${t.cm})`} className="col-span-2">
-              <input
-                className={controlClass}
-                dir="ltr"
-                inputMode="decimal"
-                aria-invalid={!dimInRange(Number(length))}
-                value={length}
-                onChange={(e) => setLength(e.target.value)}
-              />
-            </Field>
-            <Field label={`${t.width} (${t.cm})`} className="col-span-2">
-              <input
-                className={controlClass}
-                dir="ltr"
-                inputMode="decimal"
-                aria-invalid={!dimInRange(Number(width))}
-                value={width}
-                onChange={(e) => setWidth(e.target.value)}
-              />
-            </Field>
-            <Field label={`${t.height} (${t.cm})`} className="col-span-2">
-              <input
-                className={controlClass}
-                dir="ltr"
-                inputMode="decimal"
-                aria-invalid={!dimInRange(Number(height))}
-                value={height}
-                onChange={(e) => setHeight(e.target.value)}
-              />
-            </Field>
-            {!valid ? (
-              <p role="alert" className="col-span-6 text-sm text-clay">
-                {dc.range}
+              <p className="text-sm text-muted">
+                <bdi dir="ltr">
+                  {SAMPLE_BOX.l} × {SAMPLE_BOX.w} × {SAMPLE_BOX.h} {t.cm}
+                </bdi>
               </p>
-            ) : null}
-            <Field label={t.inside} className="col-span-6 md:col-span-3">
-              <select
-                className={controlClass}
-                value={contents}
-                onChange={(event) => setContents(event.target.value as Contents)}
-              >
-                {(Object.keys(t.contentsOpt) as Contents[]).map((key) => (
-                  <option key={key} value={key}>
-                    {t.contentsOpt[key]}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label={`${t.value} (€)`} className="col-span-6 md:col-span-3">
-              <input
-                className={controlClass}
-                dir="ltr"
-                inputMode="decimal"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-              />
-            </Field>
-          </div>
-        )}
+            </div>
+          ) : (
+            <fieldset className="rl-shipping-fieldset" id="shipping-parcel">
+              <legend className="rl-shipping-group-title">
+                <Icon as={Package} />
+                <bdi dir="ltr">02</bdi>
+                {sc.parcel}
+              </legend>
+              <div className="rl-shipping-parcel-fields grid grid-cols-6 gap-x-3 gap-y-4">
+                <Field label={`${t.weight} (${t.kg})`} className="col-span-3">
+                  <input
+                    className={controlClass}
+                    dir="ltr"
+                    inputMode="decimal"
+                    aria-invalid={!weightOk}
+                    value={kg}
+                    onChange={(event) => setKg(event.target.value)}
+                  />
+                </Field>
+                <Field label={t.pieces} className="col-span-3">
+                  <input
+                    className={controlClass}
+                    dir="ltr"
+                    inputMode="numeric"
+                    value={pieces}
+                    onChange={(event) => setPieces(event.target.value)}
+                  />
+                </Field>
+                <Field label={`${t.length} (${t.cm})`} className="col-span-2">
+                  <input
+                    className={controlClass}
+                    dir="ltr"
+                    inputMode="decimal"
+                    aria-invalid={!dimInRange(Number(length))}
+                    value={length}
+                    onChange={(e) => setLength(e.target.value)}
+                  />
+                </Field>
+                <Field label={`${t.width} (${t.cm})`} className="col-span-2">
+                  <input
+                    className={controlClass}
+                    dir="ltr"
+                    inputMode="decimal"
+                    aria-invalid={!dimInRange(Number(width))}
+                    value={width}
+                    onChange={(e) => setWidth(e.target.value)}
+                  />
+                </Field>
+                <Field label={`${t.height} (${t.cm})`} className="col-span-2">
+                  <input
+                    className={controlClass}
+                    dir="ltr"
+                    inputMode="decimal"
+                    aria-invalid={!dimInRange(Number(height))}
+                    value={height}
+                    onChange={(e) => setHeight(e.target.value)}
+                  />
+                </Field>
+                {!valid ? (
+                  <p role="alert" className="col-span-6 text-sm text-clay">
+                    {dc.range}
+                  </p>
+                ) : null}
+                <h3 className="rl-shipping-content-label col-span-6">{sc.contents}</h3>
+                <Field label={t.inside} className="col-span-6 md:col-span-3">
+                  <select
+                    className={controlClass}
+                    value={contents}
+                    onChange={(event) => setContents(event.target.value as Contents)}
+                  >
+                    {(Object.keys(t.contentsOpt) as Contents[]).map((key) => (
+                      <option key={key} value={key}>
+                        {t.contentsOpt[key]}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label={`${t.value} (€)`} className="col-span-6 md:col-span-3">
+                  <input
+                    className={controlClass}
+                    dir="ltr"
+                    inputMode="decimal"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                  />
+                </Field>
+              </div>
+            </fieldset>
+          )}
 
-        {!weightOk ? <p className="mt-4 text-sm text-clay">{t.weightError}</p> : null}
-        {!dimsOk ? <p className="mt-2 text-sm text-clay">{t.dimError}</p> : null}
-        {variant === "full" && pieceCount > 1 ? (
-          <p className="mt-3 text-sm text-muted">{t.perPiece}</p>
-        ) : null}
+          {!weightOk ? <p className="mt-4 text-sm text-clay">{t.weightError}</p> : null}
+          {!dimsOk ? <p className="mt-2 text-sm text-clay">{t.dimError}</p> : null}
+          {variant === "full" && pieceCount > 1 ? (
+            <p className="mt-3 text-sm text-muted">{t.perPiece}</p>
+          ) : null}
+        </div>
+        <div className={variant === "full" ? "rl-shipping-results" : undefined}>
+          {variant === "full" ? (
+            <h2 className="rl-shipping-group-title" id="shipping-options">
+              <Icon as={Truck} />
+              <bdi dir="ltr">03</bdi>
+              {sc.options}
+            </h2>
+          ) : null}
+          {valid && lead ? (
+            <div className="rl-shipping-estimates" aria-live="polite">
+              <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-line bg-line">
+                <Meter
+                  k={t.scale}
+                  v={`${weight % 1 === 0 ? weight.toFixed(0) : weight.toFixed(1)} ${t.kg}`}
+                />
+                <Meter k={t.volumeWord} v={`${lead.price.volumetric.toFixed(1)} ${t.kg}`} />
+                <Meter
+                  k={t.chargeable}
+                  v={`${lead.price.chargeable.toFixed(1)} ${t.kg}`}
+                  hot={lead.price.volumetricWins}
+                />
+              </div>
+              {lead.price.volumetricWins ? (
+                <p className="mt-3 text-sm text-pine">{t.boxSets}</p>
+              ) : null}
 
-        {valid && lead ? (
-          <div className="mt-5" aria-live="polite">
-            {variant === "full" ? (
-              <section className="rl-weight-explanation">
-                <h2>{c.weightTitle}</h2>
-                <p>{c.weightBody}</p>
-                <p className="rl-weight-formula">
-                  <bdi dir="ltr">
-                    {dims.l} × {dims.w} × {dims.h} ÷ {lead.mode.divisor} ={" "}
-                    {lead.price.volumetric.toFixed(1)} {t.kg}
-                  </bdi>{" "}
-                  · {t.modes[lead.mode.id].name}
-                </p>
-                <div className="rl-weight-visual">
-                  {[
-                    { label: t.scale, value: weight, icon: Scale },
-                    { label: t.volumeWord, value: lead.price.volumetric, icon: Package },
-                  ].map((item) => (
-                    <div key={item.label} className="rl-weight-item">
-                      <div>
-                        <Icon as={item.icon} />
-                        <span>{item.label}</span>
-                        <bdi dir="ltr">
-                          {item.value.toFixed(1)} {t.kg}
-                        </bdi>
+              {variant === "compact" ? (
+                <ul className="mt-2 divide-y divide-line">
+                  {rows.map((row) => (
+                    <li key={row.mode.id} className="flex items-center justify-between gap-3 py-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">{t.modes[row.mode.id].name}</p>
+                        <p className="text-xs text-muted">
+                          <bdi dir="ltr">
+                            {dayRange(t.dayRange, row.mode.days[0], row.mode.days[1])} ·{" "}
+                            {row.price.chargeable.toFixed(1)} {t.kg}
+                          </bdi>
+                        </p>
                       </div>
-                      <span className="rl-weight-track" aria-hidden="true">
-                        <span
-                          style={
-                            {
-                              "--rl-weight-fraction": `${(item.value / lead.price.chargeable) * 100}%`,
-                            } as CSSProperties
-                          }
-                        />
+                      <div className="text-end">
+                        <p className="text-base font-semibold">
+                          <Eur value={row.price.total} />
+                        </p>
+                        <p className="text-xs text-muted">
+                          <Iqd eur={row.price.total} />
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="mt-4 flex flex-col gap-3">
+                  <label className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 text-sm leading-relaxed">
+                    <input
+                      type="checkbox"
+                      checked={restrictedOk}
+                      onChange={(event) => setRestrictedOk(event.target.checked)}
+                      className="mt-0.5 size-6 shrink-0 accent-pine"
+                    />
+                    <span>{dc.declare}</span>
+                  </label>
+                  <ItemsLink />
+                  {rows.map((row) => {
+                    const less = Math.round((rows[0].price.total - row.price.total) * 100) / 100;
+                    return (
+                      <article key={row.mode.id} className="rl-quote-option rl-defer">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <h2 className="text-2xl leading-tight font-bold">
+                              {t.modes[row.mode.id].name}
+                            </h2>
+                            <p className="text-sm text-muted">
+                              <bdi dir="ltr">
+                                {dayRange(t.dayRange, row.mode.days[0], row.mode.days[1])}
+                              </bdi>
+                            </p>
+                          </div>
+                          <Price eur={row.price.total} />
+                        </div>
+                        <p className="mt-3 text-sm leading-relaxed text-muted">
+                          {t.modes[row.mode.id].blurb}
+                        </p>
+                        <p className="mt-3 text-sm leading-relaxed text-muted">
+                          <bdi dir="ltr" className="tabular-nums text-ink">
+                            {row.price.chargeable.toFixed(1)} kg × €{row.mode.perKg.toFixed(2)} ×{" "}
+                            {origin.factor.toFixed(2)}
+                          </bdi>
+                          {row.price.minApplied ? <span> · {t.minApplied}</span> : null}
+                          {row.price.bulky ? <span> · {t.bulky}</span> : null}
+                          {dest.surcharge > 0 ? (
+                            <span>
+                              {" "}
+                              · <bdi dir="ltr">+{formatEur(dest.surcharge)}</bdi> {t.cityDrop}
+                            </span>
+                          ) : (
+                            <span> · {t.gateway}</span>
+                          )}
+                        </p>
+                        {less > 0.5 ? (
+                          <p className="mt-2 text-sm text-pine">
+                            <Eur value={less} /> {t.saveVs}
+                          </p>
+                        ) : null}
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            className={`${btnPrimary} disabled:opacity-60`}
+                            disabled={booking?.state === "busy"}
+                            aria-busy={booking?.mode === row.mode.id && booking.state === "busy"}
+                            onClick={() => book(row.mode.id)}
+                          >
+                            {booking?.mode === row.mode.id && booking.state === "busy"
+                              ? ux.sending
+                              : t.book}
+                          </button>
+                          <button
+                            type="button"
+                            className={btnGhost}
+                            onClick={() => save(row.mode.id, row.price.total, row.price.chargeable)}
+                          >
+                            {t.save}
+                          </button>
+                        </div>
+                        <div aria-live="polite">
+                          {booking?.mode === row.mode.id && booking.state === "failed" ? (
+                            <ContactNote
+                              pre={ux.bookFailPre}
+                              post={ux.bookFailPost}
+                              className="mt-3"
+                            />
+                          ) : null}
+                          {booking?.mode === row.mode.id && booking.state === "message" ? (
+                            <p role="alert" className="mt-3 text-sm text-pine">
+                              <bdi>{booking.text}</bdi>
+                            </p>
+                          ) : null}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+
+              {variant === "full" ? (
+                <details className="rl-weight-explanation">
+                  <summary>
+                    <Icon as={Scale} />
+                    {c.weightTitle}
+                  </summary>
+                  <p>{c.weightBody}</p>
+                  <p className="rl-weight-formula">
+                    <bdi dir="ltr">
+                      {dims.l} × {dims.w} × {dims.h} ÷ {lead.mode.divisor} ={" "}
+                      {lead.price.volumetric.toFixed(1)} {t.kg}
+                    </bdi>{" "}
+                    · {t.modes[lead.mode.id].name}
+                  </p>
+                  <div className="rl-weight-visual">
+                    {[
+                      { label: t.scale, value: weight, icon: Scale },
+                      { label: t.volumeWord, value: lead.price.volumetric, icon: Package },
+                    ].map((item) => (
+                      <div key={item.label} className="rl-weight-item">
+                        <div>
+                          <Icon as={item.icon} />
+                          <span>{item.label}</span>
+                          <bdi dir="ltr">
+                            {item.value.toFixed(1)} {t.kg}
+                          </bdi>
+                        </div>
+                        <span className="rl-weight-track" aria-hidden="true">
+                          <span
+                            style={
+                              {
+                                "--rl-weight-fraction": `${(item.value / lead.price.chargeable) * 100}%`,
+                              } as CSSProperties
+                            }
+                          />
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              ) : null}
+              {variant === "full" ? (
+                <div className="mt-4 rounded-xl border border-line bg-paper p-4">
+                  {duty > 0 ? (
+                    <div className="flex items-baseline justify-between gap-3 text-sm">
+                      <span>{t.duty}</span>
+                      <span className="font-medium">
+                        ≈ <Eur value={duty} />
                       </span>
                     </div>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-            <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-line bg-line">
-              <Meter
-                k={t.scale}
-                v={`${weight % 1 === 0 ? weight.toFixed(0) : weight.toFixed(1)} ${t.kg}`}
-              />
-              <Meter k={t.volumeWord} v={`${lead.price.volumetric.toFixed(1)} ${t.kg}`} />
-              <Meter
-                k={t.chargeable}
-                v={`${lead.price.chargeable.toFixed(1)} ${t.kg}`}
-                hot={lead.price.volumetricWins}
-              />
-            </div>
-            {lead.price.volumetricWins ? (
-              <p className="mt-3 text-sm text-pine">{t.boxSets}</p>
-            ) : null}
-
-            {variant === "compact" ? (
-              <ul className="mt-2 divide-y divide-line">
-                {rows.map((row) => (
-                  <li key={row.mode.id} className="flex items-center justify-between gap-3 py-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium">{t.modes[row.mode.id].name}</p>
-                      <p className="text-xs text-muted">
-                        <bdi dir="ltr">
-                          {dayRange(t.dayRange, row.mode.days[0], row.mode.days[1])} ·{" "}
-                          {row.price.chargeable.toFixed(1)} {t.kg}
-                        </bdi>
-                      </p>
-                    </div>
-                    <div className="text-end">
-                      <p className="text-base font-semibold">
-                        <Eur value={row.price.total} />
-                      </p>
-                      <p className="text-xs text-muted">
-                        <Iqd eur={row.price.total} />
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="mt-4 flex flex-col gap-3">
-                <label className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 text-sm leading-relaxed">
-                  <input
-                    type="checkbox"
-                    checked={restrictedOk}
-                    onChange={(event) => setRestrictedOk(event.target.checked)}
-                    className="mt-0.5 size-6 shrink-0 accent-pine"
+                  ) : null}
+                  <RichLine
+                    text={dc.customs}
+                    className={`text-sm leading-relaxed text-muted ${duty > 0 ? "mt-2" : ""}`}
                   />
-                  <span>{dc.declare}</span>
-                </label>
-                <ItemsLink />
-                {rows.map((row) => {
-                  const less = Math.round((rows[0].price.total - row.price.total) * 100) / 100;
-                  return (
-                    <article key={row.mode.id} className="rl-quote-option rl-defer">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                          <h2 className="text-2xl leading-tight font-bold">
-                            {t.modes[row.mode.id].name}
-                          </h2>
-                          <p className="text-sm text-muted">
-                            <bdi dir="ltr">
-                              {dayRange(t.dayRange, row.mode.days[0], row.mode.days[1])}
-                            </bdi>
-                          </p>
-                        </div>
-                        <Price eur={row.price.total} />
-                      </div>
-                      <p className="mt-3 text-sm leading-relaxed text-muted">
-                        {t.modes[row.mode.id].blurb}
-                      </p>
-                      <p className="mt-3 text-sm leading-relaxed text-muted">
-                        <bdi dir="ltr" className="tabular-nums text-ink">
-                          {row.price.chargeable.toFixed(1)} kg × €{row.mode.perKg.toFixed(2)} ×{" "}
-                          {origin.factor.toFixed(2)}
-                        </bdi>
-                        {row.price.minApplied ? <span> · {t.minApplied}</span> : null}
-                        {row.price.bulky ? <span> · {t.bulky}</span> : null}
-                        {dest.surcharge > 0 ? (
-                          <span>
-                            {" "}
-                            · <bdi dir="ltr">+{formatEur(dest.surcharge)}</bdi> {t.cityDrop}
-                          </span>
-                        ) : (
-                          <span> · {t.gateway}</span>
-                        )}
-                      </p>
-                      {less > 0.5 ? (
-                        <p className="mt-2 text-sm text-pine">
-                          <Eur value={less} /> {t.saveVs}
-                        </p>
-                      ) : null}
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          className={`${btnPrimary} disabled:opacity-60`}
-                          disabled={booking?.state === "busy"}
-                          aria-busy={booking?.mode === row.mode.id && booking.state === "busy"}
-                          onClick={() => book(row.mode.id)}
-                        >
-                          {booking?.mode === row.mode.id && booking.state === "busy"
-                            ? ux.sending
-                            : t.book}
-                        </button>
-                        <button
-                          type="button"
-                          className={btnGhost}
-                          onClick={() => save(row.mode.id, row.price.total, row.price.chargeable)}
-                        >
-                          {t.save}
-                        </button>
-                      </div>
-                      <div aria-live="polite">
-                        {booking?.mode === row.mode.id && booking.state === "failed" ? (
-                          <ContactNote
-                            pre={ux.bookFailPre}
-                            post={ux.bookFailPost}
-                            className="mt-3"
-                          />
-                        ) : null}
-                        {booking?.mode === row.mode.id && booking.state === "message" ? (
-                          <p role="alert" className="mt-3 text-sm text-pine">
-                            <bdi>{booking.text}</bdi>
-                          </p>
-                        ) : null}
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {contents === "documents"
+                      ? t.dutyDocs
+                      : safeValue > 0 && safeValue <= 200 && contents === "personal"
+                        ? t.dutyLow
+                        : t.dutyPlan}
+                  </p>
+                  <p className="mt-2 text-xs text-muted">
+                    {dc.iqdRate
+                      .replace("{rate}", IQD_PER_EUR.toLocaleString(NUM_LOCALE))
+                      .replace("{date}", IQD_RATE_UPDATED)}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
-            {variant === "full" ? (
-              <div className="mt-4 rounded-xl border border-line bg-paper p-4">
-                {duty > 0 ? (
-                  <div className="flex items-baseline justify-between gap-3 text-sm">
-                    <span>{t.duty}</span>
-                    <span className="font-medium">
-                      ≈ <Eur value={duty} />
-                    </span>
-                  </div>
-                ) : null}
-                <RichLine
-                  text={dc.customs}
-                  className={`text-sm leading-relaxed text-muted ${duty > 0 ? "mt-2" : ""}`}
-                />
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {contents === "documents"
-                    ? t.dutyDocs
-                    : safeValue > 0 && safeValue <= 200 && contents === "personal"
-                      ? t.dutyLow
-                      : t.dutyPlan}
-                </p>
-                <p className="mt-2 text-xs text-muted">
-                  {dc.iqdRate
-                    .replace("{rate}", IQD_PER_EUR.toLocaleString(NUM_LOCALE))
-                    .replace("{date}", IQD_RATE_UPDATED)}
-                </p>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        {variant === "compact" && valid ? (
-          <Link
-            to="/quote"
-            search={{ from: fromId, to: toId, kg: parseKg(kg) }}
-            className={`${btnPrimary} mt-4 w-full`}
-          >
-            {t.changeBox}
-          </Link>
-        ) : null}
-        {notice ? (
-          <p role="status" className="mt-4 text-sm text-pine">
-            {notice}
-          </p>
-        ) : null}
-        {variant === "full" ? (
-          <p className="mt-4 text-sm leading-relaxed text-muted">{t.footnote}</p>
-        ) : null}
+          {variant === "compact" && valid ? (
+            <Link
+              to="/quote"
+              search={{ from: fromId, to: toId, kg: parseKg(kg) }}
+              className={`${btnPrimary} mt-4 w-full`}
+            >
+              {t.changeBox}
+            </Link>
+          ) : null}
+          {notice ? (
+            <p role="status" className="mt-4 text-sm text-pine">
+              {notice}
+            </p>
+          ) : null}
+          {variant === "full" ? (
+            <p className="mt-4 text-sm leading-relaxed text-muted">{t.footnote}</p>
+          ) : null}
+        </div>
       </div>
 
       {variant === "full" && held && held.length > 0 ? (

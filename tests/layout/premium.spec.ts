@@ -38,34 +38,49 @@ test("slow font swaps keep the mobile hero within the layout-shift budget", asyn
   }
 });
 
-test("homepage calculator keeps dimensions and quote handoff after scrolling", async ({ page }) => {
-  // Exercise the server-rendered page before a slow client bootstrap finishes.
-  await page.route("**/assets/*.js", async (route) => {
-    await new Promise<void>((resolve) => setTimeout(resolve, 500));
-    await route.continue();
-  });
-  await page.goto("/?lang=en", { waitUntil: "commit" });
-  const calculator = page.locator(".rl-deferred-calculator");
-  await expect
-    .poll(
-      async () => {
-        await calculator.scrollIntoViewIfNeeded();
-        return page.locator(".rl-quick-options").isVisible();
-      },
-      { intervals: [100, 250, 500] },
-    )
-    .toBe(true);
-  await expect(page.locator(".rl-quick-options")).toBeVisible();
-  await page.unroute("**/assets/*.js");
-  const length = page.locator(".rl-quick-fields input").nth(1);
-  await length.fill("60");
-  await expect(page.locator(".rl-quick-options .rl-price").first()).toContainText("56.16");
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await calculator.scrollIntoViewIfNeeded();
+test("shipping stays on its own route even with a remembered delivery preference", async ({
+  page,
+  context,
+}) => {
+  await context.addCookies([
+    { name: "rl-service", value: "delivery", url: "http://localhost:8788" },
+  ]);
+  await page.addInitScript(() => localStorage.setItem("rl-service-v1", "delivery"));
+  for (const route of ["/?lang=en", "/stores?lang=en", "/?cat=fashion&lang=en"]) {
+    await page.goto(route, { waitUntil: "networkidle" });
+    await expect(page.locator("main h1")).toBeVisible();
+    await expect(page.locator('main input[inputmode="decimal"]')).toHaveCount(0);
+    await expect(page.locator(".rl-quote-option, .rl-quick-calc")).toHaveCount(0);
+  }
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  await page.locator(".rl-hero-secondary").click();
+  await expect(page).toHaveURL(/\/quote/);
+  await expect(page.locator(".rl-shipping-page h1")).toBeVisible();
+  await expect(page.locator(".rl-quote-option")).toHaveCount(3);
+});
+
+test("shipping preserves quote parameters, recalculates rates and saves the chosen quote", async ({
+  page,
+}) => {
+  await page.goto("/quote?lang=en&l=60&w=30&h=20&kg=3.2", { waitUntil: "networkidle" });
+  const length = page.locator(".rl-quote-card .col-span-2 input").first();
   await expect(length).toHaveValue("60");
-  await page.locator(".rl-calc-note a").click();
-  await expect(page).toHaveURL(/\/quote\?.*l=60/);
-  await expect(page.locator('input[inputmode="decimal"]').nth(1)).toHaveValue("60");
+  await expect(page.locator(".rl-quote-option .rl-price").first()).toContainText("56.16");
+  await length.fill("40");
+  await expect(page.locator(".rl-quote-option .rl-price").first()).toContainText("37.44");
+  await page
+    .locator(".rl-quote-option")
+    .first()
+    .getByRole("button", { name: "Keep on this device", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toBeVisible();
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(page.locator(".rl-quote-stack > section li")).toHaveCount(1);
+  await page.locator(".rl-quote-stack > section").getByRole("button").click();
+  await expect(page.locator(".rl-quote-stack > section")).toHaveCount(0);
+  await length.fill("0");
+  await expect(length).toHaveAttribute("aria-invalid", "true");
+  await expect(page.locator(".rl-quote-option")).toHaveCount(0);
 });
 
 const ROUTES = [
@@ -303,10 +318,12 @@ test("hero: the marketplace and shipping buttons sit under the AI action", async
   }
 });
 
-test("home: the parcel card only links to tracking and invents no shipment", async ({ page }) => {
+test("shipping: the parcel card only links to tracking and invents no shipment", async ({
+  page,
+}) => {
   for (const lang of ["ckb", "ar", "en"]) {
-    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    const card = page.locator(".rl-track-card");
+    await page.goto(`/quote?lang=${lang}`, { waitUntil: "networkidle" });
+    const card = page.locator(".rl-shipping-track");
     await expect(card).toHaveCount(1);
     await expect(card.locator("a")).toHaveAttribute(
       "href",
@@ -315,9 +332,6 @@ test("home: the parcel card only links to tracking and invents no shipment", asy
     // No parcel number, status or progress bar unless a real shipment is looked up on /track.
     await expect(card).not.toContainText(/RL-\d/);
     await expect(card.locator("[role=progressbar], progress")).toHaveCount(0);
-    // The hero card's white primary keeps readable red type in both themes.
-    const cta = page.locator(".rl-ai-hero-cta");
-    await expect(cta).toHaveCSS("background-color", "rgb(255, 255, 255)");
   }
 });
 

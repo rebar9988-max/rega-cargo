@@ -1,4 +1,3 @@
-import { lazy, Suspense, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -10,27 +9,13 @@ import {
   Sparkles,
   Warehouse,
 } from "lucide-react";
-import { Chip, Icon, Deferred, Skeleton } from "./ui";
+import { Icon } from "./ui";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { heroCopy } from "@/lib/hero-copy";
 import { rlAiEnabled } from "@/lib/ai/flag";
 import { BRANDS } from "@/lib/catalog";
-import type { Service } from "@/lib/service-choice";
-
-const QuickQuote = lazy(() =>
-  import("./quote-panel").then(({ QuotePanel }) => ({ default: QuotePanel })),
-);
-
-export function PremiumHome({
-  service,
-  onService,
-  children,
-}: {
-  service: Service;
-  onService: (next: Service) => void;
-  children?: ReactNode;
-}) {
+export function PremiumHome() {
   const { lang, t } = useI18n();
   const c = redesignCopy(lang);
   const h = heroCopy(lang);
@@ -100,67 +85,6 @@ export function PremiumHome({
             </p>
           </div>
         </div>
-      </section>
-      {/* Parcel tracking entry (Figma "Your parcels" 1:31). It shows no parcel, status or
-          progress of its own: those exist only for a real shipment number on /track. */}
-      <section className="page rl-track-entry" aria-labelledby="rl-home-track">
-        <div className="rl-track-card">
-          <span className="rl-track-icon" aria-hidden="true">
-            <Icon as={Box} />
-          </span>
-          <div className="rl-track-copy">
-            <p className="rl-eyebrow">{t.trackKicker}</p>
-            <h2 id="rl-home-track">{t.trackTitle}</h2>
-          </div>
-          <Link to="/track" search={{ id: undefined }} className="rl-text-link rl-track-link">
-            {t.trackButton}
-            <Icon as={ArrowRight} directional />
-          </Link>
-        </div>
-      </section>
-      <section className="page rl-section rl-stack" aria-labelledby="rl-home-calc">
-        <div className="rl-section-heading">
-          <div>
-            <p className="rl-eyebrow">{c.shipping}</p>
-            <h2 id="rl-home-calc">{c.calculator}</h2>
-            <p>{c.calculatorBody}</p>
-          </div>
-          <div className="rl-row">
-            <Chip selected={service === "bazaar"} onClick={() => onService("bazaar")}>
-              {c.marketplace}
-            </Chip>
-            <Chip selected={service === "delivery"} onClick={() => onService("delivery")}>
-              {c.shipping}
-            </Chip>
-          </div>
-        </div>
-        <Deferred
-          className="rl-deferred-calculator"
-          fallback={
-            <div className="rl-calc-placeholder">
-              <Skeleton />
-              <Link
-                to="/quote"
-                search={{ from: undefined, to: undefined, kg: undefined }}
-                className="rl-button"
-                data-variant="secondary"
-              >
-                {t.hero.fullQuote}
-              </Link>
-            </div>
-          }
-        >
-          <Suspense
-            fallback={
-              <div className="rl-calc-placeholder">
-                <Skeleton />
-              </div>
-            }
-          >
-            <QuickQuote variant="quick" />
-          </Suspense>
-        </Deferred>
-        {children}
       </section>
       {/* The category list lives in one place, the marketplace (/stores); the hero's primary
           button and the bottom bar lead there. */}

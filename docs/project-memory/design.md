@@ -23,3 +23,7 @@ Guards: `src/lib/layout-lock.test.ts` (in `npm test`) and `tests/layout/` Playwr
 ## Content rules that affect design
 - No fake data (prices, ratings, stock, reviews, delivery promises). Catalogue photos are labelled examples.
 - Store/brand logos keep a visible "not an official partner" note.
+
+## Shipping separation (source change pending release, 2026-10-12)
+
+`components/shipping-page.tsx` and `styles/shipping.css` own the `/quote` presentation. `components/bazaar-page.tsx` owns the store catalogue. Shipping forms and tracking are no longer embedded in the homepage; its shopping/shipping buttons navigate to separate routes. The full quote uses route/package/options sections, stacked mobile cards and a sticky desktop input column. Pricing logic and brand assets are unchanged. See [verification report](../redesign/shipping-separation.md).

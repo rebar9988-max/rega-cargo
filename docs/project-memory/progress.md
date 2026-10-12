@@ -5,6 +5,8 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 ## Active / open PRs
 
+- 2026-10-12: shipping/bazaar separation prepared on `claude/separate-shipping-bazaar`; dedicated `/quote` design, no home/catalogue calculator or service switch. Not merged/deployed. [Report and verification](../redesign/shipping-separation.md).
+
 | PR | Branch | Title | State |
 |---|---|---|---|
 | #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open; verified 2026-10-12: all its design commits are ancestors of `main` (via #60) and its product-link part is in `main` via #53, so nothing unique remains. Owner decides whether to close; not touched |

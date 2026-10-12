@@ -42,6 +42,11 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - Fix (owner): GitHub → Settings (account `rebar9988-max`) → Billing and plans → fix the failed payment method or raise the Actions spending limit (or wait for the included minutes to reset next cycle); then re-run the latest run. Until then no PR has a green quality gate, so none should be merged.
 - Evidence: `gh api repos/rebar9988-max/rega-cargo/check-runs/114690493529/annotations`; Actions API `get_workflow_job` / `list_workflow_runs`.
 
+### I-9 · Shipping calculator and service choice mixed with the homepage/catalogue
+- Root cause: `PremiumHome` rendered the quick calculator unconditionally, while `BazaarPage` owned delivery preference state and could mount `DeliveryHub` in place of the catalogue.
+- Source fix on `claude/separate-shipping-bazaar`: dedicated `ShippingPage` on `/quote`, catalogue-only `BazaarPage`, and navigation from home to each service. Responsive shipping restyle; pricing/booking logic preserved.
+- Not merged/deployed. [Verification](../redesign/shipping-separation.md).
+
 ## Closed
 
 ### C-4 · FIXED 2026-10-12 — product-link panel shifted the request form (CLS 0.26) [was I-8]

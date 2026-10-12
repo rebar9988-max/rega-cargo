@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-12 ~18:30 UTC**, against `main` @ `361f954` (PR #57 merged and deployed)
+- Last memory update: **2026-10-12**, shipping-separation branch based on `main` @ `238b755`; PR #57 remains the latest verified production code release.
 
 ## Current state (verified 2026-10-11 15:14–15:38 UTC)
 
@@ -22,9 +22,12 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 | Sign-in | Worker logs `auth is disabled (VITE_AUTH_ENABLED=false)`; Better Auth fails closed and phone codes cannot be sent, so nobody can sign in (I-3, I-6) | `wrangler tail` |
 | GitHub Actions | **BROKEN — blocker for merging (I-7).** No job starts since ~15:38 UTC 2026-10-11, on `main` too. Verified cause: account billing (failed payment or spending limit) — owner must fix in Billing and plans | check-run annotation, 2026-10-12 06:31 |
 | Production smoke (2026-10-12 06:48) | Live `853e698b`: all required routes 200, `<html lang="ckb" dir="rtl">`, `/api/ai/status` enabled, banned searches (vodka, cigarettes, vape, pork bacon) list nothing, legacy host 301; hero card + tracking card render at 360/390px light/dark in ckb/ar/en with no horizontal scroll; `wrangler tail` 63/63 ok | `curl`, Playwright, `wrangler tail` |
+| Shipping/bazaar separation | Source fix prepared on `claude/separate-shipping-bazaar`; not merged/deployed. Dedicated shipping page on `/quote`, catalogue-only `/stores`, no home calculator/service switch | [verification report](docs/redesign/shipping-separation.md) |
 | Banned-products protection | Holds via the bundled list in `src/lib/compliance/rules.ts` | `wrangler tail`: "using bundled list" |
 
 ## Next safe continuation point
+
+- Review the shipping-separation branch and [verification](docs/redesign/shipping-separation.md); owner approval is required for merge/production deployment.
 
 1. **Owner action (I-7)** — GitHub Actions stays blocked by billing (owner chose not to pay; included minutes reset next billing cycle). Until then run the full quality gate locally in the official Playwright image before any merge (decision 2026-10-12). Once Actions runs again, re-run CI on `main` to confirm `9ba82e9` is green.
 2. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").

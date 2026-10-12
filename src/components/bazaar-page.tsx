@@ -1,14 +1,11 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Heart, SlidersHorizontal, ArrowUpRight, Info } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { PremiumHome } from "./premium-home";
-import type { DeliveryHub, ServiceSwitch } from "./delivery-hub";
 import { Shell, PageHeader } from "./shell";
 import { Badge, BottomSheet, Button, Chip, Icon, Select, Skeleton } from "./ui";
 import { Field } from "./field";
 import { CategoryDirectory, SubcategoryPanel } from "./category-directory";
 import { responsiveImage } from "@/lib/images";
-import { readService, writeService, type Service } from "@/lib/service-choice";
 import type { BazaarSearch } from "@/lib/bazaar-search";
 import { selectBazaar } from "@/lib/bazaar-listing";
 import { catalogueCopy } from "@/lib/catalogue-copy";
@@ -19,16 +16,8 @@ import { storeCopy } from "@/lib/store-copy";
 import { readFavs, STORES, storeById, storeLogo, writeFavs } from "@/lib/stores";
 import { PUBLISHED_STORE_CATEGORIES, isPublishedCategory } from "@/lib/catalogue";
 
-type HomeComponents = {
-  PremiumHome: typeof PremiumHome;
-  DeliveryHub: typeof DeliveryHub;
-  ServiceSwitch: typeof ServiceSwitch;
-};
-type BazaarProps =
-  | { home?: false; initialService?: Service; homeComponents?: never }
-  | { home: true; initialService?: Service; homeComponents: HomeComponents };
-
-export function BazaarPage({ home, initialService = "bazaar", homeComponents }: BazaarProps = {}) {
+/** Store catalogue only; shipping lives on /quote in ShippingPage. */
+export function BazaarPage({ home = false }: { home?: boolean } = {}) {
   const { lang } = useI18n();
   const t = storeCopy(lang),
     c = redesignCopy(lang),
@@ -39,19 +28,6 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
   const [sheet, setSheet] = useState(false);
   const [favs, setFavs] = useState<string[]>([]);
   useEffect(() => setFavs(readFavs()), []);
-  const [service, setService] = useState<Service>(initialService);
-  useEffect(() => {
-    if (!home) return;
-    const stored = readService();
-    if (stored !== initialService) {
-      setService(stored);
-      writeService(stored);
-    }
-  }, [home, initialService]);
-  const chooseService = (next: Service) => {
-    setService(next);
-    writeService(next);
-  };
   const setFilter = (patch: Partial<BazaarSearch>) => {
     void navigate({
       to: home ? "/" : "/stores",
@@ -136,259 +112,227 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
       </Button>
     </div>
   );
-  if (
-    home &&
-    !params.q &&
-    !params.cat &&
-    !params.sub &&
-    !params.fav &&
-    !params.who &&
-    !params.store &&
-    !params.country
-  )
-    return (
-      <Shell>
-        <homeComponents.PremiumHome service={service} onService={chooseService}>
-          {service === "delivery" ? <homeComponents.DeliveryHub embedded /> : null}
-        </homeComponents.PremiumHome>
-      </Shell>
-    );
   return (
     <Shell search={{ q: params.q ?? "", setQ: (q) => setFilter({ q: q || undefined }) }}>
-      {home ? <homeComponents.ServiceSwitch value={service} onChange={chooseService} /> : null}
-      {home && service === "delivery" ? (
-        <homeComponents.DeliveryHub />
-      ) : (
-        <>
-          <PageHeader kicker={c.marketplace} title={c.storesTitle} lede={t.lede} />
-          <section className="page rl-marketplace">
-            {/* One toolbar: the filter sheet button first, then the audience chips in a single
+      <PageHeader kicker={c.marketplace} title={c.storesTitle} lede={t.lede} />
+      <section className="page rl-marketplace">
+        {/* One toolbar: the filter sheet button first, then the audience chips in a single
                 scrollable row. */}
-            <div className="rl-market-toolbar">
-              <Button
-                variant="secondary"
-                className="rl-mobile-filters"
-                onClick={() => setSheet(true)}
+        <div className="rl-market-toolbar">
+          <Button variant="secondary" className="rl-mobile-filters" onClick={() => setSheet(true)}>
+            <Icon as={SlidersHorizontal} />
+            <span className="rl-filters-label">{c.filters}</span>
+          </Button>
+          <div className="rl-chip-row rl-audience-chips">
+            {(["women", "men", "kids"] as const).map((who) => (
+              <Chip
+                key={who}
+                selected={params.who === who}
+                onClick={() => setFilter({ who: params.who === who ? undefined : who })}
               >
-                <Icon as={SlidersHorizontal} />
-                <span className="rl-filters-label">{c.filters}</span>
-              </Button>
-              <div className="rl-chip-row rl-audience-chips">
-                {(["women", "men", "kids"] as const).map((who) => (
-                  <Chip
-                    key={who}
-                    selected={params.who === who}
-                    onClick={() => setFilter({ who: params.who === who ? undefined : who })}
-                  >
-                    {d.audience[who]}
-                  </Chip>
+                {d.audience[who]}
+              </Chip>
+            ))}
+          </div>
+        </div>
+        <p className="rl-partner-note">
+          <Icon as={Info} />
+          <span>{c.noPartner}</span>
+        </p>
+        <div className="rl-market-layout">
+          <aside className="rl-filter-sidebar" aria-label={c.filters}>
+            <h2>{c.filters}</h2>
+            {filters}
+          </aside>
+          <div className="rl-market-results" aria-busy={pending}>
+            {!params.cat && !params.q && !params.who && !params.store && !params.fav ? (
+              <CategoryDirectory lang={lang} to={home ? "/" : "/stores"} />
+            ) : (
+              <SubcategoryPanel lang={lang} to={home ? "/" : "/stores"} params={params} />
+            )}
+            {pending ? (
+              <div className="rl-results-grid">
+                {[0, 1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="rl-product-skeleton" />
                 ))}
               </div>
-            </div>
-            <p className="rl-partner-note">
-              <Icon as={Info} />
-              <span>{c.noPartner}</span>
-            </p>
-            <div className="rl-market-layout">
-              <aside className="rl-filter-sidebar" aria-label={c.filters}>
-                <h2>{c.filters}</h2>
-                {filters}
-              </aside>
-              <div className="rl-market-results" aria-busy={pending}>
-                {!params.cat && !params.q && !params.who && !params.store && !params.fav ? (
-                  <CategoryDirectory lang={lang} to={home ? "/" : "/stores"} />
-                ) : (
-                  <SubcategoryPanel lang={lang} to={home ? "/" : "/stores"} params={params} />
-                )}
-                {pending ? (
-                  <div className="rl-results-grid">
-                    {[0, 1, 2, 3].map((i) => (
-                      <Skeleton key={i} className="rl-product-skeleton" />
-                    ))}
+            ) : (
+              <>
+                {!results.goods.length &&
+                !results.stores.length &&
+                (!params.cat || isPublishedCategory(params.cat)) ? (
+                  <div className="rl-empty-state" role="status">
+                    <h2>{c.emptyTitle}</h2>
+                    <p>{params.cat ? catalogueCopy(lang).emptyCategory : c.emptyBody}</p>
+                    <Button variant="secondary" onClick={clear}>
+                      {c.clear}
+                    </Button>
                   </div>
-                ) : (
-                  <>
-                    {!results.goods.length &&
-                    !results.stores.length &&
-                    (!params.cat || isPublishedCategory(params.cat)) ? (
-                      <div className="rl-empty-state" role="status">
-                        <h2>{c.emptyTitle}</h2>
-                        <p>{params.cat ? catalogueCopy(lang).emptyCategory : c.emptyBody}</p>
-                        <Button variant="secondary" onClick={clear}>
-                          {c.clear}
-                        </Button>
-                      </div>
-                    ) : null}
-                    {results.goods.length ? (
-                      <section aria-labelledby="rl-samples">
-                        <div className="rl-result-heading">
-                          <h2 id="rl-samples">{c.samples}</h2>
-                          <p>{c.samplesBody}</p>
-                        </div>
-                        <ul
-                          className="rl-results-grid"
-                          data-layout="card-grid"
-                          data-layout-cols="catalogue"
-                        >
-                          {results.goods.map((good, index) => (
-                            <li key={good.id} className="rl-product-card" data-good={good.id}>
-                              <Link
-                                to="/stores/request"
-                                search={{ store: good.storeId, intent: "buy", item: good.id }}
-                                className="rl-product-image"
-                              >
-                                <img
-                                  {...responsiveImage(
-                                    good.image,
-                                    "(min-width: 1024px) 280px, (min-width: 768px) 30vw, 45vw",
-                                  )}
-                                  alt={t.goods[good.id]}
-                                  width={640}
-                                  height={640}
-                                  loading={index < 2 ? "eager" : "lazy"}
-                                  decoding="async"
-                                />
-                                <Badge>{c.exampleTitle}</Badge>
-                              </Link>
-                              <div className="rl-product-body">
-                                <p className="rl-eyebrow">
-                                  <bdi dir="ltr">{storeById(good.storeId)?.name}</bdi>
-                                </p>
-                                <h3>{t.goods[good.id]}</h3>
-                                <p className="rl-muted">{t.awaiting}</p>
-                                <Link
-                                  to="/stores/request"
-                                  search={{ store: good.storeId, intent: "buy", item: good.id }}
-                                  className="rl-button"
-                                  data-variant="primary"
-                                >
-                                  {t.order}
-                                </Link>
-                                <div className="rl-product-quick" aria-label={c.quickActions}>
-                                  <Link
-                                    to="/stores/request"
-                                    search={{ store: good.storeId, intent: "ship", item: good.id }}
-                                  >
-                                    {t.shipOwn}
-                                  </Link>
-                                </div>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </section>
-                    ) : null}
-                    {results.stores.length ? (
-                      <section aria-labelledby="rl-store-list" className="rl-defer">
-                        <div className="rl-result-heading">
-                          <h2 id="rl-store-list">{t.storesHeading}</h2>
-                          <p>{c.noPartner}</p>
-                        </div>
-                        <ul
-                          className="rl-results-grid"
-                          data-layout="card-grid"
-                          data-layout-cols="catalogue"
-                        >
-                          {results.stores.map((store) => (
-                            <li
-                              className="rl-store-card rl-card"
-                              key={store.id}
-                              data-store={store.id}
+                ) : null}
+                {results.goods.length ? (
+                  <section aria-labelledby="rl-samples">
+                    <div className="rl-result-heading">
+                      <h2 id="rl-samples">{c.samples}</h2>
+                      <p>{c.samplesBody}</p>
+                    </div>
+                    <ul
+                      className="rl-results-grid"
+                      data-layout="card-grid"
+                      data-layout-cols="catalogue"
+                    >
+                      {results.goods.map((good, index) => (
+                        <li key={good.id} className="rl-product-card" data-good={good.id}>
+                          <Link
+                            to="/stores/request"
+                            search={{ store: good.storeId, intent: "buy", item: good.id }}
+                            className="rl-product-image"
+                          >
+                            <img
+                              {...responsiveImage(
+                                good.image,
+                                "(min-width: 1024px) 280px, (min-width: 768px) 30vw, 45vw",
+                              )}
+                              alt={t.goods[good.id]}
+                              width={640}
+                              height={640}
+                              loading={index < 2 ? "eager" : "lazy"}
+                              decoding="async"
+                            />
+                            <Badge>{c.exampleTitle}</Badge>
+                          </Link>
+                          <div className="rl-product-body">
+                            <p className="rl-eyebrow">
+                              <bdi dir="ltr">{storeById(good.storeId)?.name}</bdi>
+                            </p>
+                            <h3>{t.goods[good.id]}</h3>
+                            <p className="rl-muted">{t.awaiting}</p>
+                            <Link
+                              to="/stores/request"
+                              search={{ store: good.storeId, intent: "buy", item: good.id }}
+                              className="rl-button"
+                              data-variant="primary"
                             >
-                              <div className="rl-store-top">
-                                <span className="rl-store-logo">
-                                  <img
-                                    src={storeLogo(store.id)}
-                                    alt={store.name}
-                                    width={128}
-                                    height={32}
-                                    loading="lazy"
-                                    decoding="async"
-                                  />
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  aria-pressed={favs.includes(store.id)}
-                                  aria-label={`${t.favorites} · ${store.name}`}
-                                  onClick={() => toggle(store.id)}
-                                >
-                                  <Heart
-                                    aria-hidden="true"
-                                    className="rl-icon"
-                                    fill={favs.includes(store.id) ? "currentColor" : "none"}
-                                  />
-                                </Button>
-                              </div>
-                              <h3>
-                                <bdi dir="ltr">{store.name}</bdi>
-                              </h3>
-                              <Badge>{t.external}</Badge>
-                              <p className="rl-muted">
-                                {store.country === "DE"
-                                  ? t.germany
-                                  : store.country === "INT"
-                                    ? t.international
-                                    : store.country}{" "}
-                                ·{" "}
-                                <a
-                                  href={store.url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="rl-store-site"
-                                  aria-label={`${t.open} · ${store.host}`}
-                                >
-                                  <bdi dir="ltr">{store.host}</bdi>
-                                  <Icon as={ArrowUpRight} directional />
-                                </a>
-                              </p>
-                              <p className="rl-muted rl-store-categories">
-                                {store.categories
-                                  .filter(isPublishedCategory)
-                                  .map((category) => t.categories[category])
-                                  .join(" · ")}
-                              </p>
-                              <details>
-                                <summary>{t.external}</summary>
-                                <p>{t.notes[store.note]}</p>
-                                {store.caution.map((caution) => (
-                                  <p key={caution}>{t.cautions[caution]}</p>
-                                ))}
-                              </details>
-                              {/* One primary action; "I bought it myself" is a quiet link under it
-                                  and the store's own site is the linked domain above. */}
+                              {t.order}
+                            </Link>
+                            <div className="rl-product-quick" aria-label={c.quickActions}>
                               <Link
                                 to="/stores/request"
-                                search={{ store: store.id, intent: "buy", item: undefined }}
-                                className="rl-button rl-store-primary"
-                                data-variant="primary"
+                                search={{ store: good.storeId, intent: "ship", item: good.id }}
                               >
-                                {t.assist}
+                                {t.shipOwn}
                               </Link>
-                              <div className="rl-store-links">
-                                <Link
-                                  to="/stores/request"
-                                  search={{ store: store.id, intent: "ship", item: undefined }}
-                                  className="rl-text-action"
-                                >
-                                  {t.shipOwn}
-                                </Link>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </section>
-                    ) : null}
-                  </>
-                )}
-              </div>
-            </div>
-          </section>
-          <BottomSheet open={sheet} onClose={() => setSheet(false)} title={c.filters}>
-            {filters}
-            <Button onClick={() => setSheet(false)}>{c.showResults}</Button>
-          </BottomSheet>
-        </>
-      )}
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
+                {results.stores.length ? (
+                  <section aria-labelledby="rl-store-list" className="rl-defer">
+                    <div className="rl-result-heading">
+                      <h2 id="rl-store-list">{t.storesHeading}</h2>
+                      <p>{c.noPartner}</p>
+                    </div>
+                    <ul
+                      className="rl-results-grid"
+                      data-layout="card-grid"
+                      data-layout-cols="catalogue"
+                    >
+                      {results.stores.map((store) => (
+                        <li className="rl-store-card rl-card" key={store.id} data-store={store.id}>
+                          <div className="rl-store-top">
+                            <span className="rl-store-logo">
+                              <img
+                                src={storeLogo(store.id)}
+                                alt={store.name}
+                                width={128}
+                                height={32}
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            </span>
+                            <Button
+                              variant="ghost"
+                              aria-pressed={favs.includes(store.id)}
+                              aria-label={`${t.favorites} · ${store.name}`}
+                              onClick={() => toggle(store.id)}
+                            >
+                              <Heart
+                                aria-hidden="true"
+                                className="rl-icon"
+                                fill={favs.includes(store.id) ? "currentColor" : "none"}
+                              />
+                            </Button>
+                          </div>
+                          <h3>
+                            <bdi dir="ltr">{store.name}</bdi>
+                          </h3>
+                          <Badge>{t.external}</Badge>
+                          <p className="rl-muted">
+                            {store.country === "DE"
+                              ? t.germany
+                              : store.country === "INT"
+                                ? t.international
+                                : store.country}{" "}
+                            ·{" "}
+                            <a
+                              href={store.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="rl-store-site"
+                              aria-label={`${t.open} · ${store.host}`}
+                            >
+                              <bdi dir="ltr">{store.host}</bdi>
+                              <Icon as={ArrowUpRight} directional />
+                            </a>
+                          </p>
+                          <p className="rl-muted rl-store-categories">
+                            {store.categories
+                              .filter(isPublishedCategory)
+                              .map((category) => t.categories[category])
+                              .join(" · ")}
+                          </p>
+                          <details>
+                            <summary>{t.external}</summary>
+                            <p>{t.notes[store.note]}</p>
+                            {store.caution.map((caution) => (
+                              <p key={caution}>{t.cautions[caution]}</p>
+                            ))}
+                          </details>
+                          {/* One primary action; "I bought it myself" is a quiet link under it
+                                  and the store's own site is the linked domain above. */}
+                          <Link
+                            to="/stores/request"
+                            search={{ store: store.id, intent: "buy", item: undefined }}
+                            className="rl-button rl-store-primary"
+                            data-variant="primary"
+                          >
+                            {t.assist}
+                          </Link>
+                          <div className="rl-store-links">
+                            <Link
+                              to="/stores/request"
+                              search={{ store: store.id, intent: "ship", item: undefined }}
+                              className="rl-text-action"
+                            >
+                              {t.shipOwn}
+                            </Link>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+      <BottomSheet open={sheet} onClose={() => setSheet(false)} title={c.filters}>
+        {filters}
+        <Button onClick={() => setSheet(false)}>{c.showResults}</Button>
+      </BottomSheet>
     </Shell>
   );
 }
