@@ -1642,7 +1642,7 @@
     list-style: none;
     margin-block: 0;
     display: flex;
-    gap: var(--rl-space-1);
+    gap: var(--rl-space-0);
     padding-block: var(--rl-space-2) 0;
     overflow-x: auto;
     overscroll-behavior-inline: contain;
