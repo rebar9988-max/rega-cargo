@@ -1,7 +1,22 @@
 # Progress
 
 Use Git history and PR descriptions for detail; record only status and pointers here.
+
+Autonomous P0 continuation, 2026-10-12: actual rate binding fail-open, token/limiter/stream errors and challenge/identify namespace failures reproduced before repair. Minimal changes and nine additional cases are in the same draft #68; 445 Node22 tests pass with four existing skips, typecheck/lint/build/dry run pass, public assets identical. Full pinned-Docker browser run passed:379 pass/one flaky passed on existing retry/12 existing skips, exit0. No deployment/remote CI claimed. Details: [AI audit](../ai/audit-2026-10-11.md). Ten other active PR file lists have no overlap with these six source/test files.
+
+Final live baseline, 06:54 UTC: ten desktop/mobile public pages and both expected missing-token403 probes pass; no model inference or authenticated sensitive action. Final06:57 production remains10723cf0 at100%. New repairs are not deployed; actual external gates remain pending.
+
+2026-10-12: owner-requested TinyFish investigation completed within verified zero-rate Search/Fetch. Negative wallet balance and unconfirmed authenticated profiles block paid browser automation; no top-up or new profile was created. Fresh read-only checks preserve the existing Hyperdrive/billing blockers and production version. [Concrete steps and evidence](../ai/access-recovery-2026-10-12.md) are recorded in this same draft #68; runtime remains unchanged, and no remote CI/merge/deploy is claimed.
+
+This documentation-only follow-up reran Node 22 checks: 436 pass / zero fail / four existing skips, typecheck, lint with the same five existing warnings, empty-DB build and Wrangler dry run all pass. All 148 public files remain byte-identical. No new full visual or live inference run is claimed.
+
 Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
+
+Continuation checkpoint (16:10 UTC): main memory changes through `486e442` are preserved in the fix branch. [Draft #68](https://github.com/rebar9988-max/rega-cargo/pull/68), branch `fix/rl-ai-budget-hardening-20261011`, contains tested P0 AI and verification repairs (`e430bbf`, `f210498`). It targets the dedicated review base, is unmerged and has no remote Actions run. The [audit](../ai/audit-2026-10-11.md) records actual tests, an earlier failed full visual run, the passing full repeat with three flaky cases, final 41-pass focused run, byte-identical public assets and all blockers. No database or deployment change was made by this work.
+
+Additional open PRs inspected: #64 marketplace translations, #65 database recovery documentation, #66 store/catalogue translations. Their files were left untouched. Do not close or merge them based on assumed overlap.
+
+Memory follow-up quality gate: Node 22 **436 passed, zero failed, four existing skips** (including all five memory guards); typecheck/lint/empty-DB build pass. No runtime/dependency/workflow change after tested `f210498`; no new screenshot baseline. Draft #68 remains unmerged/undeployed with no remote CI run.
 
 ## Active / open PRs
 

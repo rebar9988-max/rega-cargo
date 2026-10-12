@@ -7,8 +7,8 @@ claude.ai account/session, not the repo — **re-check every session; never assu
 
 | Integration | Status (last verified) | Use for |
 |---|---|---|
-| GitHub MCP | working, 2026-10-11 (branches, PRs, Actions runs) | PRs, CI, logs. No `gh` CLI in cloud sessions |
-| Cloudflare REST API (env token) | working, partial scope, re-verified 2026-10-11 15:14 (deployments, bindings, `wrangler tail`). **Cannot read/edit Hyperdrive** (API and `wrangler hyperdrive get`) | Read-only Worker checks |
+| GitHub MCP / CLI | session-dependent; this session's `gh` can read refs/PRs/Actions and publish draft #68 | Actions billing-usage/protection reads return 403; no allowance or zero-spend guarantee inferred |
+| Cloudflare REST / connector | session-dependent; this session's connector read Worker settings/deployments, Hyperdrive origin (GET 200) and bounded privacy-safe telemetry | Billing/usage reads fail 10000. Hyperdrive edit/credential rollback not verified; earlier token failures remain historical, not universal |
 | Wrangler CLI | via `npm ci`; `cf:dry-run` used in CI | Bundle check, `tail`. Deploy = owner approval |
 | Neon MCP | working, **write mode**, re-verified 2026-10-11 15:20 (read-only SQL on `old-cherry`, `misty`) | Schema/data checks. Writes = owner approval |
 | Workers AI (`AI` binding) | live in production, 2026-10-11 (`/api/ai/status`) | R&L AI identification |
@@ -16,8 +16,14 @@ claude.ai account/session, not the repo — **re-check every session; never assu
 | Context7 | working (2026-10-11 report) | Library/platform docs |
 | Figma | View seat only (2026-10-11 report) | Read designs; never edit the logo |
 | Playwright + Chromium | `/opt/pw-browsers/chromium` | Production browser QA |
-| Supabase, Lovable, TinyFish, Canva, Adobe | available but **not used** (other stack, metered, or marketing only) | — |
+| TinyFish | 2026-10-12: wallet -$0.008, auto-reload unconfigured; no recorded Cloudflare/GitHub sign-in. Search/Fetch contract rate zero; two searches and one official-doc fetch completed | Paid browser automation not started; [recovery evidence](../ai/access-recovery-2026-10-12.md) |
+| Supabase, Lovable, Canva, Adobe | available but **not used** (other stack, metered, or marketing only) | — |
 | WhatsApp / Twilio / Turnstile | **not configured** in production | Phone sign-in stays closed |
 
-Free-tier constraints: Neon free projects (0.25–2 CU, 1 GiB/branch), Workers + Hyperdrive on the
-current plan (staging `limits.cpu_ms` implies Workers Paid on that account — verify before relying on it).
+Neon `free_v3`, three existing branches / limit ten, and bounded usage were independently verified in this session. Current official Free limits are 100 CU-hours/month/project, 1 GB/project and 5 GB transfer/month/project; exhaustion suspends/fails operations rather than automatically upgrading. No branch, compute, extension, credential or paid plan was created. See [the audit](../ai/audit-2026-10-11.md) for the dated evidence.
+
+Cloudflare `standard` usage model and staging CPU limits do not establish billing/free quota or actual AI neurons. No paid inference, new provider or top-up was activated. CLI auth is unavailable here; the prior session's CLI availability must not be generalized.
+
+At 2026-10-12 06:06 UTC, Cloudflare billing still returns 10000 while Hyperdrive GET succeeds; GitHub billing usage still returns 403 with the current API version. Official documentation requires Account/Billing/Read and personal Plan/read respectively. Those requirements were read with TinyFish, not granted by it; actual complete token policies were not retrieved.
+
+Autonomous continuation rechecked resources at 06:32 UTC: Cloudflare billing 10000, GitHub usage 403, Hyperdrive neondb and production 10723cf0 unchanged. Credential/capability bindings in the managed environment remain empty. User/account API-token introspection at 06:49 returned 1000 Invalid API Token; complete scope policy is still unavailable. This does not invalidate the connector's successful resource GETs or establish an expired connection. No token identifier/value/policy was exported, rotated or changed. Existing Neon free_v3 remains verified; staging read-only aggregates and schema comparison are documented in the [AI audit](../ai/audit-2026-10-11.md).
