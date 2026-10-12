@@ -1,6 +1,12 @@
 import { aiEnv, turnstileSiteKey } from "../../../../src/lib/ai/env.server";
 
-export default async function challengeRoute() {
+export default async function challengeRoute(event: { req: Request }) {
+  // Tokens are cheap to request, so issuing them is rate-limited per IP too.
+  const { allow } = await import("../../../../src/lib/rate-limit.server");
+  const ip = event.req.headers.get("cf-connecting-ip")?.trim() || "unknown";
+  if (!(await allow("challenge", ip))) {
+    return Response.json({ mode: "unavailable" }, { status: 429, headers: { "cache-control": "no-store" } });
+  }
   const siteKey = turnstileSiteKey();
   if (siteKey && aiEnv().turnstileSecret) {
     return Response.json({ mode: "turnstile", siteKey });
