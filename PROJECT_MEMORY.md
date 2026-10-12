@@ -24,6 +24,8 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 ## Next safe continuation point
 
+0. **Update 2026-10-12 (verified by a Claude session):** GitHub Actions starts no job, so nothing can be merged or deployed with CI until the owner fixes it (probably billing, unverified). Ready once CI runs: PR #57 (CLS fix I-8, local checks green on `daab6ec`) and the Nitro bump for I-4 (validated, not yet a PR). The production DB repoint (I-1) is still owner-only: the agent token gets `Authentication error 10000` on Hyperdrive, and `docs/integrations/usage-policy.md` forbids routing around it with another service's credentials.
+
 1. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").
 2. After the owner's change: run the verification recipe in [deployments.md](docs/project-memory/deployments.md) ("Which database does production use?") and the post-deploy checklist; record results here.
 3. Open PRs — see [progress.md](docs/project-memory/progress.md).
