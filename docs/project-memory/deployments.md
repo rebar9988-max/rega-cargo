@@ -2,7 +2,7 @@
 
 ## 2026-10-12 conversational assistant checkpoint
 
-No deployment/merge/secret/binding/data change. Fresh 18-page production desktop/mobile check: all 200, correct locale/root RTL/no overflow, AI enabled, marketplace error persists and the new launcher is absent. Existing GitHub verify check cannot start due account payments/spending limits (annotation retrieved directly); no spending increase authorized or attempted. Local chat build/dry run succeeds with DB migration disabled. Preserve existing rollback version at the eventual approved release. [Evidence](../ai/chat-audit-2026-10-12.md).
+Draft [#69](https://github.com/rebar9988-max/rega-cargo/pull/69) created against #68’s feature branch; no remote checks triggered by that review base. No deployment/merge/secret/binding/data change. Fresh 18-page production desktop/mobile check: all 200, correct locale/root RTL/no overflow, AI enabled, marketplace error persists and the new launcher is absent. Existing GitHub verify check cannot start due account payments/spending limits (annotation retrieved directly); no spending increase authorized or attempted. Local chat build/dry run succeeds with DB migration disabled. Preserve existing rollback version at the eventual approved release. [Evidence](../ai/chat-audit-2026-10-12.md).
 
 Procedures (build, secrets, go-live, rollback): [DEPLOY.md](../../DEPLOY.md). Deploys, secret changes and rollbacks need **explicit owner approval** ([usage policy](../integrations/usage-policy.md)).
 

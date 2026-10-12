@@ -1,7 +1,7 @@
 # R&L premium assistant — audit, implementation and release evidence
 
 This is an incremental extension of the existing R&L AI, not a replacement application.
-Branch: `feat/rl-premium-chat-20261011`, stacked on draft [#68](https://github.com/rebar9988-max/rega-cargo/pull/68), initial base `f896a00` (concurrent documentation-only update `40d7337` is preserved before PR creation).
+Draft [#69](https://github.com/rebar9988-max/rega-cargo/pull/69), branch `feat/rl-premium-chat-20261011`, stacked on draft [#68](https://github.com/rebar9988-max/rega-cargo/pull/68), initial base `f896a00` (concurrent documentation-only update `40d7337` is preserved before PR creation).
 No production deployment has been made by this work. A healthy page response does not prove a working marketplace, authentication or chatbot.
 
 ## Audit and preservation
@@ -66,3 +66,5 @@ An additional real integration check confirmed signed-out private order access i
 ## Accepted baseline review
 
 346 existing closed-page baselines were rendered in the pinned official image, compared with the original pixels, and accepted after review. All dimensions are unchanged. The intended change is the floating launcher and its shadow; language-popup shadow painting and existing gray image-mask painting account for the wider diffs. The fresh unchanged-base build and identical metrics for all 19 store images confirm no store image/content/geometry redesign. The final hydration-aware captures of tablet home/stores and landscape stores each passed again without snapshot updates (six targeted update/repeat checks total). No baseline came from host Chromium, and no pixels were manually patched. The full earlier regression suite's flaky WebKit `networkidle` case remains disclosed, not silently fixed by rebaselining.
+
+Draft #69 creation and branch push were verified through GitHub. It targets #68’s feature branch, remains draft/unmerged, and has no remote CI result. Both feature work and the concurrent access-recovery documentation are preserved. Production remains on the verified prior version; no release is claimed.
