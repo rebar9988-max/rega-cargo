@@ -26,6 +26,12 @@ After work, in the same branch/PR:
 2. Update the affected files: `progress.md` (status, PR), `issues.md` (root cause/fix), `decisions.md` (append), `deployments.md` (release log), `features.md` / `architecture.md` / `design.md` / `integrations.md` when those facts changed.
 3. Update "Current state" and "Next safe continuation point" in `PROJECT_MEMORY.md`, with the date and what was verified.
 
+CI (GitHub Actions, see issues I-7):
+- Hosted runners do not start while the account has a billing block (annotation: "recent account payments have failed or your spending limit needs to be increased"). Agents cannot fix or inspect billing and must never pay, raise limits or change payment methods.
+- While blocked, merge only on the local gate recorded in `decisions.md`, state what was not run, and never report CI as green.
+- Minutes are a paid quota: keep docs-only commits docs-only (they skip the Playwright layout job), push to a PR in batches, keep work-in-progress PRs as drafts (drafts skip CI until ready).
+- Recovery once billing is fixed: re-run the newest `main` run, confirm `scope`, `verify` and `layout lock` pass, then update I-7.
+
 Memory rules:
 - Never write secrets, tokens, passwords or connection strings; env vars by *name* only.
 - Never record a task, test result or deployment that did not actually happen. Mark assumptions as assumptions.
