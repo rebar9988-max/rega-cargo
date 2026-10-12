@@ -12,7 +12,40 @@ on:
         default: false
 permissions:
   contents: read
+# Actions minutes are a paid quota on this private repo. A newer push to the same PR
+# cancels the run it supersedes; pushes to main always run to completion.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  # Decides whether the ~10 minute layout job is needed. Changes that touch only
+  # Markdown or docs/ cannot move the layout, so they skip it (verify still runs,
+  # including the project-memory link checks). Manual runs always render.
+  scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      layout: ${{ steps.diff.outputs.layout }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ "$EVENT" = workflow_dispatch ] || [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            echo "layout=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --name-only "$BASE" HEAD | grep -qvE '^docs/|\.md$'; then
+            echo "layout=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "layout=false" >> "$GITHUB_OUTPUT"
+          fi
+          git diff --name-only "$BASE" HEAD | head -50
+
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -41,6 +74,8 @@ jobs:
   # image so browsers and fonts match the committed baselines exactly (no browser download).
   layout:
     name: layout lock
+    needs: scope
+    if: needs.scope.outputs.layout == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     container:
