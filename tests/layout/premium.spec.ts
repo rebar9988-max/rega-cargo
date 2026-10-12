@@ -457,3 +457,55 @@ test("compact forms and store cards at 360px", async ({ page }) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   expect(overflow).toBe(0);
 });
+
+test("product link: the panel is in the server HTML and the request form never shifts", async ({
+  page,
+  request,
+}) => {
+  for (const lang of ["ckb", "en"]) {
+    // Server-rendered: the flag is stamped on <html> and the panel precedes the form in the HTML,
+    // so nothing is inserted above the form after load.
+    const html = await (await request.get(`/stores/request?intent=buy&lang=${lang}`)).text();
+    expect(html, lang).toContain('data-rl-plink="1"');
+    const panel = html.indexOf("data-product-link");
+    const form = html.indexOf('class="rl-card rl-request-form"');
+    expect(panel, `${lang} panel in HTML`).toBeGreaterThan(-1);
+    expect(form, `${lang} form in HTML`).toBeGreaterThan(panel);
+
+    await page.addInitScript(() => {
+      const state = window as typeof window & { shift: number };
+      state.shift = 0;
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const shift = entry as PerformanceEntry & { value: number; hadRecentInput: boolean };
+          if (!shift.hadRecentInput) state.shift += shift.value;
+        }
+      }).observe({ type: "layout-shift", buffered: true });
+    });
+    await page.goto(`/stores/request?intent=buy&lang=${lang}`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-product-link]")).toBeVisible();
+    await page.waitForTimeout(500);
+    expect(
+      await page.evaluate(() => (window as typeof window & { shift: number }).shift),
+      lang,
+    ).toBeLessThan(0.02);
+  }
+});
+
+test("accessibility: every homepage landmark is named and all page text sits in a landmark", async ({
+  page,
+}) => {
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  // The announcement bar is a region named by its own text (no text outside landmarks).
+  const bar = page.locator("section.rl-announcement");
+  await expect(bar).toHaveAttribute("aria-labelledby", "rl-announcement-text");
+  await expect(bar.locator("#rl-announcement-text")).toBeVisible();
+  const outside = await page.evaluate(() => {
+    const landmarks =
+      "header, nav, main, footer, aside, section[aria-labelledby], section[aria-label]";
+    return [...document.body.querySelectorAll("p, h1, h2, h3, li")].filter(
+      (el) => el.closest(landmarks) === null && (el as HTMLElement).offsetParent !== null,
+    ).length;
+  });
+  expect(outside).toBe(0);
+});

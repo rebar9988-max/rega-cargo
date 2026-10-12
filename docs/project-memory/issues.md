@@ -26,7 +26,8 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - No `WHATSAPP_*` / `TWILIO_*` / `PHONE_CODE_SECRET` secrets in production. Expected until the owner chooses a provider.
 
 ### I-4 · OPEN — `npm audit` highs in build tooling (undici/sharp via miniflare)
-- Not in the Worker bundle. Fix needs a Nitro beta bump (PR #4, open).
+- Not in the Worker bundle. Verified 2026-10-11: 5 highs (env-runner, miniflare, nitro, sharp, undici), all fixed by `nitro` 3.0.260610-beta -> 3.0.260903-beta (one line in `package.json`, lockfile regenerated).
+- Validated in an isolated worktree on `main` @ `cd42937`: `npm audit` 0 vulnerabilities, typecheck clean, 400 unit tests, build, `wrangler deploy --dry-run` (4,767 KiB vs 4,754 KiB), 95 Playwright geometry tests against the built Worker. Not yet a PR or deployed (CI blocked); PR #4 has no common ancestor with `main`, so apply the bump on a fresh branch.
 
 ### I-5 · OPEN — content gaps
 - `TODO(translate-review)` strings need native ckb/ar/fa/ku review; legal pages need real owner details.
@@ -42,6 +43,13 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - Evidence: `gh api repos/rebar9988-max/rega-cargo/check-runs/114690493529/annotations`; Actions API `get_workflow_job` / `list_workflow_runs`.
 
 ## Closed
+
+### C-4 · FIXED 2026-10-12 — product-link panel shifted the request form (CLS 0.26) [was I-8]
+- Symptom: production CLS 0.261 (en) / 0.267 (ckb) on `/stores/request` at 390px with throttled network and CPU, against <= 0.003 on every other page (measured 2026-10-11 and again 2026-10-12 on `10723cf0`).
+- Root cause (verified with `layout-shift` sources): `ProductLinkAssist` renders nothing until a client request (`productLinkStatus`) returns, then inserts a ~430px panel above the form.
+- Fix (merged as `361f954`, deployed as `5a2c2ecc`): PR #57 stamps `data-rl-plink` on `<html>` (same pattern as `data-rl-ai`) so the panel is in the server HTML; Playwright asserts panel-before-form in the HTML and CLS < 0.02.
+- Also in #57: the announcement bar is now a named `<section>` (axe `region` finding on all 224 audited production pages).
+- Verified on production 2026-10-12 18:1x UTC: CLS 0.001 (en) / 0.000 (ckb); axe `region` finding gone.
 
 ### C-1 · FIXED 2026-10-11 — `Disallowed operation called within global scope`
 - Root cause: `HYPERDRIVE.connectionString` read at module scope in `db.ts` / `auth/*`; workerd forbids I/O in global scope.

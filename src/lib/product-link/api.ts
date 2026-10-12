@@ -1,11 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 
-/** Lets the page ask whether the feature is on (default: off). */
-export const productLinkStatus = createServerFn({ method: "GET" }).handler(async () => {
-  const { productLinkEnabled } = await import("./flag.server");
-  return { enabled: productLinkEnabled() };
-});
-
 /**
  * Validates a product link and returns a shipping estimate. The link is parsed, never fetched.
  * Rate limited per IP; text is run through the permanent compliance filter first.

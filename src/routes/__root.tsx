@@ -12,6 +12,7 @@ import { loadCopy, I18nProvider } from "@/lib/i18n";
 import { validateLocaleSearch } from "@/lib/locale-search";
 import { LAYOUT_DIR, langMeta } from "@/lib/langs";
 import { rlAiEnabled } from "@/lib/ai/flag";
+import { productLinkEnabled } from "@/lib/product-link/flag";
 import { ServiceWorkerSetup } from "@/components/sw-setup";
 import { NotFound } from "@/components/not-found";
 import "../styles.css";
@@ -65,6 +66,7 @@ function RootDocument() {
       dir={LAYOUT_DIR}
       data-textdir={meta.dir}
       data-rl-ai={rlAiEnabled() ? "1" : undefined}
+      data-rl-plink={productLinkEnabled() ? "1" : undefined}
       suppressHydrationWarning
     >
       <head>
