@@ -43,13 +43,7 @@ export function aiEnv(): IdentifyDeps {
     tokenSecret: raw.AI_TOKEN_SECRET ?? process.env.AI_TOKEN_SECRET ?? process.env.BETTER_AUTH_SECRET,
     verifyToken: stub ? (token, now) => stub.verify(token, now) : undefined,
     limit: raw.RL_LIMIT
-      ? async (ip) => {
-          try {
-            return (await raw.RL_LIMIT!.limit({ key: `ai:${ip}` })).success;
-          } catch {
-            return true;
-          }
-        }
+      ? async (ip) => (await raw.RL_LIMIT!.limit({ key: `ai:${ip}` })).success
       : undefined,
   };
 }

@@ -12,6 +12,7 @@ import {
   type IdentifyEnv,
 } from "./identify.server.ts";
 import { landedEstimate } from "./landed.ts";
+import { aiEnv } from "./env.server.ts";
 
 // --- tiny synthetic images -------------------------------------------------
 function png(w: number, h: number) {
@@ -503,6 +504,98 @@ test("unavailable AI or usage storage fails before any provider invocation", asy
     assert.equal(response.status, 503);
     assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
   }
+  assert.equal(calls.length, 0);
+});
+
+test("the actual environment adapter never bypasses a failed rate-limit binding", async () => {
+  const g = globalThis as { __env__?: Record<string, unknown> };
+  const saved = g.__env__;
+  const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
+  const store = memoryUsageStore();
+  const limiter = storeLimiter(store);
+  try {
+    g.__env__ = {
+      ...on, AI: mockAi({ response: JSON.stringify(good) }, calls), TURNSTILE_SECRET: "",
+      RL_LIMIT: { async limit() { throw new Error("private rate-binding diagnostics"); } },
+      RL_AI_USAGE: {
+        idFromName() { return "global"; },
+        get() { return { ...limiter, async verify() { return true; } }; },
+      },
+    };
+    const response = await handleIdentify(upload({ consent: "1" }), aiEnv());
+    assert.equal(response.status, 503, `failed rate binding must deny inference; provider calls: ${calls.length}`);
+    assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
+    assert.equal(store.data.size, 0);
+    assert.equal(calls.length, 0);
+    g.__env__.RL_LIMIT = { async limit() { return { success: false }; } };
+    const limited = await handleIdentify(upload({ consent: "1" }), aiEnv());
+    assert.equal(limited.status, 429);
+    assert.deepEqual(await limited.json(), { ok: false, error: "rate_limited" });
+    assert.equal(store.data.size, 0);
+    assert.equal(calls.length, 0);
+    g.__env__.RL_LIMIT = { async limit() { return { success: true }; } };
+    const allowed = await handleIdentify(upload({ consent: "1" }), aiEnv());
+    assert.equal(allowed.status, 200);
+    assert.equal((await allowed.json()).ok, true);
+    assert.equal(calls.length, 1);
+  } finally {
+    g.__env__ = saved;
+  }
+});
+
+test("burst-limiter outages fail closed before reading or charging the upload", async () => {
+  const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
+  const store = memoryUsageStore();
+  let bodyReads = 0;
+  const request = upload({ consent: "1" });
+  Object.defineProperty(request, "body", { get() { bodyReads += 1; return null; } });
+  const response = await handleIdentify(request, {
+    env: { ...on, AI: mockAi({ response: JSON.stringify(good) }, calls) },
+    usage: storeLimiter(store),
+    async limit() { throw new Error("private rate-binding diagnostics"); },
+  });
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
+  assert.equal(bodyReads, 0);
+  assert.equal(store.data.size, 0);
+  assert.equal(calls.length, 0);
+});
+
+test("token-verifier outages fail closed without consuming usage or exposing diagnostics", async () => {
+  const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
+  const store = memoryUsageStore();
+  const response = await handleIdentify(upload({ consent: "1" }), {
+    env: { ...on, AI: mockAi({ response: JSON.stringify(good) }, calls) },
+    usage: storeLimiter(store),
+    async verifyToken() { throw new Error("private challenge-storage diagnostics"); },
+  });
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
+  assert.equal(store.data.size, 0);
+  assert.equal(calls.length, 0);
+});
+
+test("interrupted upload returns bad_request before usage or provider work", async () => {
+  const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
+  const store = memoryUsageStore();
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) { controller.error(new Error("private upload-stream diagnostics")); },
+  });
+  const request = new Request("https://rl.test/api/ai/identify", {
+    method: "POST", body, duplex: "half",
+    headers: { origin: "https://rl.test", "content-type": "multipart/form-data; boundary=test" },
+  } as RequestInit);
+  const response = await handleIdentify(request, {
+    env: { ...on, AI: mockAi({ response: JSON.stringify(good) }, calls) },
+    usage: storeLimiter(store),
+    async verifyToken() { return true; },
+  });
+  assert.equal(response.status, 400);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await response.json(), { ok: false, error: "bad_request" });
+  assert.equal(store.data.size, 0);
   assert.equal(calls.length, 0);
 });
 

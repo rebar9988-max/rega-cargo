@@ -56,3 +56,5 @@ npm run test:layout                # full geometry and pixel baselines in the pi
 ```
 
 PR [#68](https://github.com/rebar9988-max/rega-cargo/pull/68) preserves this stack and provider. Internal nonrefundable attempt accounting lives in the existing Durable Object, with no Postgres migration. The workerd harness resolves the locked Wrangler toolchain; the layout-config helper reuses atomic publication and skips identical content. See [the audit](../ai/audit-2026-10-11.md) for verified checks, API compatibility and release limits.
+
+2026-10-12 continuation: `aiEnv()` no longer permits a rejected rate-limit binding. The identify handler/route and challenge route classify dependency/stream failures and fail before provider work. Challenge token/Turnstile responses are explicitly no-store. Native workerd route regressions are included in the existing harness; no new provider, dependency, endpoint, token format or database migration.

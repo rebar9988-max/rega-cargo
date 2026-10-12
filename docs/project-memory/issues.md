@@ -4,6 +4,9 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ## Open
 
+### I-10 · FIXED IN DRAFT #68, NOT DEPLOYED · AI safety gates and transport failures
+The actual rate-binding adapter permitted inference after a rejected call; a before-fix regression observed one mocked provider invocation. Rejected token/limiter callbacks and interrupted uploads escaped classified responses; real bundled challenge/identify routes returned 500 on namespace/issuance failures. Minimal repairs now return no-store 503/400 before inference, preserve 200/429 and token/Turnstile contracts, and explicitly prevent challenge caching. Native workerd/Node regressions and the full pinned-Docker browser run pass (one flaky case disclosed). See [the audit](../ai/audit-2026-10-11.md); external release gates remain incomplete.
+
 ### I-9 · OPEN · TinyFish cannot perform the requested dashboard recovery at zero new cost
 At 2026-10-12 06:04–06:07 UTC, the wallet reports -$0.008 unchanged, paid Agent/Browser rates and no confirmed Cloudflare/GitHub sign-in in either profile. Zero-rate Search/Fetch verified official billing requirements; no paid run or login/profile change was made. Cloudflare billing 10000 and GitHub billing 403 remain open, while Hyperdrive reads still show `neondb`. See [the concrete recovery sequence](../ai/access-recovery-2026-10-12.md). No top-up request or spending-limit change is authorized by this investigation.
 

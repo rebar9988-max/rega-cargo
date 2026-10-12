@@ -82,3 +82,86 @@ test("AI usage Durable Object keeps budgets across refunds, concurrency and UTC 
     await mf.dispose();
   }
 });
+
+test("the actual AI challenge route preserves modes and classifies binding outages", async (t) => {
+  const bundle = await build({
+    stdin: {
+      contents: `
+        import challenge from "./server/routes/api/ai/challenge.ts";
+        import identify from "./server/routes/api/ai/identify.ts";
+        export default {
+          async fetch(request) {
+            const scenario = new URL(request.url).searchParams.get("scenario");
+            globalThis.__env__ = {
+              TURNSTILE_SECRET: scenario === "turnstile" ? "test-only-secret" : "",
+              TURNSTILE_SITE_KEY: scenario === "turnstile" ? "test-only-site-key" : "",
+              RL_AI_USAGE: {
+                idFromName() { return "global"; },
+                get() {
+                  if (scenario === "namespace" || scenario === "identify-namespace")
+                    throw new Error("private namespace diagnostics");
+                  return {
+                    async consume() { throw new Error("challenge must not charge usage"); },
+                    async verify() { return false; },
+                    async issue() {
+                      if (scenario === "issue") throw new Error("private issuance diagnostics");
+                      return "test-only-token";
+                    },
+                  };
+                },
+              },
+            };
+            if (scenario === "identify-namespace")
+              return identify({ req: new Request("https://rl.test/api/ai/identify", { method: "POST" }) });
+            return challenge();
+          },
+        };`,
+      resolveDir: process.cwd(),
+    },
+    bundle: true,
+    format: "esm",
+    platform: "node",
+    external: ["cloudflare:workers", "node:crypto"],
+    write: false,
+  });
+  const mf = new Miniflare(convertV4MiniflareOptions({
+    modules: true,
+    script: bundle.outputFiles[0].text,
+    compatibilityDate: "2025-09-15",
+    compatibilityFlags: ["nodejs_compat"],
+  }));
+  const call = (scenario) => mf.dispatchFetch(`https://rl.test/api/ai/challenge?scenario=${scenario}`);
+  try {
+    await t.test("issuance and namespace outages return a private no-store unavailable response", async () => {
+      const responses = [];
+      for (const scenario of ["issue", "namespace"]) {
+        responses.push(await call(scenario));
+      }
+      assert.deepEqual(responses.map((response) => response.status), [503, 503]);
+      for (const response of responses) {
+        assert.equal(response.headers.get("cache-control"), "no-store");
+        assert.deepEqual(await response.json(), { mode: "unavailable" });
+      }
+    });
+    await t.test("successful issuance preserves the token contract without caching it", async () => {
+      const response = await call("token");
+      assert.equal(response.status, 200);
+      assert.equal(response.headers.get("cache-control"), "no-store");
+      assert.deepEqual(await response.json(), { mode: "token", token: "test-only-token" });
+    });
+    await t.test("Turnstile retains precedence and its existing contract", async () => {
+      const response = await call("turnstile");
+      assert.equal(response.status, 200);
+      assert.equal(response.headers.get("cache-control"), "no-store");
+      assert.deepEqual(await response.json(), { mode: "turnstile", siteKey: "test-only-site-key" });
+    });
+    await t.test("identify namespace failure returns unavailable without constructing a gateway", async () => {
+      const response = await call("identify-namespace");
+      assert.equal(response.status, 503);
+      assert.equal(response.headers.get("cache-control"), "no-store");
+      assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
+    });
+  } finally {
+    await mf.dispose();
+  }
+});

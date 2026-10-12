@@ -2,6 +2,10 @@
 
 Use Git history and PR descriptions for detail; record only status and pointers here.
 
+Autonomous P0 continuation, 2026-10-12: actual rate binding fail-open, token/limiter/stream errors and challenge/identify namespace failures reproduced before repair. Minimal changes and nine additional cases are in the same draft #68; 445 Node22 tests pass with four existing skips, typecheck/lint/build/dry run pass, public assets identical. Full pinned-Docker browser run passed:379 pass/one flaky passed on existing retry/12 existing skips, exit0. No deployment/remote CI claimed. Details: [AI audit](../ai/audit-2026-10-11.md). Ten other active PR file lists have no overlap with these six source/test files.
+
+Final live baseline, 06:54 UTC: ten desktop/mobile public pages and both expected missing-token403 probes pass; no model inference or authenticated sensitive action. Final06:57 production remains10723cf0 at100%. New repairs are not deployed; actual external gates remain pending.
+
 2026-10-12: owner-requested TinyFish investigation completed within verified zero-rate Search/Fetch. Negative wallet balance and unconfirmed authenticated profiles block paid browser automation; no top-up or new profile was created. Fresh read-only checks preserve the existing Hyperdrive/billing blockers and production version. [Concrete steps and evidence](../ai/access-recovery-2026-10-12.md) are recorded in this same draft #68; runtime remains unchanged, and no remote CI/merge/deploy is claimed.
 
 This documentation-only follow-up reran Node 22 checks: 436 pass / zero fail / four existing skips, typecheck, lint with the same five existing warnings, empty-DB build and Wrangler dry run all pass. All 148 public files remain byte-identical. No new full visual or live inference run is claimed.
