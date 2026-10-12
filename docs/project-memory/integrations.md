@@ -14,10 +14,18 @@ claude.ai account/session, not the repo — **re-check every session; never assu
 | Workers AI (`AI` binding) | live in production, 2026-10-11 (`/api/ai/status`) | R&L AI identification |
 | Sentry MCP | org exists, 0 projects (2026-10-11 report) | Not used; app not instrumented |
 | Context7 | working (2026-10-11 report) | Library/platform docs |
-| Figma | View seat only (2026-10-11 report) | Read designs; never edit the logo |
+| Official Figma MCP | real auth, metadata, design context/screenshot and read-only Plugin API passed, 2026-10-12; Starter/View; Code Connect denied | Preferred visual workspace; reuse [verified existing file and workflow](../integrations/figma-workflow.md); never edit the logo or upgrade plans |
 | Playwright + Chromium | `/opt/pw-browsers/chromium` | Production browser QA |
 | Supabase, Lovable, TinyFish, Canva, Adobe | available but **not used** (other stack, metered, or marketing only) | — |
 | WhatsApp / Twilio / Turnstile | **not configured** in production | Phone sign-in stays closed |
 
 Free-tier constraints: Neon free projects (0.25–2 CU, 1 GiB/branch), Workers + Hyperdrive on the
 current plan (staging `limits.cpu_ms` implies Workers Paid on that account — verify before relying on it).
+
+Codex verification, 2026-10-12: GitHub MCP read the private repository and its
+instructions as `rebar9988-max`; `gh`, HTTPS clone and `git fetch` also worked in
+this session. The older CLI/browser availability rows above describe prior cloud
+sessions, not guaranteed current tooling. Figma returned handle `Danial`, unlike
+the older `Ben` snapshot in the historical integration report. Do not assume
+accounts or permissions carry between sessions. Actions run `38216868321` failed
+before jobs started with a billing/spending-limit annotation; no paid change made.
