@@ -370,6 +370,7 @@ test("compact forms and store cards at 360px", async ({ page }) => {
   await expect(card.locator("a.rl-store-site")).toHaveAttribute("target", "_blank");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   expect(overflow).toBe(0);
+});
 
 test("product link: the panel is in the server HTML and the request form never shifts", async ({
   page,
