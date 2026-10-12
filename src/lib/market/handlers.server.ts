@@ -72,11 +72,32 @@ function approved(rows: { role: string; status: string }[], role: string) {
   return rows.some((row) => row.role === role && row.status === "approved");
 }
 
+/**
+ * 20 actions of one kind per user per hour. One atomic upsert (the row lock
+ * serialises parallel requests), so a burst of simultaneous calls cannot all
+ * pass a count taken before any of them was recorded.
+ */
 async function limit(sql: Sql, userId: string, action: string) {
-  const rows = await sql<{ n: number }>`
-    select count(*) as n from action_log
-    where user_id = ${userId} and action = ${action} and created_at > now() - interval '1 hour'`;
-  if (Number(rows[0]?.n ?? 0) >= 20) throw new MarketError("rate");
+  const rows = await sql<{ allowed: boolean }>`
+    insert into rate_counters (key, n, window_start, allowed)
+    values (${`action:${action}:${userId}`}, 1, now(), true)
+    on conflict (key) do update set
+      allowed = case
+        when rate_counters.window_start < now() - interval '1 hour' then true
+        when rate_counters.n < 20 then true
+        else false
+      end,
+      window_start = case
+        when rate_counters.window_start < now() - interval '1 hour' then now()
+        else rate_counters.window_start
+      end,
+      n = case
+        when rate_counters.window_start < now() - interval '1 hour' then 1
+        when rate_counters.n < 20 then rate_counters.n + 1
+        else rate_counters.n
+      end
+    returning allowed`;
+  if (rows[0]?.allowed !== true) throw new MarketError("rate");
   await sql`insert into action_log (id, user_id, action) values (${crypto.randomUUID()}, ${userId}, ${action})`;
 }
 
