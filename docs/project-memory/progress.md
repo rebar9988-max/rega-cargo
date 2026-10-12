@@ -7,7 +7,6 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 | PR | Branch | Title | State |
 |---|---|---|---|
-| #60 | `claude/rl-cargo-design-impl-xvqpm0` | Home: brand-red hero card and parcel-tracking entry (Figma concept) | draft, mergeable; GitHub CI green on `9f81391`. Merged `main` @ `486e442` (`bed4c9d`): full gate green **locally** on 2026-10-12 (typecheck, lint 0 errors, 417 tests, build, cf dry-run, layout lock 383 passed/12 skipped in the official image). Not merged: GitHub CI cannot run (I-7) |
 | #57 | `claude/rl-ai-shopping-hero-k5aeln` | i18n for all 7 languages + product-link layout shift + announcement landmark | open, may overlap #55/#61 (merged) |
 | #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open, likely superseded by #53 |
 | #49 | `claude/rega-cargo-clone-oyhxb4` | Official R&L logo, soft 3D buttons, ten-group catalogue | draft; holds 6 unmerged hero/forms/store-card commits on top |
@@ -24,6 +23,7 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 - Native translation review; real legal details (I-5).
 
 ## Completed (recent, merged to `main`)
+- #60 home hero as a brand-red card + parcel-tracking entry (Figma "Mobile Home Concept", read-only View seat); merged as `9ba82e9` on the local quality gate (GitHub Actions blocked, I-7; owner decision 2026-10-12), deployed to production `853e698b`
 - #63 project-wide persistent memory (`CLAUDE.md` lifecycle, `PROJECT_MEMORY.md`, `docs/project-memory/`, memory test); CI verify + layout lock green on `8d68623`, merged as `df8794e`
 - #62 compliance: banned-product filter gaps (percent-encoded links, brands sold by name, disguised spellings)
 - #61 i18n header/footer/home/marketplace copy for ku, de, fa, tr
