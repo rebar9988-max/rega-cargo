@@ -1,6 +1,6 @@
 # R&L (Rega Cargo) project rules
 
-Read /workspace/PROJECT_MEMORY.md when continuing work in this workspace.
+Read PROJECT_MEMORY.md (repo root) when continuing work in this workspace; CLAUDE.md describes the memory lifecycle.
 
 ## PRODUCT
 - R&L = marketplace + shipping/delivery. Customers in Kurdistan & Iraq order from European stores (later Turkish, Chinese, US brands). We buy/receive goods at our warehouse in Cologne, Germany and ship to Erbil, Sulaymaniyah, Duhok, Kirkuk, Baghdad.
