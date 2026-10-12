@@ -1,7 +1,9 @@
 /**
  * Per-IP rate limiting with the Cloudflare Workers rate-limit binding
  * (`ratelimits` in wrangler.jsonc, binding RL_LIMIT: 20 requests / 60 s per key).
- * Without the binding (local dev) every call is allowed.
+ * Without the binding (local dev) every call is allowed. When the binding is
+ * present but errors, the request is refused (fail closed), so an outage
+ * never silently turns the limits off.
  */
 type Limiter = { limit(input: { key: string }): Promise<{ success: boolean }> };
 
@@ -14,14 +16,16 @@ export async function clientIp(): Promise<string> {
   }
 }
 
-export async function allow(scope: string): Promise<boolean> {
+/** `ip` is for plain server routes that read it from their own Request. */
+export async function allow(scope: string, ip?: string): Promise<boolean> {
   const env = (globalThis as { __env__?: { RL_LIMIT?: Limiter } }).__env__;
   if (!env?.RL_LIMIT) return true;
   try {
-    const { success } = await env.RL_LIMIT.limit({ key: `${scope}:${await clientIp()}` });
+    const { success } = await env.RL_LIMIT.limit({ key: `${scope}:${ip ?? (await clientIp())}` });
     return success;
-  } catch {
-    return true;
+  } catch (err) {
+    console.error("[rate-limit]", scope, err instanceof Error ? err.message : "failed");
+    return false;
   }
 }
 

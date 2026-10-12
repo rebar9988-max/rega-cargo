@@ -21,6 +21,15 @@ type WorkerEnv = IdentifyEnv & {
   RL_LIMIT?: { limit(input: { key: string }): Promise<{ success: boolean }> };
 };
 
+/**
+ * Without its own AI_TOKEN_SECRET the gate key is derived from the auth secret
+ * under a fixed label, so the session-signing key is never used as-is here.
+ */
+function derivedFrom(secret: string | undefined) {
+  const value = secret?.trim();
+  return value ? `rl-ai-gate-v1\n${value}` : undefined;
+}
+
 export function aiEnv(): IdentifyDeps {
   const raw = ((globalThis as { __env__?: WorkerEnv }).__env__ ?? {}) as WorkerEnv;
   const env: IdentifyEnv = {
@@ -40,14 +49,15 @@ export function aiEnv(): IdentifyDeps {
     env,
     usage,
     turnstileSecret: raw.TURNSTILE_SECRET ?? process.env.TURNSTILE_SECRET,
-    tokenSecret: raw.AI_TOKEN_SECRET ?? process.env.AI_TOKEN_SECRET ?? process.env.BETTER_AUTH_SECRET,
+    tokenSecret: raw.AI_TOKEN_SECRET ?? process.env.AI_TOKEN_SECRET ?? derivedFrom(raw.BETTER_AUTH_SECRET ?? process.env.BETTER_AUTH_SECRET),
     verifyToken: stub ? (token, now) => stub.verify(token, now) : undefined,
     limit: raw.RL_LIMIT
       ? async (ip) => {
           try {
             return (await raw.RL_LIMIT!.limit({ key: `ai:${ip}` })).success;
           } catch {
-            return true;
+            // Fail closed: a limiter outage must not lift the per-IP limit.
+            return false;
           }
         }
       : undefined,
