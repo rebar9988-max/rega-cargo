@@ -7,7 +7,6 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 | PR | Branch | Title | State |
 |---|---|---|---|
-| #57 | `claude/rl-ai-shopping-hero-k5aeln` | Fix product-link layout shift (CLS 0.26) and name the announcement landmark | open; 8 files (translations dropped, they live in #55/#61/#64/#66); local checks green, no CI (Actions blocked, I-7) |
 | #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open; verified 2026-10-12: all its design commits are ancestors of `main` (via #60) and its product-link part is in `main` via #53, so nothing unique remains. Owner decides whether to close; not touched |
 | #49 | `claude/rega-cargo-clone-oyhxb4` | Official R&L logo, soft 3D buttons, ten-group catalogue | draft; verified 2026-10-12: its commits are ancestors of `main`; logo files byte-identical. Nothing unique remains. Not touched |
 | #48 | `brand/official-rl-logo` | Replace R&L branding with the official logo | open; verified: same 1254x1254 artwork as `public/rl-logo.png` on `main` (mean pixel diff 0.49/255); only changes the asset pipeline and conflicts across 22 commits. Not touched |
@@ -24,6 +23,7 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 - Native translation review; real legal details (I-5).
 
 ## Completed (recent, merged to `main`)
+- #57 product-link layout-shift fix (CLS 0.26 -> 0.001) and named announcement landmark; merged `361f954`, deployed `5a2c2ecc`; reduced local gate (decisions.md)
 - #60 home hero as a brand-red card + parcel-tracking entry (Figma "Mobile Home Concept", read-only View seat); merged as `9ba82e9` on the local quality gate (GitHub Actions blocked, I-7; owner decision 2026-10-12), deployed to production `853e698b`
 - #63 project-wide persistent memory (`CLAUDE.md` lifecycle, `PROJECT_MEMORY.md`, `docs/project-memory/`, memory test); CI verify + layout lock green on `8d68623`, merged as `df8794e`
 - #62 compliance: banned-product filter gaps (percent-encoded links, brands sold by name, disguised spellings)
