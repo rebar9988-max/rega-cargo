@@ -1,6 +1,5 @@
 import type { Lang } from "./langs.ts";
 import type { PrimaryCategory } from "./catalogue.ts";
-import { ku as kuCopy } from "./translations/catalogue.ts";
 
 /** Subcategory labels, keyed by primary category then subcategory id (src/lib/catalogue.ts). */
 type SubLabels = Record<PrimaryCategory, Record<string, string>>;
@@ -547,7 +546,8 @@ const tr: CatalogueCopy = {
   },
 };
 
-const ALL: Record<Lang, CatalogueCopy> = { en, de, ckb, ar, fa, tr, ku: kuCopy };
+// Kurmanji (ku) uses English catalogue copy, as its store category labels already do.
+const ALL: Record<Lang, CatalogueCopy> = { en, de, ckb, ar, fa, tr, ku: en };
 
 export function catalogueCopy(lang: Lang): CatalogueCopy {
   return ALL[lang];

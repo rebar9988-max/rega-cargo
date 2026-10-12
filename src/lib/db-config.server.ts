@@ -35,3 +35,14 @@ export function resolveDatabaseUrl(): string | undefined {
   const raw = typeof process !== "undefined" ? process.env?.DATABASE_URL : undefined;
   return raw && raw.trim() ? raw.trim() : undefined;
 }
+
+/**
+ * Whether the Worker has a database, without reading the Hyperdrive connection
+ * string (workerd only allows that inside a request handler). Safe at module
+ * load.
+ */
+export function hasWorkersDatabase(): boolean {
+  const cf = cloudflareEnv();
+  if (cf?.HYPERDRIVE) return true;
+  return typeof cf?.DATABASE_URL === "string" && cf.DATABASE_URL.trim() !== "";
+}

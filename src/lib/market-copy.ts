@@ -1,6 +1,5 @@
 import { NUM_LOCALE } from "./numbers.ts";
 import type { Lang } from "@/lib/langs";
-import * as extra from "./translations/market.ts";
 
 const en = {
   marketKicker: "Free comparison",
@@ -95,8 +94,6 @@ const en = {
   delivered: "Delivered",
   cancelled: "Cancelled",
 };
-
-export type MarketCopy = typeof en;
 
 const ckb: typeof en = {
   marketKicker: "بەراوردی خۆڕایی",
@@ -289,11 +286,85 @@ const fa: typeof en = {
 const ALL: Record<Lang, typeof en> = {
   en,
   ckb,
-  ar: extra.ar,
-  de: extra.de,
-  ku: extra.ku,
+  ar: {
+    ...en,
+    marketTitle: "السوق",
+    prohibited: "هذا المنتج غير مسموح به ولا يمكن نشره.",
+    moveTitle: "النقل والإرسال",
+    search: "بحث",
+    sell: "بيع",
+    admin: "إدارة",
+    reviews: "المراجعات",
+    approve: "قبول",
+    reject: "رفض",
+    orders: "الطلبات",
+    quoteKind: "عرض سعر",
+    storeKind: "شراء من متجر",
+    received: "وصل",
+    confirmed: "تم التأكيد",
+    transit: "في الطريق",
+    delivered: "تم التسليم",
+    cancelled: "أُلغي",
+  },
+  de: {
+    ...en,
+    marketTitle: "Marktplatz",
+    prohibited: "Dieses Produkt ist nicht erlaubt und kann nicht eingestellt werden.",
+    moveTitle: "Umzug & Versand",
+    search: "Suche",
+    sell: "Verkaufen",
+    admin: "Verwaltung",
+    reviews: "Bewertungen",
+    approve: "Freigeben",
+    reject: "Ablehnen",
+    orders: "Anfragen",
+    quoteKind: "Angebot",
+    storeKind: "Shop-Kauf",
+    received: "Eingegangen",
+    confirmed: "Bestätigt",
+    transit: "Unterwegs",
+    delivered: "Zugestellt",
+    cancelled: "Storniert",
+  },
+  ku: {
+    ...en,
+    prohibited: "Ev berhem ne destûrdayî ye û nayê weşandin.",
+    marketTitle: "Bazar",
+    moveTitle: "Barkirin û şandin",
+    search: "Lêgerîn",
+    sell: "Firotin",
+    reviews: "Nirxandin",
+    approve: "Pejirandin",
+    reject: "Redkirin",
+    orders: "Daxwaz",
+    quoteKind: "Biha",
+    storeKind: "Kirîna firoşgehê",
+    received: "Gihîşt",
+    confirmed: "Pejirandî",
+    transit: "Di rê de",
+    delivered: "Radest kirî",
+    cancelled: "Betal kirî",
+  },
   fa,
-  tr: extra.tr,
+  tr: {
+    ...en,
+    prohibited: "Bu ürüne izin verilmiyor ve listelenemez.",
+    marketTitle: "Pazar",
+    moveTitle: "Taşıma ve gönderim",
+    search: "Ara",
+    sell: "Sat",
+    reviews: "Yorumlar",
+    approve: "Onayla",
+    reject: "Reddet",
+    orders: "İstekler",
+    quoteKind: "Fiyat",
+    storeKind: "Mağaza alışverişi",
+    received: "Alındı",
+    confirmed: "Onaylandı",
+    transit: "Yolda",
+    delivered: "Teslim edildi",
+    cancelled: "İptal",
+  },
 };
 
 export function marketCopy(lang: Lang) {

@@ -1,3 +1,4 @@
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 
 /**
@@ -9,6 +10,18 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = Number(process.env.LAYOUT_PORT ?? 8788);
 /** Point the suite at a deployed URL (e.g. staging) instead of the local worker. */
 const BASE_URL = process.env.LAYOUT_BASE_URL;
+
+/**
+ * The layout lock renders the no-database state its baselines were captured in, so the
+ * local worker runs from a copy of the built config without the production Hyperdrive
+ * binding (`wrangler dev` refuses one without a local Postgres connection string).
+ */
+const BUILT_CONFIG = ".output/server/wrangler.json";
+const LAYOUT_CONFIG = ".output/server/wrangler.layout.json";
+if (!BASE_URL && existsSync(BUILT_CONFIG)) {
+  const { hyperdrive: _hyperdrive, ...config } = JSON.parse(readFileSync(BUILT_CONFIG, "utf8"));
+  writeFileSync(LAYOUT_CONFIG, `${JSON.stringify(config, null, 2)}\n`);
+}
 
 export type Breakpoint = "phone" | "tablet" | "laptop";
 export type LayoutProjectUse = { breakpoint: Breakpoint };
@@ -100,8 +113,8 @@ export default defineConfig<LayoutProjectUse>({
   webServer: BASE_URL
     ? undefined
     : {
-        // Built worker served locally by wrangler (no Cloudflare credentials needed).
-        command: `npx wrangler dev --config .output/server/wrangler.json --port ${PORT} --local --show-interactive-dev-session=false`,
+        // Built worker served locally by wrangler (no Cloudflare credentials, no database).
+        command: `npx wrangler dev --config ${LAYOUT_CONFIG} --port ${PORT} --local --show-interactive-dev-session=false`,
         url: `http://localhost:${PORT}/`,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

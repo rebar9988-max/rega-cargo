@@ -1,7 +1,7 @@
 // Existing localized metadata, separated from full page copy for the initial bundle.
 import type { Lang } from "./langs";
-// TODO(translate-review): ku, de, fa, tr (and the Arabic /market description) metadata was drafted
-// without a native reviewer, matching the homepage wording in translations/redesign.ts.
+// TODO(translate-review): ku, de, fa, tr page titles/descriptions and the ar /market description were
+// added in English-to-language passes (2026-10-11) and need a native review. de/tr use the formal register.
 export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; description: string }>> = {
   // TODO(translate-review): review new Sorani marketing metadata alongside redesign-copy.ts.
   ckb: {
@@ -49,9 +49,9 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
   },
   ku: {
     "/": {
-      title: "R&L · Tiştê te yê ji Ewropayê. Gihandina te ya nû.",
+      title: "R&L · Tiştê te yê ewropî. Gihandina te ya din.",
       description:
-        "Firoşgehên Ewropayê bibîne. Em daxwaza te li Kolnê dikirin an werdigirin, paşê şandinê ber bi Kurdistan û Îraqê ve saz dikin.",
+        "Firotgehên Ewropayê bibîne. Em fermana te li Kolnê dikirin an werdigirin, paşê şandinê ber bi Kurdistan û Iraqê ve organîze dikin.",
     },
     "/stores": {
       title: "Bazar · R&L",
@@ -61,17 +61,17 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
     "/stores/request": {
       title: "Lînka berhemê · R&L",
       description:
-        "Daxwazê bişîne. Em berî ku tu tiştek bipejirînî berdestbûn û lêçûna tevahî piştrast dikin.",
+        "Daxwazê bişîne. Berî ku tu tiştekî erê bikî, em hebûn û mesrefa tevahî piştrast dikin.",
     },
     "/quote": {
       title: "Şandina xwe plan bike · R&L",
       description:
-        "Giraniya hesabkirî ya mezintir e di navbera giraniya rast û ya hecmî de. Dabeşker bi awayê şandinê ve girêdayî ye.",
+        "Giraniya hesabkirî ji giraniya rastîn û ya hacmî ya mezintir e. Dabeşker bi rêbaza şandinê ve girêdayî ye.",
     },
     "/market": {
       title: "Bazar · R&L",
       description:
-        "Berhemek, gelek firoşkar. Tevahiya herî erzan pêşî ye. Bê dayîn, bê reklam, bê cihê bi pere.",
+        "Yek berhem, çend firoşkar. Tevahiya herî erzan di pêşiyê de ye. Bê dayîn, bê reklam, bê cihê bi pere.",
     },
     "/ai": {
       title: "Wêneyê berhemekê bigire. Bizane ew çi ye. · R&L",
@@ -93,9 +93,9 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
   },
   de: {
     "/": {
-      title: "R&L · Dein Fund aus Europa. Deine nächste Lieferung.",
+      title: "R&L · Ihr europäischer Fund. Ihre nächste Lieferung.",
       description:
-        "Entdecke europäische Shops. Wir kaufen oder empfangen deine Bestellung in Köln und organisieren den Versand nach Kurdistan und in den Irak.",
+        "Entdecken Sie europäische Shops. Wir kaufen oder empfangen Ihre Bestellung in Köln und organisieren dann den Versand nach Kurdistan und in den Irak.",
     },
     "/stores": {
       title: "Marktplatz · R&L",
@@ -108,14 +108,14 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "Senden Sie die Bestellung. Wir bestätigen Verfügbarkeit und den vollen Preis, bevor Sie zustimmen.",
     },
     "/quote": {
-      title: "Plane deine Sendung · R&L",
+      title: "Sendung planen · R&L",
       description:
-        "Abrechnungsgewicht ist das höhere von tatsächlichem und Volumengewicht. Der Divisor hängt von der Versandart ab.",
+        "Das berechnete Gewicht ist das höhere aus tatsächlichem und Volumengewicht. Der Divisor hängt von der Versandart ab.",
     },
     "/market": {
       title: "Marktplatz · R&L",
       description:
-        "Ein Produkt, mehrere Verkäufer. Die günstigste Gesamtsumme steht oben. Keine Zahlung, keine Werbung, keine bezahlten Plätze.",
+        "Ein Produkt, mehrere Anbieter. Die günstigste Gesamtsumme steht oben. Keine Zahlung, keine Werbung, kein bezahlter Platz.",
     },
     "/ai": {
       title: "Produkt fotografieren. Erfahren, was es ist. · R&L",
@@ -203,7 +203,7 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
     "/market": {
       title: "السوق · R&L",
       description:
-        "منتج واحد وعدة بائعين. أرخص إجمالي يظهر أولاً. بلا دفع ولا إعلانات ولا مكان مدفوع.",
+        "منتج واحد وعدة بائعين. أقل إجمالي في المقدمة. بلا دفع ولا إعلانات ولا مكان مدفوع.",
     },
     "/ai": {
       title: "صوّر منتجًا. اعرف ما هو. · R&L",
@@ -225,9 +225,9 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
   },
   fa: {
     "/": {
-      title: "R&L · یافته اروپایی شما. تحویل بعدی شما.",
+      title: "R&L · یافتهٔ اروپایی تو. تحویل بعدی تو.",
       description:
-        "فروشگاه‌های اروپایی را کشف کنید. ما سفارش شما را در کلن می‌خریم یا دریافت می‌کنیم و ارسال به کردستان و عراق را ترتیب می‌دهیم.",
+        "فروشگاه‌های اروپایی را ببین. سفارش تو را در کلن می‌خریم یا تحویل می‌گیریم و سپس ارسال به کردستان و عراق را ترتیب می‌دهیم.",
     },
     "/stores": {
       title: "بازار · R&L",
@@ -240,9 +240,9 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "درخواست را بفرست. پیش از آنکه چیزی را تأیید کنی، موجود بودن و هزینهٔ کامل را تأیید می‌کنیم.",
     },
     "/quote": {
-      title: "ارسال خود را برنامه‌ریزی کنید · R&L",
+      title: "ارسال خود را برنامه‌ریزی کن · R&L",
       description:
-        "وزن قابل محاسبه، بیشتر از وزن واقعی و وزن حجمی است. مقسوم‌علیه به نوع ارسال بستگی دارد.",
+        "وزن قابل‌محاسبه، بیشتر از وزن واقعی و وزن حجمی است. مقسوم‌علیه به روش ارسال بستگی دارد.",
     },
     "/market": {
       title: "بازار · R&L",
@@ -269,9 +269,9 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
   },
   tr: {
     "/": {
-      title: "R&L · Avrupa'dan bulduğun ürün. Sıradaki teslimatın.",
+      title: "R&L · Avrupa'daki buluntunuz. Bir sonraki teslimatınız.",
       description:
-        "Avrupa mağazalarını keşfet. Siparişini Köln'de satın alır veya teslim alırız, ardından Kürdistan ve Irak'a gönderimi ayarlarız.",
+        "Avrupa mağazalarını keşfedin. Siparişinizi Köln'de satın alır veya teslim alırız, ardından Kürdistan ve Irak'a gönderimi organize ederiz.",
     },
     "/stores": {
       title: "Pazar · R&L",
@@ -281,17 +281,17 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
     "/stores/request": {
       title: "Ürün bağlantısı · R&L",
       description:
-        "Talebi gönder. Sen herhangi bir şeyi onaylamadan önce stok durumunu ve toplam maliyeti doğrularız.",
+        "Talebi gönderin. Siz onaylamadan önce stok durumunu ve toplam maliyeti doğrularız.",
     },
     "/quote": {
-      title: "Gönderini planla · R&L",
+      title: "Gönderinizi planlayın · R&L",
       description:
-        "Ücrete esas ağırlık, gerçek ve hacimsel ağırlıktan büyük olanıdır. Bölen, gönderi türüne göre değişir.",
+        "Ücretlendirilecek ağırlık, gerçek ağırlık ile hacimsel ağırlıktan büyük olandır. Bölen, gönderi yöntemine göre değişir.",
     },
     "/market": {
       title: "Pazar · R&L",
       description:
-        "Tek ürün, birden çok satıcı. En ucuz toplam en üstte. Ödeme yok, reklam yok, ücretli sıralama yok.",
+        "Bir ürün, birden fazla satıcı. En düşük toplam en üstte. Ödeme yok, reklam yok, ücretli sıralama yok.",
     },
     "/ai": {
       title: "Ürünün fotoğrafını çekin. Ne olduğunu görün. · R&L",

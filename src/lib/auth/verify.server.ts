@@ -12,19 +12,15 @@ import { auth, authConfigured } from "./server";
  * client-supplied user id — only the result of this verification.
  */
 
-/** True when a real database is configured server-side. */
-const databaseConfigured = Boolean(resolveDatabaseUrl());
+/**
+ * True when a real database is configured server-side. A function, not a
+ * module constant: on Workers the Hyperdrive connection string may only be
+ * read inside a request handler (see db.ts).
+ */
+const databaseConfigured = (): boolean => Boolean(resolveDatabaseUrl());
 
 /** Re-export so callers can branch on it without importing `server.ts`. */
 export { authConfigured };
-
-if (databaseConfigured && !authConfigured) {
-  console.error(
-    "[auth] DATABASE_URL is set but auth is disabled (VITE_AUTH_ENABLED=false) " +
-      "— requireUserId() will reject every request (fail closed) rather than " +
-      "share one dev user on a real database.",
-  );
-}
 
 /** Dev fallback user id, used only when auth is disabled (VITE_AUTH_ENABLED=false). */
 export const DEV_USER_ID = "dev-user";
@@ -54,9 +50,7 @@ export type VerifiedUser = { id: string; email: string | null };
  * as a bearer token, which we present as `Authorization: Bearer …` (the `bearer`
  * plugin resolves it). When deployed no token is passed and the cookie is used.
  */
-export async function getSessionUser(
-  bearerToken?: string,
-): Promise<VerifiedUser | null> {
+export async function getSessionUser(bearerToken?: string): Promise<VerifiedUser | null> {
   if (!authConfigured) return null;
   const request = getRequest();
   if (!request) return null;
@@ -83,7 +77,12 @@ export async function getSessionUser(
  */
 export async function requireUserId(bearerToken?: string): Promise<string> {
   if (!authConfigured) {
-    if (databaseConfigured) {
+    if (databaseConfigured()) {
+      console.error(
+        "[auth] DATABASE_URL is set but auth is disabled (VITE_AUTH_ENABLED=false) " +
+          "— requireUserId() rejects every request (fail closed) rather than " +
+          "share one dev user on a real database.",
+      );
       throw new Error(
         "Auth is disabled (VITE_AUTH_ENABLED=false) but DATABASE_URL is set — " +
           "refusing to fall back to the shared dev user against a real database.",
