@@ -9,6 +9,8 @@ export type DesignCopy = {
   newCollection: string;
   seeAll: string;
   wishlist: string;
+  /** Last item of the header category strip; opens the full menu. */
+  more: string;
   /** Accessible name / sheet title of the header language picker. */
   language: string;
   cart: string;
@@ -38,6 +40,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "کۆڵێکشنی نوێ",
     seeAll: "هەمووی ببینە",
     wishlist: "دڵخوازەکان",
+    more: "زیاتر",
     language: "زمان",
     cart: "داواکاری کڕین",
     account: "هەژمار",
@@ -64,6 +67,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "New collection",
     seeAll: "See all",
     wishlist: "Favourites",
+    more: "More",
     language: "Language",
     cart: "Purchase request",
     account: "Account",
@@ -90,6 +94,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "Koleksiyona nû",
     seeAll: "Hemûyan bibîne",
     wishlist: "Bijare",
+    more: "Zêdetir", // TODO(translate-review)
     language: "Ziman",
     cart: "Daxwaza kirînê",
     account: "Hesab",
@@ -116,6 +121,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "تشكيلة جديدة",
     seeAll: "عرض الكل",
     wishlist: "المفضلة",
+    more: "المزيد",
     language: "اللغة",
     cart: "طلب شراء",
     account: "الحساب",
@@ -142,6 +148,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "کالکشن جدید",
     seeAll: "مشاهده همه",
     wishlist: "علاقه‌مندی‌ها",
+    more: "بیشتر", // TODO(translate-review)
     language: "زبان",
     cart: "درخواست خرید",
     account: "حساب",
@@ -168,6 +175,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "Yeni koleksiyon",
     seeAll: "Tümünü gör",
     wishlist: "Favoriler",
+    more: "Daha fazla", // TODO(translate-review)
     language: "Dil",
     cart: "Satın alma talebi",
     account: "Hesap",
@@ -194,6 +202,7 @@ export const DESIGN_COPY: Record<Lang, DesignCopy> = {
     newCollection: "Neue Kollektion",
     seeAll: "Alle ansehen",
     wishlist: "Favoriten",
+    more: "Mehr",
     language: "Sprache",
     cart: "Kaufanfrage",
     account: "Konto",

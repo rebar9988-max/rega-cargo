@@ -437,3 +437,58 @@ test("accessibility: every homepage landmark is named and all page text sits in 
   });
   expect(outside).toBe(0);
 });
+
+test("header category strip: directly under the header, swipeable, active state, every language", async ({
+  page,
+}) => {
+  for (const lang of ["ckb", "ku", "de", "en", "ar", "fa", "tr"]) {
+    await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+    const header = page.locator(".rl-site-header");
+    const strip = page.locator('[data-layout="category-strip"]');
+    await expect(strip, lang).toBeVisible();
+    // Directly below the red header row, with nothing in between.
+    const h = (await header.boundingBox())!;
+    const s = (await strip.boundingBox())!;
+    expect(Math.abs(s.y - (h.y + h.height)), lang).toBeLessThanOrEqual(1);
+    // Ten primary categories plus "More"; food awaits approval and is not a link.
+    await expect(strip.locator("li"), lang).toHaveCount(11);
+    await expect(strip.locator('a[data-category="food"]'), lang).toHaveCount(0);
+    await expect(strip.locator('[data-category="food"]'), lang).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    // The list scrolls sideways; the page itself never does.
+    const overflow = await page.evaluate(() => ({
+      page: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      list: (() => {
+        const list = document.querySelector<HTMLElement>(".rl-category-strip-list")!;
+        return list.scrollWidth - list.clientWidth;
+      })(),
+    }));
+    expect(overflow.page, lang).toBeLessThanOrEqual(0);
+    expect(overflow.list, lang).toBeGreaterThan(0);
+    // Header actions in one row, comfortable touch targets.
+    const actions = ["menu-button", "search-button", "lang-button", "account-button"].map((id) =>
+      page.locator(`.rl-header-row [data-layout="${id}"]`),
+    );
+    const boxes = await Promise.all(actions.map((a) => a.boundingBox()));
+    for (const box of boxes) {
+      expect(box!.height, lang).toBeGreaterThanOrEqual(44);
+      expect(Math.abs(box!.y - boxes[0]!.y), lang).toBeLessThanOrEqual(1);
+    }
+  }
+  // Choosing a category marks it (aria-current) and keeps it in view after scrolling there.
+  await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+  const pets = page.locator('[data-layout="category-strip"] a[data-category="pets"]');
+  await pets.click();
+  await expect(page).toHaveURL(/cat=pets/);
+  await expect(pets).toHaveAttribute("aria-current", "page");
+  await expect(page.locator('[data-layout="category-strip"] [aria-current="page"]')).toHaveCount(1);
+  await expect(pets).toBeInViewport();
+  // "More" opens the full menu; the header search button opens the search field.
+  await page.locator('[data-layout="category-strip"] button').click();
+  await expect(page.locator('[data-layout="sheet"]')).toBeVisible();
+  await page.keyboard.press("Escape");
+  await page.locator('[data-layout="search-button"]').click();
+  await expect(page.locator('input[type="search"][aria-expanded="true"]')).toBeFocused();
+});

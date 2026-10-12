@@ -16,6 +16,7 @@ import {
   useRef,
   useState,
   type KeyboardEvent,
+  type MutableRefObject,
 } from "react";
 import type { Lang } from "@/lib/langs";
 import { addRecent, clearRecent, readRecent } from "@/lib/search/recent";
@@ -40,6 +41,11 @@ export type SearchBoxProps = {
   embedded?: boolean;
   /** Pages that filter in place (the Bazaar home) pass their query state. */
   search?: { q: string; setQ: (value: string) => void };
+  /**
+   * Set by the header: phones and tablets show a search icon button instead of the field and
+   * call this to open the field (focus stays in the tap, so iOS raises the keyboard).
+   */
+  openRef?: MutableRefObject<(() => void) | null>;
 };
 
 export function SearchBox({
@@ -49,6 +55,7 @@ export function SearchBox({
   ai,
   search,
   embedded = false,
+  openRef,
 }: SearchBoxProps) {
   const navigate = useNavigate();
   const path = useRouterState({ select: (state) => state.location.pathname });
@@ -59,6 +66,13 @@ export function SearchBox({
   const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!openRef) return;
+    openRef.current = () => inputRef.current?.focus();
+    return () => {
+      openRef.current = null;
+    };
+  }, [openRef]);
 
   // Follow the page's own query (URL changes, chips) while closed.
   useEffect(() => {
@@ -159,6 +173,7 @@ export function SearchBox({
   return (
     <div
       ref={boxRef}
+      data-open={open}
       className={embedded ? "rl-header-search relative" : "search-bar relative bg-paper"}
     >
       <form

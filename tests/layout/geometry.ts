@@ -1,7 +1,7 @@
 /** Locked layout values. Changing any of these is a deliberate design change (update styles.css too). */
 export const LAYOUT = {
   headerHeight: 64,
-  headerRow: { phone: 136, tablet: 136, laptop: 88 },
+  headerRow: { phone: 64, tablet: 64, laptop: 88 },
   catalogueColumns: { phone: 2, tablet: 3, laptop: 3 },
   bottomBarHeight: 64,
   maxContent: 1200,

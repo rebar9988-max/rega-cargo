@@ -1535,30 +1535,219 @@
 }
 
 @media (max-width: 63.999rem) {
-  /* Phones and tablets: like the big shopping apps, the logo row scrolls away and only the
-     search bar stays pinned (sticky with a negative offset, no scroll script). The pinned bar
-     gets a soft shadow so the content scrolls cleanly underneath it. */
+  /* Phones and tablets: one compact brand-red row (menu, logo, search, language, account),
+     pinned while scrolling; the category strip sits under it on the white page. The logo
+     artwork has the same red background, so it reads as part of the bar. */
   .rl-site-header {
-    inset-block-start: calc(-1 * (var(--rl-mark-size) + var(--rl-space-1)));
+    padding-block-start: var(--safe-top);
+    background: var(--rl-brand);
+    border-block-end: 0;
     transition: box-shadow var(--rl-motion);
   }
   .rl-site-header[data-shrunk="true"] {
     box-shadow: var(--rl-shadow-sm);
   }
-  .rl-site-header .rl-brand,
+  .rl-header-row {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    column-gap: var(--rl-space-1);
+    row-gap: 0;
+    padding-block: 0;
+  }
+  .rl-header-row > [data-layout="menu-button"] {
+    grid-row: 1;
+    grid-column: 1;
+  }
+  .rl-site-header .rl-brand {
+    grid-column: 2;
+  }
+  /* The artwork's own red square merges with the bar, so the mark can use the full row. */
+  .rl-site-header .rl-brand-mark {
+    inline-size: var(--rl-header-mobile);
+    block-size: var(--rl-header-mobile);
+    border-radius: 0;
+  }
   .rl-site-header .rl-header-actions {
+    grid-column: 4;
+    gap: var(--rl-space-0);
+  }
+  .rl-site-header .rl-icon-button,
+  .rl-site-header [data-layout="lang-button"] {
+    min-inline-size: var(--rl-control-h);
+    block-size: var(--rl-control-h);
+    border-radius: var(--rl-radius-pill);
+    color: var(--rl-on-brand);
+    transition: background-color var(--rl-motion-fast) var(--rl-ease);
+  }
+  .rl-site-header [data-layout="lang-button"] {
+    border-color: var(--rl-on-brand-line);
+  }
+  .rl-site-header .rl-icon-button:hover,
+  .rl-site-header [data-layout="lang-button"]:hover {
+    background: var(--rl-on-brand-hover);
+  }
+  .rl-site-header .rl-icon-button:focus-visible,
+  .rl-site-header [data-layout="lang-button"]:focus-visible,
+  .rl-site-header .rl-brand:focus-visible {
+    outline: var(--rl-focus) solid var(--rl-on-brand);
+    outline-offset: var(--rl-focus);
+  }
+  /* Search: an icon button opens the field. Closed, the field stays in the DOM (visually
+     hidden, still focusable) so the tap that focuses it also raises the iOS keyboard. */
+  .rl-header-search[data-open="false"] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  /* Open, it floats just under the bar (a full-screen sheet on phones), so the header row
+     keeps its height and nothing below it moves. */
+  .rl-header-search[data-open="true"] {
+    position: absolute;
+    inset-block-start: calc(100% + var(--rl-space-1));
+    inset-inline: max(var(--gutter), var(--safe-start)) max(var(--gutter), var(--safe-end));
+    z-index: var(--rl-z-menu);
+  }
+  .rl-header-search[data-open="true"] .rl-search-form {
+    box-shadow: var(--rl-shadow-lg);
+  }
+}
+@media (max-width: 47.999rem) {
+  .rl-header-search[data-open="true"] .rl-search-form {
+    display: flex;
+    align-items: center;
+    min-block-size: calc(var(--search-h) + var(--safe-top));
+    border-radius: 0;
+    border-inline: 0;
+    border-block-start: 0;
+    box-shadow: none;
+  }
+  .rl-header-search[data-open="true"] .rl-search-field {
+    flex: 1;
+  }
+}
+/* Category strip (phones and tablets): icon above the name, swipe sideways for more; the
+   page never scrolls horizontally. The list follows the layout direction (rtl). */
+.rl-category-strip {
+  display: none;
+}
+@media (max-width: 63.999rem) {
+  .rl-category-strip {
+    display: block;
+    background: var(--rl-surface);
+    border-block-end: var(--rl-border) solid var(--rl-line);
+  }
+  .rl-category-strip-list {
+    list-style: none;
+    margin-block: 0;
+    display: flex;
+    gap: var(--rl-space-1);
+    padding-block: var(--rl-space-2) 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .rl-category-strip-list::-webkit-scrollbar {
+    display: none;
+  }
+  .rl-category-strip-list > li {
+    flex: 1 0 auto;
+    display: flex;
+  }
+  .rl-category-strip-item {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--rl-space-1);
+    inline-size: var(--rl-strip-item);
+    min-inline-size: var(--rl-strip-item);
+    padding-block-end: var(--rl-space-2);
+    color: var(--rl-ink);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .rl-category-strip-icon {
+    display: grid;
+    place-items: center;
+    inline-size: var(--rl-strip-icon);
+    block-size: var(--rl-strip-icon);
+    border-radius: var(--rl-radius-card);
+    background: var(--rl-surface);
+    border: var(--rl-border) solid var(--rl-line);
+    box-shadow: var(--rl-shadow-sm);
+    color: var(--rl-accent);
     transition:
-      opacity var(--rl-motion),
-      visibility var(--rl-motion);
+      background-color var(--rl-motion-fast) var(--rl-ease),
+      border-color var(--rl-motion-fast) var(--rl-ease);
   }
-  .rl-site-header[data-shrunk="true"] .rl-brand,
-  .rl-site-header[data-shrunk="true"] .rl-header-actions {
-    opacity: 0;
-    visibility: hidden;
+  .rl-category-strip-icon .rl-icon {
+    inline-size: var(--rl-strip-glyph);
+    block-size: var(--rl-strip-glyph);
   }
-  .rl-site-header[data-compact="true"] .rl-header-row {
-    min-block-size: var(--rl-header-mobile-compact);
-    padding-block: var(--rl-space-1);
+  .rl-category-strip-label {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    max-inline-size: 100%;
+    font-size: var(--text-sm);
+    font-weight: var(--rl-weight-medium);
+    line-height: var(--rl-leading-heading);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .rl-category-strip-item[aria-current="page"] {
+    color: var(--rl-accent);
+  }
+  .rl-category-strip-item[aria-current="page"] .rl-category-strip-label {
+    font-weight: var(--rl-weight-semibold);
+  }
+  .rl-category-strip-item[aria-current="page"] .rl-category-strip-icon {
+    background: var(--rl-soft-accent);
+    border-color: transparent;
+  }
+  .rl-category-strip-item[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: var(--rl-space-1);
+    block-size: var(--rl-strip-indicator);
+    border-radius: var(--rl-radius-pill);
+    background: var(--rl-action);
+  }
+  .rl-category-strip-item[aria-disabled="true"] {
+    color: var(--rl-muted);
+  }
+  .rl-category-strip-item[aria-disabled="true"] .rl-category-strip-icon {
+    color: var(--rl-muted);
+    box-shadow: none;
+  }
+  button.rl-category-strip-item .rl-category-strip-icon {
+    color: var(--rl-ink);
+  }
+  a.rl-category-strip-item:focus-visible,
+  button.rl-category-strip-item:focus-visible {
+    outline: none;
+  }
+  a.rl-category-strip-item:focus-visible .rl-category-strip-icon,
+  button.rl-category-strip-item:focus-visible .rl-category-strip-icon {
+    outline: var(--rl-focus) solid var(--rl-accent);
+    outline-offset: var(--rl-focus);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    a.rl-category-strip-item:hover .rl-category-strip-icon,
+    button.rl-category-strip-item:hover .rl-category-strip-icon {
+      background: var(--rl-soft-accent);
+    }
+  }
+  a.rl-category-strip-item:active .rl-category-strip-icon,
+  button.rl-category-strip-item:active .rl-category-strip-icon {
+    background: var(--rl-raised);
   }
 }
 @media (min-width: 64rem) {

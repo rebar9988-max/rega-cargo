@@ -17,8 +17,17 @@
   --rl-mark-size: 3rem;
   --rl-mark-compact: 2.5rem;
   --rl-header-expanded: 5.5rem;
-  --rl-header-mobile: 8.5rem;
-  --rl-header-mobile-compact: 7.5rem;
+  --rl-header-mobile: 4rem;
+  --rl-header-mobile-compact: 4rem;
+  /* Header category strip (phones and tablets). */
+  --rl-strip-item: 5.5rem;
+  --rl-strip-icon: 3.5rem;
+  --rl-strip-glyph: 1.75rem;
+  --rl-strip-indicator: 3px;
+  /* Icons and focus rings on the brand-red header row. */
+  --rl-on-brand: #ffffff;
+  --rl-on-brand-hover: rgb(255 255 255 / 0.14);
+  --rl-on-brand-line: rgb(255 255 255 / 0.45);
   --rl-header-compact: 4.5rem;
   --rl-search-width: 40rem;
   --rl-nav-h: 3.5rem;
