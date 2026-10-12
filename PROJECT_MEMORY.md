@@ -6,15 +6,15 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-12 ~19:10 UTC**, against `main` @ `5b7c97e` (I-7 re-verified; CI minutes PR #77)
+- Last memory update: **2026-10-12 19:05 UTC release**, against production code `main` @ `3c7ad5a` (PR #72 merged and deployed).
 
-## Current state (verified 2026-10-11 15:14–15:38 UTC)
+## Current state (verification time is recorded per row)
 
 | Area | State | Evidence |
 |---|---|---|
 | Public pages | All AGENTS.md required routes return 200 (`/`, `/stores`, `?cat=`, `?fav=1`, `/stores/request`, `/quote`, `/ai`, legal pages); `<html lang="ckb" dir="rtl">` | `curl` against production, 15:36 |
 | R&L AI | On (`/api/ai/status` → `{"enabled":true}`) | production |
-| Live Worker version | `4242774e`, deployed 2026-10-12 18:37 UTC from `main` @ `a7ee020` (PR #75, Nitro bump); previous `5a2c2ecc` | `wrangler deploy` output, `wrangler deployments list` |
+| Live Worker version | `12dcd05e-a5ee-4b77-8a1d-04d84f01f0d4`, deployed 2026-10-12 19:05 UTC from `main` @ `3c7ad5a` (PR #72); previous `4242774e` | Cloudflare deployment `f418d675-cd5b-4257-9c29-a813857fe9e8`, verified at 100% traffic |
 | **Production database** | **BROKEN — blocker (I-1).** The Worker queries `misty-recipe-03041407/neondb`, which only has `0002_market.sql`. `/market` renders its error state; logs: `column p.compliance_status does not exist`, `relation "prohibited_keywords" does not exist` | `7b92d650`: 6 probes, `misty/neondb` rollbacks 257→287; `10723cf0`: 4 probes, 334→340; `old-cherry/cargo` rollbacks 0 throughout; `wrangler tail` (7/7 requests) |
 | Correct database | `old-cherry-79292410`, database `cargo`: 12/12 migrations (09:38 UTC), 8 compliance triggers, 378 banned keywords | Neon read-only SQL |
 | Customer data | **None in either database** (0 products, users, requests, orders) — repointing loses nothing | `pg_stat_user_tables` on both |
@@ -22,12 +22,12 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 | Sign-in | Worker logs `auth is disabled (VITE_AUTH_ENABLED=false)`; Better Auth fails closed and phone codes cannot be sent, so nobody can sign in (I-3, I-6) | `wrangler tail` |
 | GitHub Actions | **BROKEN — blocker for merging (I-7).** No job starts since ~15:38 UTC 2026-10-11, on `main` too. Verified cause: account billing (failed payment or spending limit; agents cannot read the billing page to tell which) — owner must fix in Billing and plans. Re-verified on `main` @ `a7ee020` run 186. Mitigation PR #77: docs-only changes skip the layout job, drafts skip CI, superseded PR runs cancel | check-run annotations, 2026-10-12 06:31 and 18:36 |
 | Production smoke (2026-10-12 06:48) | Live `853e698b`: all required routes 200, `<html lang="ckb" dir="rtl">`, `/api/ai/status` enabled, banned searches (vodka, cigarettes, vape, pork bacon) list nothing, legacy host 301; hero card + tracking card render at 360/390px light/dark in ckb/ar/en with no horizontal scroll; `wrangler tail` 63/63 ok | `curl`, Playwright, `wrangler tail` |
-| Shipping/bazaar separation | PR #72 prepared; owner approved merge and production deployment on 2026-10-12. Dedicated shipping page on `/quote`, catalogue-only `/stores`, no home calculator/service switch. Revalidating with current Nitro version before release | [verification report](docs/redesign/shipping-separation.md) |
+| Shipping/bazaar separation | **Live.** Dedicated `/quote` design, catalogue-only `/stores`, no home calculator/service switch. Owner approved merge/deploy. Official-image gate: 417 unit/script tests and 386 browser/layout checks passed. Production: 15 HTTP routes, 24 asset URLs, 42 Chromium/WebKit checks passed | [release verification](docs/redesign/shipping-separation.md) |
 | Banned-products protection | Holds via the bundled list in `src/lib/compliance/rules.ts` | `wrangler tail`: "using bundled list" |
 
 ## Next safe continuation point
 
-- Complete the authorized PR #72 merge/deployment and post-release checks; see [verification](docs/redesign/shipping-separation.md).
+- PR #72 is merged and live as `12dcd05e`; [post-release checks passed](docs/redesign/shipping-separation.md). Continue with the existing backend/CI issues below when authorized.
 
 1. **Owner action (I-7)** — GitHub Actions stays blocked by billing (owner chose not to pay; included minutes reset next billing cycle). Until then run the full quality gate locally in the official Playwright image before any merge (decision 2026-10-12). Once Actions runs again, re-run CI on `main` (newest head) and confirm `scope`, `verify` and `layout lock` are green; a docs-only push must show `layout lock` as skipped.
 2. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").

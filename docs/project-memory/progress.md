@@ -5,7 +5,6 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 ## Active / open PRs
 
-- 2026-10-12: [PR #72](https://github.com/rebar9988-max/rega-cargo/pull/72) shipping/bazaar separation prepared on `claude/separate-shipping-bazaar`; dedicated `/quote` design, no home/catalogue calculator or service switch. Official-image gate passed: typecheck, 417 tests, lint (0 errors), build, cf dry-run, 386 browser/layout checks (12 expected skips). Not merged/deployed. [Report and verification](../redesign/shipping-separation.md).
 
 | PR | Branch | Title | State |
 |---|---|---|---|
@@ -25,6 +24,7 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 - Native translation review; real legal details (I-5).
 
 ## Completed (recent, merged to `main`)
+- #72 shipping/bazaar separation merged `3c7ad5a`, deployed `12dcd05e` at 19:05 UTC after explicit owner approval; full official-image gate passed (417 tests, 386 browser/layout checks). Production smoke: 15 routes + 24 assets + 42 Chromium/WebKit checks passed. [Report](../redesign/shipping-separation.md).
 - #75 Nitro 3.0.260903-beta (clears the 5 npm audit highs, supersedes #4); merged `a7ee020`, deployed `4242774e`; reduced local gate
 - #57 product-link layout-shift fix (CLS 0.26 -> 0.001) and named announcement landmark; merged `361f954`, deployed `5a2c2ecc`; reduced local gate (decisions.md)
 - #60 home hero as a brand-red card + parcel-tracking entry (Figma "Mobile Home Concept", read-only View seat); merged as `9ba82e9` on the local quality gate (GitHub Actions blocked, I-7; owner decision 2026-10-12), deployed to production `853e698b`
