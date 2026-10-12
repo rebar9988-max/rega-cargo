@@ -7,7 +7,7 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 | PR | Branch | Title | State |
 |---|---|---|---|
-| #60 | `claude/rl-cargo-design-impl-xvqpm0` | Home: brand-red hero card and parcel-tracking entry (Figma concept) | draft, mergeable; CI green on `9f81391`; head `bed4c9d` (merged `main` @ `486e442`) blocked only by I-7 — local gate green, not merged |
+| #60 | `claude/rl-cargo-design-impl-xvqpm0` | Home: brand-red hero card and parcel-tracking entry (Figma concept) | draft, mergeable; GitHub CI green on `9f81391`. Merged `main` @ `486e442` (`bed4c9d`): full gate green **locally** on 2026-10-12 (typecheck, lint 0 errors, 417 tests, build, cf dry-run, layout lock 383 passed/12 skipped in the official image). Not merged: GitHub CI cannot run (I-7) |
 | #57 | `claude/rl-ai-shopping-hero-k5aeln` | i18n for all 7 languages + product-link layout shift + announcement landmark | open, may overlap #55/#61 (merged) |
 | #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open, likely superseded by #53 |
 | #49 | `claude/rega-cargo-clone-oyhxb4` | Official R&L logo, soft 3D buttons, ten-group catalogue | draft; holds 6 unmerged hero/forms/store-card commits on top |
