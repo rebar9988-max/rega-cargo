@@ -361,6 +361,8 @@ test("home: service tabs separate content, support the keyboard and preserve the
   await expect(
     page.locator('.rl-ai-hero a[href^="/stores"], .rl-ai-hero a[href^="/ai"]'),
   ).toHaveCount(0);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: "test-results/home-shipping-hero-360.png" });
   const calculator = page.locator(".rl-deferred-calculator");
   await expect
     .poll(async () => {

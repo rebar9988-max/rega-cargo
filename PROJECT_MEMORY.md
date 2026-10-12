@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-12**, UI follow-up [PR #74](https://github.com/rebar9988-max/rega-cargo/pull/74) integrates `main` @ `238b755` (including PR #57 released as `5a2c2ecc`). The UI branch is not merged or deployed; final integration checks are pending. Earlier production observations below remain historical.
+- Last memory update: **2026-10-12**, UI follow-up [PR #74](https://github.com/rebar9988-max/rega-cargo/pull/74) integrates `main` @ `238b755` (including PR #57 released as `5a2c2ecc`). Implementation and local official-image checks are complete; owner review/release is pending. The UI branch is not merged or deployed; earlier production observations below remain historical.
 
 ## Current state (verified 2026-10-11 15:14–15:38 UTC)
 
@@ -26,7 +26,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 ## Next safe continuation point
 
-- Home UI follow-up: finish the browser gate and review the [service-separation report](docs/redesign/home-service-separation.md). Merge/deploy remains subject to the existing explicit owner-approval policy.
+- Home UI follow-up: review [PR #74 and its rendered previews](docs/redesign/home-service-separation.md); the local gate passed. Merge/deploy remains subject to the existing explicit owner-approval policy.
 
 1. **Owner action (I-7)** — GitHub Actions stays blocked by billing (owner chose not to pay; included minutes reset next billing cycle). Until then run the full quality gate locally in the official Playwright image before any merge (decision 2026-10-12). Once Actions runs again, re-run CI on `main` to confirm `9ba82e9` is green.
 2. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").

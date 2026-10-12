@@ -6,8 +6,10 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 ## Active / open PRs
 
 2026-10-12 UI follow-up: [PR #74](https://github.com/rebar9988-max/rega-cargo/pull/74), `claude/clean-shopping-shipping-20261012`, separates the home services and
-tidies mobile quotes. Implementation and core checks complete; final browser verification and
-review pending. [Report](../redesign/home-service-separation.md). No merge or deployment.
+tidies mobile quotes. Implementation and the local official-image quality gate complete;
+`238b755` integrated and all 21 premium tests passed again. Full pre-integration geometry:
+385 passed/12 skips; affected baselines: 96 passed/12 skips. Owner review/release pending.
+[Report and rendered previews](../redesign/home-service-separation.md). No merge or deployment.
 
 | PR | Branch | Title | State |
 |---|---|---|---|

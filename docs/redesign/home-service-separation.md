@@ -1,7 +1,8 @@
 # Home service separation — 2026-10-12
 
-Baseline: `main` at `54e505b`. Review branch: `claude/clean-shopping-shipping-20261012`.
-Status: implemented; final browser validation in progress. No merge or deployment.
+Baseline: `main` at `54e505b`; integrated the newer `238b755` during review, retaining PR #57's
+product-link layout-shift fix and announcement landmark. Review: [PR #74](https://github.com/rebar9988-max/rega-cargo/pull/74), branch `claude/clean-shopping-shipping-20261012`.
+Status: implementation and local verification complete. No merge or deployment.
 
 ## Problem and resulting behavior
 
@@ -40,12 +41,30 @@ Official `mcr.microsoft.com/playwright:v1.63.0-noble` image, Node `22.23.3`, `DA
 - Unit tests: 417 passed, four existing skips.
 - Lint: zero errors, five existing warnings in untouched auth/i18n/theme files.
 - Production build and Cloudflare dry-run passed.
-- Final geometry/interaction suite and affected screenshot baselines: in progress.
+- Full geometry/interaction suite before upstream integration: 385 passed, 12 expected skips,
+  on all nine Chromium/WebKit device projects and the 360px suite.
+- Affected home/menu/language/search screenshot baselines: 96 passed, 12 expected skips;
+  regenerated only in the official image.
+- After integrating `238b755`: repeated TypeScript, all 417 unit tests (four skips), lint,
+  build and Cloudflare dry-run passed; all 21 premium mobile tests passed, including the new
+  upstream product-link CLS and announcement-landmark checks. The upstream changes do not
+  alter the home styles. The final shipping CTA uses the existing short shipping label.
 
 The first six-worker browser run passed 359 cases, skipped 12 and timed out in 26 cases.
 A two-worker recheck passed 24 of those; the remaining contact/network-idle and long catalogue
-cases prompted the settling/budget changes above. Final results replace the pending status
-only after the complete rerun finishes.
+cases prompted the settling/budget changes above. The full rerun then passed with two workers
+and retries disabled. No assertions were removed.
+
+## Rendered previews
+
+Sorani, light theme, 360px, captured from the compiled local Worker in the official image after
+upstream integration. These are local previews of the review branch.
+
+![Shopping panel](home-service-separation/shopping-360.png)
+
+![Shipping hero](home-service-separation/shipping-hero-360.png)
+
+![Shipping calculator](home-service-separation/shipping-360.png)
 
 Review paths: `/` (each tab), `/?lang=ckb|ar|en`, `/?cat=fashion`, `/?q=Vodka`, `/stores`,
 `/quote?from=ber&to=ebl&kg=3.2&l=60&w=30&h=20`, `/track`. The compiled preview uses the existing

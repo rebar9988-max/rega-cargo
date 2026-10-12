@@ -103,7 +103,7 @@ export function PremiumHome({ service, children }: { service: Service; children?
                     className="rl-button"
                     data-variant="primary"
                   >
-                    {t.hero.fullQuote}
+                    {c.heroShip}
                     <Icon as={ArrowRight} directional />
                   </Link>
                   <Link
