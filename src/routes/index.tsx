@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
 import { BazaarPage } from "@/components/bazaar-page";
 import { PremiumHome } from "@/components/premium-home";
-import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
+import { ServiceSwitch } from "@/components/delivery-hub";
 import { validateBazaarSearch } from "@/lib/bazaar-search";
 import { initialService } from "@/lib/service-initial";
 
@@ -23,10 +23,6 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { service } = Route.useLoaderData();
   return (
-    <BazaarPage
-      home
-      initialService={service}
-      homeComponents={{ PremiumHome, DeliveryHub, ServiceSwitch }}
-    />
+    <BazaarPage home initialService={service} homeComponents={{ PremiumHome, ServiceSwitch }} />
   );
 }

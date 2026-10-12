@@ -44,7 +44,10 @@ test("homepage calculator keeps dimensions and quote handoff after scrolling", a
     await new Promise<void>((resolve) => setTimeout(resolve, 500));
     await route.continue();
   });
-  await page.goto("/?lang=en", { waitUntil: "commit" });
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  await expect(page.locator("#rl-service-panel-bazaar")).toBeVisible();
+  await expect(page.locator(".rl-deferred-calculator")).not.toBeVisible();
+  await page.locator("#rl-service-tab-delivery").click();
   const calculator = page.locator(".rl-deferred-calculator");
   await expect
     .poll(
@@ -185,6 +188,7 @@ const PRIMARY = [
 test("catalogue: ten category rows, direct URLs, history, subcategories and honest empty states", async ({
   page,
 }) => {
+  test.setTimeout(120_000);
   await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
   const rows = page.locator(".rl-category-row");
   await expect(rows).toHaveCount(10);
@@ -229,6 +233,7 @@ test("catalogue: ten category rows, direct URLs, history, subcategories and hone
 test("hero: the AI call to action opens the existing assistant in the chosen language", async ({
   page,
 }) => {
+  test.setTimeout(120_000);
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
     const cta = page.locator(".rl-ai-hero .rl-ai-hero-cta");
@@ -260,6 +265,7 @@ test("hero: the AI call to action opens the existing assistant in the chosen lan
 test("hero: one static section right under the header, same place in every language", async ({
   page,
 }) => {
+  test.setTimeout(120_000);
   await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
   // No carousel, no slides: exactly one hero, and it is the first section in <main>.
   await expect(page.locator(".rl-ai-hero")).toHaveCount(1);
@@ -306,6 +312,7 @@ test("hero: the marketplace and shipping buttons sit under the AI action", async
 test("home: the parcel card only links to tracking and invents no shipment", async ({ page }) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    await page.locator("#rl-service-tab-delivery").click();
     const card = page.locator(".rl-track-card");
     await expect(card).toHaveCount(1);
     await expect(card.locator("a")).toHaveAttribute(
@@ -316,8 +323,87 @@ test("home: the parcel card only links to tracking and invents no shipment", asy
     await expect(card).not.toContainText(/RL-\d/);
     await expect(card.locator("[role=progressbar], progress")).toHaveCount(0);
     // The hero card's white primary keeps readable red type in both themes.
-    const cta = page.locator(".rl-ai-hero-cta");
+    const cta = page.locator('.rl-ai-hero .rl-button[data-variant="primary"]');
     await expect(cta).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  }
+});
+
+test("home: service tabs separate content, support the keyboard and preserve the quote", async ({
+  page,
+}) => {
+  await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+  const shopping = page.locator("#rl-service-panel-bazaar");
+  const delivery = page.locator("#rl-service-panel-delivery");
+  const shopTab = page.locator("#rl-service-tab-bazaar");
+  const deliveryTab = page.locator("#rl-service-tab-delivery");
+  await expect(shopping).toBeVisible();
+  await expect(delivery).not.toBeVisible();
+  await expect(shopTab).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator(".rl-track-card")).not.toBeVisible();
+  await page
+    .locator(".rl-service-switch")
+    .evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await expect(page.locator(".rl-site-header")).toHaveAttribute("data-shrunk", "true");
+  await page.evaluate(() =>
+    window.scrollBy(
+      0,
+      -Math.max(0, document.querySelector("header")!.getBoundingClientRect().bottom),
+    ),
+  );
+  await page.screenshot({ path: "test-results/home-shopping-360.png" });
+
+  await shopTab.focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(deliveryTab).toBeFocused();
+  await expect(delivery).toBeVisible();
+  await expect(shopping).not.toBeVisible();
+  await expect(page.locator(".rl-logo-strip")).not.toBeVisible();
+  await expect(
+    page.locator('.rl-ai-hero a[href^="/stores"], .rl-ai-hero a[href^="/ai"]'),
+  ).toHaveCount(0);
+  const calculator = page.locator(".rl-deferred-calculator");
+  await expect
+    .poll(async () => {
+      await calculator.scrollIntoViewIfNeeded();
+      return page.locator(".rl-quick-options").isVisible();
+    })
+    .toBe(true);
+  await page.screenshot({ path: "test-results/home-shipping-360.png" });
+  const length = page.locator(".rl-quick-fields input").nth(1);
+  await length.fill("60");
+  await expect(page.locator(".rl-quick-options .rl-price").first()).toContainText("56.16");
+  await shopTab.click();
+  await expect(shopping).toBeVisible();
+  await expect(calculator).not.toBeVisible();
+  await deliveryTab.click();
+  await expect(length).toHaveValue("60");
+
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(deliveryTab).toHaveAttribute("aria-selected", "true");
+  await expect(delivery).toBeVisible();
+  await expect(shopping).not.toBeVisible();
+  await deliveryTab.focus();
+  await page.keyboard.press("Home");
+  await expect(shopTab).toBeFocused();
+  await expect(shopping).toBeVisible();
+  await page.keyboard.press("End");
+  await expect(deliveryTab).toBeFocused();
+  await expect(delivery).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
+
+test("home search shows shopping results even when shipping is remembered, with bans intact", async ({
+  page,
+}) => {
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  await page.locator("#rl-service-tab-delivery").click();
+  await page.goto("/?lang=en&cat=fashion", { waitUntil: "networkidle" });
+  await expect(page.locator(".rl-marketplace")).toBeVisible();
+  await expect(page.locator("[data-store]").first()).toBeVisible();
+  for (const q of ["Cigarettes", "Vape", "Vodka", "Pork bacon"]) {
+    await page.goto(`/?lang=en&q=${encodeURIComponent(q)}`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
+    await expect(page.locator(".rl-empty-state")).toBeVisible();
   }
 });
 

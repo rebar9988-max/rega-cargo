@@ -16,6 +16,13 @@ Authoritative rules: [AGENTS.md](../../AGENTS.md) "DESIGN SYSTEM RULES". Impleme
 - Motion 150–250 ms, respects `prefers-reduced-motion`. Full dark mode; theme applied before first paint (`src/lib/appearance-script.ts`, CSP hash tested).
 
 ## Layout lock
+
+Home follow-up (2026-10-12, review branch `claude/clean-shopping-shipping-20261012`, not deployed):
+shopping and shipping have separate remembered tab panels and service-specific hero content.
+Mobile quote options use compact rows; the three dimensions share one row. Home headings and
+section gaps are scoped to the home rather than changing other pages. Evidence and validation:
+[home-service-separation.md](../redesign/home-service-separation.md).
+
 Breakpoints phone <768 · tablet 768–1023 · laptop ≥1024; content max 1200px; gutters 16/24/32.
 Guards: `src/lib/layout-lock.test.ts` (in `npm test`) and `tests/layout/` Playwright (Chromium + WebKit) with screenshot baselines in `tests/layout/__screenshots__/`.
 **A baseline change is a design change.** Re-render only in the official image (CI workflow `update_baselines`, or `npm run test:layout:update`), never from a local browser.

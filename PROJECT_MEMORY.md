@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-12 ~06:50 UTC**, against `main` @ `9ba82e9` (PR #60 merged and deployed)
+- Last memory update: **2026-10-12**, UI follow-up from `main` @ `54e505b` on `claude/clean-shopping-shipping-20261012`; implementation/core checks complete, final browser verification pending. This branch has not been merged or deployed; earlier production observations below remain historical.
 
 ## Current state (verified 2026-10-11 15:14–15:38 UTC)
 
@@ -25,6 +25,8 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 | Banned-products protection | Holds via the bundled list in `src/lib/compliance/rules.ts` | `wrangler tail`: "using bundled list" |
 
 ## Next safe continuation point
+
+- Home UI follow-up: finish the browser gate and review the [service-separation report](docs/redesign/home-service-separation.md). Merge/deploy remains subject to the existing explicit owner-approval policy.
 
 1. **Owner action (I-7)** — GitHub Actions stays blocked by billing (owner chose not to pay; included minutes reset next billing cycle). Until then run the full quality gate locally in the official Playwright image before any merge (decision 2026-10-12). Once Actions runs again, re-run CI on `main` to confirm `9ba82e9` is green.
 2. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").

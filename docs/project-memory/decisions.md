@@ -4,6 +4,7 @@ Append new decisions at the top. Format: date — decision — who/where (source
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-12 | Home shopping and shipping content must be separate. Preserve the existing service preference and entered quote dimensions; keep pricing and product bans intact | owner request and [implementation report](../redesign/home-service-separation.md), review branch only |
 | 2026-10-12 | While GitHub Actions cannot start jobs (I-7, billing), PR #60 may merge and deploy on the full quality gate run locally in the official Playwright image (typecheck, lint, `npm test`, build, cf dry-run, layout lock). Repo stays private; no paid change. `main` has no required checks, so nothing is bypassed | owner authorization in chat, PR #60 |
 | 2026-10-11 | Correct production database is `old-cherry-79292410` / `cargo`; `misty-recipe-03041407` is an incomplete duplicate. Fix by repointing, never by migrating `misty` | verified evidence, issues I-1 |
 | 2026-10-11 | Project-wide memory system: `CLAUDE.md` entry → `PROJECT_MEMORY.md` → `docs/project-memory/`. Memory links to DEPLOY.md / docs/integrations / docs/redesign instead of duplicating them | this memory PR |

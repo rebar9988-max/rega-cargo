@@ -39,7 +39,7 @@ async function open(page: Page, path: string, lang: string) {
 
 /** Load every image (incl. lazy ones below the fold) and the web fonts before measuring. */
 async function settle(page: Page) {
-  const deferred = page.locator(".rl-deferred-calculator");
+  const deferred = page.locator(".rl-deferred-calculator:visible");
   if (await deferred.count()) {
     // Network idle can precede hydration; the router then resets the initial scroll.
     // Keep the calculator in view until its interactive content has actually mounted.
@@ -73,7 +73,8 @@ async function settle(page: Page) {
     );
     await document.fonts.ready;
   });
-  await page.waitForLoadState("networkidle");
+  // Fonts and images above are the actual layout dependencies. A second network-idle wait
+  // can hang on a dropped local Worker connection after WebKit has already rendered the page.
 }
 
 /**

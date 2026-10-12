@@ -210,7 +210,7 @@ export function QuotePanel({
     return (
       <div className="rl-quick-calc">
         <div className="rl-quick-fields">
-          <Field label={t.from}>
+          <Field label={t.from} className="rl-quick-route">
             <select
               className={controlClass}
               value={fromId}
@@ -223,7 +223,7 @@ export function QuotePanel({
               ))}
             </select>
           </Field>
-          <Field label={t.to}>
+          <Field label={t.to} className="rl-quick-route">
             <select className={controlClass} value={toId} onChange={(e) => setToId(e.target.value)}>
               {DESTS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -232,7 +232,7 @@ export function QuotePanel({
               ))}
             </select>
           </Field>
-          <Field label={`${t.weight} (${t.kg})`}>
+          <Field label={`${t.weight} (${t.kg})`} className="rl-quick-weight">
             <input
               className={controlClass}
               dir="ltr"
@@ -247,7 +247,7 @@ export function QuotePanel({
             { label: t.width, value: width, set: setWidth },
             { label: t.height, value: height, set: setHeight },
           ].map((f) => (
-            <Field key={f.label} label={`${f.label} (${t.cm})`}>
+            <Field key={f.label} label={`${f.label} (${t.cm})`} className="rl-quick-dimension">
               <input
                 className={controlClass}
                 dir="ltr"
@@ -267,14 +267,16 @@ export function QuotePanel({
         <div className="rl-quick-options">
           {rows.map((row) => (
             <article key={row.mode.id}>
-              <h3>{t.modes[row.mode.id].name}</h3>
+              <div className="rl-quick-option-copy">
+                <h3>{t.modes[row.mode.id].name}</h3>
+                <p className="rl-caption">
+                  {t.chargeable}:{" "}
+                  <bdi dir="ltr">
+                    {row.price.chargeable.toFixed(1)} {t.kg}
+                  </bdi>
+                </p>
+              </div>
               <Price eur={row.price.total} />
-              <p className="rl-caption">
-                {t.chargeable}:{" "}
-                <bdi dir="ltr">
-                  {row.price.chargeable.toFixed(1)} {t.kg}
-                </bdi>
-              </p>
             </article>
           ))}
         </div>

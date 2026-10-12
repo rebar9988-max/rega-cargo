@@ -11,6 +11,8 @@
   --rl-on-hero: #ffffff;
   --rl-hero-ink: #b80000;
   --rl-track-icon: 3.5rem;
+  --rl-service-tab-h: 4.5rem;
+  --rl-home-heading-size: var(--text-2xl);
   --rl-logo-width: 7rem;
   --rl-logo-height: 2.5rem;
   --rl-slide-start: 100%;

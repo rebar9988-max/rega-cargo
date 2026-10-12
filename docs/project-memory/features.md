@@ -5,7 +5,7 @@ Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 
 | Route / feature | Files | Status | Notes |
 |---|---|---|---|
-| `/` home (AI shopping hero, catalogue, calculator) | `routes/index.tsx`, `components/premium-home.tsx`, `bazaar-page.tsx` | live | Hero art is inline SVG; calculator lazy-loads |
+| `/` home (AI shopping hero, catalogue, calculator) | `routes/index.tsx`, `components/premium-home.tsx`, `bazaar-page.tsx` | live; service separation in review | Single brand-red hero; calculator lazy-loads. Proposed shopping/shipping tabs: [report](../redesign/home-service-separation.md) |
 | `/stores`, `?cat=`, `?sub=`, `?who=`, `?fav=1`, `?q=` | `routes/stores*.tsx`, `components/bazaar-page.tsx`, `lib/stores.ts`, `lib/catalogue.ts` | live | Ten catalogue groups; `food` + some subcategories held for owner approval. Photos are examples, no prices/stock |
 | `/stores/request?store=..&intent=buy\|ship` | `routes/stores.request.tsx`, `lib/orders/` | degraded | Needs DB; mandatory prohibited-items declaration |
 | `/quote` | `routes/quote.tsx`, `components/quote-panel.tsx`, `lib/corridor.ts` | live (pricing) / degraded (saving) | Chargeable weight = max(actual, volumetric); EUR + IQD |

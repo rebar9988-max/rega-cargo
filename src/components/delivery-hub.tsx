@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, MapPin, ShoppingBag, Tag, Truck, type LucideIcon } from "lucide-react";
 import { BrandHero, IconBadge, TrustRow } from "@/components/brand";
@@ -8,8 +8,9 @@ import { DESTS, ORIGINS, SAMPLE_BOX, getDest, getOrigin, placeName } from "@/lib
 import { useI18n } from "@/lib/i18n";
 import { parseKg } from "@/lib/quote-search";
 import type { Service } from "@/lib/service-choice";
+import { Icon } from "@/components/ui";
 
-/** Two equal cards under the search strip: Bazaar (shopping) and Delivery (shipping/moving). */
+/** One accessible service selector; each tab opens only its own home panel. */
 export function ServiceSwitch({
   value,
   onChange,
@@ -19,34 +20,50 @@ export function ServiceSwitch({
 }) {
   const { lang } = useI18n();
   const d = DESIGN_COPY[lang];
+  const tabs = useRef<Partial<Record<Service, HTMLButtonElement>>>({});
   const items: { id: Service; icon: LucideIcon; label: string; sub: string }[] = [
     { id: "bazaar", icon: ShoppingBag, label: d.bazaar, sub: d.bazaarSub },
     { id: "delivery", icon: Truck, label: d.delivery, sub: d.deliverySub },
   ];
   return (
-    <div className="bg-paper">
-      <div className="page grid grid-cols-2 gap-3 py-3" role="tablist" aria-label={d.services}>
+    <div className="page rl-service-switch">
+      <div className="rl-service-tabs" role="tablist" aria-label={d.services}>
         {items.map((item) => {
           const on = value === item.id;
-          const Icon = item.icon;
           return (
             <button
               key={item.id}
+              ref={(element) => {
+                if (element) tabs.current[item.id] = element;
+              }}
+              id={`rl-service-tab-${item.id}`}
               type="button"
               role="tab"
               aria-selected={on}
+              aria-controls={`rl-service-panel-${item.id}`}
+              tabIndex={on ? 0 : -1}
               onClick={() => onChange(item.id)}
-              className={`flex min-h-20 min-w-0 items-center gap-3 rounded-2xl border bg-surface p-3 text-start transition-[border-color,box-shadow] ${on ? "rl-soft border-pine ring-1 ring-pine" : "border-line"}`}
+              onKeyDown={(event) => {
+                let next: Service;
+                if (event.key === "Home") next = "bazaar";
+                else if (event.key === "End") next = "delivery";
+                else if (event.key === "ArrowLeft" || event.key === "ArrowRight")
+                  next = item.id === "bazaar" ? "delivery" : "bazaar";
+                else return;
+                event.preventDefault();
+                onChange(next);
+                tabs.current[next]?.focus();
+              }}
+              className="rl-service-tab"
             >
-              <IconBadge icon={Icon} tone={on ? "solid" : "soft"} />
-              <span className="flex min-w-0 flex-col">
-                <span
-                  dir="auto"
-                  className={`text-base leading-tight font-bold ${on ? "text-pine" : "text-ink"}`}
-                >
+              <span className="rl-service-tab-icon">
+                <Icon as={item.icon} />
+              </span>
+              <span className="rl-service-tab-copy">
+                <span dir="auto" className="rl-service-tab-label">
                   {item.label}
                 </span>
-                <span dir="auto" className="mt-1 text-xs leading-snug text-muted">
+                <span dir="auto" className="rl-service-tab-sub">
                   {item.sub}
                 </span>
               </span>

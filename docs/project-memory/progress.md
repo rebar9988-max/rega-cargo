@@ -5,6 +5,10 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 ## Active / open PRs
 
+2026-10-12 UI follow-up: `claude/clean-shopping-shipping-20261012` separates the home services and
+tidies mobile quotes. Implementation and core checks complete; final browser verification and
+review pending. [Report](../redesign/home-service-separation.md). No merge or deployment.
+
 | PR | Branch | Title | State |
 |---|---|---|---|
 | #57 | `claude/rl-ai-shopping-hero-k5aeln` | i18n for all 7 languages + product-link layout shift + announcement landmark | open, may overlap #55/#61 (merged) |
