@@ -55,8 +55,8 @@ export const Route = createFileRoute("/stores/request")({
   component: RequestPage,
 });
 
-/** Where an error is shown: under the link, under the phone, or above the send button. */
-type ErrorAt = "link" | "phone" | "form";
+/** Where an error is shown: under the link, the phone, the contents checkbox, or above the send button. */
+type ErrorAt = "link" | "phone" | "declare" | "form";
 
 /** One numbered step: a big number, an icon and a short question, then the control. */
 function Step({
@@ -108,6 +108,7 @@ function RequestPage() {
   const [qty, setQty] = useState(QTY_MIN);
   const [dest, setDest] = useState(DESTS[0].id);
   const [phone, setPhone] = useState("");
+  const [declared, setDeclared] = useState(false);
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
   const [notes, setNotes] = useState("");
@@ -118,6 +119,7 @@ function RequestPage() {
   const [failed, setFailed] = useState(false);
   const inFlight = useRef(false);
   const linkRef = useRef<HTMLInputElement>(null);
+  const declareRef = useRef<HTMLInputElement>(null);
 
   /**
    * A link from another store on our list is fine too: then the request is sent without the
@@ -174,6 +176,11 @@ function RequestPage() {
       setError({ at: "phone", text: e.badPhone });
       return;
     }
+    if (!declared) {
+      setError({ at: "declare", text: DECLARE_COPY[lang].mustDeclare });
+      declareRef.current?.focus();
+      return;
+    }
     setError(null);
     inFlight.current = true;
     setBusy(true);
@@ -191,8 +198,8 @@ function RequestPage() {
           dest,
           notes,
           phone: normalizePhone(phone) ?? phone.trim(),
-          // Pressing "send" next to the one-line declaration is the confirmation.
-          declared: true,
+          // Only reached with the box ticked; the server rejects anything but true.
+          declared,
           ...gate,
         },
       });
@@ -210,7 +217,7 @@ function RequestPage() {
         rate: { at: "form", text: rc.rate },
         signin: { at: "form", text: rc.signin },
         prohibited: { at: "link", text: marketCopy(lang).prohibited },
-        declare: { at: "form", text: DECLARE_COPY[lang].mustDeclare },
+        declare: { at: "declare", text: DECLARE_COPY[lang].mustDeclare },
       };
       if (code && messages[code]) {
         setError(messages[code]);
@@ -230,6 +237,7 @@ function RequestPage() {
   const how = intent === "ship" ? e.howShip : e.howBuy;
   const linkError = error?.at === "link" ? error.text : "";
   const phoneError = error?.at === "phone" ? error.text : "";
+  const declareError = error?.at === "declare" ? error.text : "";
 
   return (
     <Shell>
@@ -445,6 +453,30 @@ function RequestPage() {
               </div>
             </details>
 
+            <div className="rl-easy-declare">
+              <label className="rl-easy-check">
+                <input
+                  ref={declareRef}
+                  type="checkbox"
+                  checked={declared}
+                  required
+                  aria-invalid={declareError ? true : undefined}
+                  aria-describedby={declareError ? "rl-declare-note" : undefined}
+                  onChange={(event) => {
+                    setDeclared(event.target.checked);
+                    if (error?.at === "declare") setError(null);
+                  }}
+                />
+                <span>{e.declare}</span>
+              </label>
+              <ItemsLink />
+              {declareError ? (
+                <p id="rl-declare-note" role="alert" className="text-sm text-clay">
+                  {declareError}
+                </p>
+              ) : null}
+            </div>
+
             <div aria-live="polite">
               {error?.at === "form" ? (
                 <p role="alert" className="text-sm text-clay">
@@ -461,9 +493,6 @@ function RequestPage() {
             >
               {busy ? ux.sending : t.submit}
             </button>
-            <p className="rl-easy-declare">
-              {e.declare} <ItemsLink />
-            </p>
           </form>
         )}
         <aside className="rl-form-aside">

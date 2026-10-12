@@ -8,6 +8,9 @@
   --rl-easy-qty-width: 16rem;
   --rl-easy-note-h: 1.5rem;
   --rl-easy-link-h: 2.5rem;
+  --rl-easy-check: 1.375rem;
+  --rl-easy-check-row: 2.75rem;
+  --rl-easy-check-nudge: 0.125rem;
 }
 .rl-easy .rl-request-form {
   gap: var(--rl-space-4);
@@ -253,12 +256,36 @@
   min-block-size: var(--rl-easy-touch);
   font-size: var(--text-lg);
 }
+/* Contents declaration: one small checkbox, unchecked by default, required to send. */
 .rl-easy-declare {
-  margin-block-start: calc(var(--rl-space-2) * -1);
+  display: grid;
+  gap: var(--rl-space-1);
+  justify-items: start;
+}
+.rl-easy-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rl-space-2);
+  min-block-size: var(--rl-easy-check-row);
   font-size: var(--text-sm);
   line-height: var(--rl-leading);
-  color: var(--rl-muted);
-  text-align: center;
+  color: var(--rl-ink);
+  cursor: pointer;
+}
+.rl-easy-check input {
+  flex: none;
+  inline-size: var(--rl-easy-check);
+  block-size: var(--rl-easy-check);
+  margin-block-start: var(--rl-easy-check-nudge);
+  accent-color: var(--rl-action);
+  cursor: pointer;
+}
+.rl-easy-check input:focus-visible {
+  outline: var(--rl-focus) solid var(--rl-accent);
+  outline-offset: var(--rl-focus);
+}
+.rl-easy-check input[aria-invalid="true"] {
+  outline: var(--rl-focus) solid var(--rl-accent);
 }
 
 /* Aside: how it works, three short lines. */

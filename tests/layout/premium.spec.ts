@@ -374,6 +374,8 @@ test("compact forms and store cards at 360px", async ({ page }) => {
   await expect(page.locator("form .rl-easy-step")).toHaveCount(4);
   await expect(page.locator(".rl-easy-qty-btn")).toHaveCount(2);
   await expect(page.locator(".rl-easy-city")).toHaveCount(5);
+  // The contents declaration is a small checkbox, unchecked until the customer ticks it.
+  await expect(page.locator(".rl-easy-check input[type=checkbox]")).not.toBeChecked();
   await page.locator(".rl-easy-more summary").click();
   const row = page.locator("form .rl-easy-more .grid-cols-2 input");
   await expect(row).toHaveCount(2);

@@ -25,6 +25,7 @@ export type EasyRequestCopy = {
   badLink: string;
   details: string;
   detailsHint: string;
+  /** Label of the small contents checkbox (unchecked by default, required). */
   declare: string;
   howTitle: string;
   howBuy: [string, string, string];
@@ -55,7 +56,7 @@ const ckb: EasyRequestCopy = {
   badLink: "ئەم لینکە کار ناکات. لە ماڵپەڕی فرۆشگاکە کۆپی بکە و لێرە بیلکێنە.",
   details: "قەبارە، ڕەنگ یان تێبینی",
   detailsHint: "ئارەزوومەندانە",
-  declare: "بە ناردن، پشتڕاست دەکەیتەوە کە هیچ کاڵایەکی قەدەغە نانێریت.",
+  declare: "پشتڕاست دەکەمەوە کە هیچ کاڵایەکی قەدەغە نانێرم.",
   howTitle: "چۆن کار دەکات؟",
   howBuy: [
     "لینکەکە دەنێریت.",
@@ -93,7 +94,7 @@ const en: EasyRequestCopy = {
   badLink: "This link does not work. Copy it from the store's website and paste it here.",
   details: "Size, colour or a note",
   detailsHint: "Optional",
-  declare: "By sending, you confirm you are not sending any prohibited items.",
+  declare: "I confirm I am not sending any prohibited items.",
   howTitle: "How it works",
   howBuy: [
     "You send the link.",
@@ -131,7 +132,7 @@ const ar: EasyRequestCopy = {
   badLink: "هذا الرابط لا يعمل. انسخه من موقع المتجر والصقه هنا.",
   details: "المقاس أو اللون أو ملاحظة",
   detailsHint: "اختياري",
-  declare: "بالإرسال تؤكد أنك لا ترسل أي مواد ممنوعة.",
+  declare: "أؤكد أنني لا أرسل أي مواد ممنوعة.",
   howTitle: "كيف يعمل؟",
   howBuy: ["ترسل الرابط.", "نتواصل معك ونخبرك بالسعر الكامل.", "إذا وافقت، نشتريه ونوصله إليك."],
   howShip: [
@@ -165,7 +166,7 @@ const de: EasyRequestCopy = {
   badLink: "Dieser Link funktioniert nicht. Kopiere ihn von der Website des Shops und füge ihn hier ein.",
   details: "Größe, Farbe oder eine Notiz",
   detailsHint: "Optional",
-  declare: "Mit dem Senden bestätigst du, dass du keine verbotenen Waren versendest.",
+  declare: "Ich bestätige, dass ich keine verbotenen Waren versende.",
   howTitle: "So funktioniert es",
   howBuy: [
     "Du schickst den Link.",
@@ -204,7 +205,7 @@ const ku: EasyRequestCopy = {
   badLink: "Ev lînk naxebite. Ji malpera firoşgehê kopî bike û li vir bizeliqîne.",
   details: "Mezinahî, reng an têbînî",
   detailsHint: "Bijarte",
-  declare: "Bi şandinê, tu piştrast dikî ku tu tiştên qedexe naşînî.",
+  declare: "Ez piştrast dikim ku ez tiştên qedexe naşînim.",
   howTitle: "Çawa dixebite?",
   howBuy: [
     "Tu lînkê dişînî.",
@@ -242,7 +243,7 @@ const fa: EasyRequestCopy = {
   badLink: "این لینک کار نمی‌کند. آن را از سایت فروشگاه کپی کنید و اینجا بچسبانید.",
   details: "سایز، رنگ یا یادداشت",
   detailsHint: "اختیاری",
-  declare: "با ارسال، تأیید می‌کنید که هیچ کالای ممنوعه‌ای نمی‌فرستید.",
+  declare: "تأیید می‌کنم که هیچ کالای ممنوعه‌ای نمی‌فرستم.",
   howTitle: "چطور کار می‌کند؟",
   howBuy: ["لینک را می‌فرستید.", "با شما تماس می‌گیریم و قیمت کامل را می‌گوییم.", "اگر موافق بودید، می‌خریم و برایتان می‌آوریم."],
   howShip: [
@@ -276,7 +277,7 @@ const tr: EasyRequestCopy = {
   badLink: "Bu bağlantı çalışmıyor. Mağazanın sitesinden kopyala ve buraya yapıştır.",
   details: "Beden, renk veya not",
   detailsHint: "İsteğe bağlı",
-  declare: "Göndererek yasaklı ürün göndermediğini onaylarsın.",
+  declare: "Yasaklı ürün göndermediğimi onaylıyorum.",
   howTitle: "Nasıl çalışır?",
   howBuy: [
     "Bağlantıyı gönderirsin.",
