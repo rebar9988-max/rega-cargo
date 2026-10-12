@@ -25,9 +25,10 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 ### I-3 · OPEN — phone sign-in cannot send codes
 - No `WHATSAPP_*` / `TWILIO_*` / `PHONE_CODE_SECRET` secrets in production. Expected until the owner chooses a provider.
 
-### I-4 · OPEN — `npm audit` highs in build tooling (undici/sharp via miniflare)
-- Not in the Worker bundle. Verified 2026-10-11: 5 highs (env-runner, miniflare, nitro, sharp, undici), all fixed by `nitro` 3.0.260610-beta -> 3.0.260903-beta (one line in `package.json`, lockfile regenerated).
-- Validated in an isolated worktree on `main` @ `cd42937`: `npm audit` 0 vulnerabilities, typecheck clean, 400 unit tests, build, `wrangler deploy --dry-run` (4,767 KiB vs 4,754 KiB), 95 Playwright geometry tests against the built Worker. Not yet a PR or deployed (CI blocked); PR #4 has no common ancestor with `main`, so apply the bump on a fresh branch.
+### I-9 · OPEN (low) — staging-only flake: `360px filters, favorites, keyboard dialog and banned searches`
+- Symptom: against `rega-cargo-staging` the test fails about 3 of 5 runs (`dialog[open]` never appears); against production 5 of 5 pass; locally and in the CI-style local Worker it passes.
+- Verified cause: the test clicks `.rl-mobile-filters` right after `page.goto("/stores?lang=en")` (default `load`, no `networkidle`), so on a slower remote the click can land before React hydrates and is lost. Control 2026-10-12: the pre-bump build (`238b755`, nitro 3.0.260610-beta) fails the same 3 of 5 on staging, so it is not a regression of the Nitro bump.
+- Fix when convenient: `waitUntil: "networkidle"` on that first `goto` (test-only). Not changed yet to keep PR #75 about the dependency.
 
 ### I-5 · OPEN — content gaps
 - `TODO(translate-review)` strings need native ckb/ar/fa/ku review; legal pages need real owner details.
@@ -41,13 +42,21 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - Why agents cannot fix it: billing endpoints are not reachable from agent sessions (403), and raising a spending limit is a paid change that needs the owner.
 - Fix (owner): GitHub → Settings (account `rebar9988-max`) → Billing and plans → fix the failed payment method or raise the Actions spending limit (or wait for the included minutes to reset next cycle); then re-run the latest run. Until then no PR has a green quality gate, so none should be merged.
 - Evidence: `gh api repos/rebar9988-max/rega-cargo/check-runs/114690493529/annotations`; Actions API `get_workflow_job` / `list_workflow_runs`.
+- Re-verified 2026-10-12 18:36 UTC on `main` @ `a7ee020` (run 186, job 114954290650): same annotation; runs 165–187 all end in 3–6 s. Repo rulesets/branch protection are unavailable on this plan (API 403 "Upgrade to GitHub Pro"), so `main` has no required checks. Account billing endpoints are not reachable from agent sessions, so "failed payment" vs "spending limit/quota" is not distinguishable here.
+- Mitigation (PR #77, does not unblock): docs-only changes skip the ~10 min layout job, draft PRs skip CI until ready, superseded PR runs cancel; `main` and manual runs are never cancelled.
 
-### I-9 · Shipping calculator and service choice mixed with the homepage/catalogue
+### I-10 · Shipping calculator and service choice mixed with the homepage/catalogue
 - Root cause: `PremiumHome` rendered the quick calculator unconditionally, while `BazaarPage` owned delivery preference state and could mount `DeliveryHub` in place of the catalogue.
 - Source fix in PR #72 on `claude/separate-shipping-bazaar`: dedicated `ShippingPage` on `/quote`, catalogue-only `BazaarPage`, and navigation from home to each service. Responsive shipping restyle; pricing/booking logic preserved.
 - Not merged/deployed. [Verification](../redesign/shipping-separation.md).
 
 ## Closed
+
+### C-5 · FIXED 2026-10-12 — `npm audit` highs in build tooling (undici/sharp via miniflare) [was I-4]
+- Not in the Worker bundle. Verified 2026-10-11: 5 highs (env-runner, miniflare, nitro, sharp, undici), all fixed by `nitro` 3.0.260610-beta -> 3.0.260903-beta (one line in `package.json`, lockfile regenerated).
+- Validated in an isolated worktree on `main` @ `cd42937`: `npm audit` 0 vulnerabilities, typecheck clean, 400 unit tests, build, `wrangler deploy --dry-run` (4,767 KiB vs 4,754 KiB), 95 Playwright geometry tests against the built Worker. Not yet a PR or deployed (CI blocked); PR #4 has no common ancestor with `main`, so apply the bump on a fresh branch.
+- 2026-10-12: Nitro bump is PR #75 (supersedes #4). Staging check on the real runtime passed; the one staging browser failure is the pre-existing race in I-9, proven by a pre-bump control.
+- Fixed by PR #75 (merged `a7ee020`, deployed `4242774e`): `npm audit` 0 vulnerabilities. PR #4 is superseded and can be closed by the owner.
 
 ### C-4 · FIXED 2026-10-12 — product-link panel shifted the request form (CLS 0.26) [was I-8]
 - Symptom: production CLS 0.261 (en) / 0.267 (ckb) on `/stores/request` at 390px with throttled network and CPU, against <= 0.003 on every other page (measured 2026-10-11 and again 2026-10-12 on `10723cf0`).
