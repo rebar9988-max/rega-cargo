@@ -42,6 +42,8 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - Why agents cannot fix it: billing endpoints are not reachable from agent sessions (403), and raising a spending limit is a paid change that needs the owner.
 - Fix (owner): GitHub → Settings (account `rebar9988-max`) → Billing and plans → fix the failed payment method or raise the Actions spending limit (or wait for the included minutes to reset next cycle); then re-run the latest run. Until then no PR has a green quality gate, so none should be merged.
 - Evidence: `gh api repos/rebar9988-max/rega-cargo/check-runs/114690493529/annotations`; Actions API `get_workflow_job` / `list_workflow_runs`.
+- Re-verified 2026-10-12 18:36 UTC on `main` @ `a7ee020` (run 186, job 114954290650): same annotation; runs 165–187 all end in 3–6 s. Repo rulesets/branch protection are unavailable on this plan (API 403 "Upgrade to GitHub Pro"), so `main` has no required checks. Account billing endpoints are not reachable from agent sessions, so "failed payment" vs "spending limit/quota" is not distinguishable here.
+- Mitigation (PR #77, does not unblock): docs-only changes skip the ~10 min layout job, draft PRs skip CI until ready, superseded PR runs cancel; `main` and manual runs are never cancelled.
 
 ## Closed
 

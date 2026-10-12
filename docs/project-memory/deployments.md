@@ -6,6 +6,8 @@ Procedures (build, secrets, go-live, rollback): [DEPLOY.md](../../DEPLOY.md). De
 - Workflow `.github/workflows/quality.yml` "Cargo quality gate" on push/PR to `main` and manual dispatch.
 - Job `verify`: `npm ci` → typecheck → `npm test` → lint → `npm run build` (`DATABASE_URL=''`) → `cf:dry-run`.
 - Job `layout lock`: official `mcr.microsoft.com/playwright:v1.63.0-noble` image, Chromium + WebKit; input `update_baselines` re-renders screenshots (artifact `layout-report`).
+- Job `scope` (PR #77): if a push/PR changes only `*.md` or `docs/`, `layout lock` is skipped; `verify` always runs; `workflow_dispatch` and unknown bases always render.
+- Draft PRs skip CI until `ready_for_review`. A newer push to the same PR cancels its older run; `main` pushes and manual runs use a per-run concurrency group and are never cancelled.
 - Deploys are **manual** (`npm run deploy` / `deploy:staging`); there is no deploy job in CI.
 
 ## Release log (append newest first; verify with `GET .../workers/scripts/<name>/deployments`)
