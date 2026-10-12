@@ -45,57 +45,77 @@ export function PremiumHome({
           nothing inserted above it. It is server-rendered with fixed copy and is centred, so it
           sits in the same place and keeps the same hierarchy in every language. */}
       <section className="rl-ai-hero" aria-labelledby="rl-hero-title">
-        <div className="page rl-ai-hero-inner">
-          {ai ? (
-            <p className="rl-ai-hero-badge">
-              <Icon as={Sparkles} />
-              <span>{h.eyebrow}</span>
-            </p>
-          ) : (
-            <p className="rl-eyebrow" lang="en" dir="ltr">
-              {t.brandSub}
-            </p>
-          )}
-          <h1 id="rl-hero-title">{ai ? h.title : c.heroTitle}</h1>
-          <p className="rl-ai-hero-subtitle">{ai ? h.subtitle : c.heroBody}</p>
-          <div className="rl-ai-hero-actions" data-ai={ai || undefined}>
-            {/* With AI off for this deployment the marketplace is the primary action, so the
-                hero never links to an assistant that is not there. */}
+        {/* A brand-red card inside the page gutter (Figma "Mobile Home Concept", Hero 1:8). */}
+        <div className="page">
+          <div className="rl-ai-hero-inner">
             {ai ? (
-              <Link
-                to="/ai"
-                className="rl-button rl-ai-hero-cta"
-                data-variant="primary"
-                aria-busy={opening || undefined}
-                aria-label={opening ? `${h.cta}. ${h.ctaOpening}` : undefined}
-              >
+              <p className="rl-ai-hero-badge">
                 <Icon as={Sparkles} />
-                {h.cta}
-              </Link>
-            ) : null}
-            <div className="rl-ai-hero-more">
-              <Link
-                to="/stores"
-                className="rl-button rl-hero-shop"
-                data-variant={ai ? "secondary" : "primary"}
-              >
-                {c.heroShop}
-                <Icon as={ArrowRight} directional />
-              </Link>
-              <Link
-                to="/quote"
-                search={{ from: undefined, to: undefined, kg: undefined }}
-                className="rl-button rl-hero-secondary"
-                data-variant="secondary"
-              >
-                {c.heroShip}
-              </Link>
+                <span>{h.eyebrow}</span>
+              </p>
+            ) : (
+              <p className="rl-eyebrow" lang="en" dir="ltr">
+                {t.brandSub}
+              </p>
+            )}
+            <h1 id="rl-hero-title">{ai ? h.title : c.heroTitle}</h1>
+            <p className="rl-ai-hero-subtitle">{ai ? h.subtitle : c.heroBody}</p>
+            <div className="rl-ai-hero-actions" data-ai={ai || undefined}>
+              {/* With AI off for this deployment the marketplace is the primary action, so the
+                hero never links to an assistant that is not there. */}
+              {ai ? (
+                <Link
+                  to="/ai"
+                  className="rl-button rl-ai-hero-cta"
+                  data-variant="primary"
+                  aria-busy={opening || undefined}
+                  aria-label={opening ? `${h.cta}. ${h.ctaOpening}` : undefined}
+                >
+                  <Icon as={Sparkles} />
+                  {h.cta}
+                </Link>
+              ) : null}
+              <div className="rl-ai-hero-more">
+                <Link
+                  to="/stores"
+                  className="rl-button rl-hero-shop"
+                  data-variant={ai ? "secondary" : "primary"}
+                >
+                  {c.heroShop}
+                  <Icon as={ArrowRight} directional />
+                </Link>
+                <Link
+                  to="/quote"
+                  search={{ from: undefined, to: undefined, kg: undefined }}
+                  className="rl-button rl-hero-secondary"
+                  data-variant="secondary"
+                >
+                  {c.heroShip}
+                </Link>
+              </div>
             </div>
+            <p className="rl-hero-location">
+              <Icon as={Warehouse} />
+              {c.warehouse}
+            </p>
           </div>
-          <p className="rl-hero-location">
-            <Icon as={Warehouse} />
-            {c.warehouse}
-          </p>
+        </div>
+      </section>
+      {/* Parcel tracking entry (Figma "Your parcels" 1:31). It shows no parcel, status or
+          progress of its own: those exist only for a real shipment number on /track. */}
+      <section className="page rl-track-entry" aria-labelledby="rl-home-track">
+        <div className="rl-track-card">
+          <span className="rl-track-icon" aria-hidden="true">
+            <Icon as={Box} />
+          </span>
+          <div className="rl-track-copy">
+            <p className="rl-eyebrow">{t.trackKicker}</p>
+            <h2 id="rl-home-track">{t.trackTitle}</h2>
+          </div>
+          <Link to="/track" search={{ id: undefined }} className="rl-text-link rl-track-link">
+            {t.trackButton}
+            <Icon as={ArrowRight} directional />
+          </Link>
         </div>
       </section>
       <section className="page rl-section rl-stack" aria-labelledby="rl-home-calc">

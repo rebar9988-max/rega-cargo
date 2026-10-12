@@ -456,6 +456,10 @@
     color: var(--rl-success);
   }
   .rl-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--rl-space-1);
     min-block-size: var(--rl-control-h);
     padding-inline: var(--rl-space-2);
     border: var(--rl-border) solid var(--rl-line);
@@ -578,15 +582,27 @@
      Centred copy keeps the same position and hierarchy in RTL and LTR text; long translations
      wrap. No fixed heights: the block grows with its text, so nothing is clipped. */
   .rl-ai-hero {
-    background: var(--rl-surface);
-    border-block-end: var(--rl-border) solid var(--rl-line);
+    padding-block-start: var(--rl-space-2);
   }
+  /* The hero is a brand-red card inside the page gutter; every colour inside it comes from the
+     --rl-hero-* / --rl-on-hero tokens so contrast holds in light and dark mode. */
   .rl-ai-hero-inner {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     padding-block: var(--rl-space-4) var(--rl-space-3);
+    padding-inline: var(--rl-space-2);
+    border-radius: var(--rl-radius-card);
+    background: var(--rl-hero-card);
+    color: var(--rl-on-hero);
+    box-shadow: var(--rl-shadow-sm);
+  }
+  .rl-ai-hero-inner :focus-visible {
+    outline-color: var(--rl-on-hero);
+  }
+  .rl-ai-hero-inner .rl-eyebrow {
+    color: var(--rl-on-hero);
   }
   /* Set on each child: the base layer aligns Latin-script blocks to the right edge. */
   .rl-ai-hero-inner > * {
@@ -599,10 +615,9 @@
     gap: var(--rl-space-1);
     min-block-size: var(--rl-ai-hero-badge-h);
     padding-inline: var(--rl-space-2);
-    border: var(--rl-border) solid var(--rl-line);
     border-radius: var(--rl-radius-pill);
-    background: var(--rl-paper);
-    color: var(--rl-accent);
+    background: var(--rl-on-hero);
+    color: var(--rl-hero-ink);
     font-size: var(--text-xs);
     font-weight: var(--rl-weight-semibold);
   }
@@ -610,16 +625,16 @@
     margin-block-start: var(--rl-space-2);
     font-size: var(--text-4xl);
     line-height: var(--rl-leading-heading);
-    font-weight: var(--rl-weight-semibold);
+    font-weight: var(--rl-weight-bold);
     letter-spacing: var(--rl-tracking);
-    color: var(--rl-ink);
+    color: var(--rl-on-hero);
     white-space: pre-line;
     text-wrap: balance;
     overflow-wrap: anywhere;
   }
   .rl-ai-hero-subtitle {
     margin-block-start: var(--rl-space-2);
-    color: var(--rl-muted);
+    color: var(--rl-on-hero);
     font-size: var(--text-base);
     text-wrap: balance;
   }
@@ -675,8 +690,69 @@
     align-items: center;
     gap: var(--rl-space-1);
     margin-block-start: var(--rl-space-3);
-    color: var(--rl-muted);
+    color: var(--rl-on-hero);
     font-size: var(--text-sm);
+  }
+  /* Buttons on the red card: the primary is white with red type (Figma "Explore action" 1:11),
+     the secondaries are outlined in white. Hover keeps the colours and only lifts. */
+  .rl-ai-hero-inner .rl-button[data-variant="primary"],
+  .rl-ai-hero-inner .rl-button[data-variant="primary"]:hover {
+    background: var(--rl-on-hero);
+    color: var(--rl-hero-ink);
+    border-color: var(--rl-on-hero);
+  }
+  .rl-ai-hero-inner .rl-button[data-variant="secondary"],
+  .rl-ai-hero-inner .rl-button[data-variant="secondary"]:hover {
+    background: transparent;
+    color: var(--rl-on-hero);
+    border-color: var(--rl-on-hero);
+    box-shadow: none;
+  }
+  /* Parcel tracking entry: one white card, icon tile, title and a link to /track. */
+  .rl-track-entry {
+    padding-block-start: var(--rl-space-2);
+  }
+  .rl-track-card {
+    display: grid;
+    grid-template-columns: var(--rl-track-icon) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--rl-space-1) var(--rl-space-2);
+    padding: var(--rl-space-2);
+    border: var(--rl-border) solid var(--rl-line);
+    border-radius: var(--rl-radius-card);
+    background: var(--rl-surface);
+    box-shadow: var(--rl-shadow-sm);
+  }
+  .rl-track-icon {
+    display: grid;
+    place-items: center;
+    inline-size: var(--rl-track-icon);
+    block-size: var(--rl-track-icon);
+    border-radius: var(--rl-radius-sm);
+    background: var(--rl-soft-accent);
+    color: var(--rl-accent);
+  }
+  .rl-track-copy {
+    min-inline-size: 0;
+  }
+  .rl-track-copy h2 {
+    font-size: var(--text-base);
+    font-weight: var(--rl-weight-semibold);
+    line-height: var(--rl-leading-heading);
+    text-wrap: balance;
+  }
+  .rl-track-link {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-block-size: var(--rl-control-h);
+  }
+  @media (width >= 48rem) {
+    .rl-track-card {
+      grid-template-columns: var(--rl-track-icon) minmax(0, 1fr) auto;
+    }
+    .rl-track-link {
+      grid-column: auto;
+    }
   }
   .rl-section-heading {
     display: flex;
@@ -864,6 +940,17 @@
   .rl-footer-slogan {
     font-weight: var(--rl-weight-semibold);
   }
+  /* Phones: brand block on top, the link groups side by side in two columns. */
+  @media (width < 48rem) {
+    .rl-footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--rl-space-3);
+    }
+    .rl-footer-grid > :first-child,
+    .rl-footer-grid > :last-child {
+      grid-column: 1 / -1;
+    }
+  }
   .rl-footer-note {
     border-block-start: var(--rl-border) solid var(--rl-line);
     padding-block: var(--rl-space-3);
@@ -938,23 +1025,74 @@
   padding-block-start: var(--rl-space-3);
   padding-block-end: var(--rl-space-8);
 }
+/* Filter button and audience chips share one row; the chips scroll sideways if they ever
+   outgrow it, so the row never wraps or overflows the page. */
 .rl-market-toolbar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--rl-space-2);
-  margin-block-end: var(--rl-space-3);
+  gap: var(--rl-space-1);
+  margin-block-end: var(--rl-space-2);
+}
+.rl-market-toolbar .rl-mobile-filters {
+  flex: none;
+  padding-inline: var(--rl-space-2);
+  border-radius: var(--rl-radius-pill);
+  font-size: var(--text-sm);
 }
 .rl-chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: var(--rl-space-1);
 }
+/* Phones: the filter button is a round icon button (its label stays for screen readers) so
+   the three audience chips fit beside it without scrolling. */
+@media (width < 28rem) {
+  .rl-market-toolbar .rl-mobile-filters {
+    min-inline-size: var(--rl-control-h);
+    padding-inline: 0;
+  }
+  .rl-audience-chips .rl-chip {
+    flex: 1 0 auto;
+    padding-inline: var(--rl-space-1);
+  }
+  .rl-filters-label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+.rl-audience-chips {
+  flex: 1;
+  min-inline-size: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+.rl-audience-chips::-webkit-scrollbar {
+  display: none;
+}
+.rl-audience-chips .rl-chip {
+  flex: none;
+}
 .rl-partner-note {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
   color: var(--rl-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   margin-block-end: var(--rl-space-4);
+}
+/* Long category lists stay at three lines so store cards in a row line up. */
+.rl-store-categories {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 .rl-market-layout {
   display: grid;
@@ -1100,8 +1238,40 @@
   font-size: var(--text-sm);
   padding-inline: var(--rl-space-1);
 }
-.rl-store-card > .rl-button[data-variant="secondary"] {
+.rl-store-card > .rl-store-primary {
   margin-block-start: auto;
+}
+.rl-store-card > .rl-badge {
+  align-self: start;
+}
+.rl-store-site {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rl-space-0);
+  min-block-size: var(--rl-control-h);
+  color: var(--rl-ink);
+  font-weight: var(--rl-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.rl-store-site:hover {
+  color: var(--rl-accent);
+}
+.rl-store-links {
+  display: flex;
+  justify-content: center;
+}
+.rl-store-links .rl-text-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rl-space-0);
+  min-block-size: var(--rl-control-h);
+  color: var(--rl-ink);
+  font-weight: var(--rl-weight-medium);
+}
+.rl-store-links .rl-text-action:hover {
+  color: var(--rl-accent);
+  text-decoration: underline;
 }
 .rl-store-card details {
   color: var(--rl-muted);
@@ -1422,8 +1592,9 @@
   min-block-size: var(--rl-control-h);
 }
 @media (width < 28rem) {
-  /* The Sorani headline fits two lines in both the fallback and final font at 360px. */
-  html[lang="ckb"] .rl-ai-hero h1 {
+  /* Inside the hero card's padding every headline keeps the same line count in the fallback
+     and the final font at 360px (the Sorani one fits two lines). */
+  .rl-ai-hero h1 {
     font-size: var(--text-3xl);
   }
 }

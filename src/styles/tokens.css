@@ -5,6 +5,12 @@
   --rl-ai-hero-cta-width: 28rem;
   --rl-ai-hero-cta-h: 3.5rem;
   --rl-ai-hero-badge-h: 2rem;
+  /* Hero card (Figma Mobile Home Concept): brand red in both themes, white type. The ink is
+     fixed, not themed, because it always sits on white inside the red card (7:1). */
+  --rl-hero-card: var(--rl-brand);
+  --rl-on-hero: #ffffff;
+  --rl-hero-ink: #b80000;
+  --rl-track-icon: 3.5rem;
   --rl-logo-width: 7rem;
   --rl-logo-height: 2.5rem;
   --rl-slide-start: 100%;

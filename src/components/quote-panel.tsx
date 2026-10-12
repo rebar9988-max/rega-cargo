@@ -362,8 +362,9 @@ export function QuotePanel({
             </p>
           </div>
         ) : (
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <Field label={`${t.weight} (${t.kg})`}>
+          // Phones too: weight and pieces side by side, the three dimensions in one row.
+          <div className="mt-4 grid grid-cols-6 gap-x-3 gap-y-4">
+            <Field label={`${t.weight} (${t.kg})`} className="col-span-3">
               <input
                 className={controlClass}
                 dir="ltr"
@@ -373,7 +374,7 @@ export function QuotePanel({
                 onChange={(event) => setKg(event.target.value)}
               />
             </Field>
-            <Field label={t.pieces}>
+            <Field label={t.pieces} className="col-span-3">
               <input
                 className={controlClass}
                 dir="ltr"
@@ -382,7 +383,7 @@ export function QuotePanel({
                 onChange={(event) => setPieces(event.target.value)}
               />
             </Field>
-            <Field label={`${t.length} (${t.cm})`}>
+            <Field label={`${t.length} (${t.cm})`} className="col-span-2">
               <input
                 className={controlClass}
                 dir="ltr"
@@ -392,7 +393,7 @@ export function QuotePanel({
                 onChange={(e) => setLength(e.target.value)}
               />
             </Field>
-            <Field label={`${t.width} (${t.cm})`}>
+            <Field label={`${t.width} (${t.cm})`} className="col-span-2">
               <input
                 className={controlClass}
                 dir="ltr"
@@ -402,7 +403,7 @@ export function QuotePanel({
                 onChange={(e) => setWidth(e.target.value)}
               />
             </Field>
-            <Field label={`${t.height} (${t.cm})`}>
+            <Field label={`${t.height} (${t.cm})`} className="col-span-2">
               <input
                 className={controlClass}
                 dir="ltr"
@@ -413,11 +414,11 @@ export function QuotePanel({
               />
             </Field>
             {!valid ? (
-              <p role="alert" className="text-sm text-clay md:col-span-2">
+              <p role="alert" className="col-span-6 text-sm text-clay">
                 {dc.range}
               </p>
             ) : null}
-            <Field label={t.inside}>
+            <Field label={t.inside} className="col-span-6 md:col-span-3">
               <select
                 className={controlClass}
                 value={contents}
@@ -430,7 +431,7 @@ export function QuotePanel({
                 ))}
               </select>
             </Field>
-            <Field label={`${t.value} (€)`}>
+            <Field label={`${t.value} (€)`} className="col-span-6 md:col-span-3">
               <input
                 className={controlClass}
                 dir="ltr"

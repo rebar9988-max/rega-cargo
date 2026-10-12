@@ -34,6 +34,13 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 ### I-6 · OPEN — sign-in disabled in production
 - Live log: `[auth] DATABASE_URL is set but auth is disabled (VITE_AUTH_ENABLED=false) — requireUserId() rejects every request (fail closed)`. This is the shipped default (`src/lib/auth/verify.server.ts`): the Better Auth path fails closed. `phoneOrAuthMiddleware` checks an `rl_phone` session first, but phone codes cannot be sent (I-3), so nobody can sign in today; account, request and admin features stay unavailable even after I-1. Needs an owner decision (phone provider and/or enabling Better Auth).
 
+### I-7 · OPEN · blocker for merging — GitHub Actions does not start any job (billing)
+- Symptom: every "Cargo quality gate" run since ~15:38 UTC on 2026-10-11 ends as `failure` in 3–4 s with `runner_id: 0`, no steps and job logs returning 404: runs 165–170, including the `main` push run 166 on `486e442` and PR #60 runs on `bed4c9d` (plus one re-run) and `075b36c`.
+- Verified root cause (check-run annotation on `075b36c`, 2026-10-12 06:31 UTC): "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings". The repo is private on the personal account `rebar9988-max`.
+- Why agents cannot fix it: billing endpoints are not reachable from agent sessions (403), and raising a spending limit is a paid change that needs the owner.
+- Fix (owner): GitHub → Settings (account `rebar9988-max`) → Billing and plans → fix the failed payment method or raise the Actions spending limit (or wait for the included minutes to reset next cycle); then re-run the latest run. Until then no PR has a green quality gate, so none should be merged.
+- Evidence: `gh api repos/rebar9988-max/rega-cargo/check-runs/114690493529/annotations`; Actions API `get_workflow_job` / `list_workflow_runs`.
+
 ## Closed
 
 ### C-1 · FIXED 2026-10-11 — `Disallowed operation called within global scope`
