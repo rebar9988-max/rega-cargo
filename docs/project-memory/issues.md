@@ -28,6 +28,12 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 ### I-4 · OPEN — `npm audit` highs in build tooling (undici/sharp via miniflare)
 - Not in the Worker bundle. Verified 2026-10-11: 5 highs (env-runner, miniflare, nitro, sharp, undici), all fixed by `nitro` 3.0.260610-beta -> 3.0.260903-beta (one line in `package.json`, lockfile regenerated).
 - Validated in an isolated worktree on `main` @ `cd42937`: `npm audit` 0 vulnerabilities, typecheck clean, 400 unit tests, build, `wrangler deploy --dry-run` (4,767 KiB vs 4,754 KiB), 95 Playwright geometry tests against the built Worker. Not yet a PR or deployed (CI blocked); PR #4 has no common ancestor with `main`, so apply the bump on a fresh branch.
+- 2026-10-12: Nitro bump is PR #75 (supersedes #4). Staging check on the real runtime passed; the one staging browser failure is the pre-existing race in I-9, proven by a pre-bump control.
+
+### I-9 · OPEN (low) — staging-only flake: `360px filters, favorites, keyboard dialog and banned searches`
+- Symptom: against `rega-cargo-staging` the test fails about 3 of 5 runs (`dialog[open]` never appears); against production 5 of 5 pass; locally and in the CI-style local Worker it passes.
+- Verified cause: the test clicks `.rl-mobile-filters` right after `page.goto("/stores?lang=en")` (default `load`, no `networkidle`), so on a slower remote the click can land before React hydrates and is lost. Control 2026-10-12: the pre-bump build (`238b755`, nitro 3.0.260610-beta) fails the same 3 of 5 on staging, so it is not a regression of the Nitro bump.
+- Fix when convenient: `waitUntil: "networkidle"` on that first `goto` (test-only). Not changed yet to keep PR #75 about the dependency.
 
 ### I-5 · OPEN — content gaps
 - `TODO(translate-review)` strings need native ckb/ar/fa/ku review; legal pages need real owner details.
