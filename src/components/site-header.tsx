@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ChevronDown,
@@ -7,6 +7,8 @@ import {
   House,
   LayoutGrid,
   Menu,
+  MoreHorizontal,
+  Search,
   ShoppingBag,
   Truck,
   UserRound,
@@ -38,6 +40,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
   const d = DESIGN_COPY[lang];
   const path = useRouterState({ select: (s) => s.location.pathname });
   const wrap = useRef<HTMLElement>(null);
+  const openSearch = useRef<(() => void) | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const [active, setActive] = useState(false);
   const [mobile, setMobile] = useState(false);
@@ -107,6 +110,16 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
       ) : null}
       <header ref={wrap} className="rl-site-header" data-shrunk={shrunk} aria-label={c.navigation}>
         <div className="page rl-header-row" data-layout="header">
+          <button
+            type="button"
+            data-layout="menu-button"
+            className="rl-icon-button rl-mobile-only"
+            aria-label={t.menuOpen}
+            aria-expanded={mobile}
+            onClick={() => setMobile(true)}
+          >
+            <Icon as={Menu} />
+          </button>
           <Link to="/" className="rl-brand" aria-label={t.nav.home}>
             <Mark className="rl-brand-mark" />
           </Link>
@@ -117,8 +130,18 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             closeLabel={t.menuClose}
             lang={lang}
             ai={rlAiEnabled()}
+            openRef={openSearch}
           />
           <div className="rl-header-actions">
+            <button
+              type="button"
+              data-layout="search-button"
+              className="rl-icon-button rl-mobile-only"
+              aria-label={d.search}
+              onClick={() => openSearch.current?.()}
+            >
+              <Icon as={Search} />
+            </button>
             <Link
               to="/stores"
               search={{ fav: 1 }}
@@ -133,25 +156,24 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             <Link
               to="/stores/request"
               search={{ store: undefined, item: undefined, intent: "buy" }}
-              className="rl-icon-button"
+              className="rl-icon-button rl-desktop-only"
               aria-label={c.requests}
             >
               <Icon as={ShoppingBag} />
             </Link>
             <HeaderLangPicker lang={lang} setLang={setLang} title={d.language} />
+            {/* Phones and tablets: account sits last in the bar (desktop keeps its place above). */}
+            <Link
+              to="/account"
+              data-layout="account-button"
+              className="rl-icon-button rl-mobile-only"
+              aria-label={c.account}
+            >
+              <Icon as={UserRound} />
+            </Link>
             <span className="rl-desktop-only">
               <ThemeToggle />
             </span>
-            <button
-              type="button"
-              data-layout="menu-button"
-              className="rl-icon-button rl-mobile-only"
-              aria-label={t.menuOpen}
-              aria-expanded={mobile}
-              onClick={() => setMobile(true)}
-            >
-              <Icon as={Menu} />
-            </button>
           </div>
         </div>
         <nav className="page rl-category-nav" aria-label={c.categories}>
@@ -227,6 +249,12 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
           </div>
         ) : null}
       </header>
+      <CategoryStrip
+        label={c.categories}
+        more={d.more}
+        moreOpen={mobile}
+        onMore={() => setMobile(true)}
+      />
       <Modal
         open={mobile}
         onClose={() => setMobile(false)}
@@ -304,6 +332,13 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             <Link to="/stores" search={{ fav: 1 }} onClick={() => setMobile(false)}>
               {d.wishlist}
             </Link>
+            <Link
+              to="/stores/request"
+              search={{ store: undefined, item: undefined, intent: "buy" }}
+              onClick={() => setMobile(false)}
+            >
+              {c.requests}
+            </Link>
           </nav>
           <label className="rl-stack">
             <span>{d.language}</span>
@@ -338,3 +373,111 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
     </>
   );
 }
+
+/**
+ * Phones and tablets: the primary categories as one horizontal row under the header (icon
+ * above the name), the same groups, order and /stores?cat=… links as the desktop mega menu
+ * and the mobile menu. The selected category is marked from the URL. Categories awaiting
+ * approval stay visible but are not links. "More" opens the full menu.
+ */
+function CategoryStrip({
+  label,
+  more,
+  moreOpen,
+  onMore,
+}: {
+  label: string;
+  more: string;
+  moreOpen: boolean;
+  onMore: () => void;
+}) {
+  const { lang } = useI18n();
+  const sc = storeCopy(lang);
+  const cc = catalogueCopy(lang);
+  const current = useRouterState({
+    select: (s): string | undefined => {
+      const cat = (s.location.search as { cat?: unknown }).cat;
+      const listing = s.location.pathname === "/" || s.location.pathname === "/stores";
+      return listing && typeof cat === "string" ? cat : undefined;
+    },
+  });
+  const list = useRef<HTMLUListElement>(null);
+  // Keep the selected category in view without scrolling the page or animating on load.
+  useIsoLayoutEffect(() => {
+    function reveal() {
+      const box = list.current;
+      const item = box?.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!box || !item) return;
+      const boxRect = box.getBoundingClientRect();
+      const itemRect = item.getBoundingClientRect();
+      if (itemRect.left >= boxRect.left && itemRect.right <= boxRect.right) return;
+      box.scrollLeft += itemRect.left + itemRect.width / 2 - (boxRect.left + boxRect.width / 2);
+    }
+    reveal();
+    // Layout can still settle while the web fonts load, so check again once they have.
+    let live = true;
+    void document.fonts?.ready.then(() => {
+      if (live) reveal();
+    });
+    return () => {
+      live = false;
+    };
+  }, [current]);
+  return (
+    <nav className="rl-category-strip" aria-label={label} data-layout="category-strip">
+      <ul ref={list} className="page rl-category-strip-list">
+        {NAV_CATEGORIES.map((cat) => {
+          const content = (
+            <>
+              <span className="rl-category-strip-icon">
+                <Icon as={CATEGORY_ICON[cat]} />
+              </span>
+              <span className="rl-category-strip-label">{sc.categories[cat]}</span>
+            </>
+          );
+          return (
+            <li key={cat}>
+              {isPublishedCategory(cat) ? (
+                <Link
+                  to="/stores"
+                  search={{ cat }}
+                  className="rl-category-strip-item"
+                  data-category={cat}
+                  aria-current={current === cat ? "page" : undefined}
+                >
+                  {content}
+                </Link>
+              ) : (
+                <span
+                  className="rl-category-strip-item"
+                  data-category={cat}
+                  aria-disabled="true"
+                  title={cc.comingSoon}
+                >
+                  {content}
+                  <span className="sr-only">{cc.comingSoon}</span>
+                </span>
+              )}
+            </li>
+          );
+        })}
+        <li>
+          <button
+            type="button"
+            className="rl-category-strip-item"
+            aria-haspopup="dialog"
+            aria-expanded={moreOpen}
+            onClick={onMore}
+          >
+            <span className="rl-category-strip-icon">
+              <Icon as={MoreHorizontal} />
+            </span>
+            <span className="rl-category-strip-label">{more}</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+}
+
+const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;

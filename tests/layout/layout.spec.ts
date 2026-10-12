@@ -142,7 +142,9 @@ for (const lang of LANGS) {
 
     test(`search sheet ${lang}`, async ({ page, breakpoint }) => {
       await open(page, "/", lang);
-      await page.locator('input[type="search"]').first().click();
+      // Phones and tablets open the field from the header's search button.
+      if (breakpoint === "laptop") await page.locator('input[type="search"]').first().click();
+      else await page.locator('[data-layout="search-button"]').click();
       await expect(page.locator('input[type="search"][aria-expanded="true"]')).toBeVisible();
       // The suggestion list mounts lazily; capture the sheet only once its content is there.
       await expect(page.locator('[role="group"][aria-labelledby="rl-g-cats"]')).toBeVisible();

@@ -72,7 +72,7 @@ baseline update.
 | Gutters | `--gutter` 16 / 24 / 32 |
 | Card grids | `card-grid`: 2 / 3 / 4 columns; filtered store catalogue: 2 / 3 / 3, with a desktop filter sidebar |
 | Media | product photos `aspect-product` (3:4), catalogue tiles `aspect-square` |
-| Header | Expanded main row 136px phone/tablet, 88px desktop; compact row 120px phone/tablet, 72px desktop. Announcement/category rows are separate. Legacy `--header-h` remains 64px for existing layout helpers |
+| Header | Main row 64px phone/tablet (brand-red bar: menu, logo, search, language, account; pinned), 88px desktop (compact 72px). Phones/tablets show the swipeable category strip directly under it; desktop keeps the category mega menu row. Announcement/category rows are separate. Legacy `--header-h` remains 64px for existing layout helpers |
 | Bottom bar | `--bottom-bar-h` 64px + `safe-area-inset-bottom`, phone and tablet only |
 | Type scale | stepped tokens (no fluid `clamp`); body 16px, RTL heading line-height/letter-spacing from semantic tokens |
 | iOS | `viewport-fit=cover` + safe-area paddings, `text-size-adjust: 100%`, inputs ≥ 16px (no focus zoom), zoom never disabled |

@@ -9,6 +9,7 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 | PR | Branch | Title | State |
 |---|---|---|---|
+| #78 | `claude/header-category-strip` | Header: compact red bar + swipeable category strip on phones and tablets | open 2026-10-12; local gate on `bdba5ec`: typecheck, lint 0 errors, `npm test` 417/0, build, cf dry-run 4806.88 KiB, official-image layout lock 387 passed / 12 skipped (screenshot compare). Hosted CI blocked (I-7). Not deployed — needs owner approval |
 | #77 | `claude/ci-minutes-recovery` | ci: spend fewer Actions minutes (docs-only skips layout, drafts wait, superseded PR runs cancel) | open 2026-10-12; workflow-only, no Worker change; local verify gate green (417 tests); hosted CI cannot start (I-7) |
 | #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open; verified 2026-10-12: all its design commits are ancestors of `main` (via #60) and its product-link part is in `main` via #53, so nothing unique remains. Owner decides whether to close; not touched |
 | #49 | `claude/rega-cargo-clone-oyhxb4` | Official R&L logo, soft 3D buttons, ten-group catalogue | draft; verified 2026-10-12: its commits are ancestors of `main`; logo files byte-identical. Nothing unique remains. Not touched |
