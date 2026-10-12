@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-12 ~06:50 UTC**, against `main` @ `9ba82e9` (PR #60 merged and deployed)
+- Last memory update: **2026-10-12 ~18:30 UTC**, against `main` @ `361f954` (PR #57 merged and deployed)
 
 ## Current state (verified 2026-10-11 15:14–15:38 UTC)
 
@@ -14,7 +14,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 |---|---|---|
 | Public pages | All AGENTS.md required routes return 200 (`/`, `/stores`, `?cat=`, `?fav=1`, `/stores/request`, `/quote`, `/ai`, legal pages); `<html lang="ckb" dir="rtl">` | `curl` against production, 15:36 |
 | R&L AI | On (`/api/ai/status` → `{"enabled":true}`) | production |
-| Live Worker version | `853e698b`, deployed 2026-10-12 06:47 UTC from `main` @ `9ba82e9` (PR #60) | `wrangler deploy` output, `wrangler deployments list` |
+| Live Worker version | `5a2c2ecc`, deployed 2026-10-12 18:11 UTC from `main` @ `361f954` (PR #57); previous `853e698b` | `wrangler deploy` output, `wrangler deployments list` |
 | **Production database** | **BROKEN — blocker (I-1).** The Worker queries `misty-recipe-03041407/neondb`, which only has `0002_market.sql`. `/market` renders its error state; logs: `column p.compliance_status does not exist`, `relation "prohibited_keywords" does not exist` | `7b92d650`: 6 probes, `misty/neondb` rollbacks 257→287; `10723cf0`: 4 probes, 334→340; `old-cherry/cargo` rollbacks 0 throughout; `wrangler tail` (7/7 requests) |
 | Correct database | `old-cherry-79292410`, database `cargo`: 12/12 migrations (09:38 UTC), 8 compliance triggers, 378 banned keywords | Neon read-only SQL |
 | Customer data | **None in either database** (0 products, users, requests, orders) — repointing loses nothing | `pg_stat_user_tables` on both |
@@ -30,7 +30,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 2. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").
 3. After the owner's change: run the verification recipe in [deployments.md](docs/project-memory/deployments.md) ("Which database does production use?") and the post-deploy checklist; record results here.
 4. Open PRs — see [progress.md](docs/project-memory/progress.md).
-5. **PR #57 (I-8) and the Nitro bump (I-4)** are ready on local checks only (typecheck, lint, 417 unit tests, build, 97 geometry tests; no official-image run, no WebKit, no screenshot comparison). Docker has no reachable daemon in the agent environment, so the owner-defined full gate cannot be reproduced there.
+5. **Nitro bump (I-4)** is validated locally only (isolated worktree: `npm audit` 5 highs -> 0, 400 unit tests, build, dry-run, 95 geometry tests) and not yet a PR. PR #57 (I-8) merged as `361f954` and deployed as `5a2c2ecc` on a reduced local gate (no official image, screenshots or WebKit: Docker has no reachable daemon in the agent environment; see decisions.md).
 
 ## Memory map
 
