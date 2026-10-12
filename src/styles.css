@@ -152,7 +152,8 @@
       legend,
       summary,
       figcaption,
-      blockquote
+      blockquote,
+      select
     ) {
     text-align: right;
   }

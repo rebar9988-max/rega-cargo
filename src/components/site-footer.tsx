@@ -18,8 +18,10 @@ export function SiteFooter() {
       <div className="page rl-footer-grid">
         <div className="rl-stack">
           <Mark />
-          <p className="rl-footer-slogan" lang="en" dir="ltr">
-            {t.brandSub}
+          <p className="rl-footer-slogan">
+            <bdi lang="en" dir="ltr">
+              {t.brandSub}
+            </bdi>
           </p>
           <p>{DESIGN_COPY[lang].route}</p>
           <p className="rl-row">

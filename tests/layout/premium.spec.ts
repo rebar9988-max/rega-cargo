@@ -303,6 +303,74 @@ test("hero: the marketplace and shipping buttons sit under the AI action", async
   }
 });
 
+test("home: the parcel card only links to tracking and invents no shipment", async ({ page }) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const card = page.locator(".rl-track-card");
+    await expect(card).toHaveCount(1);
+    await expect(card.locator("a")).toHaveAttribute(
+      "href",
+      new RegExp(`^/track(\\?lang=${lang})?$`),
+    );
+    // No parcel number, status or progress bar unless a real shipment is looked up on /track.
+    await expect(card).not.toContainText(/RL-\d/);
+    await expect(card.locator("[role=progressbar], progress")).toHaveCount(0);
+    // The hero card's white primary keeps readable red type in both themes.
+    const cta = page.locator(".rl-ai-hero-cta");
+    await expect(cta).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  }
+});
+
+test("marketplace toolbar: filter button and audience chips share one row", async ({ page }) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+    const filters = await page.locator(".rl-market-toolbar .rl-mobile-filters").boundingBox();
+    const chips = page.locator(".rl-market-toolbar .rl-chip");
+    await expect(chips).toHaveCount(3);
+    for (let i = 0; i < 3; i++) {
+      const chip = await chips.nth(i).boundingBox();
+      expect(
+        Math.abs(chip!.y + chip!.height / 2 - (filters!.y + filters!.height / 2)),
+        lang,
+      ).toBeLessThan(2);
+      expect(chip!.height, lang).toBeGreaterThanOrEqual(44);
+    }
+    // The layout is rtl in every language: the filter button sits at the start (right) edge.
+    const width = page.viewportSize()!.width;
+    expect(Math.round(filters!.x + filters!.width), lang).toBeGreaterThan(width - 32);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(overflow, lang).toBe(0);
+  }
+});
+
+test("compact forms and store cards at 360px", async ({ page }) => {
+  // Quote: length, width and height share one row.
+  await page.goto("/quote?lang=ckb", { waitUntil: "networkidle" });
+  const dims = page.locator(".rl-quote-card .col-span-2 input");
+  await expect(dims).toHaveCount(3);
+  const ys = await dims.evaluateAll((els) =>
+    els.map((e) => Math.round(e.getBoundingClientRect().top)),
+  );
+  expect(new Set(ys).size).toBe(1);
+  // Order request: size, colour and quantity share one row.
+  await page.goto("/stores/request?store=zalando&intent=buy&lang=ckb", {
+    waitUntil: "networkidle",
+  });
+  const row = page.locator("form .grid-cols-3 input");
+  await expect(row).toHaveCount(3);
+  const ry = await row.evaluateAll((els) =>
+    els.map((e) => Math.round(e.getBoundingClientRect().top)),
+  );
+  expect(new Set(ry).size).toBe(1);
+  // Store cards: one primary action, the domain links to the store's own site.
+  await page.goto("/stores?lang=ckb", { waitUntil: "networkidle" });
+  const card = page.locator("[data-store=zalando]");
+  await expect(card.locator(".rl-button[data-variant=primary]")).toHaveCount(1);
+  await expect(card.locator("a.rl-store-site")).toHaveAttribute("href", /zalando/);
+  await expect(card.locator("a.rl-store-site")).toHaveAttribute("target", "_blank");
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  expect(overflow).toBe(0);
+
 test("product link: the panel is in the server HTML and the request form never shifts", async ({
   page,
   request,

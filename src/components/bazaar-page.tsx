@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Heart, SlidersHorizontal, ArrowUpRight } from "lucide-react";
+import { Heart, SlidersHorizontal, ArrowUpRight, Info } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { PremiumHome } from "./premium-home";
 import type { DeliveryHub, ServiceSwitch } from "./delivery-hub";
@@ -162,8 +162,18 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
         <>
           <PageHeader kicker={c.marketplace} title={c.storesTitle} lede={t.lede} />
           <section className="page rl-marketplace">
+            {/* One toolbar: the filter sheet button first, then the audience chips in a single
+                scrollable row. */}
             <div className="rl-market-toolbar">
-              <div className="rl-chip-row">
+              <Button
+                variant="secondary"
+                className="rl-mobile-filters"
+                onClick={() => setSheet(true)}
+              >
+                <Icon as={SlidersHorizontal} />
+                <span className="rl-filters-label">{c.filters}</span>
+              </Button>
+              <div className="rl-chip-row rl-audience-chips">
                 {(["women", "men", "kids"] as const).map((who) => (
                   <Chip
                     key={who}
@@ -174,16 +184,11 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
                   </Chip>
                 ))}
               </div>
-              <Button
-                variant="secondary"
-                className="rl-mobile-filters"
-                onClick={() => setSheet(true)}
-              >
-                <Icon as={SlidersHorizontal} />
-                {c.filters}
-              </Button>
             </div>
-            <p className="rl-partner-note">{c.noPartner}</p>
+            <p className="rl-partner-note">
+              <Icon as={Info} />
+              <span>{c.noPartner}</span>
+            </p>
             <div className="rl-market-layout">
               <aside className="rl-filter-sidebar" aria-label={c.filters}>
                 <h2>{c.filters}</h2>
@@ -324,39 +329,24 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
                                   : store.country === "INT"
                                     ? t.international
                                     : store.country}{" "}
-                                · <bdi dir="ltr">{store.host}</bdi>
+                                ·{" "}
+                                <a
+                                  href={store.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="rl-store-site"
+                                  aria-label={`${t.open} · ${store.host}`}
+                                >
+                                  <bdi dir="ltr">{store.host}</bdi>
+                                  <Icon as={ArrowUpRight} directional />
+                                </a>
                               </p>
-                              <p className="rl-muted">
+                              <p className="rl-muted rl-store-categories">
                                 {store.categories
                                   .filter(isPublishedCategory)
                                   .map((category) => t.categories[category])
                                   .join(" · ")}
                               </p>
-                              <a
-                                href={store.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="rl-button"
-                                data-variant="secondary"
-                              >
-                                {t.open}
-                                <Icon as={ArrowUpRight} directional />
-                              </a>
-                              <Link
-                                to="/stores/request"
-                                search={{ store: store.id, intent: "buy", item: undefined }}
-                                className="rl-button"
-                                data-variant="primary"
-                              >
-                                {t.assist}
-                              </Link>
-                              <Link
-                                to="/stores/request"
-                                search={{ store: store.id, intent: "ship", item: undefined }}
-                                className="rl-text-action"
-                              >
-                                {t.shipOwn}
-                              </Link>
                               <details>
                                 <summary>{t.external}</summary>
                                 <p>{t.notes[store.note]}</p>
@@ -364,6 +354,25 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
                                   <p key={caution}>{t.cautions[caution]}</p>
                                 ))}
                               </details>
+                              {/* One primary action; "I bought it myself" is a quiet link under it
+                                  and the store's own site is the linked domain above. */}
+                              <Link
+                                to="/stores/request"
+                                search={{ store: store.id, intent: "buy", item: undefined }}
+                                className="rl-button rl-store-primary"
+                                data-variant="primary"
+                              >
+                                {t.assist}
+                              </Link>
+                              <div className="rl-store-links">
+                                <Link
+                                  to="/stores/request"
+                                  search={{ store: store.id, intent: "ship", item: undefined }}
+                                  className="rl-text-action"
+                                >
+                                  {t.shipOwn}
+                                </Link>
+                              </div>
                             </li>
                           ))}
                         </ul>

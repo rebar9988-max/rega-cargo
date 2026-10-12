@@ -12,9 +12,10 @@ Procedures (build, secrets, go-live, rollback): [DEPLOY.md](../../DEPLOY.md). De
 
 | When (UTC) | Worker | Version | Notes |
 |---|---|---|---|
-| 2026-10-11 15:28 | `rega-cargo` | `10723cf0` | **Current production** (verified 15:36). Another session; source commit not recorded; `/market` still fails (I-1) |
+| 2026-10-12 06:47 | `rega-cargo` | `853e698b` | **Current production.** `main` @ `9ba82e9` (PR #60 merge), `--message "9ba82e9 PR #60"`; smoke + browser check passed; `wrangler tail` 63/63 ok, no exceptions; only the known I-1/I-6 log errors |
+| 2026-10-11 15:28 | `rega-cargo` | `10723cf0` | Superseded by `853e698b` (was production, verified 15:36). Another session; source commit not recorded; `/market` still fails (I-1) |
 | 2026-10-11 15:11 | `rega-cargo` | `7b92d650` | Source commit not recorded; `/market` failed (I-1) |
-| 2026-10-11 15:02 | `rega-cargo-staging` | `4eac3268` | Source commit not recorded |
+| 2026-10-11 15:02 | `rega-cargo-staging` | `4eac3268` | PR #60 branch at `9f81391` (hero card + tracking entry); all required routes 200 on staging afterwards |
 | 2026-10-11 10:45 | `rega-cargo` | `c20d050d` | Source commit not recorded |
 | 2026-10-11 10:26 | `rega-cargo` | `af8ee256` | PR #58 module-scope fix |
 | 2026-10-11 10:05 | `rega-cargo` | `55cc4430` | First Hyperdrive binding; crashed on global-scope read |
