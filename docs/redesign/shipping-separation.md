@@ -27,4 +27,8 @@ Test URLs (local Worker on `http://localhost:8788`): `/`, `/?cat=fashion`, `/sto
 
 Visual references: [mobile](../../tests/layout/__screenshots__/chromium-iphone/quote-ckb.png) · [desktop](../../tests/layout/__screenshots__/chromium-laptop/quote-ckb.png).
 
-GitHub Actions remains blocked by account billing (latest main check-run annotation verified 2026-10-12). New labels in `lib/shipping-copy.ts` cover all seven existing locales and carry a native-translation-review TODO. Booking/tracking backend availability remains subject to the existing database/auth issues. Merge and production deployment require owner approval under `docs/integrations/usage-policy.md`.
+GitHub Actions remains blocked by account billing (latest main check-run annotation verified 2026-10-12). New labels in `lib/shipping-copy.ts` cover all seven existing locales and carry a native-translation-review TODO. Booking/tracking backend availability remains subject to the existing database/auth issues. Owner explicitly approved merge and production deployment on 2026-10-12. Publication is in progress.
+
+## Release validation after updating from main
+
+Combined with `main` @ `0b19931` (including PR #75 Nitro 3.0.260903-beta and PR #77 CI changes). Merge conflicts were documentation-only; the staging-only I-9 is preserved and shipping separation is tracked as I-10. On the combined source, the official-image/Node 22 gate passed again: typecheck, 417 tests (4 skipped), lint (0 errors, 5 existing warnings), build with migrations skipped, fresh cf dry-run, and all 386 browser/layout/screenshot checks (12 expected menu skips, 6.8 minutes). Assets were uploaded to the existing `rega-cargo` Worker; secrets and domain routing are preserved.
