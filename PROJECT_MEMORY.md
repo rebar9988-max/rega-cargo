@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-11 16:10 UTC evidence**, PR [#68](https://github.com/rebar9988-max/rega-cargo/pull/68); main memory changes through `486e442` preserved. AI runtime fixes are committed as `e430bbf` / `f210498`, not deployed.
+- Last memory update: **2026-10-12 06:06–06:07 UTC access recheck**, PR [#68](https://github.com/rebar9988-max/rega-cargo/pull/68); main remains `486e442`. AI runtime fixes are committed as `e430bbf` / `f210498`, not deployed.
 
 ## Current state (dated evidence from 2026-10-11 15:14–16:10 UTC; quality follow-up below)
 
@@ -26,6 +26,8 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 Final memory follow-up checks: **436 Node 22 tests passed, zero failed, four existing skips**; typecheck, lint and empty-DB build passed. Source runtime unchanged from tested `f210498`; visual evidence is in the linked audit. This is local evidence, not remote CI or a production deployment.
 
 ## Next safe continuation point
+
+Latest [TinyFish investigation and concrete recovery sequence](docs/ai/access-recovery-2026-10-12.md): paid automation is blocked by the reported negative wallet balance and unconfirmed dashboard sign-in; only verified zero-rate Search/Fetch was used. Cloudflare billing still fails 10000, GitHub billing still fails 403, and Hyperdrive still points to `neondb`. Production version remains `10723cf0`. No repair/deployment of those external blockers is claimed.
 
 1. Continue from draft [#68](https://github.com/rebar9988-max/rega-cargo/pull/68). Its review base mirrors audited main and avoids starting unverified-cost Actions. Verify the Actions allowance/zero-spend guard before retargeting to current main; preserve later work and satisfy both mandatory quality jobs/reviews. No remote CI result exists for this patch.
 2. For I-1, reuse existing Cargo/staging; recheck their current migration/data difference, connected app preview, authentication boundaries, coordinated Hyperdrive/fallback configuration and rollback readiness. Keep both databases. Do not automatically run legacy cleanup migrations or delete the duplicate.

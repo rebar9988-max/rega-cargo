@@ -4,6 +4,7 @@ Append new decisions at the top. Format: date — decision — who/where (source
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-12 | Explicit TinyFish request does not waive the owner's zero-new-cost rule. Use its verified zero-rate Search/Fetch; do not start paid browser automation, top up or assume a named profile is authenticated | [wallet/profile checks and official recovery requirements](../ai/access-recovery-2026-10-12.md) |
 | 2026-10-11 | Owner authorized autonomous incremental upgrades without routine questions; preserve working AI/UI/data and enforce zero-new-cost, authorization and release gates. Existing task authorization can satisfy routine approval; it does not waive the gates | owner master directive and continuation instruction; draft #68 |
 | 2026-10-11 | Use a dedicated unchanged-main review base for draft #68 while private Actions billing guard is inaccessible; no workflow/protection change, no merge/deploy. Retarget only after cost/current-main quality gates | [AI audit](../ai/audit-2026-10-11.md) |
 | 2026-10-11 | Preserve all provider attempts in the existing global cap, ignore stale UTC state mutations, sanitize localized formatted prices, reuse atomic layout publication and the locked Wrangler test runtime | draft #68; failing-before-fix regressions |

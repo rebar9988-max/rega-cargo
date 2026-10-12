@@ -4,6 +4,9 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ## Open
 
+### I-9 · OPEN · TinyFish cannot perform the requested dashboard recovery at zero new cost
+At 2026-10-12 06:04–06:07 UTC, the wallet reports -$0.008 unchanged, paid Agent/Browser rates and no confirmed Cloudflare/GitHub sign-in in either profile. Zero-rate Search/Fetch verified official billing requirements; no paid run or login/profile change was made. Cloudflare billing 10000 and GitHub billing 403 remain open, while Hyperdrive reads still show `neondb`. See [the concrete recovery sequence](../ai/access-recovery-2026-10-12.md). No top-up request or spending-limit change is authorized by this investigation.
+
 ### I-1 / I-2 · 16:10 UTC evidence supersedes universal permission/data assumptions below
 - This session's authorized Cloudflare connector successfully reads Hyperdrive origin; it still resolves to misty-recipe/neondb. CLI authentication is unavailable, and edit permission was not exercised or assumed.
 - Intended Cargo production now has 13 migration records / 413 keywords after another operator's 0014; existing staging remains 12 / 378. Exact accessible-table counts are zero for application records, but external identity/other schemas/later writes are not covered. Repointing safety cannot be inferred solely from those counts.

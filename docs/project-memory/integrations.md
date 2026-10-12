@@ -16,9 +16,12 @@ claude.ai account/session, not the repo — **re-check every session; never assu
 | Context7 | working (2026-10-11 report) | Library/platform docs |
 | Figma | View seat only (2026-10-11 report) | Read designs; never edit the logo |
 | Playwright + Chromium | `/opt/pw-browsers/chromium` | Production browser QA |
-| Supabase, Lovable, TinyFish, Canva, Adobe | available but **not used** (other stack, metered, or marketing only) | — |
+| TinyFish | 2026-10-12: wallet -$0.008, auto-reload unconfigured; no recorded Cloudflare/GitHub sign-in. Search/Fetch contract rate zero; two searches and one official-doc fetch completed | Paid browser automation not started; [recovery evidence](../ai/access-recovery-2026-10-12.md) |
+| Supabase, Lovable, Canva, Adobe | available but **not used** (other stack, metered, or marketing only) | — |
 | WhatsApp / Twilio / Turnstile | **not configured** in production | Phone sign-in stays closed |
 
 Neon `free_v3`, three existing branches / limit ten, and bounded usage were independently verified in this session. Current official Free limits are 100 CU-hours/month/project, 1 GB/project and 5 GB transfer/month/project; exhaustion suspends/fails operations rather than automatically upgrading. No branch, compute, extension, credential or paid plan was created. See [the audit](../ai/audit-2026-10-11.md) for the dated evidence.
 
 Cloudflare `standard` usage model and staging CPU limits do not establish billing/free quota or actual AI neurons. No paid inference, new provider or top-up was activated. CLI auth is unavailable here; the prior session's CLI availability must not be generalized.
+
+At 2026-10-12 06:06 UTC, Cloudflare billing still returns 10000 while Hyperdrive GET succeeds; GitHub billing usage still returns 403 with the current API version. Official documentation requires Account/Billing/Read and personal Plan/read respectively. Those requirements were read with TinyFish, not granted by it; actual complete token policies were not retrieved.

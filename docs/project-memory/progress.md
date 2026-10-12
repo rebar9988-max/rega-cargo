@@ -1,6 +1,11 @@
 # Progress
 
 Use Git history and PR descriptions for detail; record only status and pointers here.
+
+2026-10-12: owner-requested TinyFish investigation completed within verified zero-rate Search/Fetch. Negative wallet balance and unconfirmed authenticated profiles block paid browser automation; no top-up or new profile was created. Fresh read-only checks preserve the existing Hyperdrive/billing blockers and production version. [Concrete steps and evidence](../ai/access-recovery-2026-10-12.md) are recorded in this same draft #68; runtime remains unchanged, and no remote CI/merge/deploy is claimed.
+
+This documentation-only follow-up reran Node 22 checks: 436 pass / zero fail / four existing skips, typecheck, lint with the same five existing warnings, empty-DB build and Wrangler dry run all pass. All 148 public files remain byte-identical. No new full visual or live inference run is claimed.
+
 Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 Continuation checkpoint (16:10 UTC): main memory changes through `486e442` are preserved in the fix branch. [Draft #68](https://github.com/rebar9988-max/rega-cargo/pull/68), branch `fix/rl-ai-budget-hardening-20261011`, contains tested P0 AI and verification repairs (`e430bbf`, `f210498`). It targets the dedicated review base, is unmerged and has no remote Actions run. The [audit](../ai/audit-2026-10-11.md) records actual tests, an earlier failed full visual run, the passing full repeat with three flaky cases, final 41-pass focused run, byte-identical public assets and all blockers. No database or deployment change was made by this work.
