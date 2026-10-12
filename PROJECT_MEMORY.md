@@ -30,6 +30,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 2. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").
 3. After the owner's change: run the verification recipe in [deployments.md](docs/project-memory/deployments.md) ("Which database does production use?") and the post-deploy checklist; record results here.
 4. Open PRs — see [progress.md](docs/project-memory/progress.md).
+5. **PR #57 (I-8) and the Nitro bump (I-4)** are ready on local checks only (typecheck, lint, 417 unit tests, build, 97 geometry tests; no official-image run, no WebKit, no screenshot comparison). Docker has no reachable daemon in the agent environment, so the owner-defined full gate cannot be reproduced there.
 
 ## Memory map
 

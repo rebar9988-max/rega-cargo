@@ -7,16 +7,17 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 | PR | Branch | Title | State |
 |---|---|---|---|
-| #57 | `claude/rl-ai-shopping-hero-k5aeln` | i18n for all 7 languages + product-link layout shift + announcement landmark | open, may overlap #55/#61 (merged) |
-| #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open, likely superseded by #53 |
-| #49 | `claude/rega-cargo-clone-oyhxb4` | Official R&L logo, soft 3D buttons, ten-group catalogue | draft; holds 6 unmerged hero/forms/store-card commits on top |
-| #48 | `brand/official-rl-logo` | Replace R&L branding with the official logo | open, likely superseded by #50 |
-| #9 | `docs/rl-ai-architecture` | R&L AI architecture proposal | open (design only) |
-| #4 | `chore/nitro-audit-fix` | Bump Nitro beta to clear npm audit highs | open (issues I-4) |
+| #57 | `claude/rl-ai-shopping-hero-k5aeln` | Fix product-link layout shift (CLS 0.26) and name the announcement landmark | open; 8 files (translations dropped, they live in #55/#61/#64/#66); local checks green, no CI (Actions blocked, I-7) |
+| #51 | `claude/rl-cargo-safe-expansion-0rike6` | Product-link check + homepage/catalogue refinements | open; verified 2026-10-12: all its design commits are ancestors of `main` (via #60) and its product-link part is in `main` via #53, so nothing unique remains. Owner decides whether to close; not touched |
+| #49 | `claude/rega-cargo-clone-oyhxb4` | Official R&L logo, soft 3D buttons, ten-group catalogue | draft; verified 2026-10-12: its commits are ancestors of `main`; logo files byte-identical. Nothing unique remains. Not touched |
+| #48 | `brand/official-rl-logo` | Replace R&L branding with the official logo | open; verified: same 1254x1254 artwork as `public/rl-logo.png` on `main` (mean pixel diff 0.49/255); only changes the asset pipeline and conflicts across 22 commits. Not touched |
+| #9 | `docs/rl-ai-architecture` | R&L AI architecture proposal | open (design only); outdated: says nothing is implemented, but `/ai` ships |
+| #4 | `chore/nitro-audit-fix` | Bump Nitro beta to clear npm audit highs | open (issues I-4); no common ancestor with `main`; real content is the one-line Nitro bump, validated separately (see I-4) |
 
 "Likely superseded" is an assumption — compare the diff against `main` before closing anything.
 
 ## Pending (owner or approval needed)
+- **GitHub Actions starts no job** (since ~2026-10-11 15:38 UTC, also on `main`; my pushes of 2026-10-12 created no run). Probably billing or a spending limit, unverified. No PR can be merged or deployed without CI until the owner fixes it.
 - Repoint production DB (issues I-1) — blocker for market, requests, tracking, accounts.
 - Choose phone sign-in provider (I-3); Turnstile keys; enable auth (I-6).
 - Approve held catalogue groups (`food`, `beauty/health`, `pets/food`).

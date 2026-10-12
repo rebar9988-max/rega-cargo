@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Field, controlClass, btnPrimary, btnGhost } from "@/components/field";
 import { formatEur } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
 import { NUM_LOCALE } from "@/lib/numbers";
 import { checkProductUrl } from "@/lib/orders/store-request";
-import { productLinkCheck, productLinkStatus } from "@/lib/product-link/api";
+import { productLinkCheck } from "@/lib/product-link/api";
+import { productLinkEnabled } from "@/lib/product-link/flag";
 import { productLinkCopy } from "@/lib/product-link/copy";
 import { LINK_MAX } from "@/lib/product-link/url";
 
@@ -25,21 +26,13 @@ type Result = {
 export function ProductLinkAssist({ dest, onUse }: { dest: string; onUse: (url: string) => void }) {
   const { lang } = useI18n();
   const c = productLinkCopy(lang);
-  const [enabled, setEnabled] = useState(false);
+  // Known on the server and stamped on <html>, so the first paint already includes the panel.
+  const [enabled] = useState(productLinkEnabled);
   const [url, setUrl] = useState("");
   const [kg, setKg] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
 
-  useEffect(() => {
-    let on = true;
-    productLinkStatus()
-      .then((s) => on && setEnabled(s.enabled === true))
-      .catch(() => undefined);
-    return () => {
-      on = false;
-    };
-  }, []);
   if (!enabled) return null;
 
   async function run(event: React.FormEvent) {
@@ -58,7 +51,7 @@ export function ProductLinkAssist({ dest, onUse }: { dest: string; onUse: (url: 
   const number = new Intl.NumberFormat(NUM_LOCALE, { maximumFractionDigits: 1 });
   const canUse = result?.link && checkProductUrl(result.link.canonicalUrl, undefined).ok;
   return (
-    <form onSubmit={run} className="rl-card flex flex-col gap-4" aria-busy={busy}>
+    <form onSubmit={run} className="rl-card flex flex-col gap-4" aria-busy={busy} data-product-link>
       <div>
         <h2 className="text-2xl leading-tight font-bold">{c.title}</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">{c.lede}</p>
