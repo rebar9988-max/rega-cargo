@@ -45,7 +45,8 @@ CI (GitHub Actions, see issues I-7):
 - Hosted runners do not start while the account has a billing block (annotation: "recent account payments have failed or your spending limit needs to be increased"). Agents cannot fix or inspect billing and must never pay, raise limits or change payment methods.
 - While blocked, merge only on the local gate recorded in `decisions.md`, state what was not run, and never report CI as green.
 - Minutes are a paid quota: keep docs-only commits docs-only (they skip the Playwright layout job), push to a PR in batches, keep work-in-progress PRs as drafts (drafts skip CI until ready).
-- Recovery once billing is fixed: re-run the newest `main` run, confirm `scope`, `verify` and `layout lock` pass, then update I-7.
+- Local gate: `npm run quality:local` runs every CI step plus the compliance scan and `npm audit`, and writes `.quality/local-report.json`. Exit 0 = pass (layout lock ran in the official Playwright image), 2 = partial (no Docker daemon: geometry only, no screenshots/WebKit; never report it as equal to CI), 1 = a check failed.
+- Recovery once billing is fixed: re-run the newest `main` run, confirm `verify` (it now includes the docs-only scope step) and `layout lock` pass, then update I-7.
 
 Memory rules:
 - Never write secrets, tokens, passwords or connection strings; env vars by *name* only.

@@ -22,20 +22,22 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
-  # Decides whether the ~10 minute layout job is needed. Changes that touch only
-  # Markdown or docs/ cannot move the layout, so they skip it (verify still runs,
-  # including the project-memory link checks). Manual runs always render.
-  scope:
+  # verify also decides whether the ~12 minute layout job is needed (it used to be a
+  # separate "scope" job, which cost a whole billed runner minute on every run). Changes
+  # that touch only Markdown or docs/ cannot move the layout, so they skip it (verify
+  # still runs, including the project-memory link checks). Manual runs always render.
+  verify:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 20
     outputs:
-      layout: ${{ steps.diff.outputs.layout }}
+      layout: ${{ steps.scope.outputs.layout }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - id: diff
+      - name: Scope (does this change need the layout lock?)
+        id: scope
         env:
           EVENT: ${{ github.event_name }}
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -50,13 +52,6 @@ jobs:
             echo "layout=false" >> "$GITHUB_OUTPUT"
           fi
           git diff --name-only "$BASE" HEAD | head -50
-
-  verify:
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -78,10 +73,12 @@ jobs:
   # Layout lock (DEPLOY.md "Layout lock"): geometry assertions + screenshot baselines on
   # phone/tablet/laptop viewports in Chromium and WebKit. Runs in the official Playwright
   # image so browsers and fonts match the committed baselines exactly (no browser download).
+  # It waits for verify: a change that fails typecheck, tests, lint or the build does not
+  # also spend the ~12 layout minutes. Fix verify first; the next push renders the layout.
   layout:
     name: layout lock
-    needs: scope
-    if: needs.scope.outputs.layout == 'true'
+    needs: verify
+    if: needs.verify.outputs.layout == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     container:
