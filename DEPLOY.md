@@ -268,3 +268,11 @@ Apply in filename order with `DATABASE_URL=… npm run db:migrate`:
   non-ok products unpublished. Admins can clear `pending_review` items, never `blocked` ones.
 - Scan existing data: `/admin` → "Run compliance scan", or `npm run compliance:scan` (with `DATABASE_URL` it
   applies the changes to that database). CI runs the bundled-data scan in `npm test`.
+
+
+## Branch previews (2026-10-13)
+
+Existing Cloudflare Builds feature branches run `npm run build` then `npx wrangler preview`.
+The root `previews` block contains explicit noindex vars and supplies no database/secrets/AI bindings.
+Primary journey pages render truthful unavailable states without a test backend; authenticated writes and inference are unavailable there. Production/staging bindings and secrets are unchanged.
+Preview resources do not inherit production bindings; see [Cloudflare configuration](https://developers.cloudflare.com/workers/previews/configuration/) and [isolation](https://developers.cloudflare.com/workers/previews/resources/). Existing Preview Base was verified empty. No new DB or persistent token provisioned.
