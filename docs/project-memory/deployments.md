@@ -60,3 +60,7 @@ Follow-up `ff1c6e0`: staging `0dd47819-60be-488f-9053-13008366da44`, deployment 
 ## 2026-10-13 critical domain/WebKit staging checkpoint
 
 PR #89 app commit `35c4547`: existing staging Worker `75511c45-4f5e-4081-8d02-8edc3a777379`, deployment `b4c68270`, 100%, 11:06 UTC. Cloudflare build `15bd6fa6` succeeded via a temporary trigger scoped to the existing staging Worker/repository/credential, then that trigger was removed. No Worker identity guard bypass, database migration or new service/credential. Production rollback baseline: `db08bc5b-31d3-460f-b7ea-7fdf9b0eb750` (queried live before rollout). [Validation and full report](../verification/rlgo-domain-20261013.md).
+
+## 2026-10-13 critical domain/WebKit production release
+
+PR #89 merged `4465ba7`; build `ed9dc719` succeeded, migration skipped, startup 9ms. Worker `ddde9ad1-6555-4ee4-afe4-b7ac5043efcc`, deployment `b5bed8a3`, 100%, 11:27 UTC. Verified actual production: 40 browser cases, 6 delayed/repeated/scroll rendering regressions, 2 slow-network cases, 31 page/API/asset/redirect probes, 2 v11→v12 cache recovery checks; zero unexpected browser/asset errors. Apex/HTTP GET 301 and POST 308 go directly to www with path/query retained. No rollback needed; baseline `db08bc5b` remains available. This docs-only update may produce an identical-code version through existing auto-builds; re-query live deployments before acting. [Full evidence and limitations](../verification/rlgo-domain-20261013.md).
