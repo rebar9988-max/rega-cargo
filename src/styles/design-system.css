@@ -1812,16 +1812,10 @@
     grid-row: 1;
   }
 }
-/* Offscreen sections retain a remembered layout size and render before they enter view. */
+/* Keep real content painted when sections enter the viewport. WebKit can
+   retain an empty skipped subtree with content-visibility:auto after scroll. */
 .rl-defer {
-  content-visibility: auto;
-  contain-intrinsic-block-size: auto var(--rl-section-intrinsic);
-}
-.rl-site-footer.rl-defer {
-  contain-intrinsic-block-size: auto var(--rl-footer-intrinsic);
-}
-.rl-quote-option.rl-defer {
-  contain-intrinsic-block-size: auto var(--rl-option-intrinsic);
+  content-visibility: visible;
 }
 .rl-calc-placeholder {
   min-block-size: var(--rl-calc-placeholder);

@@ -23,3 +23,30 @@ test("complete pages hydrate after repeat visits and delayed asset responses", a
   expect(errors).toEqual([]);
   expect(failedAssets).toEqual([]);
 });
+
+test("homepage sections paint in the viewport during repeated mobile scrolling", async ({
+  page,
+}) => {
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  for (let repeat = 0; repeat < 3; repeat++) {
+    for (const section of await page.locator("main section").all()) {
+      await section.evaluate(async (element) => {
+        element.scrollIntoView({ block: "center" });
+        await new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        );
+      });
+      const state = await section.evaluate((element) => ({
+        text: (element as HTMLElement).innerText.trim(),
+        top: element.getBoundingClientRect().top,
+        bottom: element.getBoundingClientRect().bottom,
+        height: innerHeight,
+      }));
+      expect(state.top).toBeLessThan(state.height);
+      expect(state.bottom).toBeGreaterThan(0);
+      expect(state.text.length, "visible section must paint its actual text").toBeGreaterThan(20);
+    }
+  }
+  await page.locator("footer").evaluate((element) => element.scrollIntoView());
+  await expect(page.locator("footer")).toContainText("R&L");
+});
