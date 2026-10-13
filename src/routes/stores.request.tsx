@@ -6,7 +6,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { Field, controlClass, btnPrimary } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
-import { DESTS, placeName } from "@/lib/corridor";
+import { DESTS, getDest, placeName } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
 import { storeById, goodById } from "@/lib/stores";
@@ -29,6 +29,10 @@ import { ProductLinkAssist } from "@/components/product-link-assist";
 import { JOURNEY_COPY } from "@/lib/journey-copy";
 import { useHydrated } from "@/lib/use-hydrated";
 import { REQUEST_COPY as ACCOUNT_REQUEST_COPY } from "@/lib/requests/copy";
+import { useOrderDraft } from "@/lib/orders/use-draft";
+import { DRAFT_COPY } from "@/lib/orders/draft-copy";
+import { OrderFallback } from "@/components/order-fallback";
+import { useOrderAvailability } from "@/lib/orders/use-availability";
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
     store: typeof search.store === "string" ? search.store : undefined,
@@ -72,6 +76,32 @@ function RequestPage() {
   const formRef = useRef<HTMLFormElement>(null);
   const [fieldError, setFieldError] = useState("");
   const [signin, setSignin] = useState(false);
+  const dc = DRAFT_COPY[lang];
+  const unavailable = useOrderAvailability();
+  const draft = useOrderDraft({
+    store: store?.id,
+    intent: intent === "ship" ? "ship" : "buy",
+    url,
+    qty,
+    dest,
+    restore: (value) => {
+      setUrl(value.url);
+      setQty(value.qty);
+      setDest(value.dest);
+      setDeclared(false);
+    },
+  });
+  const summary: Array<[string, string]> = [
+    [j.bring, intent === "ship" ? t.shipTitle : t.buyTitle],
+    [t.url, url],
+    [t.qty, qty],
+    [t.dest, placeName(getDest(dest), lang)],
+    [t.size, size],
+    [t.color, color],
+    [t.notesLabel, notes],
+    [rc.phone, phone],
+    [j.review, declared ? DECLARE_COPY[lang].declare : "—"],
+  ];
   function invalid(field: string, message: string) {
     setError(message);
     setFieldError(field);
@@ -132,6 +162,7 @@ function RequestPage() {
         },
       });
       if (result && "id" in result && result.id) {
+        draft.clear();
         setSaved(String(result.id));
         return;
       }
@@ -201,6 +232,39 @@ function RequestPage() {
         ) : (
           <div className="flex flex-col gap-6">
             <form ref={formRef} noValidate onSubmit={submit} className="rl-card rl-request-form">
+              {unavailable ? (
+                <p role="status" className="text-sm text-muted">
+                  {dc.unavailable}
+                </p>
+              ) : null}
+              <div className="rl-stack">
+                <label className="flex items-start gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={draft.enabled}
+                    onChange={(event) => draft.setEnabled(event.target.checked)}
+                    disabled={!ready}
+                    className="mt-0.5 size-6 shrink-0 accent-pine"
+                  />
+                  <span>{dc.keep}</span>
+                </label>
+                <p className="text-xs text-muted">{dc.privacy}</p>
+                {draft.restored ? (
+                  <p role="status" className="text-sm">
+                    {dc.restored}
+                  </p>
+                ) : null}
+                {draft.failed ? (
+                  <p role="status" className="text-sm text-clay">
+                    {dc.unsafe}
+                  </p>
+                ) : null}
+                {draft.enabled ? (
+                  <button type="button" className="rl-button" onClick={draft.clear}>
+                    {dc.clear}
+                  </button>
+                ) : null}
+              </div>
               {good ? (
                 <div className="flex items-center gap-3">
                   <img
@@ -376,6 +440,11 @@ function RequestPage() {
                 {busy ? ux.sending : ACCOUNT_REQUEST_COPY[lang].submit}
               </button>
             </form>
+            <OrderFallback
+              rows={summary}
+              declared={declared}
+              unavailable={unavailable || signin || failed}
+            />
             <details className="rl-stack">
               <summary className="rl-mobile-menu-link">{j.linkCheck}</summary>
               <ProductLinkAssist dest={dest} onUse={setUrl} />
