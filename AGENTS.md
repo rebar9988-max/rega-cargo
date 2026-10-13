@@ -15,6 +15,14 @@ Owner-established permanent rule (2026-10-13):
 - Preserve all other existing project instructions. Earlier product descriptions and slogans remain historical context where they conflict with this permanent rule; they do not authorize a different identity.
 - Keep this permanent identity rule identical in the repository-root `AGENTS.md` and `CLAUDE.md`.
 
+## PERMANENT PUBLIC DOMAIN RULE
+
+Owner decision (2026-10-13): R&L is publicly served only at `https://www.rlgo.net`.
+`rlgo.net` and HTTP variants redirect to canonical HTTPS www, preserving paths and queries.
+Do not attach `cargo.regaplatform.com` or enable production/staging workers.dev, version preview URLs or Cloudflare Builds branch previews without explicit owner authorization.
+Keep the staging Worker, bindings and data intact; it has no public URL. Use local/isolated checks for future staging work and obtain authorization before exposing another hostname.
+Never modify the separate REGA Platform domains or Worker.
+
 Read PROJECT_MEMORY.md (repo root) when continuing work in this workspace; CLAUDE.md describes the memory lifecycle.
 
 ## PRODUCT

@@ -32,3 +32,7 @@ Append new decisions at the top. Format: date — decision — who/where (source
 | ≤2026-10-08 | Western digits everywhere | PR #40 |
 | ≤2026-10-08 | Cargo is fully separate from REGA (own Worker, own DB, never `rega-platform`) | DEPLOY.md |
 | standing | No new dependency without a clear need; no paid services without owner authorization | AGENTS.md, owner |
+
+## 2026-10-13 domain exclusivity
+
+Owner explicitly requested closure of old domains and exclusive public service at https://www.rlgo.net. Detach cargo.regaplatform.com and its managed DNS; disable production/staging workers.dev, version preview URLs and Cloudflare Builds branch previews. Keep apex/HTTP canonical redirects, R&L data/bindings/architecture and REGA Platform unchanged. Staging remains deployed without public routing; future tests must use isolation or new explicit owner authorization.

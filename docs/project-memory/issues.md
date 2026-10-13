@@ -86,3 +86,7 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ### C-3 · FIXED — English headline wrap during font swap (CLS 0.0755)
 - Latin fallback stack now prefers Arial/Liberation Sans; CLS 0.0003 ([step-6.md](../redesign/step-6.md)).
+
+## 2026-10-13 public domain exclusivity — resolved routing exposure
+
+Previous configuration intentionally retained `cargo.regaplatform.com` and public staging/workers.dev. The owner's follow-up explicitly supersedes that policy: serve R&L only on `https://www.rlgo.net`, retain redirect-only apex/HTTP. Closed cargo attachment/DNS and all production/staging workers.dev/version previews; disabled Builds branch previews. Existing native previews have no routable URLs. Canonical browser/protocol checks pass; source persistence passed the full local official-image gate (455 layout tests/16 skips, zero failures) and is tracked in [PR #91](https://github.com/rebar9988-max/rega-cargo/pull/91). This is a routing/configuration change, not another application rewrite or database change. See [evidence](../verification/rlgo-exclusive-domain-20261013.md).

@@ -3,13 +3,14 @@
 Central memory for every Claude Code session on R&L Cargo. Entry point: [CLAUDE.md](CLAUDE.md).
 Memory is a guide, not proof: **re-verify against code, GitHub and production before acting**.
 
-- Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Existing https://cargo.regaplatform.com stays attached.
-- Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
+- Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
+- Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-13**, modernization branch based on `main` @ `248fe11`. See the current checkpoint below.
+- Last memory update: **2026-10-13**, domain exclusivity follow-up based on verified `main` @ `9c08685`. See the current checkpoint below.
 
 ## Current checkpoint (2026-10-13)
 
+- **Exclusive public domain:** owner requested old domains closed. At 11:48 UTC cargo attachment/DNS removed; production/staging workers.dev and version previews disabled; R&L Builds branch previews disabled. Twelve closed-endpoint checks returned 404; both public DNS resolvers confirmed retired cargo NXDOMAIN; ten browser cases and 31 canonical protocol checks passed. Full local official-image gate passed: 432 unit tests/4 skips and 455 layout/browser tests/16 skips, zero failures; source persistence tracked in [PR #91](https://github.com/rebar9988-max/rega-cargo/pull/91). [Evidence](docs/verification/rlgo-exclusive-domain-20261013.md).
 - **Critical domain/WebKit repair:** PR #89 (`codex/rlgo-critical-domain-fix`), application commits `f06bfcb` + `35c4547`. Live WebKit scrolling reproduced blank content from `.rl-defer` / `content-visibility:auto`; paired same-document control restored paint. CSS optimization removed, SW cache bumped to v12, www/apex/HTTP routing and source canonical/auth/cache settings aligned. Staging `75511c45` passed 40 browser cases, two slow-network checks and the corrected WebKit regressions; full official-image lock completed with 449 direct passes, 6 passes on configured retries, 16 skips, no final failures. Final focused gate passed 45/45 without retry. PR #89 merged as `4465ba7`; production `ddde9ad1` at 11:27 UTC passed 40 browser cases, 6 paint/navigation cases, 2 slow checks, 31 protocol checks and 2 stale-cache recovery checks. No rollback needed; native iPhone/direct IPv6/real OTP remain unavailable. [Evidence and limitations](docs/verification/rlgo-domain-20261013.md).
 
 - Unified modernization branch: `claude/unified-journeys-20261013`. Navigation, homepage, real market discovery, request disclosure/errors and Safari submission readiness implemented in PR #82; final local gate 426 unit tests + 432 browser tests passed (4/12 existing skips). Staging `f04cd880`: 57 browser cases, 30 axe checks passed. PR #82 merged as `04ada22`; production UI release `fff69ec5` passed 57 read-only browser cases and 30 axe checks. Follow-up `claude/verified-release-preview-20261013` fixes reproduced catalogue first-click loss and missing preview configuration; final local gate 427 unit / 437 browser tests passed; follow-up merge/rollout pending. [Audit, 20-reference matrix and verification](docs/redesign/unified-journeys-20261013.md).
@@ -40,7 +41,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 ## Next safe continuation point
 
-- The critical domain/WebKit repair is released and verified (PR #89). Use `https://www.rlgo.net` as primary; preserve the apex/HTTP redirects and SW v12. Do not restore `content-visibility:auto` without the real viewport paint regression. Query current deployments before future releases; documentation-only builds may change the version ID. Native iPhone/direct IPv6/real OTP verification remains a clearly recorded follow-up, not a passed test.
+- The critical domain/WebKit repair is released and verified (PR #89). Owner domain-exclusivity decision is now enforced in Cloudflare: only `https://www.rlgo.net` serves R&L; retired cargo DNS/domain and public staging/preview URLs are closed. Keep them closed; use isolated checks for staging. Preserve the apex/HTTP redirects and SW v12. Do not restore `content-visibility:auto` without the real viewport paint regression. Query current deployments before future releases; documentation-only builds may change the version ID. Native iPhone/direct IPv6/real OTP verification remains a clearly recorded follow-up, not a passed test.
 
 - PR #72 is already merged/live. Continue the unified modernization release gate and existing Cloudflare Builds rollout; see [current verification](docs/redesign/unified-journeys-20261013.md).
 

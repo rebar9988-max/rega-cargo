@@ -49,3 +49,7 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 - #52 CI layout-lock timeout report · #50 static AI hero, brand system, catalogue, RTL layout lock
 - #47 premium redesign Steps 0–6 ([docs/redesign/](../redesign/README.md))
 - #40–#46 Western digits, layout lock, compliance, header language picker, customer requests (R7), prohibited-items page, brand rail
+
+## 2026-10-13 domain exclusivity
+
+Domain exclusivity follow-up: live cargo custom-domain attachment and its DNS record removed; staging shutdown verified first (404 while www stayed 200), then production workers.dev disabled. Both workers.dev URLs return 404; apex 301 preserves path/query. Source config and permanent instructions updated to prevent re-exposure. Local typecheck, 432 unit tests/4 skips, lint 0 errors/5 existing warnings, migration-free build, both environment dry-runs, startup and npm audit passed. Official-image layout lock: 455 passed, 16 existing skips, zero failures or retries. Canonical browser verification: 10 cases passed; 31 protocol checks passed. No application/UI/database change. Source persistence: [PR #91](https://github.com/rebar9988-max/rega-cargo/pull/91), normal merge followed by existing automatic main deployment.
