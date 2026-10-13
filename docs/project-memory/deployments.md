@@ -56,3 +56,7 @@ Healthy: only `old-cherry-79292410/cargo` moves, with commits not rollbacks, and
 `npx wrangler deployments list --name rega-cargo` → `npx wrangler rollback <version-id> --name rega-cargo` (owner approval). Rolling back before the legacy-host wrapper re-exposes the old workers.dev host. DB: forward-only migrations; take a Neon branch/snapshot before migrating.
 
 Follow-up `ff1c6e0`: staging `0dd47819-60be-488f-9053-13008366da44`, deployment `dd3ddfef-205b-44f1-b2f0-022f8887909a`, startup 13ms; existing catalogue regression 3 consecutive passes. This fixes the proven first-click hydration race and missing branch-preview configuration; full lock passed 437 / 16 intentional skips / 0 failed; follow-up merge/rollout pending. Main deployment remains automatic.
+
+## 2026-10-13 critical domain/WebKit staging checkpoint
+
+PR #89 app commit `35c4547`: existing staging Worker `75511c45-4f5e-4081-8d02-8edc3a777379`, deployment `b4c68270`, 100%, 11:06 UTC. Cloudflare build `15bd6fa6` succeeded via a temporary trigger scoped to the existing staging Worker/repository/credential, then that trigger was removed. No Worker identity guard bypass, database migration or new service/credential. Production rollback baseline: `db08bc5b-31d3-460f-b7ea-7fdf9b0eb750` (queried live before rollout). [Validation and full report](../verification/rlgo-domain-20261013.md).

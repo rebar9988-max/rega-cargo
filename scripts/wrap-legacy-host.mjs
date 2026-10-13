@@ -8,7 +8,6 @@
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { WORKER_FIRST_PATHS } from "./legacy-host.mjs";
 
 export const ENTRY = "legacy-host-entry.mjs";
 
@@ -21,8 +20,10 @@ export default wrapWorker(inner);
 }
 
 export function patchConfig(config) {
-  const runFirst = new Set([...(Array.isArray(config.assets?.run_worker_first) ? config.assets.run_worker_first : []), ...WORKER_FIRST_PATHS]);
-  return { ...config, main: ENTRY, assets: { ...config.assets, run_worker_first: [...runFirst] } };
+  // Redirects must cover assets too: asset-first would bypass host/scheme
+  // normalization for scripts, images and downloads. Nitro still serves them
+  // through the unchanged ASSETS binding after the canonical check.
+  return { ...config, main: ENTRY, assets: { ...config.assets, run_worker_first: true } };
 }
 
 function main() {

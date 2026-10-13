@@ -10,7 +10,7 @@
  * takes over immediately; pages stay network first, so nobody gets stuck.
  * Kill switch: replace this file with one that calls self.registration.unregister().
  */
-const VERSION = "rl-sw-v11";
+const VERSION = "rl-sw-v12"; // retire cached HTML with WebKit's skipped-section CSS
 const PAGES = `${VERSION}-pages`;
 const ASSETS = `${VERSION}-assets`;
 const STATIC = `${VERSION}-static`;
@@ -25,7 +25,13 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(PAGES)
-      .then((cache) => Promise.all(PRECACHE.map((url) => cache.add(new Request(url, { cache: "reload" })).catch(() => undefined))))
+      .then((cache) =>
+        Promise.all(
+          PRECACHE.map((url) =>
+            cache.add(new Request(url, { cache: "reload" })).catch(() => undefined),
+          ),
+        ),
+      )
       .then(() => self.skipWaiting()),
   );
 });
@@ -34,8 +40,11 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
-      await Promise.all(keys.filter((key) => !key.startsWith(`${VERSION}-`)).map((key) => caches.delete(key)));
-      if (self.registration.navigationPreload) await self.registration.navigationPreload.enable().catch(() => undefined);
+      await Promise.all(
+        keys.filter((key) => !key.startsWith(`${VERSION}-`)).map((key) => caches.delete(key)),
+      );
+      if (self.registration.navigationPreload)
+        await self.registration.navigationPreload.enable().catch(() => undefined);
       await self.clients.claim();
     })(),
   );
@@ -44,7 +53,11 @@ self.addEventListener("activate", (event) => {
 /** Navigations cannot be answered with a redirected response: rebuild it. */
 async function clean(response) {
   if (!response || !response.redirected) return response;
-  return new Response(await response.blob(), { status: response.status, statusText: response.statusText, headers: response.headers });
+  return new Response(await response.blob(), {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
 }
 
 function cacheable(response) {
@@ -79,7 +92,12 @@ async function page(event, url) {
     }
     return response;
   })();
-  event.waitUntil(network.then(() => saved, () => undefined));
+  event.waitUntil(
+    network.then(
+      () => saved,
+      () => undefined,
+    ),
+  );
   const cached = key ? await clean(await cache.match(key)) : undefined;
   if (!cached) {
     try {
