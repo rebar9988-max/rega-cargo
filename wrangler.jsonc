@@ -14,15 +14,23 @@
   "observability": { "enabled": true },
   // Production lives on its custom domain. workers.dev stays enabled only so
   // the old URL rega-cargo.<subdomain>.workers.dev can 301 visitors (and
-  // installed PWAs, via a self-unregistering /sw.js) to cargo.regaplatform.com
+  // installed PWAs, via a self-unregistering /sw.js) to www.rlgo.net
   // — see scripts/legacy-host.mjs; it never serves the app. Version preview
   // URLs are off for production. Staging below keeps workers.dev.
   "workers_dev": true,
   "preview_urls": false,
-  // Production custom domain (attached 2026-10-09). Only this hostname — the
-  // apex and www.regaplatform.com belong to the REGA worker `rega-platform`
-  // and must never be listed here.
-  "routes": [{ "pattern": "cargo.regaplatform.com", "custom_domain": true }],
+  // Production custom domains. Primary: www.rlgo.net (owner decision
+  // 2026-10-13, zone rlgo.net in this account); rlgo.net 301s to it
+  // (scripts/legacy-host.mjs). cargo.regaplatform.com (attached 2026-10-09) is
+  // the previous production domain and stays attached so its redirect keeps
+  // working. Only that one regaplatform.com hostname — the apex and
+  // www.regaplatform.com belong to the REGA worker `rega-platform` and must
+  // never be listed here.
+  "routes": [
+    { "pattern": "www.rlgo.net", "custom_domain": true },
+    { "pattern": "rlgo.net", "custom_domain": true },
+    { "pattern": "cargo.regaplatform.com", "custom_domain": true }
+  ],
 
   // Database (Postgres) via Hyperdrive — see DEPLOY.md. Production only:
   // staging has no database (bindings are not inherited by env.staging).
@@ -35,7 +43,7 @@
   // Plain (non-secret) runtime vars. Secrets are set with `wrangler secret put`
   // (see DEPLOY.md) and must NEVER be added here.
   "vars": {
-    "BETTER_AUTH_URL": "https://cargo.regaplatform.com",
+    "BETTER_AUTH_URL": "https://www.rlgo.net",
     // Don't inject the Grok app-builder extensions script (grok.com) into
     // production HTML — this app is no longer hosted on that platform.
     "VITE_GROK_EXTENSIONS": "0",
@@ -46,8 +54,11 @@
     // Product-link check (parse + shipping estimate; no provider data yet).
     "PRODUCT_LINK_ENABLED": "true",
     // Canonical origin for <link rel=canonical>, robots.txt and sitemap.xml.
-    // Custom domain attached 2026-10-09 (owner-approved).
-    "SITE_URL": "https://cargo.regaplatform.com"
+    // Primary domain www.rlgo.net since 2026-10-13 (owner decision).
+    "SITE_URL": "https://www.rlgo.net",
+    // Extra hosts 301'd to www.rlgo.net (comma-separated, see
+    // scripts/legacy-host.mjs). Empty = cargo.regaplatform.com still serves.
+    "RL_LEGACY_REDIRECT_HOSTS": ""
   },
 
   // R&L AI: Workers AI binding + strongly consistent usage counter (daily cap and

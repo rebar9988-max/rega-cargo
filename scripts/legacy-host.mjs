@@ -1,11 +1,32 @@
-// Old production URL -> custom domain. Runs in the Worker *before* Nitro (see
+// Old production URLs -> primary domain. Runs in the Worker *before* Nitro (see
 // scripts/wrap-legacy-host.mjs), because Nitro serves public assets ahead of
 // any middleware. Pure: no imports, so it is bundled as-is and unit-tested.
-export const LEGACY_HOSTS = ["rega-cargo.rebar9988.workers.dev"];
-export const CANONICAL_ORIGIN = "https://cargo.regaplatform.com";
+//
+// Primary domain since 2026-10-13: https://www.rlgo.net. The apex and the old
+// workers.dev host always redirect. The previous production domain
+// (cargo.regaplatform.com) redirects only once it is listed in the Worker var
+// RL_LEGACY_REDIRECT_HOSTS (comma-separated), so the cutover — and its
+// rollback — is a config change that never touches the new domain.
+export const LEGACY_HOSTS = ["rega-cargo.rebar9988.workers.dev", "rlgo.net"];
+export const CANONICAL_ORIGIN = "https://www.rlgo.net";
+const CANONICAL_HOST = new URL(CANONICAL_ORIGIN).hostname;
 
-/** Static paths that must reach the Worker (wrangler assets.run_worker_first). */
-export const WORKER_FIRST_PATHS = ["/sw.js", "/manifest.webmanifest", "/offline.html"];
+/** Always-redirected hosts plus the ones named in env.RL_LEGACY_REDIRECT_HOSTS. */
+export function redirectHosts(env) {
+  const extra =
+    typeof env?.RL_LEGACY_REDIRECT_HOSTS === "string" ? env.RL_LEGACY_REDIRECT_HOSTS : "";
+  const hosts = [
+    ...LEGACY_HOSTS,
+    ...extra
+      .split(",")
+      .map((h) => h.trim().toLowerCase())
+      .filter(Boolean),
+  ];
+  // Never redirect the primary host to itself.
+  return hosts.filter(
+    (h) => h !== CANONICAL_HOST && (LEGACY_HOSTS.includes(h) || h === "cargo.regaplatform.com"),
+  );
+}
 
 // Replaces the app's service worker on the old host: drop all caches,
 // unregister, and move open windows/installed PWAs to the same path on the new
@@ -30,10 +51,12 @@ self.addEventListener("activate", (event) => {
 `;
 
 /** Response for a request on a legacy host, or null to continue normally. */
-export function legacyHostResponse(request) {
+export function legacyHostResponse(request, env) {
   const url = new URL(request.url);
-  if (!LEGACY_HOSTS.includes(url.hostname.toLowerCase())) return null;
-  if (url.pathname === "/sw.js") {
+  const legacy = redirectHosts(env).includes(url.hostname.toLowerCase());
+  const insecurePrimary = url.hostname.toLowerCase() === CANONICAL_HOST && url.protocol === "http:";
+  if (!legacy && !insecurePrimary) return null;
+  if (legacy && url.protocol === "https:" && url.pathname === "/sw.js") {
     return new Response(UNREGISTER_SW, {
       status: 200,
       headers: {
@@ -60,7 +83,7 @@ export function wrapWorker(worker) {
   return {
     ...worker,
     fetch(request, env, ctx) {
-      return legacyHostResponse(request) ?? worker.fetch(request, env, ctx);
+      return legacyHostResponse(request, env) ?? worker.fetch(request, env, ctx);
     },
   };
 }
