@@ -54,6 +54,17 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - 2026-10-13 (`claude/local-quality-gate-20261013`): `npm run quality:local` is the reproducible local gate; scope folded into `verify`, `layout lock` waits for `verify`. Re-verified: runs 201–220 (2026-10-12 20:49 → 2026-10-13 07:02 UTC) all end in 3–5 s; drafts show `skipped`.
 - Cloud agent sessions: Docker CLI present, daemon unreachable, so the official-image layout lock cannot run there (gate reports PARTIAL). The preinstalled Chromium is revision 1194 while Playwright 1.63 expects 1243; do not run `playwright install`. For geometry only, point `PLAYWRIGHT_BROWSERS_PATH` at a scratch folder where `chromium_headless_shell-1243/chrome-headless-shell-linux64/` symlinks the files of `/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/` (plus `chrome-headless-shell` → `headless_shell` and the two marker files). Results from that browser are geometry evidence only.
 
+### I-12 · OPEN (fixed in PR #87) — Worker entry chunk can export non-handler values, so workerd refuses to start
+- Symptom: after porting `61f3436`, the local Worker failed with `Uncaught TypeError: Incorrect type for map entry 'APPEARANCE_SCRIPT': the provided value is not of type 'function or ExportedHandler'`. The geometry suite could not start its web server.
+- Root cause (bisected 2026-10-13, built at each commit):
+  - The bundler re-exports modules shared between the Nitro server routes and the SSR bundle from the Worker entry `.output/server/index.mjs`.
+  - On `main` those extra exports happen to be functions or objects (`challenge_exports`, `ipKey`, `verifyAiToken`, …), which workerd accepts.
+  - Importing `src/lib/rate-limit.server` from `server/routes/api/ai/challenge.ts` shifted the chunks, so the string `APPEARANCE_SCRIPT` became an entry export.
+- `wrangler deploy --dry-run` does **not** detect this. The layout-lock web server and real startup do.
+- Fix (`cd0251c`): the route applies the same limit inline instead of importing the shared module.
+- Guard idea, not implemented: after build, check the final `export { … }` of `.output/server/index.mjs`.
+- Until such a guard exists: after touching imports in `server/` or `exports.cloudflare.ts`, run a startup check (the layout geometry, or `npm run cf:dev`).
+
 ### I-10 · Shipping calculator and service choice mixed with the homepage/catalogue
 - Root cause: `PremiumHome` rendered the quick calculator unconditionally, while `BazaarPage` owned delivery preference state and could mount `DeliveryHub` in place of the catalogue.
 - Source fix in PR #72 on `claude/separate-shipping-bazaar`: dedicated `ShippingPage` on `/quote`, catalogue-only `BazaarPage`, and navigation from home to each service. Responsive shipping restyle; pricing/booking logic preserved.

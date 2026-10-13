@@ -10,16 +10,19 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 ## CODEX — NEXT SESSION HANDOFF
 
-Written by Claude Code on 2026-10-13 ~10:05 UTC for Codex or any later agent. Read `AGENTS.md`, `CLAUDE.md`, this file and the topic files you need **before acting**, then re-check every "verified" fact below against the live state. **V** = verified by the writing session at the time given, **H** = historical (copied from older memory, not re-checked), **A** = assumption.
+Written by Claude Code on 2026-10-13 ~10:05 UTC, updated ~10:40 UTC for Codex or any later agent. Read `AGENTS.md`, `CLAUDE.md`, this file and the topic files you need **before acting**, then re-check every "verified" fact below against the live state. **V** = verified by the writing session at the time given, **H** = historical (copied from older memory, not re-checked), **A** = assumption.
 
 **Where things stand**
 - V 09:58 UTC: `main` @ `5d39d9d` (PR #84). Task branch `claude/local-quality-gate-20261013`; head = the commit that adds this handoff (find it with `git log -1 origin/claude/local-quality-gate-20261013`); its code commit is `e67c51f`.
-- V: [PR #85](https://github.com/rebar9988-max/rega-cargo/pull/85) is **draft**, open, `mergeable_state: clean`. Actions run 221 on it was `skipped` (drafts start no job, so they cost no minutes).
+- V: [PR #85](https://github.com/rebar9988-max/rega-cargo/pull/85) is **draft**, open, `mergeable_state: clean`. Actions runs 221–222 on it were `skipped` (drafts start no job, so they cost no minutes).
+- V 10:35 UTC: [PR #87](https://github.com/rebar9988-max/rega-cargo/pull/87) (**draft**, branch `claude/security-fixes-port-20261013`, head `cd0251c`) ports the five security commits onto `main` @ `5d39d9d`, plus one port fix (see I-12).
+- V: [PR #86](https://github.com/rebar9988-max/rega-cargo/pull/86) (draft, `claude/integrations-refresh-20261013`) is **another agent's** concurrent docs-only work. It also edits `docs/project-memory/integrations.md`, which PR #85 changes too, so whichever merges second resolves that conflict. Do not push to #86.
 - V: production Worker `rega-cargo` serves version `db08bc5b` at 100% (07:43 UTC, `triggered_by: secret`), on top of code version `fd88780b` (07:03 UTC). That `fd88780b` is the build of `5d39d9d` is **A**, inferred from timing. Read-only HTTP check at 09:35 UTC: required routes 200, banned search empty. Nothing was deployed by Claude Code on 2026-10-13; PR #85 does not change the Worker, so it needs **no deploy** after merge.
 
 **Completed — do not repeat**
 - `npm run quality:local` (`scripts/quality-local.mjs` + `scripts/quality-local.test.mjs`): CI verify steps + compliance scan + `npm audit` + layout lock in the official image. Exit 0 = PASS, 2 = PARTIAL, 1 = FAIL. Report: `.quality/local-report.json`.
 - `quality.yml`: scope step folded into `verify`; `layout lock` `needs: verify`. No check removed.
+- Security port (PR #87): cherry-picks with `-x`; `package.json` test-list conflict resolved; Worker-entry export bug found and fixed (`cd0251c`). Verified on `cd0251c` (PARTIAL): typecheck, `npm test` 221 + 215 tests (0 failed, 4 existing skips), lint 0 errors, build, dry-run 4855 KiB, compliance, audit 0, geometry 297 passed / 12 skipped / 0 failed.
 - Audit of open PRs, Actions history and job timings (verify 1.3–1.5 min, layout 12–13 min, runs 159/160) — results are in `deployments.md`, `issues.md` I-7.
 
 **Quality gate results on `e67c51f` (V, cloud session) — status PARTIAL, never call it PASS**
@@ -28,8 +31,8 @@ Written by Claude Code on 2026-10-13 ~10:05 UTC for Codex or any later agent. Re
 
 **Blockers**
 1. GitHub Actions billing block (I-7) — owner only (Billing and plans). Agents must never pay, raise limits or change payment methods.
-2. No Docker daemon in cloud agent sessions, so the official-image layout lock (screenshots + WebKit) cannot run there. Preinstalled Chromium is revision 1194; Playwright 1.63 wants 1243; WebKit is not installed. Do not run `playwright install`. Geometry-only workaround: the browser shim in `issues.md` I-7.
-3. Five security fixes are unmerged: `origin/claude/rega-cargo-clone-oyhxb4` @ `23eaa92` has `df19bd1`, `06340e8`, `61f3436`, `9ff5774` and `8b67547` (dated 2026-10-12). They are not on `main` and have no open PR. The branch forks at `475593d` (2026-10-11), far behind `main`. Details are in `progress.md`.
+2. No Docker daemon in cloud agent sessions. `dockerd` exists at `/usr/bin/dockerd`, but starting it was **denied by the agent permission policy** (2026-10-13 10:05, classified as container escape); do not retry it. Consequently so the official-image layout lock (screenshots + WebKit) cannot run there. Preinstalled Chromium is revision 1194; Playwright 1.63 wants 1243; WebKit is not installed. Do not run `playwright install`. Geometry-only workaround: the browser shim in `issues.md` I-7.
+3. Five security fixes are not on `main` yet. They are now in draft PR #87, which needs the full gate, owner security review and owner authorization to merge and deploy. The original branch `origin/claude/rega-cargo-clone-oyhxb4` @ `23eaa92` is kept unchanged; it can be closed or deleted by the owner once #87 merges.
 4. Phone OTP provider credentials are missing (I-3/I-6), so authenticated journeys cannot be verified. **H**.
 
 **Next actions, in order**
@@ -42,7 +45,11 @@ Written by Claude Code on 2026-10-13 ~10:05 UTC for Codex or any later agent. Re
    - Exit 1: fix the failure.
    - Exit 2: still PARTIAL — keep the PR in draft.
 3. The owner merges PR #85, or authorizes the merge in chat (`main` has no branch protection on this plan, so the authorization is the gate). Nothing to deploy afterwards.
-4. Security commits: on a **new** branch from `main`, cherry-pick the five commits and resolve conflicts against current `main`, without rewriting the old branch. Run `npm run quality:local` and open a **draft** PR for owner review. Deploy only after the full gate passes and the owner authorizes it. Do not deploy while another agent's deploy is running: check `GET .../workers/scripts/rega-cargo/deployments` first.
+4. Security commits: **done as draft PR #87** — do not re-port them.
+   - Remaining: on a Docker machine run the full gate on `claude/security-fixes-port-20261013`. `quality:local` lives on #85, so either merge #85 first or run its steps by hand.
+   - Then the owner reviews.
+   - After an authorized merge, deploy staging first, then production through the existing Cloudflare Builds path. That deploy is a Worker change and needs no migration or new binding. Never deploy while another deploy is running: check `GET .../workers/scripts/rega-cargo/deployments` first.
+   - After deploy, smoke-test that the Worker starts, `/api/ai/challenge` works, and `/track` accepts a long code and refuses `RG-12345`.
 5. Once billing is fixed: re-run the newest `main` run and confirm `verify` and `layout lock` pass, then close I-7.
 
 **Safe to automate:**
