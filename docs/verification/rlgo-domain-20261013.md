@@ -44,4 +44,21 @@ Final results and deployment identifiers are appended below after execution.
 
 Final focused official-image gate: **45/45 passed with retries disabled**, across all nine Chromium/WebKit device projects, including delayed/repeated rendering, real viewport painting, navigation, form validation and the previously flaky search sheet. The repeated typecheck/unit/lint gate passed (432 unit passes, 4 existing skips, 0 lint errors). ESLint initially inspected generated Playwright report JavaScript; that report was preserved outside the source tree and lint rerun normally. Memory link/secret checks passed 5/5. `npm audit` reported zero vulnerabilities, including dev dependencies. Staged Chromium and WebKit cache recovery both removed seeded v11 caches, activated v12 and rendered the full page.
 
-Production release is pending the normal permitted PR merge.
+## Verified production release
+
+PR #89 merged normally as `4465ba7da46ce7965d4f4c29303c00302dd5f527` at 11:26 UTC, without admin override or protection changes. Existing production Cloudflare build `ed9dc719-e5ce-4dcc-848c-cb236225f14c` succeeded; migration explicitly skipped because no build `DATABASE_URL` existed; Worker startup 9ms. Production version `ddde9ad1-6555-4ee4-afe4-b7ac5043efcc`, deployment `b5bed8a3-1b82-4e34-80b9-36bd071139d8`, 100%, 11:27 UTC. Hyperdrive ID, all existing secret binding names, AI, rate limit and Durable Object bindings were preserved; `SITE_URL` and `BETTER_AUTH_URL` are now the canonical HTTPS www origin.
+
+Actual production verification after deployment:
+
+- **40/40 complete-page browser cases passed** across WebKit iPhone, Chromium Android, real Chrome, Firefox and Edge. Actual main/footer rendering, enabled controls, mobile/desktop sizing, zero page/console errors, zero HTTP asset errors and zero overflow. Marketplace rendered its genuine empty state.
+- **6/6 production delayed-module/repeat-visit/actual-scroll paint regressions passed** on WebKit iPhone, Chromium phone and laptop, with no retry.
+- **2/2 slow-network checks passed**; every section and footer painted, request controls hydrated, zero page/console/asset errors.
+- **31/31 protocol checks passed**: 19 public page/API/asset probes (following the existing marketplace query normalization), nine exact single-hop GET redirects for HTTP/apex pages/assets with encoded query preservation, and three method-preserving POST 308 responses. Canonical HTTPS did not loop. AI status remained enabled. HTML CSP nonces matched the response policy. CSS/JS/images/fonts loaded correctly.
+- **2/2 stale-cache recovery checks passed**: seeded v11 caches were removed; v12 page/static/asset caches activated and the complete website rendered in Chromium and WebKit.
+- Google and Cloudflare public DNS resolvers both returned Cloudflare IPv4/IPv6 addresses for apex and www. Both custom domains remained enabled on `rega-cargo`; active certificates cover both. No DNS/SSL changes were required.
+- Production-only observability query (dry/non-persistent), 11:27:32–11:33:46 UTC: 1,017 sampled invocations on `ddde9ad1`, all `ok`, no other outcome group; active Cargo issue list empty.
+- Hosted main run `38390191118` did not start any runner (billing annotation; runner_id 0). The full official-image local substitute gate governed this permitted release. Hosted CI is not reported as passed.
+
+No rollback was needed. Tested rollback baseline remains `db08bc5b-31d3-460f-b7ea-7fdf9b0eb750`; use a normal 100% deployment of the previous version if a future production failure requires rollback, without forcing past secret/version checks. No database data/schema, pricing, branding, route contracts, REGA Platform resource, account plan or credential was changed.
+
+This documentation update can trigger another existing main build with identical application code. The version above is the verified functional release, not a promise that a later metadata-only deployment ID cannot change; inspect live deployments before any future operation.

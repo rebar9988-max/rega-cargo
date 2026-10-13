@@ -4,9 +4,9 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ## Open
 
-### I-11 · STAGING FIX VERIFIED 2026-10-13 — WebKit blank viewport and incomplete canonical cutover
+### I-11 · RESOLVED IN PRODUCTION 2026-10-13 — WebKit blank viewport and incomplete canonical cutover
 
-- `content-visibility:auto` left an in-viewport section unpainted in live WebKit/iPhone-profile scrolling; same-document removal restored actual text and height. Source now paints real content, and SW v12 retires cached faulty HTML. Domain cutover also left old SEO/auth/cache/source-route settings and no apex/HTTP redirects. PR #89 fixes both, with path/query/method preservation and protected REGA hosts. Staging `75511c45` passed 40 public browser cases and slow/paint checks. Native iPhone/direct IPv6/authenticated OTP checks remain unavailable; production gate/release pending. [Paired evidence](../verification/rlgo-domain-20261013.md).
+- `content-visibility:auto` left an in-viewport section unpainted in live WebKit/iPhone-profile scrolling; same-document removal restored actual text and height. Source now paints real content, and SW v12 retires cached faulty HTML. Domain cutover also left old SEO/auth/cache/source-route settings and no apex/HTTP redirects. PR #89 fixes both, with path/query/method preservation and protected REGA hosts. Staging `75511c45` passed 40 public browser cases and slow/paint checks. Native iPhone/direct IPv6/authenticated OTP checks remain unavailable; PR #89 merged (`4465ba7`), production `ddde9ad1` passed full public rendering, routing, asset, slow-network and cache verification. No rollback needed. [Paired evidence](../verification/rlgo-domain-20261013.md).
 
 
 ### I-1 · RESOLVED 2026-10-13 — production Hyperdrive and fallback recovered
