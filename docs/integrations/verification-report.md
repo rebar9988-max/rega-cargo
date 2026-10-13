@@ -1,4 +1,36 @@
-# Integration verification report: 2026-10-11
+# Integration verification report
+
+## 2026-10-13 10:00 UTC — Claude Code (read this first)
+
+Every check was read-only. Nothing was deployed, migrated, created, deleted or reconnected.
+No application code changed.
+
+| Area | Result | Evidence |
+|---|---|---|
+| GitHub MCP | working | `get_me` = `rebar9988-max`; 10 open PRs (#85 draft local quality gate is the newest); `actions_list` |
+| GitHub Actions | **still blocked (I-7)** | `main` run 220 (`5d39d9d`): `scope` and `verify` fail in 3 s, `layout lock` skipped. Same billing pattern as I-7 |
+| Cloudflare API | token active, partial scope | Workers: `rega-cargo`, `rega-cargo-staging`, `rega-platform`. Live `rega-cargo` version `db08bc5b` at 100 % (deployment 2026-10-13 07:43 UTC, "Secret Change"). Domains: `cargo.regaplatform.com → rega-cargo`; apex and `www → rega-platform`. Hyperdrive list and Observability telemetry: `10000 Authentication error` |
+| Wrangler 4.149.0 | working | `whoami` (user API token, cannot read user email), `deployments list --name rega-cargo` |
+| Neon | working, write mode | 3 projects (`old-cherry-79292410` and `misty-recipe-03041407` both named `rl-cargo-production`; `lucky-glitter-73195208` = REGA, not touched). Read-only SQL on `old-cherry/cargo`: 13 migrations, latest `0014_compliance_brands.sql`, 28 tables, 8 prohibited categories, 413 prohibited keywords |
+| Local gate on `main` `5d39d9d` | pass | typecheck pass; `npm test` 211/0 + 216/0; lint 0 errors / 5 warnings; `DATABASE_URL='' npm run build` pass; `cf:dry-run` 4850.60 KiB (gzip 1093.89 KiB); `npm audit --omit=dev --audit-level=high` 0 vulnerabilities; `compliance:scan` pass. Layout lock not run (no Docker daemon) |
+| Production HTTP | pass | `/`, `/stores`, `/stores?cat=beauty`, `/stores?fav=1`, `/stores/request?store=zalando&intent=buy`, `/quote`, `/ai`, `/impressum`, `/privacy`, `/terms`, `/api/ai/status` → 200; `/market` → 307 (canonical query) |
+| Playwright + Chromium | pass with `executablePath` | `/` → 200, `<html lang="ckb" dir="rtl">`, 0 console errors, Chromium 141.0.7390.37. Without `executablePath`, Playwright 1.63 looks for `chromium_headless_shell-1243`, which is not installed |
+| Lighthouse 12.8.2 (`npx`) | pass | production `/`: performance 0.95, accessibility 1.00, best practices 1.00, SEO 1.00 |
+| Sentry | org only | `terms-of-service-1c` (de.sentry.io), 0 projects. Not activated |
+| Figma | read | `whoami`: Starter team, View seat |
+| Context7 | working | resolves `/cloudflare/workers-sdk` |
+| Connectors | 21 listed | 12 connected and enabled; Google Drive changed from "connected, off in chat" to `connect_incomplete`; 7 others incomplete; Compute Engine needs reconnect. Plugins: none |
+| Codex | not observable | No `codex` CLI or `.codex/` config here. Codex must verify its own column in `inventory.md` |
+
+### Owner actions (unchanged unless noted)
+
+1. GitHub billing (I-7) so hosted CI can run again.
+2. Optional: Cloudflare token scopes `Hyperdrive: Read` and `Workers Observability: Read`.
+3. Codex: run its own discovery once and fill the Codex column.
+
+---
+
+## 2026-10-11 (historical)
 
 Every check below was read-only. Nothing was deployed, migrated, created or deleted.
 
