@@ -34,7 +34,7 @@ Detail lives in [DEPLOY.md](../../DEPLOY.md); this file is the map.
 
 | Env | Worker | Domain | Database |
 |---|---|---|---|
-| Production | `rega-cargo` | `cargo.regaplatform.com` (workers.dev only 301-redirects) | Hyperdrive `795013d06b38408e87552686a6045291` → see [issues.md](issues.md) I-1 |
+| Production | `rega-cargo` | primary `www.rlgo.net`, apex redirects; previous `cargo.regaplatform.com` remains attached (PR #89 cutover) | Hyperdrive `795013d06b38408e87552686a6045291` → see [issues.md](issues.md) I-1 |
 | Staging | `rega-cargo-staging` | workers.dev | none declared in `wrangler.jsonc` (its `DATABASE_URL` secret not checked) |
 | Local | `npm run dev` :8080 | — | PGLite + `migrations/dev/seed.sql` |
 

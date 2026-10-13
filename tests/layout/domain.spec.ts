@@ -17,8 +17,16 @@ test("complete pages hydrate after repeat visits and delayed asset responses", a
     await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("footer")).toBeVisible();
     expect((await page.locator("main").innerText()).trim().length).toBeGreaterThan(100);
+    // SSR visibility/network idle can precede lazy route hydration. Wait for
+    // each journey's usable controls before a new document navigation can
+    // cancel its imports and trigger TanStack's missing-module reload.
+    if (path.startsWith("/?"))
+      await expect(page.locator('main form button[type="submit"]').first()).toBeEnabled();
+    if (path.startsWith("/stores?"))
+      await expect(page.locator(".rl-audience-chips button").first()).toBeEnabled();
     if (path.startsWith("/stores/request"))
       await expect(page.locator('form.rl-request-form button[type="submit"]')).toBeEnabled();
+    await page.waitForLoadState("networkidle");
   }
   expect(errors).toEqual([]);
   expect(failedAssets).toEqual([]);

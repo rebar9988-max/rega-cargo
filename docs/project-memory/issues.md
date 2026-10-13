@@ -4,6 +4,11 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ## Open
 
+### I-11 · STAGING FIX VERIFIED 2026-10-13 — WebKit blank viewport and incomplete canonical cutover
+
+- `content-visibility:auto` left an in-viewport section unpainted in live WebKit/iPhone-profile scrolling; same-document removal restored actual text and height. Source now paints real content, and SW v12 retires cached faulty HTML. Domain cutover also left old SEO/auth/cache/source-route settings and no apex/HTTP redirects. PR #89 fixes both, with path/query/method preservation and protected REGA hosts. Staging `75511c45` passed 40 public browser cases and slow/paint checks. Native iPhone/direct IPv6/authenticated OTP checks remain unavailable; production gate/release pending. [Paired evidence](../verification/rlgo-domain-20261013.md).
+
+
 ### I-1 · RESOLVED 2026-10-13 — production Hyperdrive and fallback recovered
 - Current evidence: Cloudflare GET now succeeds; original origin = `misty-recipe-03041407/neondb`. Fresh read-only schema/count checks and the existing connected staging market validated `old-cherry-79292410/cargo` (13 migrations, 28 tables, 413 prohibited keywords, zero products/phone users/requests).
 - Owner's current prompt explicitly authorizes root-cause fixes and infrastructure release. PATCH existing Hyperdrive origin succeeded, with original credential ready for rollback; config ID/caching/connection limit preserved. Subsequent production `/market` renders the real form/empty state, banned query `vodka` yields no product cards. No migrations, records, duplicate deletion or provider changes.
