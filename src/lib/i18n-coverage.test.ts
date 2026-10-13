@@ -4,9 +4,26 @@ import { LANGS } from "./langs.ts";
 import { SEO_MESSAGES } from "./seo-messages.ts";
 import { productLinkCopy } from "./product-link/copy.ts";
 import { redesignCopy } from "./redesign-copy.ts";
+import { marketCopy } from "./market-copy.ts";
+import { storeCopy } from "./store-copy.ts";
+import { catalogueCopy } from "./catalogue-copy.ts";
+import { JOURNEY_COPY } from "./journey-copy.ts";
 
 const ids = LANGS.map((l) => l.id);
 const others = ids.filter((id) => id !== "en");
+
+test("unified journey copy preserves all seven languages and truthful manual-review wording", () => {
+  for (const id of ids) {
+    const copy = JOURNEY_COPY[id];
+    assert.deepEqual(Object.keys(copy).sort(), Object.keys(JOURNEY_COPY.en).sort());
+    for (const text of Object.values(copy)) assert.ok(text.trim());
+    assert.equal(copy.title.split("\n").length, 2);
+    assert.match(copy.received, /R&L/);
+    if (id !== "en") assert.notEqual(copy.body, JOURNEY_COPY.en.body);
+  }
+  assert.equal(JOURNEY_COPY.ckb.shop, "بازاڕ بکە");
+  assert.equal(JOURNEY_COPY.ckb.bring, "کاڵام بۆ بهێنەوە");
+});
 
 test("every language has the same SEO pages, with non-empty title and description", () => {
   const paths = Object.keys(SEO_MESSAGES.en);
@@ -92,4 +109,63 @@ test("redesign copy has no English left in ku, de, fa and tr", () => {
 
 test("the not-an-official-partner note stays in every language (hard rule 2)", () => {
   for (const id of ids) assert.match(redesignCopy(id).noPartner, /R&L/, `${id}.noPartner`);
+});
+
+test("marketplace copy is translated in every language (only words shared with English may match)", () => {
+  const en = marketCopy("en") as Record<string, string>;
+  // Same word in German: "Name" is the German word too.
+  const shared: Record<string, string[]> = { de: ["name"] };
+  for (const id of others) {
+    const c = marketCopy(id) as Record<string, string>;
+    assert.deepEqual(Object.keys(c).sort(), Object.keys(en).sort(), `${id}: keys`);
+    for (const [k, v] of Object.entries(c)) {
+      assert.ok(v.trim(), `${id}.${k} empty`);
+      if (/[A-Za-z]{4,}/.test(en[k]) && v === en[k] && !(shared[id] ?? []).includes(k))
+        assert.fail(`${id}.${k} is still English: ${v}`);
+    }
+  }
+});
+
+test("store and catalogue copy are translated in every language", () => {
+  const en = new Map(leaves(storeCopy("en")));
+  const enCat = new Map(leaves(catalogueCopy("en")));
+  // Words that are the same in these languages (loanwords).
+  const sharedCat: Record<string, string[]> = {
+    de: [
+      ".subs.electronics.smartphones",
+      ".subs.electronics.tablets",
+      ".subs.sports.fitness",
+      ".subs.sports.camping",
+      ".subs.food.snacks",
+    ],
+    tr: [".subs.sports.fitness"],
+  };
+  for (const id of others) {
+    const store = leaves(storeCopy(id));
+    assert.deepEqual(
+      store.map(([k]) => k),
+      [...en.keys()],
+      `${id}: store keys`,
+    );
+    for (const [k, v] of store)
+      if (/[A-Za-z]{4,}/.test(en.get(k) ?? "") && v === en.get(k) && !/^[A-Z0-9 .&\-+/@]+$/.test(v))
+        assert.fail(`${id} store${k} is still English: ${v}`);
+    const cat = leaves(catalogueCopy(id));
+    assert.deepEqual(
+      cat.map(([k]) => k),
+      [...enCat.keys()],
+      `${id}: catalogue keys`,
+    );
+    for (const [k, v] of cat)
+      if (
+        /[A-Za-z]{4,}/.test(enCat.get(k) ?? "") &&
+        v === enCat.get(k) &&
+        !(sharedCat[id] ?? []).includes(k)
+      )
+        assert.fail(`${id} catalogue${k} is still English: ${v}`);
+  }
+});
+
+test("the not-an-official-partner badge on store cards names R&L in every language (hard rule 2)", () => {
+  for (const id of ids) assert.match(storeCopy(id).notPartner, /R&L/, `${id}.notPartner`);
 });

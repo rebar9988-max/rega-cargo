@@ -1,3 +1,4 @@
+import { DEFAULT_MARKET_SEARCH } from "@/lib/market/search";
 import { Link } from "@tanstack/react-router";
 import { Mail, Warehouse } from "lucide-react";
 import { Mark } from "./site-mark";
@@ -9,9 +10,11 @@ import { SITE_COPY } from "@/lib/site-copy";
 import { ITEMS_COPY } from "@/lib/items-copy";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
+import { JOURNEY_COPY } from "@/lib/journey-copy";
 export function SiteFooter() {
   const { lang, t, setLang } = useI18n();
   const c = redesignCopy(lang);
+  const j = JOURNEY_COPY[lang];
   const legal = SITE_COPY[lang].legal;
   return (
     <footer className="rl-site-footer rl-defer clear-bottom-bar">
@@ -36,7 +39,13 @@ export function SiteFooter() {
         <nav aria-label={c.footerShop} className="rl-stack">
           <h2>{c.footerShop}</h2>
           {/* One link to the marketplace instead of repeating the category list here. */}
-          <Link to="/stores">{c.marketplace}</Link>
+          <Link to="/market" search={DEFAULT_MARKET_SEARCH}>
+            {c.marketplace}
+          </Link>
+          <Link to="/stores/request" search={{ intent: "buy", store: undefined, item: undefined }}>
+            {j.bring}
+          </Link>
+          <Link to="/stores">{j.stores}</Link>
           <Link to="/stores" search={{ fav: 1 }}>
             {DESIGN_COPY[lang].wishlist}
           </Link>

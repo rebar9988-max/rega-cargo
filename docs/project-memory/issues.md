@@ -4,7 +4,11 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 
 ## Open
 
-### I-1 · OPEN · blocker — production Worker queries the wrong (incomplete) Neon database
+### I-1 · RESOLVED 2026-10-13 — production Hyperdrive and fallback recovered
+- Current evidence: Cloudflare GET now succeeds; original origin = `misty-recipe-03041407/neondb`. Fresh read-only schema/count checks and the existing connected staging market validated `old-cherry-79292410/cargo` (13 migrations, 28 tables, 413 prohibited keywords, zero products/phone users/requests).
+- Owner's current prompt explicitly authorizes root-cause fixes and infrastructure release. PATCH existing Hyperdrive origin succeeded, with original credential ready for rollback; config ID/caching/connection limit preserved. Subsequent production `/market` renders the real form/empty state, banned query `vodka` yields no product cards. No migrations, records, duplicate deletion or provider changes.
+- Existing fallback `DATABASE_URL` was subsequently updated to the same verified cargo connection. Cloudflare PUT succeeded and created secret-only production version `2db4fb28` (05:20 UTC), preserving application code. Previous facts below are historical. Code rollback alone does not undo a Hyperdrive origin change.
+
 - Symptom: `/market` and every DB-backed page show their error state.
 - Root cause (re-verified 2026-10-11 15:14–15:20 UTC on live version `7b92d650`): the Worker reaches `misty-recipe-03041407/neondb`, which only has `0002_market.sql` (applied 10:31 UTC, most likely by `npm run build` with `DATABASE_URL` set). Live log on every `/market` request: `[market] error: column p.compliance_status does not exist` (added by `0012`) and `[compliance] DB rules unavailable … relation "prohibited_keywords" does not exist` (added by `0011`).
 - Still open on `10723cf0` (15:38 UTC): 4 more probes raised `misty` rollbacks 334→340, `old-cherry` 0.
@@ -19,7 +23,9 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
   5. Only afterwards, and with approval, delete `misty-recipe-03041407`.
 - Prevention: always build with `DATABASE_URL=''` unless migrating deliberately; take a Neon branch before any migration.
 
-### I-2 · OPEN — Cloudflare agent token lacks Hyperdrive and Observability scopes
+### I-2 · PARTIALLY RESOLVED 2026-10-13 — Hyperdrive permission available; Observability unverified
+- Connected Cloudflare GET/PATCH Hyperdrive now succeed. The old Hyperdrive denial below is superseded; no permission/token changes were made in this session.
+
 - Agents cannot verify or fix I-1. Owner may add `Hyperdrive: Read/Edit`, `Workers Observability: Read`.
 
 ### I-3 · OPEN — phone sign-in cannot send codes

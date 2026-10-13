@@ -453,11 +453,25 @@ const de: StoreCopy = {
   back: "Zurück zum Basar",
 };
 
+// TODO(translate-review): the English leftovers in ku were translated 2026-10-11 and need a native review.
+// This block keeps its own register (formal "hûn") so the page reads consistently.
 const ku: StoreCopy = {
-  ...en,
   kicker: "Bibîne, paşê siparîş bike",
   title: "Bazar",
   lede: "Wêneyan bibîne û ya ku ji te re xweş e siparîş bike. Ev mînak in, ne stoka zindî. Tiştek nayê kirîn heta ku hûn bihayekî piştrast erê bikin.",
+  search: "Firoşgehan bigerin",
+  allCategories: "Hemû kategorî",
+  allCountries: "Hemû welat",
+  germany: "Almanya",
+  international: "Derveyî Almanyayê",
+  favorites: "Bijare",
+  empty: "Tu firoşgeh li hev nayê.",
+  external: "Firoşgeha derve",
+  notPartner: "Ne hevparê R&L e",
+  open: "Malpera fermî veke",
+  assist: "Ask R&L to buy",
+  shipOwn: "Min berê kirî ye",
+  proposed: "Pêşniyar kirî ye. Daxwaza li Kurdistanê nehatiye piştrastkirin.",
   order: "Siparîş",
   sample: "Mînak e, ne stoka zindî",
   storesHeading: "Firoşgeh",
@@ -470,6 +484,19 @@ const ku: StoreCopy = {
     kettle: "Çaydankê elektrîkê",
     baby: "Kincên zarokan",
     ball: "Topa gogê",
+  },
+  categories: {
+    electronics: "Elektronîk",
+    sports: "Werzîş û Derve",
+    baby: "Zarok û Pitik",
+    home: "Mal û Bexçe",
+    food: "Xwarin û Vexwarin",
+    gaming: "Lîstikên vîdyoyê û Lîstok",
+    beauty: "Bedewî, Lênêrîn û Tenduristî",
+    auto: "Wesayît û Motorsîklêt",
+    fashion: "Moda û Pêvek",
+    pets: "Pêdiviyên Heywanan",
+    general: "Giştî",
   },
   notes: {
     amazon:
@@ -484,14 +511,49 @@ const ku: StoreCopy = {
       "Sephora DE bernameyeke affiliate ya Awin ji bo lînkên reklamê heye. Destûrê nade em bikirin. Em ne endam in.",
     link: "Tu APIya berhemê ya pejirandî nehat dîtin. Em malperê bi otomatîkî naxwînin. Tenê lînka fermî û daxwazek bi destan tê pêşkêşkirin.",
   },
+  cautions: {
+    perfume: "Bîhn dibe ku di barkirina hewayî de neyê pejirandin.",
+    aerosol: "Aerosol bi piranî li ser balafiran qedexe ne.",
+    battery: "Pîlên lîtyûmê yên serbixwe kontrolek cuda hewce dikin.",
+    cosmetics: "Şilav û kozmetîk dikarin sînordar bin.",
+  },
+  requestKicker: "Hêj tiştek nehatiye kirîn",
+  requestTitle: "Lînka berhemê",
+  requestLede:
+    "Daxwazê bişînin. Berî ku hûn tiştekî erê bikin, em hebûn û mesrefa tevahî piştrast dikin.",
   buyTitle: "Siparîşa kirînê",
+  shipTitle: "Kirîna ku min kiriye bişîne",
+  url: "Lînka berhemê",
+  urlHint: "Heke we ji bazarê ferman dabe vebijarkî ye. Heke lînka firoşgehê hebe, li vir bixin.",
+  size: "Mezinahî",
+  color: "Reng",
+  qty: "Hejmar",
+  dest: "Cihê gihandinê",
+  notesLabel: "Nîşe",
+  costs: "Lêçûn, dema ku were zanîn",
+  rows: [
+    "Berhem",
+    "Gihandina di hundirê welatê firoşgehê de",
+    "Xizmeta R&L",
+    "Şandina navneteweyî",
+    "Veguhertina diravî",
+    "Gumrik",
+  ],
+  awaiting: "Li benda piştrastkirinê",
+  whoTitle: "Kî çi dike",
+  whoBody:
+    "Ger hûn ji me bixwazin bikirin, R&L tenê piştî ku hûn pêşniyareke piştrastkirî erê bikin pere dide firoşgehê. Hûn pereyê R&L didin. Betalkirin, vegerandin û garantî li gorî rêzikên wê firoşgehê ne. Zirar bi wêne tê îdîakirin, ne vegerandineke xweber e.",
+  shipBody:
+    "Ger we berê pere daye firoşgehê, R&L tiştekî nakire. Em tenê ya hûn bi nav dikin kom dikin û dişînin. Rêzikên vegerandinê hê jî di destê firoşgehê de ne.",
+  cautionTitle: "May not fly",
   submit: "Siparîşê bişîne",
-  back: "Vegere bazarê",
+  invalidUrl: "Lînkeke https a tevahî binivîsin, an jî ji bo fermana bazarê vala bihêlin.",
+  wrongHost:
+    "Ev girêdan ne li ser malpera fermî ya wê firoşgehê ye. Girêdanekê ji malpera firoşgehê bi xwe binivîse.",
   sentTitle: "Siparîş li ser vî amûrî hate tomarkirin",
   sentBody: "Tu kirîn nehat kirin û tu biha nehat piştrastkirin.",
   serviceLater: "Ev xizmet hê ne amade ye. E-name 2233rega@gmail.com.",
-  wrongHost:
-    "Ev girêdan ne li ser malpera fermî ya wê firoşgehê ye. Girêdanekê ji malpera firoşgehê bi xwe binivîse.",
+  back: "Vegere bazarê",
 };
 
 const fa: StoreCopy = {
@@ -596,27 +658,28 @@ const fa: StoreCopy = {
   back: "بازگشت به بازار",
 };
 
+// TODO(translate-review): the English leftovers in tr were translated 2026-10-11 and need a native review.
+// This block keeps its own register (informal "sen") so the page reads consistently.
 const tr: StoreCopy = {
-  ...en,
   kicker: "Gör, sonra sipariş et",
   title: "Pazar",
   lede: "Resimlere bak ve beğendiğini sipariş et. Bunlar örnektir, canlı stok değildir. Onaylı fiyat olmadan hiçbir şey satın alınmaz.",
+  search: "Mağaza ara",
+  allCategories: "Tüm kategoriler",
+  allCountries: "Tüm ülkeler",
+  germany: "Almanya",
+  international: "Almanya dışı",
+  favorites: "Favoriler",
+  empty: "Eşleşen mağaza yok.",
+  external: "Harici mağaza",
+  notPartner: "R&L ortağı değil",
+  open: "Resmî siteyi aç",
+  assist: "Ask R&L to buy",
+  shipOwn: "Ben zaten satın aldım",
+  proposed: "Önerildi. Kürdistan'daki talep doğrulanmadı.",
   order: "Sipariş et",
   sample: "Örnek, canlı stok değil",
   storesHeading: "Mağazalar",
-  categories: {
-    electronics: "Elektronik",
-    sports: "Spor ve outdoor",
-    baby: "Bebek ve çocuk",
-    home: "Ev ve bahçe",
-    food: "Gıda ve içecek",
-    gaming: "Oyun ve oyuncak",
-    beauty: "Güzellik, kişisel bakım ve sağlık",
-    auto: "Otomobil ve motosiklet",
-    fashion: "Moda ve aksesuar",
-    pets: "Evcil hayvan ürünleri",
-    general: "Genel",
-  },
   goods: {
     perfume: "Parfüm",
     cream: "Yüz kremi",
@@ -626,6 +689,19 @@ const tr: StoreCopy = {
     kettle: "Elektrikli kettle",
     baby: "Bebek kıyafeti",
     ball: "Futbol topu",
+  },
+  categories: {
+    electronics: "Elektronik",
+    sports: "Spor ve outdoor",
+    baby: "Bebek ve çocuk",
+    home: "Ev ve bahçe",
+    food: "Gıda ve içecek",
+    gaming: "Oyun ve oyuncak",
+    beauty: "Bakım, güzellik ve sağlık",
+    auto: "Otomobil ve motosiklet",
+    fashion: "Moda ve aksesuar",
+    pets: "Evcil hayvan ürünleri",
+    general: "Genel",
   },
   notes: {
     amazon:
@@ -640,14 +716,48 @@ const tr: StoreCopy = {
       "Sephora DE'nin tanıtım bağlantıları için bir Awin ortaklık programı var. Satın almamıza izin vermez. Üye değiliz.",
     link: "Onaylı bir ürün API'si bulunamadı. Siteden otomatik veri çekmeyiz. Yalnızca resmi bağlantı ve elle talep sunulur.",
   },
+  cautions: {
+    perfume: "Parfüm hava kargosunda reddedilebilir.",
+    aerosol: "Aerosoller uçaklarda çoğunlukla yasaktır.",
+    battery: "Gevşek lityum piller ayrı bir kontrol gerektirir.",
+    cosmetics: "Sıvılar ve kozmetik ürünler kısıtlanabilir.",
+  },
+  requestKicker: "Henüz hiçbir şey satın alınmadı",
+  requestTitle: "Ürün bağlantısı",
+  requestLede: "Talebi gönder. Sen onaylamadan önce stok durumunu ve toplam maliyeti doğrularız.",
   buyTitle: "Satın alma siparişi",
+  shipTitle: "Satın aldığım ürünü gönder",
+  url: "Ürün bağlantısı",
+  urlHint: "Pazardan sipariş verdiysen isteğe bağlı. Mağaza bağlantın varsa buraya yapıştır.",
+  size: "Beden",
+  color: "Renk",
+  qty: "Adet",
+  dest: "Varış noktası",
+  notesLabel: "Notlar",
+  costs: "Maliyet, belli olduğunda",
+  rows: [
+    "Ürün",
+    "Mağazanın ülkesi içinde teslimat",
+    "R&L hizmet bedeli",
+    "Uluslararası gönderim",
+    "Kur dönüşümü",
+    "Gümrük",
+  ],
+  awaiting: "Onay bekleniyor",
+  whoTitle: "Kim ne yapar",
+  whoBody:
+    "Senden satın almamızı istersen, R&L mağazaya yalnızca onayladığın kesin teklifin ardından öder. Ödemeyi R&L'ye yaparsın. İptal, iade ve garanti o mağazanın kurallarına tabidir. Hasar, otomatik iade değil, fotoğraflarla yapılan bir taleptir.",
+  shipBody:
+    "Mağazaya zaten ödeme yaptıysan R&L bir şey satın almaz. Yalnızca belirttiğin ürünü toplar ve göndeririz. İade kuralları yine mağazaya aittir.",
+  cautionTitle: "May not fly",
   submit: "Siparişi gönder",
-  back: "Pazara dön",
+  invalidUrl: "Tam bir https bağlantısı gir veya pazar siparişi için boş bırak.",
+  wrongHost:
+    "Bu bağlantı o mağazanın resmi sitesinde değil. Mağazanın kendi sitesinden bir bağlantı yapıştırın.",
   sentTitle: "Sipariş bu cihazda saklandı",
   sentBody: "Satın alma yapılmadı ve fiyat onaylanmadı.",
   serviceLater: "Bu hizmet henüz yok. E-posta 2233rega@gmail.com.",
-  wrongHost:
-    "Bu bağlantı o mağazanın resmi sitesinde değil. Mağazanın kendi sitesinden bir bağlantı yapıştırın.",
+  back: "Pazara dön",
 };
 
 const ALL: Record<Lang, StoreCopy> = { en, ckb, ar, de, ku, fa, tr };

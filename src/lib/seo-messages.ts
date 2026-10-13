@@ -1,5 +1,6 @@
 // Existing localized metadata, separated from full page copy for the initial bundle.
 import type { Lang } from "./langs";
+import { JOURNEY_COPY } from "./journey-copy.ts";
 // TODO(translate-review): ku, de, fa, tr page titles/descriptions and the ar /market description were
 // added in English-to-language passes (2026-10-11) and need a native review. de/tr use the formal register.
 export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; description: string }>> = {
@@ -312,3 +313,12 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
     },
   },
 };
+
+// Keep search previews aligned with the actual unified customer journeys.
+for (const lang of Object.keys(SEO_MESSAGES) as Lang[]) {
+  SEO_MESSAGES[lang]["/"] = {
+    title: `${JOURNEY_COPY[lang].title.replace(/\n/g, " ")} · R&L`,
+    description: JOURNEY_COPY[lang].body.replace(/\n/g, " "),
+  };
+  SEO_MESSAGES[lang]["/stores"].title = `${JOURNEY_COPY[lang].stores} · R&L`;
+}

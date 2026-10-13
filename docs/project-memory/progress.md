@@ -3,7 +3,14 @@
 Use Git history and PR descriptions for detail; record only status and pointers here.
 Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
-## Active / open PRs
+## Current work (2026-10-13)
+
+- `claude/unified-journeys-20261013`: unified real marketplace + Bring For Me + tracking, small reusable changes and existing contract preservation. [Report](../redesign/unified-journeys-20261013.md). PR #82: typecheck, 426 unit tests (4 existing skips), lint 0 errors/5 existing warnings, migration-free build and Worker dry run pass. Final official-image no-update lock 432 passed / 12 intentional skips / 0 failed on code `c6941ac`; staging `f04cd880` passed 57 browser cases and 30 axe checks. Reviewed translations adopted from #64/#66 without merging their branches. Production release pending.
+- Hyperdrive P1 root cause fixed live; real marketplace now healthy/empty. No database records or schema changed.
+- Cloudflare Builds preview failed fetching the private repository before build; existing authorized Workers API deployed staging with inherited bindings/secrets/headers. Use that existing release workflow after the gated merge; a bounded automatic retry will verify the integration. Missing phone-provider credentials remain an external blocker for authenticated production journeys.
+- Existing PR #79 also edits `/stores/request`; it remains untouched. This task preserves its branch rather than silently merging unverified work.
+
+## Historical active / open PRs (recheck GitHub before acting)
 
 - 2026-10-12: [PR #72](https://github.com/rebar9988-max/rega-cargo/pull/72) shipping/bazaar separation prepared on `claude/separate-shipping-bazaar`; dedicated `/quote` design, no home/catalogue calculator or service switch. Official-image gate passed: typecheck, 417 tests, lint (0 errors), build, cf dry-run, 386 browser/layout checks (12 expected skips). Not merged/deployed. [Report and verification](../redesign/shipping-separation.md).
 
@@ -19,7 +26,7 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 ## Pending (owner or approval needed)
 - **GitHub Actions starts no job** (since ~2026-10-11 15:38 UTC, also on `main`). Verified: account billing block (I-7; re-verified 2026-10-12 18:36 UTC). No PR can be merged or deployed without CI until the owner fixes it.
-- Repoint production DB (issues I-1) — blocker for market, requests, tracking, accounts.
+- Production Hyperdrive and fallback recovered (I-1, 2026-10-13); no data/schema mutation.
 - Choose phone sign-in provider (I-3); Turnstile keys; enable auth (I-6).
 - Approve held catalogue groups (`food`, `beauty/health`, `pets/food`).
 - Native translation review; real legal details (I-5).

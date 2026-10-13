@@ -5,6 +5,10 @@ It is fully separate from the live REGA site (`www.regaplatform.com`, Worker
 `rega-platform`, repo `Rega`). Nothing here touches that Worker, its DNS
 records, or its database. **Never point this app at REGA's database.**
 
+## Existing automatic release (verified 2026-10-13)
+
+Cloudflare Builds is connected to **this** repository/`rega-cargo`, production branch `main`, with `npm run build` then `npx wrangler deploy`. It has no build environment variables. GitHub Actions is the quality gate, not the deployment job. Never merge until applicable repository safeguards and the authorized quality gate are satisfied. See [release evidence](docs/redesign/unified-journeys-20261013.md) and [CI/deployment memory](docs/project-memory/deployments.md). Do not inject production `DATABASE_URL` into a build; that would run migrations.
+
 ## How the build works
 
 | Piece | Where |
@@ -45,9 +49,9 @@ Ten primary groups live in `src/lib/catalogue.ts` (order, subcategories, search 
 
 **Held back until the owner approves:** `food` and the `beauty/health` and `pets/food` subcategories (food safety / halal / health). They show "Coming soon", are not linked, and are excluded from filters, search and store cards. To publish, edit `PENDING_APPROVAL_*` in `src/lib/catalogue.ts`. `src/lib/catalogue.test.ts` covers this and the permanent product ban.
 
-**Navigation:** the header "All categories" panel, the mobile menu, the footer, the home directory and the `/stores` directory all read the same ten groups (`src/lib/navigation.ts` → `catalogue.ts`). The old seven-item audience/sample-photo menu was removed; the Women/Men/Kids chips on `/stores` (`?who=`) are unchanged.
+**Navigation (2026-10-13):** primary journeys are Home → `/market` (real products/offers) → `/stores/request` (Bring For Me) → `/track` → Help (`/contact`). The five mobile destinations end with `/account`; Help stays in the menu/footer. `/stores` remains the external retailer catalogue, not synchronized inventory. Its desktop category panel, mobile strip and collapsed menu taxonomy still read the same ten groups (`src/lib/navigation.ts` → `catalogue.ts`); legitimate categories and `cat/sub/who/fav` links are preserved. Global navigation does not repeat the category wall. See [unified journey verification](docs/redesign/unified-journeys-20261013.md).
 
-New Sorani, Arabic and Persian strings carry `TODO(translate-review)`; Kurmanji (`ku`) uses English catalogue copy until reviewed.
+New Sorani, Arabic and Persian strings carry `TODO(translate-review)`; all seven catalogue/store/market dictionaries now have complete translated keys; native review remains required for the marked additions (PR #64/#66 dictionaries adopted in unified PR #82).
 
 **Layout baselines:** colours and buttons changed, so `tests/layout/__screenshots__` must be re-rendered in CI (run the "Cargo quality gate" workflow with `update_baselines`), then committed. Geometry checks (`--ignore-snapshots`) pass without it.
 
@@ -88,7 +92,7 @@ baseline update.
   390×844, 820×1180, 1180×820. Each view asserts: no horizontal overflow; header and bottom bar at
   exact heights; content within 1200px, centred, correct gutter; card grid column count and equal
   card sizes per row; nothing outside the viewport; image boxes at their declared aspect ratio;
-  inputs ≥ 16px; every text size on the token scale. Then it compares a full-page screenshot with
+  inputs ≥ 16px; every text size on the token scale. Then it captures the full document in a document-sized viewport (asserting unchanged main geometry and zero scroll, then restoring the real device viewport), and compares it with
   the committed baseline (`tests/layout/__screenshots__/`, tolerance 0.2% of pixels).
 - `tests/layout/premium.spec.ts`: the required route/query matrix at 360px in ckb/ar/en and both
   themes, keyboard dialogs, banned searches, filter/favorite URL state, language switching,

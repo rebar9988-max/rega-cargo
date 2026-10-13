@@ -1,27 +1,18 @@
 import { Skeleton } from "@/components/ui";
-import { responsiveImage } from "@/lib/images";
 import { seo } from "@/lib/seo";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { PAGES_COPY } from "@/lib/pages-copy";
 import { PageHeader, Shell } from "@/components/shell";
 import { btnPrimary, controlClass } from "@/components/field";
-import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 import { marketHome } from "@/lib/market/api";
-import { iqd, marketCopy } from "@/lib/market-copy";
+import { marketCopy } from "@/lib/market-copy";
 
+import { MarketProductCard } from "@/components/market-product-card";
+import { JOURNEY_COPY } from "@/lib/journey-copy";
+import { validateMarketSearch } from "@/lib/market/search";
 export const Route = createFileRoute("/market/")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    q: typeof search.q === "string" ? search.q : "",
-    category: typeof search.category === "string" ? search.category : "",
-    brand: typeof search.brand === "string" ? search.brand : "",
-    min: typeof search.min === "string" ? search.min : "",
-    max: typeof search.max === "string" ? search.max : "",
-    stock: search.stock === "in" ? "in" : "",
-    sort: search.sort === "new" ? "new" : "price",
-    page: typeof search.page === "number" && search.page > 0 ? search.page : 1,
-    saved: search.saved === "1" || search.saved === true ? "1" : "",
-  }),
+  validateSearch: validateMarketSearch,
   loaderDeps: ({ search }) => ({
     q: search.q,
     category: search.category,
@@ -52,6 +43,7 @@ function MarketHome() {
   const { lang } = useI18n();
   const t = marketCopy(lang);
   const router = useRouter();
+  const j = JOURNEY_COPY[lang];
   if ("error" in data) {
     const pc = PAGES_COPY[lang];
     return (
@@ -62,7 +54,15 @@ function MarketHome() {
             {data.error === "unavailable" ? pc.unavailable : pc.errorBody}
           </p>
           <Link to="/stores" className={btnPrimary}>
-            {DESIGN_COPY[lang].bazaarSub}
+            {j.stores}
+          </Link>
+          <Link
+            to="/stores/request"
+            search={{ intent: "buy", store: undefined, item: undefined }}
+            className="rl-button"
+            data-variant="secondary"
+          >
+            {j.bring}
           </Link>
           <button
             type="button"
@@ -99,6 +99,7 @@ function MarketHome() {
           </button>
         </div>
         <form
+          key={JSON.stringify(search)}
           className="rl-card rl-compare-filters"
           onSubmit={(event) => {
             event.preventDefault();
@@ -190,7 +191,14 @@ function MarketHome() {
           >
             <p className="text-sm text-muted">{t.none}</p>
             <Link to="/stores" className={btnPrimary}>
-              {DESIGN_COPY[lang].bazaarSub}
+              {j.stores}
+            </Link>
+            <Link
+              to="/stores/request"
+              search={{ intent: "buy", store: undefined, item: undefined }}
+              className="rl-text-link"
+            >
+              {j.bring}
             </Link>
             {search.q ||
             search.category ||
@@ -221,41 +229,7 @@ function MarketHome() {
         ) : null}
         <ul data-layout="card-grid" className="card-grid">
           {data.items.map((item) => (
-            <li key={item.slug} className="rl-compare-card">
-              <Link
-                to="/market/$slug"
-                params={{ slug: item.slug }}
-                className="flex h-full flex-col"
-              >
-                {item.image ? (
-                  <img
-                    {...responsiveImage(item.image, "(min-width: 768px) 270px, 50vw")}
-                    alt=""
-                    width={640}
-                    height={640}
-                    loading="lazy"
-                    decoding="async"
-                    className="aspect-square w-full object-cover"
-                  />
-                ) : (
-                  <span className="aspect-square bg-paper" />
-                )}
-                <span className="flex flex-1 flex-col gap-1 p-3">
-                  <span className="font-semibold">
-                    {lang === "ckb" ? item.nameKu : item.nameEn}
-                  </span>
-                  <span className="font-sans text-xs text-muted">
-                    <bdi dir="ltr">{item.brand}</bdi>
-                  </span>
-                  <span className="text-sm text-pine">
-                    {item.lowest == null ? "—" : <bdi dir="ltr">{iqd(item.lowest)}</bdi>}
-                  </span>
-                  <span className="text-xs text-muted">
-                    <bdi dir="ltr">{item.offerCount}</bdi> {t.offers}
-                  </span>
-                </span>
-              </Link>
-            </li>
+            <MarketProductCard key={item.slug} item={item} />
           ))}
         </ul>
         <div className="flex gap-3">

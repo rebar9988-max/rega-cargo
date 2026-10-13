@@ -35,6 +35,13 @@ async function open(page: Page, path: string, lang: string) {
   });
   await expect(page.locator("html")).toHaveAttribute("lang", lang, { timeout: 15_000 });
   await settle(page);
+  // A page baseline represents the initial view, not retained focus/scroll after hydration.
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    window.scrollTo(0, 0);
+  });
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(page.locator(".rl-site-header")).toHaveAttribute("data-shrunk", "false");
 }
 
 /** Load every image (incl. lazy ones below the fold) and the web fonts before measuring. */
@@ -86,6 +93,36 @@ function shot(page: Page, sheet = false) {
   return { mask: [page.locator(photos)], maskColor: "#c9ced6" };
 }
 
+/**
+ * Chromium's mobile captureBeyondViewport scrolls the live page while capturing
+ * tall documents, painting sticky headers halfway down the image. Capture a
+ * document-sized viewport instead; prove that content geometry is unchanged,
+ * then restore the real device viewport. No element is hidden or restyled.
+ */
+async function documentShot(page: Page, name: string) {
+  const viewport = page.viewportSize()!;
+  const main = (await page.locator("main").boundingBox())!;
+  const height = await page.evaluate(() =>
+    Math.max(document.documentElement.scrollHeight, document.body.scrollHeight),
+  );
+  try {
+    await page.setViewportSize({ ...viewport, height });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(page.locator(".rl-site-header")).toHaveAttribute("data-shrunk", "false");
+    const expanded = (await page.locator("main").boundingBox())!;
+    for (const key of ["x", "y", "width", "height"] as const)
+      expect(
+        Math.abs(expanded[key] - main[key]),
+        `capture preserves main ${key}`,
+      ).toBeLessThanOrEqual(1);
+    await expect(page).toHaveScreenshot(name, { ...shot(page) });
+    expect(await page.evaluate(() => window.scrollY), "capture must not scroll the page").toBe(0);
+  } finally {
+    await page.setViewportSize(viewport);
+    await page.evaluate(() => window.scrollTo(0, 0));
+  }
+}
+
 async function geometry(page: Page, bp: Bp, sheet = false) {
   // Scroll restoration and WebKit's grid layout may settle a frame after the header state.
   await expect
@@ -103,10 +140,8 @@ for (const lang of LANGS) {
       test(`${slug(path)} ${lang}`, async ({ page, breakpoint }) => {
         await open(page, path, lang);
         await geometry(page, breakpoint);
-        await expect(page).toHaveScreenshot(`${slug(path)}-${lang}.png`, {
-          fullPage: true,
-          ...shot(page),
-        });
+        await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+        await documentShot(page, `${slug(path)}-${lang}.png`);
       });
     }
 

@@ -249,7 +249,7 @@ test("hero: the AI call to action opens the existing assistant in the chosen lan
     const cta = page.locator(".rl-ai-hero .rl-ai-hero-cta");
     await expect(cta).toHaveCount(1);
     await expect(cta).toBeVisible();
-    await expect(cta).toHaveAttribute("data-variant", "primary");
+    await expect(cta).toHaveClass(/rl-hero-assist/);
     await expect(cta).toHaveAttribute("href", new RegExp(`^/ai(\\?lang=${lang})?$`));
     // Visible without scrolling on a phone, and a comfortable touch target.
     const box = await cta.boundingBox();
@@ -306,15 +306,29 @@ test("hero: one static section right under the header, same place in every langu
   }
 });
 
-test("hero: the marketplace and shipping buttons sit under the AI action", async ({ page }) => {
+test("hero: marketplace and Bring For Me are primary, with tracking immediately available", async ({
+  page,
+}) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
     const shop = page.locator(".rl-ai-hero .rl-hero-shop");
-    await expect(shop).toHaveAttribute("href", new RegExp(`^/stores(\\?lang=${lang})?$`));
-    await expect(page.locator(".rl-ai-hero .rl-hero-secondary")).toHaveCount(1);
-    const cta = (await page.locator(".rl-ai-hero-cta").boundingBox())!;
-    const box = (await shop.boundingBox())!;
-    expect(box.y, lang).toBeGreaterThanOrEqual(cta.y + cta.height);
+    const bring = page.locator(".rl-ai-hero .rl-hero-bring");
+    await expect(shop).toHaveAttribute("href", /\/market/);
+    await expect(bring).toHaveAttribute("href", /\/stores\/request/);
+    const ai = (await page.locator(".rl-ai-hero-cta").boundingBox())!;
+    for (const action of [shop, bring]) {
+      const box = (await action.boundingBox())!;
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.y + box.height).toBeLessThanOrEqual(ai.y);
+    }
+    const nav = page.locator('[data-layout="bottom-bar"]');
+    await expect(nav.locator('a[href^="/track"]')).toBeVisible();
+    await expect(nav.locator('a[href^="/stores/request"]')).toBeVisible();
+    await expect(nav.locator('a[href^="/market"]')).toBeVisible();
+    await expect(page.locator('[data-layout="category-strip"]')).toHaveCount(0);
+    await page.locator('.rl-home-track-form input[name="id"]').fill("RG-TEST-TEST-TEST");
+    await page.locator(".rl-home-track-form button").click();
+    await expect(page).toHaveURL(/\/track.*id=RG-TEST-TEST-TEST/);
   }
 });
 
@@ -366,12 +380,19 @@ test("compact forms and store cards at 360px", async ({ page }) => {
     els.map((e) => Math.round(e.getBoundingClientRect().top)),
   );
   expect(new Set(ys).size).toBe(1);
-  // Order request: size, colour and quantity share one row.
+  // Optional size and colour share a row; quantity remains directly visible.
   await page.goto("/stores/request?store=zalando&intent=buy&lang=ckb", {
     waitUntil: "networkidle",
   });
-  const row = page.locator("form .grid-cols-3 input");
-  await expect(row).toHaveCount(3);
+  await page
+    .locator("details")
+    .filter({ has: page.locator("[data-product-link]") })
+    .locator("summary")
+    .click();
+  await page.locator("form details summary").click();
+  const row = page.locator("form .grid-cols-2 input");
+  await expect(row).toHaveCount(2);
+  await expect(page.locator('form [name="qty"]')).toBeVisible();
   const ry = await row.evaluateAll((els) =>
     els.map((e) => Math.round(e.getBoundingClientRect().top)),
   );
@@ -391,14 +412,15 @@ test("product link: the panel is in the server HTML and the request form never s
   request,
 }) => {
   for (const lang of ["ckb", "en"]) {
-    // Server-rendered: the flag is stamped on <html> and the panel precedes the form in the HTML,
+    // Server-rendered: the flag is stamped on <html> and the optional panel follows the form,
     // so nothing is inserted above the form after load.
     const html = await (await request.get(`/stores/request?intent=buy&lang=${lang}`)).text();
     expect(html, lang).toContain('data-rl-plink="1"');
     const panel = html.indexOf("data-product-link");
     const form = html.indexOf('class="rl-card rl-request-form"');
     expect(panel, `${lang} panel in HTML`).toBeGreaterThan(-1);
-    expect(form, `${lang} form in HTML`).toBeGreaterThan(panel);
+    expect(form, `${lang} form in HTML`).toBeGreaterThan(-1);
+    expect(panel, `${lang} optional check follows the form`).toBeGreaterThan(form);
 
     await page.addInitScript(() => {
       const state = window as typeof window & { shift: number };
@@ -411,6 +433,12 @@ test("product link: the panel is in the server HTML and the request form never s
       }).observe({ type: "layout-shift", buffered: true });
     });
     await page.goto(`/stores/request?intent=buy&lang=${lang}`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-product-link]")).not.toBeVisible();
+    await page
+      .locator("details")
+      .filter({ has: page.locator("[data-product-link]") })
+      .locator("summary")
+      .click();
     await expect(page.locator("[data-product-link]")).toBeVisible();
     await page.waitForTimeout(500);
     expect(

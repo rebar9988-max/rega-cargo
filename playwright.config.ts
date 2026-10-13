@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync } from "node:fs";
+import { prepareLayoutConfig } from "./scripts/layout-config.mjs";
 import { defineConfig, devices } from "@playwright/test";
 
 /**
@@ -19,8 +20,7 @@ const BASE_URL = process.env.LAYOUT_BASE_URL;
 const BUILT_CONFIG = ".output/server/wrangler.json";
 const LAYOUT_CONFIG = ".output/server/wrangler.layout.json";
 if (!BASE_URL && existsSync(BUILT_CONFIG)) {
-  const { hyperdrive: _hyperdrive, ...config } = JSON.parse(readFileSync(BUILT_CONFIG, "utf8"));
-  writeFileSync(LAYOUT_CONFIG, `${JSON.stringify(config, null, 2)}\n`);
+  prepareLayoutConfig(BUILT_CONFIG, LAYOUT_CONFIG);
 }
 
 export type Breakpoint = "phone" | "tablet" | "laptop";

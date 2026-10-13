@@ -18,6 +18,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+/**
+ * @param {string[]} argv
+ * @returns {{ error: string } | { staged: string, target: string }}
+ */
 export function parseWriteAtomicArgs(argv) {
   const [staged, target, ...rest] = argv;
   if (!staged || !target) {
@@ -27,6 +31,7 @@ export function parseWriteAtomicArgs(argv) {
   return { staged, target };
 }
 
+/** @param {string} dir @param {string} file */
 function isInside(dir, file) {
   const rel = relative(dir, file);
   return rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
@@ -37,6 +42,7 @@ function isInside(dir, file) {
  * the deployed app, so a temp that lands there ships (and an interrupted run
  * leaves it behind).
  */
+/** @param {{ staged: string, target: string, publicDir: string }} paths */
 export function stagingError({ staged, target, publicDir }) {
   if (staged === target) return `staged file and target are the same path: ${target}`;
   if (isInside(publicDir, staged)) {
@@ -50,6 +56,11 @@ export function stagingError({ staged, target, publicDir }) {
  * `rename` is injectable because EXDEV — the refusal the "stage under
  * /workspace/.grok/" contract rests on — cannot be provoked portably.
  */
+/**
+ * @param {string} staged
+ * @param {string} target
+ * @param {{ rename?: typeof renameSync }} [options]
+ */
 export function handOver(staged, target, { rename = renameSync } = {}) {
   if (!existsSync(staged)) {
     throw Object.assign(new Error(`staged file is missing: ${staged}`), { code: "ENOENT" });
@@ -58,7 +69,7 @@ export function handOver(staged, target, { rename = renameSync } = {}) {
   try {
     rename(staged, target);
   } catch (err) {
-    if (err?.code === "EXDEV") {
+    if (typeof err === "object" && err !== null && "code" in err && err.code === "EXDEV") {
       throw new Error(
         `${staged} is on another filesystem than ${target}, so the hand-over cannot be a `
           + "rename — stage under /workspace/.grok/ instead",
@@ -70,7 +81,7 @@ export function handOver(staged, target, { rename = renameSync } = {}) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseWriteAtomicArgs(process.argv.slice(2));
-  if (args.error) {
+  if ("error" in args) {
     console.error(`[write-atomic] ${args.error}`);
     process.exit(1);
   }
@@ -87,7 +98,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   try {
     handOver(staged, target);
   } catch (err) {
-    console.error(`[write-atomic] ${staged} → ${target} failed: ${err?.message || err}`);
+    console.error(`[write-atomic] ${staged} → ${target} failed: ${err instanceof Error ? err.message : err}`);
     process.exit(1);
   }
   console.log(`[write-atomic] wrote ${target}`);

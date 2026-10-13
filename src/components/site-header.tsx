@@ -11,6 +11,7 @@ import {
   Search,
   ShoppingBag,
   Truck,
+  PackageSearch,
   UserRound,
   X,
 } from "lucide-react";
@@ -24,12 +25,13 @@ import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { LANGS } from "@/lib/langs";
 import { DESIGN_COPY } from "@/lib/design-copy";
-import { NAV_CATEGORIES, ANNOUNCEMENT_ENABLED } from "@/lib/navigation";
+import { NAV_CATEGORIES, ANNOUNCEMENT_ENABLED, primaryJourney } from "@/lib/navigation";
 import { storeCopy } from "@/lib/store-copy";
 import { catalogueCopy } from "@/lib/catalogue-copy";
 import { isPublishedCategory, publishedSubcategories } from "@/lib/catalogue";
 import { rawGet, rawSet } from "@/lib/storage";
 import { rlAiEnabled } from "@/lib/ai/flag";
+import { JOURNEY_COPY } from "@/lib/journey-copy";
 import type { ShellSearch } from "./shell";
 
 export function SiteHeader({ search }: { search?: ShellSearch }) {
@@ -37,8 +39,15 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
   const c = redesignCopy(lang);
   const sc = storeCopy(lang);
   const cc = catalogueCopy(lang);
+  const j = JOURNEY_COPY[lang];
   const d = DESIGN_COPY[lang];
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const journey = primaryJourney(path);
+  const catalogue = useRouterState({
+    select: (s) =>
+      s.location.pathname === "/stores" ||
+      (s.location.pathname === "/" && Boolean((s.location.search as { cat?: string }).cat)),
+  });
   const wrap = useRef<HTMLElement>(null);
   const openSearch = useRef<(() => void) | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -83,9 +92,9 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
   }
   const tabs = [
     { to: "/", label: t.nav.home, icon: House },
-    { to: "/stores", label: c.marketplace, icon: ShoppingBag },
-    { to: "/quote", label: c.shipping, icon: Truck },
-    { to: "/market", label: t.nav.market, icon: LayoutGrid },
+    { to: "/market", label: j.market, icon: ShoppingBag },
+    { to: "/stores/request", label: j.bring, icon: PackageSearch },
+    { to: "/track", label: t.nav.track, icon: Truck },
     { to: "/account", label: c.account, icon: UserRound },
   ];
   return (
@@ -126,7 +135,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
           <SearchBox
             embedded
             search={search}
-            label={c.search}
+            label={j.stores}
             closeLabel={t.menuClose}
             lang={lang}
             ai={rlAiEnabled()}
@@ -157,7 +166,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
               to="/stores/request"
               search={{ store: undefined, item: undefined, intent: "buy" }}
               className="rl-icon-button rl-desktop-only"
-              aria-label={c.requests}
+              aria-label={j.bring}
             >
               <Icon as={ShoppingBag} />
             </Link>
@@ -176,34 +185,43 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             </span>
           </div>
         </div>
-        <nav className="page rl-category-nav" aria-label={c.categories}>
-          <button
-            ref={trigger}
-            type="button"
-            aria-expanded={active}
-            aria-controls="rl-mega"
-            onClick={() => setActive(!active)}
-            onKeyDown={categoryKey}
-            className="rl-category-trigger"
-          >
-            <Icon as={LayoutGrid} />
-            {cc.title}
-            <Icon as={ChevronDown} />
-          </button>
-          <Link
-            to="/quote"
-            search={{ from: undefined, to: undefined, kg: undefined }}
-            className="rl-nav-service"
-          >
-            {c.shipping}
-          </Link>
-          {rlAiEnabled() ? (
-            <Link to="/ai" className="rl-nav-service">
-              {SITE_COPY[lang].ai}
+        <nav className="page rl-category-nav rl-primary-nav" aria-label={c.navigation}>
+          {tabs.slice(0, 4).map((tab) => (
+            <Link
+              key={tab.to}
+              to={tab.to}
+              className="rl-nav-service"
+              aria-current={journey === tab.to ? "page" : undefined}
+            >
+              {tab.label}
             </Link>
-          ) : null}
+          ))}
+          <Link
+            to="/contact"
+            className="rl-nav-service"
+            aria-current={journey === "/contact" ? "page" : undefined}
+          >
+            {j.help}
+          </Link>
         </nav>
-        {active ? (
+        {catalogue ? (
+          <nav className="page rl-category-nav" aria-label={c.categories}>
+            <button
+              ref={trigger}
+              type="button"
+              aria-expanded={active}
+              aria-controls="rl-mega"
+              onClick={() => setActive(!active)}
+              onKeyDown={categoryKey}
+              className="rl-category-trigger"
+            >
+              <Icon as={LayoutGrid} />
+              {cc.title}
+              <Icon as={ChevronDown} />
+            </button>
+          </nav>
+        ) : null}
+        {catalogue && active ? (
           <div
             id="rl-mega"
             className="rl-mega"
@@ -249,12 +267,14 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
           </div>
         ) : null}
       </header>
-      <CategoryStrip
-        label={c.categories}
-        more={d.more}
-        moreOpen={mobile}
-        onMore={() => setMobile(true)}
-      />
+      {catalogue ? (
+        <CategoryStrip
+          label={c.categories}
+          more={d.more}
+          moreOpen={mobile}
+          onMore={() => setMobile(true)}
+        />
+      ) : null}
       <Modal
         open={mobile}
         onClose={() => setMobile(false)}
@@ -266,33 +286,62 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             <Mark />
             <ThemeToggle />
           </div>
-          <nav className="rl-stack" aria-label={c.categories}>
-            {NAV_CATEGORIES.map((cat) =>
-              isPublishedCategory(cat) ? (
-                <Link
-                  key={cat}
-                  to="/stores"
-                  search={{ cat }}
-                  onClick={() => setMobile(false)}
-                  className="rl-mobile-menu-link"
-                >
-                  <span className="rl-row">
-                    <Icon as={CATEGORY_ICON[cat]} />
-                    {sc.categories[cat]}
-                  </span>
-                  <Icon as={ChevronRight} directional />
-                </Link>
-              ) : (
-                <span key={cat} className="rl-mobile-menu-link" aria-disabled="true">
-                  <span className="rl-row">
-                    <Icon as={CATEGORY_ICON[cat]} />
-                    {sc.categories[cat]}
-                  </span>
-                  <Badge>{cc.comingSoon}</Badge>
+          <nav className="rl-stack" aria-label={c.navigation}>
+            {tabs.map((tab) => (
+              <Link
+                key={tab.to}
+                to={tab.to}
+                className="rl-mobile-menu-link"
+                aria-current={journey === tab.to ? "page" : undefined}
+                onClick={() => setMobile(false)}
+              >
+                <span className="rl-row">
+                  <Icon as={tab.icon} />
+                  {tab.label}
                 </span>
-              ),
-            )}
+                <Icon as={ChevronRight} directional />
+              </Link>
+            ))}
+            <Link to="/contact" className="rl-mobile-menu-link" onClick={() => setMobile(false)}>
+              {j.help}
+            </Link>
+            <Link to="/stores" className="rl-mobile-menu-link" onClick={() => setMobile(false)}>
+              {j.stores}
+            </Link>
           </nav>
+          <details>
+            <summary className="rl-mobile-menu-link">
+              {c.categories}
+              <Icon as={ChevronDown} />
+            </summary>
+            <nav className="rl-stack" aria-label={c.categories}>
+              {NAV_CATEGORIES.map((cat) =>
+                isPublishedCategory(cat) ? (
+                  <Link
+                    key={cat}
+                    to="/stores"
+                    search={{ cat }}
+                    onClick={() => setMobile(false)}
+                    className="rl-mobile-menu-link"
+                  >
+                    <span className="rl-row">
+                      <Icon as={CATEGORY_ICON[cat]} />
+                      {sc.categories[cat]}
+                    </span>
+                    <Icon as={ChevronRight} directional />
+                  </Link>
+                ) : (
+                  <span key={cat} className="rl-mobile-menu-link" aria-disabled="true">
+                    <span className="rl-row">
+                      <Icon as={CATEGORY_ICON[cat]} />
+                      {sc.categories[cat]}
+                    </span>
+                    <Badge>{cc.comingSoon}</Badge>
+                  </span>
+                ),
+              )}
+            </nav>
+          </details>
           <nav className="rl-row" aria-label={d.services}>
             <Link
               to="/quote"
@@ -301,43 +350,13 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
             >
               {c.shipping}
             </Link>
-            <Link to="/track" search={{ id: "" }} onClick={() => setMobile(false)}>
-              {t.nav.track}
-            </Link>
-            <Link
-              to="/market"
-              search={{
-                q: "",
-                category: "",
-                brand: "",
-                min: "",
-                max: "",
-                stock: "",
-                sort: "price",
-                page: 1,
-                saved: "",
-              }}
-              onClick={() => setMobile(false)}
-            >
-              {t.nav.market}
-            </Link>
             {rlAiEnabled() ? (
               <Link to="/ai" onClick={() => setMobile(false)}>
                 {SITE_COPY[lang].ai}
               </Link>
             ) : null}
-            <Link to="/account" onClick={() => setMobile(false)}>
-              {c.account}
-            </Link>
             <Link to="/stores" search={{ fav: 1 }} onClick={() => setMobile(false)}>
               {d.wishlist}
-            </Link>
-            <Link
-              to="/stores/request"
-              search={{ store: undefined, item: undefined, intent: "buy" }}
-              onClick={() => setMobile(false)}
-            >
-              {c.requests}
             </Link>
           </nav>
           <label className="rl-stack">
@@ -364,7 +383,7 @@ export function SiteHeader({ search }: { search?: ShellSearch }) {
         aria-label={c.navigation}
       >
         {tabs.map((tab) => (
-          <Link key={tab.to} to={tab.to} aria-current={path === tab.to ? "page" : undefined}>
+          <Link key={tab.to} to={tab.to} aria-current={journey === tab.to ? "page" : undefined}>
             <Icon as={tab.icon} />
             <span>{tab.label}</span>
           </Link>
