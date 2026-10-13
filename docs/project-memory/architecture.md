@@ -48,6 +48,10 @@ Agent session env (names only): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`,
 
 ## Quality gate (same as CI)
 
+One command: `npm run quality:local` (`scripts/quality-local.mjs`). It runs the steps below with `DATABASE_URL` forced empty, adds the compliance scan of bundled data (throw-away PGLite) and `npm audit --audit-level=high`, then the layout lock in `mcr.microsoft.com/playwright:v1.63.0-noble` when a Docker daemon is reachable (dependencies go into a container-only volume; the host build output is reused). Without Docker it runs geometry on local Chromium only and exits 2 ("partial"). Report: `.quality/local-report.json`. Flags: `--geometry-only`, `--no-layout`, `--no-audit`. There is no automated accessibility suite in the repo beyond the landmark checks in `tests/layout/premium.spec.ts`; the axe runs recorded in deployments.md were ad hoc.
+
+Manual equivalent:
+
 ```sh
 npm run typecheck && npm test && npm run lint
 DATABASE_URL='' npm run build      # empty value: never migrate a real DB by accident

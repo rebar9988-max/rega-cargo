@@ -43,6 +43,7 @@ Restyle, don't rewrite logic. Do not break routes, query params, APIs, data mode
 - Motion 150–250ms, respect prefers-reduced-motion.
 
 ## Workflow
+- Shared memory for Codex and Claude Code: start with the "CODEX — NEXT SESSION HANDOFF" section in PROJECT_MEMORY.md, then CLAUDE.md (memory lifecycle, CI rules, `npm run quality:local`). Use that memory; do not create a separate one. One agent per working tree; use your own branch or worktree.
 - Work through Steps 0–6 in order, one focused commit per step.
 - For each step run lint, type-check, tests and build, fix regressions, and write a short report with changed files and exact test URLs before continuing.
 - If a change would break a route, logic, data or a hard rule, stop and explain.
