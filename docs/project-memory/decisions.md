@@ -36,3 +36,7 @@ Append new decisions at the top. Format: date — decision — who/where (source
 ## 2026-10-13 domain exclusivity
 
 Owner explicitly requested closure of old domains and exclusive public service at https://www.rlgo.net. Detach cargo.regaplatform.com and its managed DNS; disable production/staging workers.dev, version preview URLs and Cloudflare Builds branch previews. Keep apex/HTTP canonical redirects, R&L data/bindings/architecture and REGA Platform unchanged. Staging remains deployed without public routing; future tests must use isolation or new explicit owner authorization.
+
+## R&L AI ownership and verification — 2026-10-13
+
+Owner explicitly authorized end-to-end R&L AI modernization only. Preserve identity, R&L-only purpose, isolated ownership, authorized contracts, privacy, brand and Sorani typography. Reuse selected #69 typed-chat primitives and #68 budget hardening without merging stale unrelated branches. No provider prose/private data enters the assistant response. Missing release credentials/protection visibility are external blockers, not permission to bypass safeguards. See [verification report](../ai/rl-ai-verification-20261013.md).

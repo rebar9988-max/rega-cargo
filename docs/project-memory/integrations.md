@@ -21,3 +21,9 @@ claude.ai account/session, not the repo — **re-check every session; never assu
 
 Free-tier constraints: Neon free projects (0.25–2 CU, 1 GiB/branch), Workers + Hyperdrive on the
 current plan (staging `limits.cpu_ms` implies Workers Paid on that account — verify before relying on it).
+
+## R&L AI ownership and verification — 2026-10-13
+
+This Codex session has working existing GitHub read/source tools and local Docker/Playwright. Cloudflare direct credentials are not configured; `wrangler whoami` is unauthenticated. Hosted Actions cannot start (billing annotation). GitHub protection/deployment reads return 403. Existing Workers AI Gemma and Durable Object binding/config are preserved; no new AI Gateway or paid service introduced. See [verification report](../ai/rl-ai-verification-20261013.md).
+
+Release preflight update: existing authenticated Cloudflare connector resolves the direct-CLI credential gap. Verified R&L main Builds trigger and rollback version `5791d60b`, no concurrent build. GitHub main branch resource reports `protected:false`. Hosted billing failure remains; the standing full local official-image gate policy applies. No release yet.

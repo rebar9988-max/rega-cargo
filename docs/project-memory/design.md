@@ -30,3 +30,7 @@ Below 1024px the header is one 64px brand-red row (menu, logo, search button, la
 ## Shipping separation (source change pending release, 2026-10-12)
 
 `components/shipping-page.tsx` and `styles/shipping.css` own the `/quote` presentation. `components/bazaar-page.tsx` owns the store catalogue. Shipping forms and tracking are no longer embedded in the homepage; its shopping/shipping buttons navigate to separate routes. The full quote uses route/package/options sections, stacked mobile cards and a sticky desktop input column. Pricing logic and brand assets are unchanged. See [verification report](../redesign/shipping-separation.md).
+
+## R&L AI ownership and verification — 2026-10-13
+
+AI-scoped white/red restrained cards, existing tokens and official brand; reuse existing Vazirmatn v33.003 variable WOFF2 only inside assistant/image UI. Global Noto/Inter, homepage, header/footer and assets unchanged. Only 27 intentional `/ai` baselines updated in official Playwright 1.63 image after visual review. Keep correct RTL and bidi-isolated mixed text. See [verification report](../ai/rl-ai-verification-20261013.md).

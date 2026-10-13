@@ -90,3 +90,9 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 ## 2026-10-13 public domain exclusivity — resolved routing exposure
 
 Previous configuration intentionally retained `cargo.regaplatform.com` and public staging/workers.dev. The owner's follow-up explicitly supersedes that policy: serve R&L only on `https://www.rlgo.net`, retain redirect-only apex/HTTP. Closed cargo attachment/DNS and all production/staging workers.dev/version previews; disabled Builds branch previews. Existing native previews have no routable URLs. Canonical browser/protocol checks pass; source persistence passed the full local official-image gate (455 layout tests/16 skips, zero failures) and is tracked in [PR #91](https://github.com/rebar9988-max/rega-cargo/pull/91). This is a routing/configuration change, not another application rewrite or database change. See [evidence](../verification/rlgo-exclusive-domain-20261013.md).
+
+## R&L AI ownership and verification — 2026-10-13
+
+R&L AI source defects repaired: photo selection previously processed immediately; rate-limiter failures previously permitted inference; refunded failures could reopen provider-attempt budget; stale refunds could roll UTC state backwards. Actual workerd tests cover the repairs. The first API adapter caused Nitro/SSR entrypoint export pollution; the necessary public Marketplace server contract resolved it without changing business logic. Billing/missing credentials/protection visibility block rollout. See [verification report](../ai/rl-ai-verification-20261013.md).
+
+Release preflight update: existing authenticated Cloudflare connector resolves the direct-CLI credential gap. Verified R&L main Builds trigger and rollback version `5791d60b`, no concurrent build. GitHub main branch resource reports `protected:false`. Hosted billing failure remains; the standing full local official-image gate policy applies. No release yet.

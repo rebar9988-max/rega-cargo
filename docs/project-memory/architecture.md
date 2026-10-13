@@ -54,3 +54,7 @@ DATABASE_URL='' npm run build      # empty value: never migrate a real DB by acc
 npm run cf:dry-run
 npm run test:layout:geometry       # layout geometry without pixel baselines
 ```
+
+## R&L AI ownership and verification — 2026-10-13
+
+R&L AI conversation policy/UI is owned by `src/modules/rl-ai/`; existing `src/lib/ai/` retains approved provider/vision/budget ownership. `/api/ai/chat` uses a typed planner, never provider prose. Marketplace integration is only exported `assistantProductSearch` in `src/lib/market/assistant-contract.server.ts`, with existing public filtering and no private data. AST import tests prohibit domain internals, SQL and reverse business dependencies. Existing auth/database and private workflows remain authoritative. See [verification report](../ai/rl-ai-verification-20261013.md).

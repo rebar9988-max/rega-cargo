@@ -1,0 +1,265 @@
+.root {
+  --ai-gap: var(--rl-space-3);
+  --ai-log-height: 28rem;
+  --ai-icon-size: 3.5rem;
+  --ai-font: "Vazirmatn", var(--rl-font-latin), sans-serif;
+  font-family: var(--ai-font);
+  padding-block: var(--rl-space-4);
+  display: grid;
+  gap: var(--ai-gap);
+  color: var(--rl-ink);
+}
+.welcome,
+.chat {
+  background: var(--rl-surface);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-card);
+  box-shadow: var(--rl-shadow-sm);
+}
+.welcome {
+  padding: var(--rl-space-4);
+  display: grid;
+  gap: var(--rl-space-3);
+  justify-items: start;
+}
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-2);
+}
+.identity h1 {
+  font-size: var(--text-4xl);
+  font-weight: var(--rl-weight-bold);
+  line-height: var(--rl-leading-heading);
+  margin: 0;
+}
+.symbol {
+  display: grid;
+  place-items: center;
+  background: var(--rl-action);
+  color: var(--rl-on-action);
+  inline-size: var(--ai-icon-size);
+  block-size: var(--ai-icon-size);
+  border-radius: var(--rl-radius-card);
+  box-shadow: var(--rl-button-shadow);
+}
+.symbol svg {
+  inline-size: var(--rl-space-4);
+  block-size: var(--rl-space-4);
+}
+.subtitle {
+  font-size: var(--text-xl);
+  color: var(--rl-ink);
+}
+.intro {
+  color: var(--rl-muted);
+  font-size: var(--text-lg);
+  max-inline-size: var(--rl-reading);
+  line-height: var(--rl-leading);
+}
+.shortcuts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--rl-space-2);
+}
+.shortcuts button {
+  min-block-size: var(--rl-control-h);
+  padding: var(--rl-space-3) var(--rl-space-2);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-card);
+  background: var(--rl-surface);
+  box-shadow: var(--rl-shadow-sm);
+  display: grid;
+  justify-items: center;
+  gap: var(--rl-space-2);
+  color: var(--rl-ink);
+  line-height: var(--rl-leading);
+  cursor: pointer;
+}
+.shortcutIcon {
+  display: grid;
+  place-items: center;
+  inline-size: var(--rl-space-6);
+  block-size: var(--rl-space-6);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-soft-accent);
+  color: var(--rl-accent);
+}
+.shortcutIcon svg {
+  inline-size: var(--rl-space-3);
+  block-size: var(--rl-space-3);
+}
+.shortcuts button:hover {
+  border-color: var(--rl-accent);
+}
+.root :is(button, a, textarea, input):focus-visible {
+  outline: var(--rl-focus) solid var(--rl-accent);
+  outline-offset: var(--rl-focus);
+}
+.chat {
+  overflow: hidden;
+}
+.chatHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rl-space-2);
+  padding: var(--rl-space-3);
+  border-block-end: var(--rl-border) solid var(--rl-line);
+}
+.chatHeader strong {
+  font-size: var(--text-xl);
+}
+.chatHeader p,
+.notice {
+  font-size: var(--text-sm);
+  color: var(--rl-muted);
+  line-height: var(--rl-leading);
+}
+.messages {
+  padding: var(--rl-space-3);
+  max-block-size: min(var(--ai-log-height), 55dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rl-space-2);
+  scroll-behavior: auto;
+}
+.userMessage,
+.assistantMessage {
+  padding: var(--rl-space-2) var(--rl-space-3);
+  border-radius: var(--rl-radius-card);
+  max-inline-size: 90%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  unicode-bidi: plaintext;
+  line-height: var(--rl-leading);
+}
+.userMessage {
+  align-self: flex-end;
+  background: var(--rl-soft-accent);
+  color: var(--rl-ink);
+}
+.assistantMessage {
+  align-self: flex-start;
+  background: var(--rl-raised);
+  color: var(--rl-ink);
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rl-space-1);
+  margin-block-start: var(--rl-space-2);
+}
+.links:empty {
+  display: none;
+}
+.products {
+  display: grid;
+  gap: var(--rl-space-2);
+  padding: 0;
+  list-style: none;
+  margin-block: var(--rl-space-2);
+}
+.products li {
+  padding: var(--rl-space-2);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-surface);
+}
+.products a {
+  color: var(--rl-accent);
+  text-decoration: underline;
+}
+.composer {
+  padding: var(--rl-space-3);
+  border-block-start: var(--rl-border) solid var(--rl-line);
+  display: grid;
+  gap: var(--rl-space-2);
+  padding-block-end: max(var(--rl-space-3), env(safe-area-inset-bottom));
+}
+.consent {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+  min-block-size: var(--rl-control-h);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.consent input {
+  inline-size: var(--rl-space-3);
+  block-size: var(--rl-space-3);
+  accent-color: var(--rl-action);
+  flex-shrink: 0;
+}
+.inputRow {
+  display: flex;
+  align-items: end;
+  gap: var(--rl-space-1);
+}
+.inputRow textarea {
+  min-inline-size: 0;
+  inline-size: 100%;
+  min-block-size: var(--rl-control-h);
+  max-block-size: 10rem;
+  resize: vertical;
+  padding: var(--rl-space-2);
+  border: var(--rl-border) solid var(--rl-control-line);
+  border-radius: var(--rl-radius-card);
+  background: var(--rl-surface);
+  color: var(--rl-ink);
+  font: inherit;
+  font-size: var(--text-base);
+}
+.notice svg {
+  inline-size: var(--rl-icon);
+  block-size: var(--rl-icon);
+  display: inline;
+  margin-inline-end: var(--rl-space-1);
+  vertical-align: middle;
+}
+.confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rl-space-2);
+  padding: var(--rl-space-2);
+  background: var(--rl-soft-accent);
+}
+@media (max-width: 767px) {
+  .root {
+    gap: var(--rl-space-2);
+    padding-block: var(--rl-space-2);
+  }
+  .welcome {
+    padding: var(--rl-space-3);
+  }
+  .identity h1 {
+    font-size: var(--text-3xl);
+  }
+  .subtitle {
+    font-size: var(--text-lg);
+  }
+  .shortcuts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--rl-space-1);
+  }
+  .shortcuts button:last-child {
+    grid-column: 1 / -1;
+  }
+  .shortcuts button {
+    padding: var(--rl-space-2);
+  }
+  .chatHeader,
+  .composer,
+  .messages {
+    padding: var(--rl-space-2);
+  }
+  .assistantMessage,
+  .userMessage {
+    max-inline-size: 100%;
+    padding: var(--rl-space-2);
+  }
+}

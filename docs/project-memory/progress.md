@@ -53,3 +53,9 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 ## 2026-10-13 domain exclusivity
 
 Domain exclusivity follow-up: live cargo custom-domain attachment and its DNS record removed; staging shutdown verified first (404 while www stayed 200), then production workers.dev disabled. Both workers.dev URLs return 404; apex 301 preserves path/query. Source config and permanent instructions updated to prevent re-exposure. Local typecheck, 432 unit tests/4 skips, lint 0 errors/5 existing warnings, migration-free build, both environment dry-runs, startup and npm audit passed. Official-image layout lock: 455 passed, 16 existing skips, zero failures or retries. Canonical browser verification: 10 cases passed; 31 protocol checks passed. No application/UI/database change. Source persistence: [PR #91](https://github.com/rebar9988-max/rega-cargo/pull/91), normal merge followed by existing automatic main deployment.
+
+## R&L AI ownership and verification — 2026-10-13
+
+R&L AI implementation, focused security and browser verification completed on `codex/rl-ai-domain-lock-20261013`; full official-image gate running. No production deployment claimed. Existing unmerged #68/#69 and unrelated PRs remain untouched. See the linked verification report for final gate and review handoff. See [verification report](../ai/rl-ai-verification-20261013.md).
+
+Release preflight update: existing authenticated Cloudflare connector resolves the direct-CLI credential gap. Verified R&L main Builds trigger and rollback version `5791d60b`, no concurrent build. GitHub main branch resource reports `protected:false`. Hosted billing failure remains; the standing full local official-image gate policy applies. No release yet.
