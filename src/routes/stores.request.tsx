@@ -26,6 +26,9 @@ import { marketCopy } from "@/lib/market-copy";
 import { ContactNote } from "@/components/contact-note";
 import { ProductLinkAssist } from "@/components/product-link-assist";
 
+import { JOURNEY_COPY } from "@/lib/journey-copy";
+import { useHydrated } from "@/lib/use-hydrated";
+import { REQUEST_COPY as ACCOUNT_REQUEST_COPY } from "@/lib/requests/copy";
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
     store: typeof search.store === "string" ? search.store : undefined,
@@ -44,7 +47,7 @@ export const Route = createFileRoute("/stores/request")({
 });
 
 function RequestPage() {
-  const { lang } = useI18n();
+  const { lang, t: global } = useI18n();
   const t = storeCopy(lang);
   const rc = REQUEST_COPY[lang];
   const { store: storeId, intent, item } = Route.useSearch();
@@ -58,46 +61,56 @@ function RequestPage() {
   const [notes, setNotes] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
-  const [warn, setWarn] = useState("");
   const [saved, setSaved] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
   const [failed, setFailed] = useState(false);
   const [declared, setDeclared] = useState(false);
   const ux = UX_COPY[lang];
+  const ready = useHydrated();
+  const j = JOURNEY_COPY[lang];
+  const formRef = useRef<HTMLFormElement>(null);
+  const [fieldError, setFieldError] = useState("");
+  const [signin, setSignin] = useState(false);
+  function invalid(field: string, message: string) {
+    setError(message);
+    setFieldError(field);
+    formRef.current?.querySelector<HTMLElement>(`[name="${field}"]`)?.focus();
+  }
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     if (inFlight.current) return;
-    setWarn("");
     setFailed(false);
+    setSignin(false);
     // Same checks as the server (store-request.ts); the server re-validates everything.
     let href = "";
     if (url.trim()) {
       const checked = checkProductUrl(url, store);
       if (!checked.ok) {
-        setError(checked.error === "host" ? t.wrongHost : t.invalidUrl);
+        invalid("url", checked.error === "host" ? t.wrongHost : t.invalidUrl);
         return;
       }
       href = checked.url;
     } else if (!good) {
-      setError(t.invalidUrl);
+      invalid("url", t.invalidUrl);
       return;
     }
     const count = Number(qty.trim());
     if (!/^\d{1,2}$/.test(qty.trim()) || count < QTY_MIN || count > QTY_MAX) {
-      setError(rc.badQty);
+      invalid("qty", rc.badQty);
       return;
     }
     if (phone.trim() && !normalizePhone(phone)) {
-      setError(rc.badPhone);
+      invalid("phone", rc.badPhone);
       return;
     }
     if (!declared) {
-      setError(DECLARE_COPY[lang].mustDeclare);
+      invalid("declared", DECLARE_COPY[lang].mustDeclare);
       return;
     }
     setError("");
+    setFieldError("");
     inFlight.current = true;
     setBusy(true);
     try {
@@ -123,6 +136,7 @@ function RequestPage() {
         return;
       }
       const code = result && "error" in result ? result.error : "";
+      setSignin(code === "signin");
       const message: Record<string, string> = {
         url: t.invalidUrl,
         host: t.wrongHost,
@@ -135,7 +149,21 @@ function RequestPage() {
         declare: DECLARE_COPY[lang].mustDeclare,
       };
       if (code && message[code]) {
-        setError(message[code]);
+        const field = (
+          {
+            url: "url",
+            host: "url",
+            qty: "qty",
+            dest: "dest",
+            contact: "phone",
+            declare: "declared",
+          } as Record<string, string>
+        )[code];
+        if (field) invalid(field, message[code]);
+        else {
+          setFieldError("");
+          setError(message[code]);
+        }
         return;
       }
     } catch {
@@ -151,19 +179,18 @@ function RequestPage() {
 
   return (
     <Shell>
-      <PageHeader
-        kicker={t.requestKicker}
-        title={intent === "ship" ? t.shipTitle : t.buyTitle}
-        lede={t.requestLede}
-      />
+      <PageHeader kicker={t.requestKicker} title={j.bring} lede={j.bringBody} />
       <div className="page rl-form-layout">
         {saved ? (
           <div className="rl-card">
             <h2 className="text-2xl font-semibold">{t.sentTitle}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">{t.sentBody}</p>
-            <p className="mt-4 font-sans text-sm font-semibold">
+            <p className="mt-3 text-sm leading-relaxed text-muted">{j.received}</p>
+            <p role="status" className="mt-4 font-sans text-sm font-semibold">
               <bdi dir="ltr">{saved}</bdi>
             </p>
+            <Link to="/track" search={{ id: saved }} className="rl-button" data-variant="secondary">
+              {global.nav.track}
+            </Link>
             <Link
               to="/stores"
               className="mt-6 inline-flex h-12 items-center rounded-full border border-line px-5 text-sm"
@@ -173,61 +200,68 @@ function RequestPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-6">
-          <ProductLinkAssist dest={dest} onUse={setUrl} />
-          <form onSubmit={submit} className="rl-card rl-request-form">
-            {good ? (
-              <div className="flex items-center gap-3">
-                <img
-                  {...responsiveImage(good.image, "64px")}
-                  alt=""
-                  width={64}
-                  height={64}
-                  decoding="async"
-                  className="size-16 rounded-xl object-cover"
-                />
-                <div>
-                  <p className="font-semibold">{t.goods[good.id]}</p>
-                  <p className="text-sm text-muted">{t.sample}</p>
+            <form ref={formRef} noValidate onSubmit={submit} className="rl-card rl-request-form">
+              {good ? (
+                <div className="flex items-center gap-3">
+                  <img
+                    {...responsiveImage(good.image, "64px")}
+                    alt=""
+                    width={64}
+                    height={64}
+                    decoding="async"
+                    className="size-16 rounded-xl object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold">{t.goods[good.id]}</p>
+                    <p className="text-sm text-muted">{t.sample}</p>
+                  </div>
                 </div>
-              </div>
-            ) : null}
-            {store ? (
-              <p className="font-sans text-sm text-muted">
-                {store.name} · <bdi dir="ltr">{store.host}</bdi>
-              </p>
-            ) : null}
-            <Field label={t.url} hint={t.urlHint}>
-              <input
-                className={controlClass}
-                dir="ltr"
-                type="url"
-                inputMode="url"
-                maxLength={URL_MAX}
-                value={url}
-                onChange={(event) => setUrl(event.target.value)}
-                required={!good}
-              />
-            </Field>
-            {/* Size, colour and quantity share one row on phones too. */}
-            <div className="grid grid-cols-3 gap-x-3 gap-y-4">
-              <Field label={t.size}>
+              ) : null}
+              {store ? (
+                <p className="font-sans text-sm text-muted">
+                  {store.name} · <bdi dir="ltr">{store.host}</bdi>
+                </p>
+              ) : null}
+              <nav className="rl-row" aria-label={j.bring}>
+                <Link
+                  to="/stores/request"
+                  search={{ store: storeId, item, intent: "buy" }}
+                  className="rl-chip"
+                  aria-current={intent === "buy" ? "page" : undefined}
+                >
+                  {t.buyTitle}
+                </Link>
+                <Link
+                  to="/stores/request"
+                  search={{ store: storeId, item, intent: "ship" }}
+                  className="rl-chip"
+                  aria-current={intent === "ship" ? "page" : undefined}
+                >
+                  {t.shipTitle}
+                </Link>
+              </nav>
+              <Field label={t.url} hint={good ? t.urlHint : undefined}>
                 <input
+                  name="url"
+                  aria-invalid={fieldError === "url" || undefined}
+                  aria-describedby={fieldError === "url" ? "rl-request-error" : undefined}
+                  disabled={!ready}
                   className={controlClass}
-                  maxLength={TEXT_MAX.size}
-                  value={size}
-                  onChange={(event) => setSize(event.target.value)}
-                />
-              </Field>
-              <Field label={t.color}>
-                <input
-                  className={controlClass}
-                  maxLength={TEXT_MAX.color}
-                  value={color}
-                  onChange={(event) => setColor(event.target.value)}
+                  dir="ltr"
+                  type="url"
+                  inputMode="url"
+                  maxLength={URL_MAX}
+                  value={url}
+                  onChange={(event) => setUrl(event.target.value)}
+                  required={!good}
                 />
               </Field>
               <Field label={t.qty}>
                 <input
+                  name="qty"
+                  aria-invalid={fieldError === "qty" || undefined}
+                  aria-describedby={fieldError === "qty" ? "rl-request-error" : undefined}
+                  disabled={!ready}
                   className={controlClass}
                   dir="ltr"
                   type="number"
@@ -239,87 +273,130 @@ function RequestPage() {
                   onChange={(event) => setQty(event.target.value)}
                 />
               </Field>
-            </div>
-            <Field label={t.dest}>
-              <select
-                className={controlClass}
-                value={dest}
-                onChange={(event) => setDest(event.target.value)}
+              <details className="rl-stack">
+                <summary className="rl-mobile-menu-link">{j.optional}</summary>
+                {/* Optional variants are disclosed without changing the request payload. */}
+                <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+                  <Field label={t.size}>
+                    <input
+                      disabled={!ready}
+                      className={controlClass}
+                      maxLength={TEXT_MAX.size}
+                      value={size}
+                      onChange={(event) => setSize(event.target.value)}
+                    />
+                  </Field>
+                  <Field label={t.color}>
+                    <input
+                      disabled={!ready}
+                      className={controlClass}
+                      maxLength={TEXT_MAX.color}
+                      value={color}
+                      onChange={(event) => setColor(event.target.value)}
+                    />
+                  </Field>
+                </div>
+                <Field label={t.notesLabel}>
+                  <textarea
+                    disabled={!ready}
+                    className={`${controlClass} h-28 py-3`}
+                    maxLength={TEXT_MAX.notes}
+                    value={notes}
+                    onChange={(event) => setNotes(event.target.value)}
+                  />
+                </Field>
+              </details>
+              <Field label={t.dest}>
+                <select
+                  name="dest"
+                  aria-invalid={fieldError === "dest" || undefined}
+                  aria-describedby={fieldError === "dest" ? "rl-request-error" : undefined}
+                  disabled={!ready}
+                  className={controlClass}
+                  value={dest}
+                  onChange={(event) => setDest(event.target.value)}
+                >
+                  {DESTS.map((place) => (
+                    <option key={place.id} value={place.id}>
+                      {placeName(place, lang)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label={rc.phone} hint={rc.phoneHint}>
+                <input
+                  name="phone"
+                  aria-invalid={fieldError === "phone" || undefined}
+                  aria-describedby={fieldError === "phone" ? "rl-request-error" : undefined}
+                  disabled={!ready}
+                  className={controlClass}
+                  dir="ltr"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  maxLength={24}
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                />
+              </Field>
+              <label className="flex items-start gap-3 text-sm leading-relaxed">
+                <input
+                  disabled={!ready}
+                  type="checkbox"
+                  name="declared"
+                  aria-invalid={fieldError === "declared" || undefined}
+                  aria-describedby={fieldError === "declared" ? "rl-request-error" : undefined}
+                  checked={declared}
+                  onChange={(event) => setDeclared(event.target.checked)}
+                  className="mt-0.5 size-6 shrink-0 accent-pine"
+                />
+                <span>{DECLARE_COPY[lang].declare}</span>
+              </label>
+              <ItemsLink />
+              <div aria-live="polite">
+                {error ? (
+                  <p id="rl-request-error" role="alert" className="text-sm text-clay">
+                    {error}
+                  </p>
+                ) : null}
+                {failed && !error ? <ContactNote pre={ux.failPre} post={ux.failPost} /> : null}
+                {signin ? (
+                  <Link to="/account" className="rl-text-link">
+                    {rc.signin}
+                  </Link>
+                ) : null}
+              </div>
+              <button
+                type="submit"
+                className={`${btnPrimary} disabled:opacity-60`}
+                disabled={busy || !ready}
+                aria-busy={busy || !ready}
               >
-                {DESTS.map((place) => (
-                  <option key={place.id} value={place.id}>
-                    {placeName(place, lang)}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label={t.notesLabel}>
-              <textarea
-                className={`${controlClass} h-28 py-3`}
-                maxLength={TEXT_MAX.notes}
-                value={notes}
-                onChange={(event) => setNotes(event.target.value)}
-              />
-            </Field>
-            <Field label={rc.phone} hint={rc.phoneHint}>
-              <input
-                className={controlClass}
-                dir="ltr"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                maxLength={24}
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-              />
-            </Field>
-            <label className="flex items-start gap-3 text-sm leading-relaxed">
-              <input
-                type="checkbox"
-                checked={declared}
-                onChange={(event) => setDeclared(event.target.checked)}
-                className="mt-0.5 size-6 shrink-0 accent-pine"
-              />
-              <span>{DECLARE_COPY[lang].declare}</span>
-            </label>
-            <ItemsLink />
-            <div aria-live="polite">
-              {error ? (
-                <p role="alert" className="text-sm text-clay">
-                  {error}
-                </p>
-              ) : null}
-              {failed && !error ? <ContactNote pre={ux.failPre} post={ux.failPost} /> : null}
-            </div>
-            {warn ? <p className="text-sm text-clay">{warn}</p> : null}
-            <button
-              type="submit"
-              className={`${btnPrimary} disabled:opacity-60`}
-              disabled={busy}
-              aria-busy={busy}
-            >
-              {busy ? ux.sending : t.submit}
-            </button>
-          </form>
+                {busy ? ux.sending : ACCOUNT_REQUEST_COPY[lang].submit}
+              </button>
+            </form>
+            <details className="rl-stack">
+              <summary className="rl-mobile-menu-link">{j.linkCheck}</summary>
+              <ProductLinkAssist dest={dest} onUse={setUrl} />
+            </details>
           </div>
         )}
         <aside className="rl-form-aside">
-          <div className="rl-card">
-            <h2 className="text-2xl leading-tight font-bold">{t.costs}</h2>
-            <ul className="mt-4 flex flex-col gap-3">
-              {t.rows.map((row) => (
-                <li key={row} className="flex items-baseline justify-between gap-3 text-sm">
-                  <span>{row}</span>
-                  <span className="rl-awaiting text-muted">{t.awaiting}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rl-card">
-            <h2 className="text-2xl leading-tight font-bold">{t.whoTitle}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              {intent === "ship" ? t.shipBody : t.whoBody}
-            </p>
+          <div className="rl-card rl-stack">
+            <h2 className="text-2xl leading-tight font-bold">{j.review}</h2>
+            <p className="text-sm text-muted">{intent === "ship" ? t.shipBody : t.whoBody}</p>
+            <details>
+              <summary className="rl-mobile-menu-link">{t.costs}</summary>
+              <ul className="mt-4 flex flex-col gap-3">
+                {t.rows.map((row) => (
+                  <li key={row} className="flex items-baseline justify-between gap-3 text-sm">
+                    <span>{row}</span>
+                    <span className="rl-awaiting text-muted">{t.awaiting}</span>
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
           {store && store.caution.length > 0 ? (
             <div className="rl-card">

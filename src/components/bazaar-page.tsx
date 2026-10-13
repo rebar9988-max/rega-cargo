@@ -17,6 +17,7 @@ import { readFavs, STORES, storeById, storeLogo, writeFavs } from "@/lib/stores"
 import { PUBLISHED_STORE_CATEGORIES, isPublishedCategory } from "@/lib/catalogue";
 
 /** Store catalogue only; shipping lives on /quote in ShippingPage. */
+import { JOURNEY_COPY } from "@/lib/journey-copy";
 export function BazaarPage({ home = false }: { home?: boolean } = {}) {
   const { lang } = useI18n();
   const t = storeCopy(lang),
@@ -114,7 +115,7 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
   );
   return (
     <Shell search={{ q: params.q ?? "", setQ: (q) => setFilter({ q: q || undefined }) }}>
-      <PageHeader kicker={c.marketplace} title={c.storesTitle} lede={t.lede} />
+      <PageHeader kicker={JOURNEY_COPY[lang].stores} title={c.storesTitle} lede={t.lede} />
       <section className="page rl-marketplace">
         {/* One toolbar: the filter sheet button first, then the audience chips in a single
                 scrollable row. */}

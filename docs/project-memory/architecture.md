@@ -8,9 +8,9 @@ Detail lives in [DEPLOY.md](../../DEPLOY.md); this file is the map.
 |---|---|---|
 | UI | React 19, TypeScript 5, Tailwind 4, Radix primitives, lucide icons | `src/components/`, `src/styles*` |
 | Routing / SSR | TanStack Start + TanStack Router (file routes) | `src/routes/`, generated `src/routeTree.gen.ts` |
-| Server build | Nitro v3 **beta** (`3.0.260610-beta`), preset `cloudflare-module`, Vite 8 | `vite.config.ts` |
+| Server build | Nitro v3 **beta** (`3.0.260903-beta`), preset `cloudflare-module`, Vite 8 | `vite.config.ts` |
 | Runtime | Cloudflare Workers (`nodejs_compat`), static assets via `ASSETS` | `wrangler.jsonc` |
-| Database | Postgres via `pg` + `kysely`; prod = Neon via Hyperdrive `HYPERDRIVE` (fallback `DATABASE_URL` secret); local/tests = embedded PGLite | `src/lib/db.ts`, `src/lib/db-config.server.ts` |
+| Database | Postgres via `pg` + `kysely`; prod = verified cargo on Neon via recovered Hyperdrive `HYPERDRIVE` (coordinated `DATABASE_URL` secret, 2026-10-13); local/tests = embedded PGLite | `src/lib/db.ts`, `src/lib/db-config.server.ts` |
 | Migrations | plain SQL `migrations/0002…0013`, runner `scripts/migrate.mjs`, tracked in `_migrations`. `npm run build` runs `db:migrate` **whenever `DATABASE_URL` is set** | `migrations/`, `package.json` |
 | Auth | Phone codes (WhatsApp/Twilio) → `rl_phone` session first, then Better Auth | `src/lib/phone/`, `src/lib/auth/middleware.ts` |
 | AI | Workers AI binding `AI`, model `@cf/google/gemma-4-26b-a4b-it`; budgets in Durable Object `RlAiUsage` (SQLite) | `src/lib/ai/`, `server/routes/api/ai/`, `exports.cloudflare.ts` |

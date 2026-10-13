@@ -4,9 +4,22 @@ import { BazaarPage } from "@/components/bazaar-page";
 import { PremiumHome } from "@/components/premium-home";
 import { Shell } from "@/components/shell";
 import { validateBazaarSearch } from "@/lib/bazaar-search";
+import { marketHome } from "@/lib/market/api";
 
 export const Route = createFileRoute("/")({
   validateSearch: validateBazaarSearch,
+  loaderDeps: ({ search }) => ({
+    catalogue: Boolean(
+      search.q ||
+      search.cat ||
+      search.sub ||
+      search.fav ||
+      search.who ||
+      search.store ||
+      search.country,
+    ),
+  }),
+  loader: ({ deps }) => (deps.catalogue ? null : marketHome({ data: { sort: "new", page: 1 } })),
   head: ({ match }) =>
     seo({
       lang: match.context.initialLang,
@@ -20,6 +33,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const params = Route.useSearch();
+  const market = Route.useLoaderData();
   // Preserve existing home-search URLs without mixing the catalogue with shipping.
   if (
     params.q ||
@@ -33,7 +47,7 @@ function HomePage() {
     return <BazaarPage home />;
   return (
     <Shell>
-      <PremiumHome />
+      <PremiumHome market={market} />
     </Shell>
   );
 }

@@ -1,7 +1,38 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { areaOnly, canSetJobStatus, cheapest, cleanContact, cleanImage, cleanMoney, contactHref, offerTotal, rankOffers, slugify } from "../market.ts";
+import {
+  areaOnly,
+  canSetJobStatus,
+  cheapest,
+  cleanContact,
+  cleanImage,
+  cleanMoney,
+  contactHref,
+  offerTotal,
+  rankOffers,
+  slugify,
+} from "../market.ts";
 import { MarketError } from "../market.ts";
+import { validateMarketSearch } from "./search.ts";
+import { primaryJourney } from "../navigation.ts";
+
+describe("marketplace query and journey deep links", () => {
+  it("preserves page numbers encoded as URL strings, with the existing server bounds", () => {
+    assert.equal(validateMarketSearch({ page: "2", q: "kettle" }).page, 2);
+    for (const page of ["0", "-1", "1.5", "101", "Infinity", "garbage", {}])
+      assert.equal(validateMarketSearch({ page }).page, 1);
+    assert.equal(validateMarketSearch({ page: 100 }).page, 100);
+  });
+  it("normalizes unsupported filters and distinguishes real marketplace and external requests", () => {
+    assert.equal(validateMarketSearch({ stock: "maybe", sort: "sponsored" }).stock, "");
+    assert.equal(validateMarketSearch({ sort: "sponsored" }).sort, "price");
+    assert.equal(primaryJourney("/market/kettle"), "/market");
+    assert.equal(primaryJourney("/stores/request"), "/stores/request");
+    assert.equal(primaryJourney("/stores"), "/stores/request");
+    assert.equal(primaryJourney("/account/RG-TEST"), "/account");
+    assert.equal(primaryJourney("/marketplace"), null);
+  });
+});
 
 describe("marketplace offers", () => {
   it("sorts by price plus shipping and keeps sold-out last", () => {

@@ -6,9 +6,19 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-12 ~21:15 UTC**, against `main` @ `bd03131` (PR #78 released as `2e724d37`)
+- Last memory update: **2026-10-13**, modernization branch based on `main` @ `248fe11`. See the current checkpoint below.
 
-## Current state (verified 2026-10-11 15:14–15:38 UTC)
+## Current checkpoint (2026-10-13)
+
+- Unified modernization branch: `claude/unified-journeys-20261013`. Navigation, homepage, real market discovery, request disclosure/errors and Safari submission readiness implemented; release gate in progress. [Audit, 20-reference matrix and verification](docs/redesign/unified-journeys-20261013.md).
+- **P1 marketplace database recovered live:** authorized Hyperdrive origin update to verified `old-cherry-79292410/cargo`; `/market` now renders filters and the genuine empty state. No schema/data writes, migration, project deletion or auth change. Existing fallback `DATABASE_URL` was then coordinated to the same verified cargo connection (secret-only version `2db4fb28`, no application code change). All inspected customer/product/request counts zero. Production fallback secret update succeeded; no connection value was logged or stored in the repository.
+- Live Worker configuration is `2db4fb28-b170-4c6c-bea4-d3b75db3b19a`, 100%, 2026-10-13 05:20 UTC (secret-only update; application code remains main `248fe11`). Root/market/request/track/account automated browser visits: 200, zero horizontal overflow at 390px.
+- Existing Cloudflare Builds was connected after the last memory checkpoint (trigger created 2026-10-12 21:55): auto-build `main`, `npm run build`, `npx wrangler deploy`; no build runs yet. It is the available existing release path; local Wrangler has no authentication. No new infrastructure or token was created.
+- GitHub main run `38309201291` still cannot start because of account billing; no required branch checks/protection on `main`. Follow the existing full local official-image gate before an authorized merge; never call hosted CI green.
+- Phone OTP provider credentials remain missing. No real sign-in or authenticated production submission can be verified; security gates stay intact.
+
+### Historical checkpoint (superseded where the current checkpoint above differs)
+
 
 | Area | State | Evidence |
 |---|---|---|
@@ -28,10 +38,10 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 ## Next safe continuation point
 
-- Complete the authorized PR #72 merge/deployment and post-release checks; see [verification](docs/redesign/shipping-separation.md).
+- PR #72 is already merged/live. Continue the unified modernization release gate and existing Cloudflare Builds rollout; see [current verification](docs/redesign/unified-journeys-20261013.md).
 
 1. **Owner action (I-7)** — GitHub Actions stays blocked by billing (owner chose not to pay; included minutes reset next billing cycle). Until then run the full quality gate locally in the official Playwright image before any merge (decision 2026-10-12). Once Actions runs again, re-run CI on `main` (newest head) and confirm `scope`, `verify` and `layout lock` are green; a docs-only push must show `layout lock` as skipped.
-2. **Owner action (blocker, I-1)** — agents lack the Hyperdrive permission and need owner approval for secrets/deploys. Exact steps in [issues.md](docs/project-memory/issues.md) (I-1 "Fix").
+2. **Database (I-1 resolved)** — Hyperdrive and fallback now target verified cargo. Never migrate/delete the duplicate database. Old scope/approval blockers were superseded by current connected access and the owner's end-to-end authorization.
 3. After the owner's change: run the verification recipe in [deployments.md](docs/project-memory/deployments.md) ("Which database does production use?") and the post-deploy checklist; record results here.
 4. Open PRs — see [progress.md](docs/project-memory/progress.md).
 5. PR #57 (CLS, `5a2c2ecc`) and PR #75 (Nitro, `4242774e`) are live, both merged on a reduced local gate (no official image, screenshots or WebKit: Docker has no reachable daemon in the agent environment; decisions.md). Open: I-9 (staging-only test race, low).

@@ -4,9 +4,23 @@ import { LANGS } from "./langs.ts";
 import { SEO_MESSAGES } from "./seo-messages.ts";
 import { productLinkCopy } from "./product-link/copy.ts";
 import { redesignCopy } from "./redesign-copy.ts";
+import { JOURNEY_COPY } from "./journey-copy.ts";
 
 const ids = LANGS.map((l) => l.id);
 const others = ids.filter((id) => id !== "en");
+
+test("unified journey copy preserves all seven languages and truthful manual-review wording", () => {
+  for (const id of ids) {
+    const copy = JOURNEY_COPY[id];
+    assert.deepEqual(Object.keys(copy).sort(), Object.keys(JOURNEY_COPY.en).sort());
+    for (const text of Object.values(copy)) assert.ok(text.trim());
+    assert.equal(copy.title.split("\n").length, 2);
+    assert.match(copy.received, /R&L/);
+    if (id !== "en") assert.notEqual(copy.body, JOURNEY_COPY.en.body);
+  }
+  assert.equal(JOURNEY_COPY.ckb.shop, "بازاڕ بکە");
+  assert.equal(JOURNEY_COPY.ckb.bring, "کاڵام بۆ بهێنەوە");
+});
 
 test("every language has the same SEO pages, with non-empty title and description", () => {
   const paths = Object.keys(SEO_MESSAGES.en);
