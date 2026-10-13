@@ -53,28 +53,25 @@ test("repo config: production has AI on with cap; staging is a separate worker w
   const json = JSON.parse(src.replace(/^\s*\/\/.*$/gm, ""));
   const { production, environments } = splitEnvironments(json);
   assert.equal(production.name, "rega-cargo");
-  // Production lives on its custom domain; staging keeps workers.dev.
-  // workers.dev stays on only for the legacy-host 301 (scripts/legacy-host.mjs).
-  assert.equal(production.workers_dev, true);
+  // Only the canonical domain serves R&L; apex redirects, all public test URLs are off.
+  assert.equal(production.workers_dev, false);
   assert.equal(production.preview_urls, false);
-  // Primary www.rlgo.net; apex and the previous domain stay attached so their
-  // redirects keep working. Never the REGA hosts (apex/www.regaplatform.com).
+  // Retired cargo and unrelated REGA domains must never be attached again.
   assert.deepEqual(production.routes, [
     { pattern: "www.rlgo.net", custom_domain: true },
     { pattern: "rlgo.net", custom_domain: true },
-    { pattern: "cargo.regaplatform.com", custom_domain: true },
   ]);
   assert.equal(production.vars.BETTER_AUTH_URL, "https://www.rlgo.net");
   assert.equal(production.vars.SITE_URL, "https://www.rlgo.net");
-  assert.equal(typeof production.vars.RL_LEGACY_REDIRECT_HOSTS, "string");
+  assert.equal(production.vars.RL_LEGACY_REDIRECT_HOSTS, "cargo.regaplatform.com");
   assert.equal(production.vars.RL_AI_ENABLED, "true");
   assert.equal(production.vars.RL_AI_DAILY_CAP, "200");
   assert.deepEqual(production.ai, { binding: "AI" });
   assert.equal(production.durable_objects.bindings[0].class_name, "RlAiUsage");
   assert.equal(environments.staging.name, "rega-cargo-staging");
   assert.deepEqual(environments.staging.routes, []);
-  assert.equal(environments.staging.workers_dev, true);
-  assert.equal(environments.staging.preview_urls, true);
+  assert.equal(environments.staging.workers_dev, false);
+  assert.equal(environments.staging.preview_urls, false);
   assert.equal(environments.staging.vars.RL_AI_ENABLED, "true");
   assert.deepEqual(production.hyperdrive, [
     { binding: "HYPERDRIVE", id: "795013d06b38408e87552686a6045291" },

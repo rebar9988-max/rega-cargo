@@ -34,15 +34,15 @@ Detail lives in [DEPLOY.md](../../DEPLOY.md); this file is the map.
 
 | Env | Worker | Domain | Database |
 |---|---|---|---|
-| Production | `rega-cargo` | primary `www.rlgo.net`, apex redirects; previous `cargo.regaplatform.com` remains attached (PR #89 live) | Hyperdrive `795013d06b38408e87552686a6045291` → see [issues.md](issues.md) I-1 |
-| Staging | `rega-cargo-staging` | workers.dev | none declared in `wrangler.jsonc` (its `DATABASE_URL` secret not checked) |
+| Production | `rega-cargo` | primary `www.rlgo.net`, apex redirects; retired cargo detached; workers.dev/version previews off | Hyperdrive `795013d06b38408e87552686a6045291` → see [issues.md](issues.md) I-1 |
+| Staging | `rega-cargo-staging` | no public URL (workers.dev/version previews off) | none declared in `wrangler.jsonc` (its `DATABASE_URL` secret not checked) |
 | Local | `npm run dev` :8080 | — | PGLite + `migrations/dev/seed.sql` |
 
 **Never** touch the REGA Worker `rega-platform`, `www.regaplatform.com`/apex, or Neon project `lucky-glitter-73195208` (rega-platform).
 
 ## Environment variable names (no values here, ever)
 
-Plain vars (`wrangler.jsonc`): `BETTER_AUTH_URL`, `SITE_URL`, `VITE_GROK_EXTENSIONS`, `RL_AI_ENABLED`, `RL_AI_DAILY_CAP`, `PRODUCT_LINK_ENABLED`, staging `RL_NOINDEX`.
+Plain vars (`wrangler.jsonc`): `BETTER_AUTH_URL`, `SITE_URL`, `VITE_GROK_EXTENSIONS`, `RL_AI_ENABLED`, `RL_AI_DAILY_CAP`, `PRODUCT_LINK_ENABLED`, `RL_LEGACY_REDIRECT_HOSTS`, staging `RL_NOINDEX`.
 Secrets (`wrangler secret put`): `BETTER_AUTH_SECRET`, `DATABASE_URL`, `QUOTE_SECRET`, `PHONE_CODE_SECRET`, `WHATSAPP_*`, `TWILIO_*`, `TURNSTILE_SECRET`, `TURNSTILE_SITE_KEY`, `AI_TOKEN_SECRET`, `IQD_PER_EUR`, `GROK_AUTH_*`. Live production secrets observed 2026-10-11: `BETTER_AUTH_SECRET`, `DATABASE_URL`, `QUOTE_SECRET` only — so phone sign-in cannot send codes.
 Agent session env (names only): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `GITHUB_TOKEN`.
 

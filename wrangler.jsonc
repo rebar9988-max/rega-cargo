@@ -12,24 +12,18 @@
   "compatibility_date": "2025-09-15",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
-  // Production lives on its custom domain. workers.dev stays enabled only so
-  // the old URL rega-cargo.<subdomain>.workers.dev can 301 visitors (and
-  // installed PWAs, via a self-unregistering /sw.js) to www.rlgo.net
-  // — see scripts/legacy-host.mjs; it never serves the app. Version preview
-  // URLs are off for production. Staging below keeps workers.dev.
-  "workers_dev": true,
+  // Owner decision 2026-10-13: public R&L exists only on www.rlgo.net.
+  // Disable workers.dev and version previews, including staging below.
+  "workers_dev": false,
   "preview_urls": false,
   // Production custom domains. Primary: www.rlgo.net (owner decision
   // 2026-10-13, zone rlgo.net in this account); rlgo.net 301s to it
-  // (scripts/legacy-host.mjs). cargo.regaplatform.com (attached 2026-10-09) is
-  // the previous production domain and stays attached so its redirect keeps
-  // working. Only that one regaplatform.com hostname — the apex and
-  // www.regaplatform.com belong to the REGA worker `rega-platform` and must
-  // never be listed here.
+  // (scripts/legacy-host.mjs). The retired cargo.regaplatform.com is detached.
+  // regaplatform.com and www.regaplatform.com belong to the separate REGA
+  // worker `rega-platform` and must never be listed here.
   "routes": [
     { "pattern": "www.rlgo.net", "custom_domain": true },
-    { "pattern": "rlgo.net", "custom_domain": true },
-    { "pattern": "cargo.regaplatform.com", "custom_domain": true }
+    { "pattern": "rlgo.net", "custom_domain": true }
   ],
 
   // Database (Postgres) via Hyperdrive — see DEPLOY.md. Production only:
@@ -56,9 +50,9 @@
     // Canonical origin for <link rel=canonical>, robots.txt and sitemap.xml.
     // Primary domain www.rlgo.net since 2026-10-13 (owner decision).
     "SITE_URL": "https://www.rlgo.net",
-    // Extra hosts 301'd to www.rlgo.net (comma-separated, see
-    // scripts/legacy-host.mjs). Empty = cargo.regaplatform.com still serves.
-    "RL_LEGACY_REDIRECT_HOSTS": ""
+    // Defense for stale routing during retirement: never serve the app on
+    // cargo.regaplatform.com even if a retired attachment is restored.
+    "RL_LEGACY_REDIRECT_HOSTS": "cargo.regaplatform.com"
   },
 
   // R&L AI: Workers AI binding + strongly consistent usage counter (daily cap and
@@ -70,10 +64,13 @@
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RlAiUsage"] }],
 
   // Per-IP rate limit for quote signing and tracking lookups (20 / 60 s per key).
-  "ratelimits": [{ "name": "RL_LIMIT", "namespace_id": "1101", "simple": { "limit": 20, "period": 60 } }],
+  "ratelimits": [
+    { "name": "RL_LIMIT", "namespace_id": "1101", "simple": { "limit": 20, "period": 60 } }
+  ],
 
-  // Existing Cloudflare Builds runs `wrangler preview` for feature branches.
-  // Preview bindings/vars are independent: no production database, secrets,
+  // Cloudflare Builds branch previews are disabled in the account settings.
+  // Keep isolated preview vars for safety if a manual preview is attempted:
+  // no production database, secrets,
   // AI inference or retailer fetches. Primary journeys render truthful
   // unavailable states until an explicitly configured test backend exists.
   "previews": {
@@ -86,16 +83,15 @@
     }
   },
 
-  // Staging: separate Worker `rega-cargo-staging` on workers.dev only (no
+  // Staging: separate Worker `rega-cargo-staging` with no public URL (no
   // routes, no custom domain, no database, its own secrets). Deploy with
   // `npm run deploy:staging`. Bindings and vars are not inherited from the
   // top level, so everything staging needs is listed here.
   "env": {
     "staging": {
       "name": "rega-cargo-staging",
-      "workers_dev": true,
-      // Explicit, so staging doesn't inherit production's `false`.
-      "preview_urls": true,
+      "workers_dev": false,
+      "preview_urls": false,
       "routes": [],
       // Only accepted on Workers Paid; deploying this verifies the plan.
       "limits": { "cpu_ms": 30000 },
@@ -115,7 +111,9 @@
         "bindings": [{ "name": "RL_AI_USAGE", "class_name": "RlAiUsage" }]
       },
       "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RlAiUsage"] }],
-      "ratelimits": [{ "name": "RL_LIMIT", "namespace_id": "1102", "simple": { "limit": 20, "period": 60 } }]
+      "ratelimits": [
+        { "name": "RL_LIMIT", "namespace_id": "1102", "simple": { "limit": 20, "period": 60 } }
+      ]
     }
   }
 }

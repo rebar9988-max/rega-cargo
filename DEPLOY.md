@@ -157,44 +157,36 @@ Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
    ```bash
    npm ci && npm run build && npx wrangler deploy
    ```
-6. **Verify on staging first (`https://rega-cargo-staging.<account-subdomain>.workers.dev`),
-   then on `https://cargo.regaplatform.com`** (production has no workers.dev URL): home,
+6. **Verify in isolation first, then on `https://www.rlgo.net`:** home,
    `/quote`, `/track`, `/customs`, `/contact`, `/stores`, `/market`,
-   `/market/<slug>`; all 7 languages (ckb/ar/fa must be RTL); mobile viewport;
-   phone sign-in end to end; `npx wrangler tail rega-cargo` shows no
-   `exceededCpu` / exceptions.
-7. **Custom domain — only after step 6 passes:** Workers & Pages → `rega-cargo`
-   → Settings → Domains & Routes → Add → Custom domain →
-   `cargo.regaplatform.com` (Cloudflare creates the DNS record for this new
-   hostname only; existing records are untouched). Or add to `wrangler.jsonc`:
-   `"routes": [{ "pattern": "cargo.regaplatform.com", "custom_domain": true }]`
-   and redeploy. Requires a token with Zone DNS edit + Workers Routes edit.
-   **Status: done 2026-10-09** — `cargo.regaplatform.com` is attached to
-   `rega-cargo` (production only; staging has `routes: []`) and is listed in
-   `wrangler.jsonc`. Since the owner confirmed the new address, the old
-   `rega-cargo.<subdomain>.workers.dev` URL never serves the app: a wrapper in
-   front of Nitro (`scripts/legacy-host.mjs`, wired in by
-   `scripts/wrap-legacy-host.mjs` after `vite build`) answers every request on
-   that host with a 301 (308 for non-GET) to the same path + query on
-   `https://cargo.regaplatform.com`, and `/sw.js` with a no-store service worker
-   that clears caches, unregisters itself and navigates open windows/installed
-   PWAs to the new domain. `assets.run_worker_first` routes `/sw.js`,
-   `/manifest.webmanifest` and `/offline.html` through the Worker so the asset
-   server can't serve them on the old host. Production keeps `workers_dev: true`
-   for this redirect and has `preview_urls: false`. Staging
-   (`rega-cargo-staging`) stays on workers.dev and is passed through untouched.
-   Note: a code rollback (`wrangler rollback`) to a version before the redirect
-   would serve the app on the old host again.
+   `/market/<slug>`, `/stores/request`; all languages and mobile viewport. Verify real phone
+   sign-in only when provider credentials and a test account exist.
+   Check Worker logs for exceptions and `exceededCpu`.
+7. **Public domain exclusivity (owner decision 2026-10-13):** only
+   `www.rlgo.net` serves R&L. `rlgo.net` and HTTP variants redirect directly
+   to canonical HTTPS www with the same path/query (301 GET/HEAD, 308 other
+   methods). Production `workers_dev: false`, `preview_urls: false`;
+   custom domains are only `www.rlgo.net` and redirect-only `rlgo.net`.
+   The retired `cargo.regaplatform.com` attachment and its managed DNS
+   record are removed. Do not recreate them.
+   Staging keeps its separate Worker, bindings and secrets, but has no
+   public URL: `routes: []`, `workers_dev: false`, `preview_urls: false`.
+   Test it locally or through an explicitly authorized isolated mechanism;
+   do not expose another hostname without owner approval. Cloudflare Builds
+   branch previews are also disabled in account settings. The wrapper keeps
+   its legacy redirect/SW recovery implementation as defense for stale
+   routing, while retired workers.dev URLs are unavailable at the edge.
+   Never modify `rega-platform`, `regaplatform.com` or `www.regaplatform.com`.
 
 ## Rollback
 
 * **Bad deploy:** `npx wrangler deployments list --name rega-cargo` then
   `npx wrangler rollback <version-id> --name rega-cargo` (or Dashboard →
   `rega-cargo` → Deployments → Rollback). Instant, no rebuild.
-* **Take Cargo offline without touching REGA:** remove the
-  `cargo.regaplatform.com` custom domain from the `rega-cargo` Worker (DNS
-  record for that hostname goes with it), or `npx wrangler delete rega-cargo`.
-  `rega-platform` and `www.regaplatform.com` are unaffected either way.
+* **Routing rollback:** preserve domain exclusivity when rolling back code.
+  Keep production/staging workers.dev and previews disabled and cargo detached.
+  Recheck live domains/subdomain flags after any rollback. Never delete the
+  Worker or change database resources to repair routing.
 * **Database:** migrations are forward-only. Take a provider snapshot/branch
   (Neon: branch; Supabase: backup) **before** running `db:migrate` in
   production; restore from it to roll back. Never drop production tables.
@@ -272,7 +264,7 @@ Apply in filename order with `DATABASE_URL=… npm run db:migrate`:
 
 ## Branch previews (2026-10-13)
 
-Existing Cloudflare Builds feature branches run `npm run build` then `npx wrangler preview`.
+Cloudflare Builds branch previews are disabled by the owner domain-exclusivity decision. Historical branch preview records are retained and have no routable URLs. Do not re-enable automatic preview builds or public preview routing.
 The root `previews` block contains explicit noindex vars and supplies no database/secrets/AI bindings.
 Primary journey pages render truthful unavailable states without a test backend; authenticated writes and inference are unavailable there. Production/staging bindings and secrets are unchanged.
 Preview resources do not inherit production bindings; see [Cloudflare configuration](https://developers.cloudflare.com/workers/previews/configuration/) and [isolation](https://developers.cloudflare.com/workers/previews/resources/). Existing Preview Base was verified empty. No new DB or persistent token provisioned.
