@@ -57,8 +57,16 @@ test("repo config: production has AI on with cap; staging is a separate worker w
   // workers.dev stays on only for the legacy-host 301 (scripts/legacy-host.mjs).
   assert.equal(production.workers_dev, true);
   assert.equal(production.preview_urls, false);
-  assert.deepEqual(production.routes, [{ pattern: "cargo.regaplatform.com", custom_domain: true }]);
-  assert.equal(production.vars.SITE_URL, "https://cargo.regaplatform.com");
+  // Primary www.rlgo.net; apex and the previous domain stay attached so their
+  // redirects keep working. Never the REGA hosts (apex/www.regaplatform.com).
+  assert.deepEqual(production.routes, [
+    { pattern: "www.rlgo.net", custom_domain: true },
+    { pattern: "rlgo.net", custom_domain: true },
+    { pattern: "cargo.regaplatform.com", custom_domain: true },
+  ]);
+  assert.equal(production.vars.BETTER_AUTH_URL, "https://www.rlgo.net");
+  assert.equal(production.vars.SITE_URL, "https://www.rlgo.net");
+  assert.equal(typeof production.vars.RL_LEGACY_REDIRECT_HOSTS, "string");
   assert.equal(production.vars.RL_AI_ENABLED, "true");
   assert.equal(production.vars.RL_AI_DAILY_CAP, "200");
   assert.deepEqual(production.ai, { binding: "AI" });

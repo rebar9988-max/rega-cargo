@@ -7,6 +7,9 @@ import { createHtmlCache } from "../../src/lib/html-cache";
 import { serviceFromCookieHeader } from "../../src/lib/service-choice";
 
 const ALLOWED_HOSTS = [
+  "www.rlgo.net",
+  // Previous production domain; serves the app until it is switched to a 301
+  // via RL_LEGACY_REDIRECT_HOSTS (scripts/legacy-host.mjs).
   "cargo.regaplatform.com",
   "rega-cargo-staging.rebar9988.workers.dev",
 ];

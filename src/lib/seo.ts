@@ -5,7 +5,7 @@ import { seoCopy } from "./seo-copy";
  * the Worker var SITE_URL (set per environment in wrangler.jsonc) so it can be
  * switched to a custom domain later without code changes.
  */
-const FALLBACK_ORIGIN = "https://cargo.regaplatform.com";
+const FALLBACK_ORIGIN = "https://www.rlgo.net";
 
 export function siteOrigin(): string {
   if (typeof window !== "undefined") return window.location.origin;
