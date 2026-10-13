@@ -10,6 +10,10 @@ Procedures (build, secrets, go-live, rollback): [DEPLOY.md](../../DEPLOY.md). De
 - Draft PRs skip CI until `ready_for_review`. A newer push to the same PR cancels its older run; `main` pushes and manual runs use a per-run concurrency group and are never cancelled.
 - No deployment job in GitHub Actions. **Verified 2026-10-13:** existing Cloudflare Builds is now connected to `rega-cargo`/this GitHub repo; production main auto-build uses `npm run build` + `npx wrangler deploy`, with no build env vars. Trigger `4b2f7874-0d8a-45d4-85d5-c322060ef6a1` was created 2026-10-12 21:55. No configuration change by this session.
 
+## 2026-10-13 unified release checkpoint
+
+PR #82 code `c6941ac`: local typecheck, 426 unit tests (4 existing skips), lint 0 errors/5 warnings, build with no DATABASE_URL, dry run and official-image no-update lock (432 pass / 12 skips / 0 fail) passed. Staging version `f04cd880-970e-4710-b98b-0638008952c5`, deployment `47fdfd40-b4bb-4503-83d3-7efeb493df7b`, 100%, via existing Workers API; 57 browser cases and 30 axe checks passed. Static headers, secrets, bindings, routes and DO namespaces preserved. Production code rollout pending. Cloudflare Builds preview `013e0da9` failed fetching the private repository at 05:54 before build; do not call it a code failure or a passing hosted gate.
+
 ## 2026-10-13 infrastructure recovery (no Worker code release)
 
 Production Hyperdrive origin repointed to verified `old-cherry-79292410/cargo` using the existing authorized connected API. Original credentials available during the recovery for rollback. No migrations, data writes, project deletion, auth changes. Existing fallback secret then coordinated to cargo: secret-only production version `2db4fb28-b170-4c6c-bea4-d3b75db3b19a`, 100%, 05:20 UTC; app code remains main `248fe11`. Prior configuration/version is `1ec140d1`. Real public market now renders filters/empty state. The previous snapshot below is historical.

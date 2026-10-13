@@ -5,9 +5,9 @@ Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 
 ## Current work (2026-10-13)
 
-- `claude/unified-journeys-20261013`: unified real marketplace + Bring For Me + tracking, small reusable changes and existing contract preservation. [Report](../redesign/unified-journeys-20261013.md). Typecheck, 420 unit tests (4 existing skips), lint 0 errors/5 existing warnings, migration-free build and Worker dry run pass at the implementation checkpoint; final browser/visual release gate in progress.
+- `claude/unified-journeys-20261013`: unified real marketplace + Bring For Me + tracking, small reusable changes and existing contract preservation. [Report](../redesign/unified-journeys-20261013.md). PR #82: typecheck, 426 unit tests (4 existing skips), lint 0 errors/5 existing warnings, migration-free build and Worker dry run pass. Final official-image no-update lock 432 passed / 12 intentional skips / 0 failed on code `c6941ac`; staging `f04cd880` passed 57 browser cases and 30 axe checks. Reviewed translations adopted from #64/#66 without merging their branches. Production release pending.
 - Hyperdrive P1 root cause fixed live; real marketplace now healthy/empty. No database records or schema changed.
-- Existing Cloudflare Builds auto-deploys main; check release outcome after the gated merge. Missing phone-provider credentials remain an external blocker for authenticated production journeys.
+- Cloudflare Builds preview failed fetching the private repository before build; existing authorized Workers API deployed staging with inherited bindings/secrets/headers. Use that existing release workflow after the gated merge; a bounded automatic retry will verify the integration. Missing phone-provider credentials remain an external blocker for authenticated production journeys.
 - Existing PR #79 also edits `/stores/request`; it remains untouched. This task preserves its branch rather than silently merging unverified work.
 
 ## Historical active / open PRs (recheck GitHub before acting)

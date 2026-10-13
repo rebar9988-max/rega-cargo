@@ -51,7 +51,7 @@ Ten primary groups live in `src/lib/catalogue.ts` (order, subcategories, search 
 
 **Navigation (2026-10-13):** primary journeys are Home → `/market` (real products/offers) → `/stores/request` (Bring For Me) → `/track` → Help (`/contact`). The five mobile destinations end with `/account`; Help stays in the menu/footer. `/stores` remains the external retailer catalogue, not synchronized inventory. Its desktop category panel, mobile strip and collapsed menu taxonomy still read the same ten groups (`src/lib/navigation.ts` → `catalogue.ts`); legitimate categories and `cat/sub/who/fav` links are preserved. Global navigation does not repeat the category wall. See [unified journey verification](docs/redesign/unified-journeys-20261013.md).
 
-New Sorani, Arabic and Persian strings carry `TODO(translate-review)`; Kurmanji (`ku`) uses English catalogue copy until reviewed.
+New Sorani, Arabic and Persian strings carry `TODO(translate-review)`; all seven catalogue/store/market dictionaries now have complete translated keys; native review remains required for the marked additions (PR #64/#66 dictionaries adopted in unified PR #82).
 
 **Layout baselines:** colours and buttons changed, so `tests/layout/__screenshots__` must be re-rendered in CI (run the "Cargo quality gate" workflow with `update_baselines`), then committed. Geometry checks (`--ignore-snapshots`) pass without it.
 
