@@ -61,7 +61,7 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
   - On `main` those extra exports happen to be functions or objects (`challenge_exports`, `ipKey`, `verifyAiToken`, …), which workerd accepts.
   - Importing `src/lib/rate-limit.server` from `server/routes/api/ai/challenge.ts` shifted the chunks, so the string `APPEARANCE_SCRIPT` became an entry export.
 - `wrangler deploy --dry-run` does **not** detect this. The layout-lock web server and real startup do.
-- Fix (`cd0251c`): the route applies the same limit inline instead of importing the shared module.
+- Fix (`cd0251c`): the route applies the same limit inline instead of importing the shared module. Verified 2026-10-13: the local workerd and staging `c33cd8c3` both start, and the entry exports match `main`.
 - Guard idea, not implemented: after build, check the final `export { … }` of `.output/server/index.mjs`.
 - Until such a guard exists: after touching imports in `server/` or `exports.cloudflare.ts`, run a startup check (the layout geometry, or `npm run cf:dev`).
 

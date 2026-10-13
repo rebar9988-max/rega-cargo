@@ -10,13 +10,19 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 ## CODEX — NEXT SESSION HANDOFF
 
-Written by Claude Code on 2026-10-13 ~10:05 UTC, updated ~10:40 UTC for Codex or any later agent. Read `AGENTS.md`, `CLAUDE.md`, this file and the topic files you need **before acting**, then re-check every "verified" fact below against the live state. **V** = verified by the writing session at the time given, **H** = historical (copied from older memory, not re-checked), **A** = assumption.
+Written by Claude Code on 2026-10-13 ~10:05 UTC, updated ~10:55 UTC for Codex or any later agent. Read `AGENTS.md`, `CLAUDE.md`, this file and the topic files you need **before acting**, then re-check every "verified" fact below against the live state. **V** = verified by the writing session at the time given, **H** = historical (copied from older memory, not re-checked), **A** = assumption.
 
 **Where things stand**
 - V 09:58 UTC: `main` @ `5d39d9d` (PR #84). Task branch `claude/local-quality-gate-20261013`; head = the commit that adds this handoff (find it with `git log -1 origin/claude/local-quality-gate-20261013`); its code commit is `e67c51f`.
 - V: [PR #85](https://github.com/rebar9988-max/rega-cargo/pull/85) is **draft**, open, `mergeable_state: clean`. Actions runs 221–222 on it were `skipped` (drafts start no job, so they cost no minutes).
 - V 10:35 UTC: [PR #87](https://github.com/rebar9988-max/rega-cargo/pull/87) (**draft**, branch `claude/security-fixes-port-20261013`, head `cd0251c`) ports the five security commits onto `main` @ `5d39d9d`, plus one port fix (see I-12).
-- V: [PR #86](https://github.com/rebar9988-max/rega-cargo/pull/86) (draft, `claude/integrations-refresh-20261013`) is **another agent's** concurrent docs-only work. It also edits `docs/project-memory/integrations.md`, which PR #85 changes too, so whichever merges second resolves that conflict. Do not push to #86.
+- V: [PR #86](https://github.com/rebar9988-max/rega-cargo/pull/86) (draft, `claude/integrations-refresh-20261013`) is **another agent's** concurrent docs-only work. Trial merges at 10:35 UTC showed a real conflict in `docs/project-memory/integrations.md` between #86 and #85. To resolve it without overwriting the other agent, PR #85 now leaves that file as on `main`; its Docker and browser facts live in this handoff and in I-7. #87 merges cleanly on top of #85. Do not push to #86.
+- V 10:20 UTC: [PR #88](https://github.com/rebar9988-max/rega-cargo/pull/88) (`claude/rlgo-domain-migration`, **not draft**) belongs to another agent and makes `www.rlgo.net` the primary production domain. It is outside this task's scope; nobody from this task touched it. Coordinate deploys with it: check the live deployments of both Workers before any deploy.
+- V 10:30 UTC: **staging `rega-cargo-staging` runs PR #87** (`cd0251c`), version `c33cd8c3-54fe-4bb9-b99e-110346c1fa4d`, deployed with `wrangler deploy -c .output/server/wrangler.staging.json` and message "PR #87 cd0251c security port - staging verification only".
+  - Bindings, vars and secrets are unchanged.
+  - Rollback: `npx wrangler rollback 46a42df1-4418-4712-ab95-bc081faa377c --name rega-cargo-staging`.
+  - Production is untouched (`db08bc5b`).
+  - Staging evidence is in PR #87 and deployments.md.
 - V: production Worker `rega-cargo` serves version `db08bc5b` at 100% (07:43 UTC, `triggered_by: secret`), on top of code version `fd88780b` (07:03 UTC). That `fd88780b` is the build of `5d39d9d` is **A**, inferred from timing. Read-only HTTP check at 09:35 UTC: required routes 200, banned search empty. Nothing was deployed by Claude Code on 2026-10-13; PR #85 does not change the Worker, so it needs **no deploy** after merge.
 
 **Completed — do not repeat**
@@ -45,7 +51,11 @@ Written by Claude Code on 2026-10-13 ~10:05 UTC, updated ~10:40 UTC for Codex or
    - Exit 1: fix the failure.
    - Exit 2: still PARTIAL — keep the PR in draft.
 3. The owner merges PR #85, or authorizes the merge in chat (`main` has no branch protection on this plan, so the authorization is the gate). Nothing to deploy afterwards.
-4. Security commits: **done as draft PR #87** — do not re-port them.
+4. Security commits: **done as draft PR #87, reviewed and staging-verified** (see PR #87 for the evidence table) — do not re-port, re-review or re-deploy staging unless the code changes.
+   - Still BLOCKED: official-image gate (screenshots/WebKit), hosted CI, owner approval.
+   - Still unverified on a real runtime:
+     - per-IP challenge limit: the agent egress IP rotates, so check it from one fixed IP;
+     - `__Host-rl_phone` on a live sign-in: needs an OTP provider.
    - Remaining: on a Docker machine run the full gate on `claude/security-fixes-port-20261013`. `quality:local` lives on #85, so either merge #85 first or run its steps by hand.
    - Then the owner reviews.
    - After an authorized merge, deploy staging first, then production through the existing Cloudflare Builds path. That deploy is a Worker change and needs no migration or new binding. Never deploy while another deploy is running: check `GET .../workers/scripts/rega-cargo/deployments` first.
