@@ -28,7 +28,7 @@ export const orderQuote = createServerFn({ method: "POST" })
   .validator((input: Record<string, unknown>) => input)
   .handler(async ({ data }) => {
     const { allow, serverSecret } = await import("@/lib/rate-limit.server");
-    const { verifyQuote } = await import("@/lib/quote-token");
+    const { quoteBookingKey, verifyQuote } = await import("@/lib/quote-token");
     const { setResponseStatus } = await import("@tanstack/react-start/server");
     if (!(await allow("book"))) {
       setResponseStatus(429);
@@ -54,7 +54,14 @@ export const orderQuote = createServerFn({ method: "POST" })
     }
     const contents = typeof data.contents === "string" ? data.contents.slice(0, 20) : "personal";
     const { submitRequest } = await import("./handlers.server");
-    return submitRequest(userId, "quote", { ...quote, contents, declared: true }, Math.round(quote.total));
+    // One booking per signed quote: replaying the same token returns the first request.
+    return submitRequest(
+      userId,
+      "quote",
+      { ...quote, contents, declared: true },
+      Math.round(quote.total),
+      { idempotencyKey: quoteBookingKey(String(data.quote)) },
+    );
   });
 
 /**

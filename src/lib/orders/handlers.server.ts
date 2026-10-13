@@ -2,7 +2,7 @@ import { getSql } from "@/lib/db";
 import { auditLog, checkTextServer } from "@/lib/compliance/service.server";
 import { MarketError, cleanOptional, cleanText } from "@/lib/market";
 import { phoneMe } from "@/lib/phone/session.server";
-import { newTrackingId, normalizeTrackingId } from "./tracking-id";
+import { newTrackingId, publicTrackingId } from "./tracking-id";
 
 /** Version of the restricted-items declaration text the user accepted. */
 export const DECLARATION_VERSION = "2026-10-09";
@@ -140,7 +140,7 @@ export async function submitRequest(
 }
 
 export async function lookupTracking(id: string) {
-  const code = normalizeTrackingId(id);
+  const code = publicTrackingId(id);
   if (!code) return { error: "notfound" as const };
   try {
     const sql = await getSql();

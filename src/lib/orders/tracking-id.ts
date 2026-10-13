@@ -15,3 +15,13 @@ export function normalizeTrackingId(input: string): string | null {
   const code = input.trim().toUpperCase().slice(0, 40);
   return /^RG-[A-Z0-9]{4,}(-[A-Z0-9]{4})*$/.test(code) ? code : null;
 }
+
+/**
+ * The anonymous /track lookup only accepts the 60-bit form. Legacy RG-XXXXX
+ * codes (about a million possibilities) could be enumerated, so they stay
+ * visible to their owner and staff in the account pages only.
+ */
+export function publicTrackingId(input: string): string | null {
+  const code = normalizeTrackingId(input);
+  return code && /^RG-[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}$/.test(code) ? code : null;
+}
