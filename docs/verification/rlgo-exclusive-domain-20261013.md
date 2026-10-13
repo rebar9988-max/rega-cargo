@@ -16,7 +16,7 @@ Source `wrangler.jsonc` disables production/staging workers.dev and version prev
 - Twelve closed-endpoint checks returned 404: home, stores/query, service worker, logo asset and AI status on both production/staging workers.dev, plus current production/staging version preview URLs.
 - Ten complete-page checks passed after closure: home and Bring For Me request on WebKit/iPhone emulation, Chromium mobile, actual Chrome, Firefox and Edge. Hydrated controls and main content rendered; zero page/console errors, failed requests, bad HTTP responses or horizontal overflow. Browser TLS verification remained enabled.
 - All 31 canonical protocol checks passed: full HTML/main/footer and CSP nonce match on primary journeys, assets, fonts, SW v12, sitemap/robots and AI status; exact one-hop GET 301 and POST 308 for HTTP/apex, preserving encoded paths/query strings.
-- Typecheck, 432 unit tests (4 intentional skips), lint (0 errors/5 existing warnings), migration-free build, production and staging dry-runs and Worker startup profile passed. Worker types generated outside the repository; npm audit reports zero vulnerabilities. Full official-image layout/screenshot lock passed: 455 passed, 16 existing skips, zero failed attempts or final failures (13.0 minutes). No baselines/tolerances changed.
+- Typecheck, 432 unit tests (4 intentional skips), lint (0 errors/5 existing warnings), migration-free build, production and staging dry-runs and Worker startup profile passed. Worker types generated outside the repository; npm audit reports zero vulnerabilities. Full official-image layout/screenshot lock passed: 455 passed, 16 existing skips, zero failed attempts or final failures (12.5 minutes). No baselines/tolerances changed.
 
 ## Limits and future releases
 
