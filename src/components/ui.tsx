@@ -14,22 +14,27 @@ import { Eur, Iqd } from "./field";
 import { useI18n } from "@/lib/i18n";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { useTheme } from "@/lib/theme";
+import { useHydrated } from "@/lib/use-hydrated";
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
-/** Shared soft-3D button. `loading` marks it busy and blocks a second submit. */
+/** Client actions wait for their handlers; `loading` also blocks a second submit. */
 export function Button({
   variant = "primary",
   loading = false,
   className = "",
   disabled,
+  onClick,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; loading?: boolean }) {
+  const ready = useHydrated();
+  const waiting = Boolean(onClick) && !ready;
   return (
     <button
       type="button"
       className={`rl-button ${className}`}
       data-variant={variant}
-      aria-busy={loading || undefined}
-      disabled={disabled || loading}
+      aria-busy={loading || waiting || undefined}
+      disabled={disabled || loading || waiting}
+      onClick={onClick}
       {...props}
     />
   );
@@ -53,10 +58,22 @@ export function Card({ className = "", ...props }: HTMLAttributes<HTMLDivElement
 export function Chip({
   selected = false,
   className = "",
+  disabled,
+  onClick,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { selected?: boolean }) {
+  const ready = useHydrated();
+  const waiting = Boolean(onClick) && !ready;
   return (
-    <button type="button" className={`rl-chip ${className}`} aria-pressed={selected} {...props} />
+    <button
+      type="button"
+      className={`rl-chip ${className}`}
+      aria-pressed={selected}
+      aria-busy={waiting || undefined}
+      disabled={disabled || waiting}
+      onClick={onClick}
+      {...props}
+    />
   );
 }
 export function Icon({

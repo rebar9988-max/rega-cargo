@@ -73,3 +73,19 @@ test("repo config: production has AI on with cap; staging is a separate worker w
   ]);
   assert.ok(!("hyperdrive" in environments.staging));
 });
+
+test("branch previews are explicit, non-indexed and have no production bindings or secrets", () => {
+  const src = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
+  const config = JSON.parse(src.replace(/^\s*\/\/.*$/gm, ""));
+  assert.deepEqual(Object.keys(config.previews), ["vars"]);
+  assert.equal(config.previews.vars.RL_NOINDEX, "1");
+  assert.equal(config.previews.vars.RL_AI_ENABLED, "false");
+  assert.equal(config.previews.vars.RL_AI_DAILY_CAP, "0");
+  assert.equal(config.previews.vars.PRODUCT_LINK_ENABLED, "false");
+  assert.ok(!("DATABASE_URL" in config.previews.vars));
+  assert.deepEqual(splitEnvironments(config).production.previews, config.previews);
+  // The production service and binding remain the verified existing Cargo resources.
+  assert.equal(config.name, "rega-cargo");
+  assert.equal(config.hyperdrive[0].id, "795013d06b38408e87552686a6045291");
+  assert.equal(config.vars.RL_AI_ENABLED, "true");
+});

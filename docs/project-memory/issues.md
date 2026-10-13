@@ -23,30 +23,31 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
   5. Only afterwards, and with approval, delete `misty-recipe-03041407`.
 - Prevention: always build with `DATABASE_URL=''` unless migrating deliberately; take a Neon branch before any migration.
 
-### I-2 · PARTIALLY RESOLVED 2026-10-13 — Hyperdrive permission available; Observability unverified
+### I-2 · RESOLVED 2026-10-13 — Hyperdrive and Observability permissions available
 - Connected Cloudflare GET/PATCH Hyperdrive now succeed. The old Hyperdrive denial below is superseded; no permission/token changes were made in this session.
 
-- Agents cannot verify or fix I-1. Owner may add `Hyperdrive: Read/Edit`, `Workers Observability: Read`.
+- Current connected API supports Hyperdrive GET/PATCH and temporary Cargo-only Observability queries. Production post-release query: 378 sampled invocations `ok`; zero unexpected errors excluding known auth-disabled warnings. The older unavailable-scope evidence below is historical. I-1 was recovered without a scope change.
 
 ### I-3 · OPEN — phone sign-in cannot send codes
 - No `WHATSAPP_*` / `TWILIO_*` / `PHONE_CODE_SECRET` secrets in production. Expected until the owner chooses a provider.
 
-### I-9 · OPEN (low) — staging-only flake: `360px filters, favorites, keyboard dialog and banned searches`
+### I-9 · ROOT CAUSE FIXED IN FOLLOW-UP 2026-10-13 — first click lost before hydration: `360px filters, favorites, keyboard dialog and banned searches`
+- Current evidence: existing regression reproduced on staging; held module showed enabled server filter button, first click 0 dialogs, second click 1. `ff1c6e0` reuses shared readiness in Button/Chip; new delayed-module regression passed, existing live staging regression passed 3 consecutive times. Full release gate passed (427 unit / 4 existing skips; 437 browser / 16 intentional skips); production follow-up pending; older observations below are historical.
 - Symptom: against `rega-cargo-staging` the test fails about 3 of 5 runs (`dialog[open]` never appears); against production 5 of 5 pass; locally and in the CI-style local Worker it passes.
 - Verified cause: the test clicks `.rl-mobile-filters` right after `page.goto("/stores?lang=en")` (default `load`, no `networkidle`), so on a slower remote the click can land before React hydrates and is lost. Control 2026-10-12: the pre-bump build (`238b755`, nitro 3.0.260610-beta) fails the same 3 of 5 on staging, so it is not a regression of the Nitro bump.
 - Fix when convenient: `waitUntil: "networkidle"` on that first `goto` (test-only). Not changed yet to keep PR #75 about the dependency.
 
 ### I-5 · OPEN — content gaps
-- `TODO(translate-review)` strings need native ckb/ar/fa/ku review; legal pages need real owner details.
+- `TODO(translate-review)` strings need native ckb/ar/fa/ku/de/tr review; legal pages need real owner details.
 
 ### I-6 · OPEN — sign-in disabled in production
 - Live log: `[auth] DATABASE_URL is set but auth is disabled (VITE_AUTH_ENABLED=false) — requireUserId() rejects every request (fail closed)`. This is the shipped default (`src/lib/auth/verify.server.ts`): the Better Auth path fails closed. `phoneOrAuthMiddleware` checks an `rl_phone` session first, but phone codes cannot be sent (I-3), so nobody can sign in today; account, request and admin features stay unavailable even after I-1. Needs an owner decision (phone provider and/or enabling Better Auth).
 
-### I-7 · OPEN · blocker for merging — GitHub Actions does not start any job (billing)
+### I-7 · OPEN · hosted CI blocked; authorized full local gate governs merges — GitHub Actions does not start any job (billing)
 - Symptom: every "Cargo quality gate" run since ~15:38 UTC on 2026-10-11 ends as `failure` in 3–4 s with `runner_id: 0`, no steps and job logs returning 404: runs 165–170, including the `main` push run 166 on `486e442` and PR #60 runs on `bed4c9d` (plus one re-run) and `075b36c`.
 - Verified root cause (check-run annotation on `075b36c`, 2026-10-12 06:31 UTC): "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings". The repo is private on the personal account `rebar9988-max`.
 - Why agents cannot fix it: billing endpoints are not reachable from agent sessions (403), and raising a spending limit is a paid change that needs the owner.
-- Fix (owner): GitHub → Settings (account `rebar9988-max`) → Billing and plans → fix the failed payment method or raise the Actions spending limit (or wait for the included minutes to reset next cycle); then re-run the latest run. Until then no PR has a green quality gate, so none should be merged.
+- Fix (owner): GitHub → Settings (account `rebar9988-max`) → Billing and plans → fix the failed payment method or raise the Actions spending limit (or wait for the included minutes to reset next cycle); then re-run the latest run. Hosted checks cannot be green until billing is repaired. Current owner authorization and CLAUDE.md full-local-gate policy supersede this historical merge prohibition.
 - Evidence: `gh api repos/rebar9988-max/rega-cargo/check-runs/114690493529/annotations`; Actions API `get_workflow_job` / `list_workflow_runs`.
 - Re-verified 2026-10-12 18:36 UTC on `main` @ `a7ee020` (run 186, job 114954290650): same annotation; runs 165–187 all end in 3–6 s. Repo rulesets/branch protection are unavailable on this plan (API 403 "Upgrade to GitHub Pro"), so `main` has no required checks. Account billing endpoints are not reachable from agent sessions, so "failed payment" vs "spending limit/quota" is not distinguishable here.
 - Mitigation (PR #77, does not unblock): docs-only changes skip the ~10 min layout job, draft PRs skip CI until ready, superseded PR runs cancel; `main` and manual runs are never cancelled.
