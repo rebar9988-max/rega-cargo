@@ -27,6 +27,8 @@ Always respond to the R&L Cargo project owner in Kurdish Sorani (ckb), regardles
 Memory index: [PROJECT_MEMORY.md](PROJECT_MEMORY.md) → topic files in [docs/project-memory/](docs/project-memory/).
 Memory is a guide, not proof. When memory disagrees with the code, GitHub or production, trust the live state and fix the memory.
 
+The "CODEX — NEXT SESSION HANDOFF" section in `PROJECT_MEMORY.md` is the shared cross-agent handoff. Refresh it at the end of every session.
+
 Every task follows: READ MEMORY → VERIFY CURRENT STATE → IDENTIFY PENDING WORK → CONTINUE SAFELY → TEST → UPDATE MEMORY.
 
 Before work:

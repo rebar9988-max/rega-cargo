@@ -6,7 +6,81 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Production: https://cargo.regaplatform.com (Cloudflare Worker `rega-cargo`)
 - Staging: https://rega-cargo-staging.rebar9988.workers.dev (Worker `rega-cargo-staging`)
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-13 ~09:40 UTC**, branch `claude/local-quality-gate-20261013` based on `main` @ `5d39d9d`. See the current checkpoint below.
+- Last memory update: **2026-10-13 ~10:05 UTC**, branch `claude/local-quality-gate-20261013` (PR #85) based on `main` @ `5d39d9d`. Start with the Codex handoff below, then the current checkpoint.
+
+## CODEX — NEXT SESSION HANDOFF
+
+Written by Claude Code on 2026-10-13 ~10:05 UTC for Codex or any later agent. Read `AGENTS.md`, `CLAUDE.md`, this file and the topic files you need **before acting**, then re-check every "verified" fact below against the live state. **V** = verified by the writing session at the time given, **H** = historical (copied from older memory, not re-checked), **A** = assumption.
+
+**Where things stand**
+- V 09:58 UTC: `main` @ `5d39d9d` (PR #84). Task branch `claude/local-quality-gate-20261013`; head = the commit that adds this handoff (find it with `git log -1 origin/claude/local-quality-gate-20261013`); its code commit is `e67c51f`.
+- V: [PR #85](https://github.com/rebar9988-max/rega-cargo/pull/85) is **draft**, open, `mergeable_state: clean`. Actions run 221 on it was `skipped` (drafts start no job, so they cost no minutes).
+- V: production Worker `rega-cargo` serves version `db08bc5b` at 100% (07:43 UTC, `triggered_by: secret`), on top of code version `fd88780b` (07:03 UTC). That `fd88780b` is the build of `5d39d9d` is **A**, inferred from timing. Read-only HTTP check at 09:35 UTC: required routes 200, banned search empty. Nothing was deployed by Claude Code on 2026-10-13; PR #85 does not change the Worker, so it needs **no deploy** after merge.
+
+**Completed — do not repeat**
+- `npm run quality:local` (`scripts/quality-local.mjs` + `scripts/quality-local.test.mjs`): CI verify steps + compliance scan + `npm audit` + layout lock in the official image. Exit 0 = PASS, 2 = PARTIAL, 1 = FAIL. Report: `.quality/local-report.json`.
+- `quality.yml`: scope step folded into `verify`; `layout lock` `needs: verify`. No check removed.
+- Audit of open PRs, Actions history and job timings (verify 1.3–1.5 min, layout 12–13 min, runs 159/160) — results are in `deployments.md`, `issues.md` I-7.
+
+**Quality gate results on `e67c51f` (V, cloud session) — status PARTIAL, never call it PASS**
+- Passed: typecheck · `npm test` 221 + 216 tests, 0 failed, 4 existing skips · lint 0 errors · build (`DATABASE_URL` empty) · `cf:dry-run` · compliance scan · `npm audit` 0 vulnerabilities · Playwright geometry 297 passed / 12 skipped (Chromium projects + `premium-360`).
+- Blocked, not run: screenshot baselines, WebKit projects, official image `mcr.microsoft.com/playwright:v1.63.0-noble`. Hosted CI: blocked.
+
+**Blockers**
+1. GitHub Actions billing block (I-7) — owner only (Billing and plans). Agents must never pay, raise limits or change payment methods.
+2. No Docker daemon in cloud agent sessions, so the official-image layout lock (screenshots + WebKit) cannot run there. Preinstalled Chromium is revision 1194; Playwright 1.63 wants 1243; WebKit is not installed. Do not run `playwright install`. Geometry-only workaround: the browser shim in `issues.md` I-7.
+3. Five security fixes are unmerged: `origin/claude/rega-cargo-clone-oyhxb4` @ `23eaa92` has `df19bd1`, `06340e8`, `61f3436`, `9ff5774` and `8b67547` (dated 2026-10-12). They are not on `main` and have no open PR. The branch forks at `475593d` (2026-10-11), far behind `main`. Details are in `progress.md`.
+4. Phone OTP provider credentials are missing (I-3/I-6), so authenticated journeys cannot be verified. **H**.
+
+**Next actions, in order**
+1. Re-verify: `git fetch origin`, open PRs (GitHub MCP `list_pull_requests`), the newest Actions runs, and the live deployments (read-only).
+2. On a machine **with** a Docker daemon (owner laptop or Codex environment, if it has one):
+   ```sh
+   git checkout claude/local-quality-gate-20261013 && npm ci && npm run quality:local
+   ```
+   - Exit 0: record the result in `decisions.md`/`progress.md` and mark PR #85 ready.
+   - Exit 1: fix the failure.
+   - Exit 2: still PARTIAL — keep the PR in draft.
+3. The owner merges PR #85, or authorizes the merge in chat (`main` has no branch protection on this plan, so the authorization is the gate). Nothing to deploy afterwards.
+4. Security commits: on a **new** branch from `main`, cherry-pick the five commits and resolve conflicts against current `main`, without rewriting the old branch. Run `npm run quality:local` and open a **draft** PR for owner review. Deploy only after the full gate passes and the owner authorizes it. Do not deploy while another agent's deploy is running: check `GET .../workers/scripts/rega-cargo/deployments` first.
+5. Once billing is fixed: re-run the newest `main` run and confirm `verify` and `layout lock` pass, then close I-7.
+
+**Safe to automate:**
+- reading GitHub, Actions and Cloudflare state
+- `npm ci`, `npm run quality:local`, and any local test
+- commits and pushes on task branches; draft PRs
+- updating memory
+
+**Owner authorization required:**
+- merging into `main`
+- any production or staging deploy
+- secret or binding changes
+- database writes or migrations
+- closing other people's PRs
+- billing or plan changes
+- anything that costs money
+
+**Never:**
+- touch REGA (`rebar9988-max/Rega`, Worker `rega-platform`)
+- put secrets in memory
+- report PARTIAL as PASS or hosted CI as green
+- skip, quarantine or re-baseline tests to get green
+- run two production deploys at once
+
+**Engineering tools (availability is per session — re-check)**
+
+| Tool | State 2026-10-13 |
+|---|---|
+| GitHub MCP | V working: PRs, Actions runs and jobs, PR create. No `gh` CLI |
+| Cloudflare REST API (env token by name `CLOUDFLARE_API_TOKEN`) | V working read-only: Worker deployments and versions |
+| npm registry | V reachable: `npm ci`, `npm audit` |
+| Node | V 22.22 |
+| Playwright | V 1.63 with the Chromium 1194 shim, geometry only |
+| Docker | V CLI 29.8 present, daemon unreachable |
+| Production over HTTPS | V reachable |
+| Neon, Supabase, Sentry, Figma, Context7 MCP | Listed as connected; **not exercised** this session (see [integrations.md](docs/project-memory/integrations.md)) |
+
+Codex's environment may differ: test each tool before relying on it.
 
 ## Current checkpoint (2026-10-13)
 
