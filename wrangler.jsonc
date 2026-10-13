@@ -61,6 +61,20 @@
   // Per-IP rate limit for quote signing and tracking lookups (20 / 60 s per key).
   "ratelimits": [{ "name": "RL_LIMIT", "namespace_id": "1101", "simple": { "limit": 20, "period": 60 } }],
 
+  // Existing Cloudflare Builds runs `wrangler preview` for feature branches.
+  // Preview bindings/vars are independent: no production database, secrets,
+  // AI inference or retailer fetches. Primary journeys render truthful
+  // unavailable states until an explicitly configured test backend exists.
+  "previews": {
+    "vars": {
+      "VITE_GROK_EXTENSIONS": "0",
+      "RL_AI_ENABLED": "false",
+      "RL_AI_DAILY_CAP": "0",
+      "PRODUCT_LINK_ENABLED": "false",
+      "RL_NOINDEX": "1"
+    }
+  },
+
   // Staging: separate Worker `rega-cargo-staging` on workers.dev only (no
   // routes, no custom domain, no database, its own secrets). Deploy with
   // `npm run deploy:staging`. Bindings and vars are not inherited from the

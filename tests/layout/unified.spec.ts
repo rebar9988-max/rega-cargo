@@ -133,3 +133,28 @@ test("Bring For Me retries a failed submission and confirms only a backend-issue
   expect(sent).toContain("https://www.zalando.de/shoes");
   expect(sent).toContain("ship");
 });
+
+test("catalogue opens filters on the first click after a delayed client module", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile || page.viewportSize()!.width >= 1024, "Mobile filter sheet only");
+  let release!: () => void;
+  const delayed = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/assets/bazaar-page-*.js", async (route) => {
+    await delayed;
+    await route.continue();
+  });
+  await page.goto("/stores?lang=en", { waitUntil: "domcontentloaded" });
+  const filters = page.locator(".rl-mobile-filters");
+  await expect(filters).toBeDisabled();
+  await expect(page.locator(".rl-audience-chips button").first()).toBeDisabled();
+  release();
+  await expect(filters).toBeEnabled();
+  await filters.click();
+  await expect(page.locator("dialog[open]")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(filters).toBeFocused();
+});
