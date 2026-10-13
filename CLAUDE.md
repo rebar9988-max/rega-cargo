@@ -1,5 +1,20 @@
 # R&L Cargo — Claude Code instructions
 
+## PERMANENT R&L PRODUCT IDENTITY — HIGHEST PRIORITY
+
+Owner-established permanent rule (2026-10-13):
+
+**R&L = MARKETPLACE + BRING FOR ME + DELIVERY / TRACKING**
+
+**Official Kurdish slogan: بازاڕ و گەیاندن**
+
+- This is the highest-priority product identity rule for Codex, Claude Code and all future project work. It takes precedence over any conflicting or narrower product identity or slogan in existing instructions, project memory, documentation or legacy naming, including the repository name `rega-cargo`.
+- All future development, UX/UI, navigation and architecture decisions must respect and support all three services as first-class parts of the same R&L product: MARKETPLACE, BRING FOR ME, and DELIVERY / TRACKING.
+- Never redefine R&L as cargo-only, marketplace-only or delivery-only. Never remove, hide or demote a core service in a way that changes this identity.
+- Never change the core mission, official identity, official Kurdish slogan or these three core services without explicit owner approval.
+- Preserve all other existing project instructions. Earlier product descriptions and slogans remain historical context where they conflict with this permanent rule; they do not authorize a different identity.
+- Keep this permanent identity rule identical in the repository-root `AGENTS.md` and `CLAUDE.md`.
+
 Project rules live in AGENTS.md; follow them as well.
 
 ## PERMANENT USER LANGUAGE PREFERENCE
