@@ -140,7 +140,7 @@ export function HeaderLangPicker({ lang, setLang, title }: { lang: Lang; setLang
         <span
           lang={current.html}
           dir={current.dir}
-          className={`max-w-[6.5rem] truncate text-sm max-[359px]:hidden leading-none font-medium md:max-w-none ${current.dir === "rtl" ? "font-ar" : "font-sans"}`}
+          className={`rl-lang-name text-sm leading-none font-medium ${current.dir === "rtl" ? "font-ar" : "font-sans"}`}
           aria-hidden="true"
         >
           {current.short}
