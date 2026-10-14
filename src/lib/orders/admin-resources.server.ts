@@ -73,7 +73,7 @@ export const orderAdminResources: Record<string, ResourceSpec> = {
           user_id: actor,
           kind: checked.data.flow,
           name: contact.name,
-          phone: contact.phone,
+          phone: contact.phone ?? "",
           payload: JSON.stringify(checked.data),
           estimate_eur: shippingEstimateEur(checked.data),
           status: "received",

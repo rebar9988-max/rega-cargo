@@ -46,7 +46,7 @@ export async function submitRequest(
 ) {
   const key = options.idempotencyKey ?? null;
   try {
-    let me: { name?: string; phone?: string } | null = null;
+    let me: { name?: string; phone?: string | null } | null = null;
     try {
       me = await phoneMe();
     } catch {
@@ -57,7 +57,7 @@ export async function submitRequest(
       const sqlForUser = await getSql();
       const rows = await sqlForUser<{
         name: string;
-        phone: string;
+        phone: string | null;
       }>`select name, phone from phone_users where id = ${userId}`;
       me = rows[0] ?? null;
     }

@@ -9,6 +9,10 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-14**, verified five-improvement beta release: PR #95 / main `8ae779f`, Worker `1a514fed` at 100%. Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
+## Email OTP sign-in (2026-10-14, branch `claude/rl-email-otp-production-jjs9zb`, not deployed)
+
+Source adds email one-time-code registration/sign-in (`src/lib/email-auth/`, migration `0016_email_otp.sql`, additive) on the existing phone_users/phone_sessions/user_roles, rate counters, HMAC code helper and bot gate; Resend via plain fetch. Local gate passed (typecheck, lint 0 errors, 502 unit passes/4 existing skips, build, dry-run). **Blocked, not live:** production Worker has no `RESEND_API_KEY`; rlgo.net has no Resend DKIM/SPF records; no Resend access in the agent session. Real email delivery and live registration/login are not verified. Activation steps: DEPLOY.md "Email sign-in". Existing customer contact: email-only accounts store an empty phone on requests; staff see the email in the identity view.
+
 ## R&L AI owner-only permanent baseline (2026-10-14)
 
 Owner explicitly reconfirmed: the approved R&L AI foundation must survive every unrelated R&L change; only a new explicit owner request for the affected AI change authorizes a baseline change. Broad redesign/refactor/upgrade requests are insufficient. Preserving bug/security maintenance remains allowed. Read the identical OWNER-ONLY R&L AI BASELINE rule in root AGENTS/CLAUDE and module AGENTS/README before editing. Regression checks pin the official identity, tool allowlist and approved Sorani welcome/refusal/shortcuts; CODEOWNERS also covers the governance entry points. These checks and review rules detect accidental drift, but are not technical immutability or enabled branch protection.

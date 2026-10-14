@@ -207,10 +207,12 @@ Secrets (`npx wrangler secret put`, never committed):
 | Name | Purpose |
 | --- | --- |
 | `BETTER_AUTH_SECRET` | Signs Better Auth cookies when that path is on |
-| `PHONE_CODE_SECRET` | HMAC key for phone codes |
+| `PHONE_CODE_SECRET` | HMAC key for phone and email sign-in codes |
 | `DATABASE_URL` or Hyperdrive `HYPERDRIVE` | Postgres. Without it the Worker has no database |
 | `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`, `WHATSAPP_TEMPLATE`, `WHATSAPP_TEMPLATE_LANG` | WhatsApp codes |
 | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | SMS codes |
+| `RESEND_API_KEY` | Email sign-in codes via Resend. Without it email sign-in reports unavailable |
+| `RESEND_FROM` (plain var, optional) | Sender on the Resend-verified domain. Default `R&L <no-reply@rlgo.net>` |
 | `TURNSTILE_SECRET` | Server Turnstile check (phone send + AI, when set) |
 | `TURNSTILE_SITE_KEY` | Public Turnstile site key |
 | `AI_TOKEN_SECRET` | Optional HMAC for the AI page token. If unset, the usage Durable Object holds the key |
@@ -268,3 +270,19 @@ Cloudflare Builds branch previews are disabled by the owner domain-exclusivity d
 The root `previews` block contains explicit noindex vars and supplies no database/secrets/AI bindings.
 Primary journey pages render truthful unavailable states without a test backend; authenticated writes and inference are unavailable there. Production/staging bindings and secrets are unchanged.
 Preview resources do not inherit production bindings; see [Cloudflare configuration](https://developers.cloudflare.com/workers/previews/configuration/) and [isolation](https://developers.cloudflare.com/workers/previews/resources/). Existing Preview Base was verified empty. No new DB or persistent token provisioned.
+
+## Email sign-in (one-time code)
+
+`src/lib/email-auth/` adds email registration and sign-in next to phone sign-in, in the same dialog.
+Accounts are `phone_users` rows with `email` set and `phone` empty (migration `0016_email_otp.sql`, additive),
+so sessions (`__Host-rl_phone`), roles, middleware and pages are unchanged. Codes: six digits, 5 minutes,
+HMAC-SHA256 only (`PHONE_CODE_SECRET`, separate `email-otp` domain), 5 guesses, deleted on use, one resend
+per 60 s, per-address and per-IP hourly/daily counters, the Workers `RL_LIMIT` limiter and the shared bot
+gate (`verifyGate`). Sends answer identically for registered and unknown addresses.
+
+Activation (owner/Cloudflare + Resend access required):
+1. In Resend, add and verify the sending domain `rlgo.net` (DKIM `resend._domainkey`, `send.` MX + SPF TXT
+   records in the Cloudflare zone). Free plan only; do not activate paid features.
+2. `npx wrangler secret put RESEND_API_KEY --name rega-cargo` (a sending-only key).
+3. Optional: set `RESEND_FROM` in `wrangler.jsonc` vars if a sender other than `no-reply@rlgo.net` is wanted.
+4. Verify with an authorized test inbox: register, sign out, sign in, reload (session persists).

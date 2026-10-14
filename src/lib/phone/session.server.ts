@@ -43,7 +43,7 @@ function secureCookie() {
   }
 }
 
-function clientIp() {
+export function clientIp() {
   try {
     const request = getRequest();
     return request?.headers.get("cf-connecting-ip")?.trim() || "unknown";
@@ -62,7 +62,7 @@ function writeCookie(token: string | null) {
   });
 }
 
-async function bump(key: string, limit: number, window: "hour" | "day") {
+export async function bump(key: string, limit: number, window: "hour" | "day") {
   const sql = await getSql();
   const rows =
     window === "hour"
@@ -108,13 +108,15 @@ async function limited(phone: string, ip: string, scope: "send" | "pin") {
   return phoneHour || ipHour || phoneDay;
 }
 
-async function sweep() {
+export async function sweep() {
   const sql = await getSql();
   await sql`
     with gone_codes as (
       delete from phone_codes where expires_at < now() - interval '1 day' returning 1
     ), gone_sessions as (
       delete from phone_sessions where expires_at < now() returning 1
+    ), gone_email_codes as (
+      delete from email_codes where expires_at < now() - interval '1 day' returning 1
     ), gone_log as (
       delete from action_log where created_at < now() - interval '7 days' returning 1
     ), gone_counters as (
@@ -139,9 +141,10 @@ export async function phoneMe() {
   const sql = await getSql();
   const rows = await sql<{
     name: string;
-    phone: string;
-  }>`select name, phone from phone_users where id = ${id}`;
-  return rows[0] ? { name: rows[0].name, phone: rows[0].phone } : null;
+    phone: string | null;
+    email: string | null;
+  }>`select name, phone, email from phone_users where id = ${id}`;
+  return rows[0] ? { name: rows[0].name, phone: rows[0].phone, email: rows[0].email } : null;
 }
 
 export function phoneDeliveryConfigured() {
@@ -209,7 +212,7 @@ export async function phoneStart(dial: unknown, national: unknown, turnstileToke
   return { phone, sent: true as const, whatsapp: sent.whatsapp, sms: sent.sms };
 }
 
-async function openSession(userId: string) {
+export async function openSession(userId: string) {
   const token = randomBytes(32).toString("hex");
   const sql = await getSql();
   await sql`
