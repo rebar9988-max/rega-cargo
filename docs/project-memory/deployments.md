@@ -1,5 +1,10 @@
 # CI/CD and deployments
 
+## 2026-10-14 five-improvement candidate — release held
+
+No merge, deployment, staging exposure, remote migration or production data write. User prohibits release when verified legal content is missing; business-approved.json remains blank. Candidate builds locally without a database connection; migration 0015 is isolated-tested only. Existing production read-only inspection: `0f6e2dd7-441a-4092-af4e-57715a4af7b3`, 100%, 07:16 UTC. Existing main auto-build invokes build/deploy directly, so do not merge the draft until the legal gate and owner/OTP verification are satisfied. [Evidence](../verification/rl-five-improvements-20261013.md).
+
+
 Procedures (build, secrets, go-live, rollback): [DEPLOY.md](../../DEPLOY.md). Deploys, secret changes and rollbacks need **explicit owner approval** ([usage policy](../integrations/usage-policy.md)).
 
 ## CI

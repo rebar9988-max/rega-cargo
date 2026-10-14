@@ -1,6 +1,6 @@
 # R&L five improvements — implementation and release evidence
 
-Base: main 631549f, canonical production https://www.rlgo.net. Work branch: codex/rl-five-improvements-20261013. Scope: Marketplace, Bring For Me, Delivery/Tracking and the existing AI service. No changes to REGA Platform, public hostnames, pricing rates, branding or customer records.
+Initial base: main 631549f; current integration base: main 19c17f2, canonical production https://www.rlgo.net. Work branch: codex/rl-five-improvements-20261013. Scope: Marketplace, Bring For Me, Delivery/Tracking and the existing AI service. No changes to REGA Platform, public hostnames, pricing rates, branding or customer records.
 
 ## Step 0: current-state audit
 
@@ -20,4 +20,61 @@ Base: main 631549f, canonical production https://www.rlgo.net. Work branch: code
 
 ## Release status
 
-Implementation and verification in progress. No production deployment or authenticated SUPER_ADMIN verification is claimed.
+Implementation is complete on the feature branch. Final mobile layout regression checks have passed. Release remains blocked by missing owner-verified business/legal content and an identifiable verified SUPER_ADMIN account / real OTP provider. No production deployment or authenticated SUPER_ADMIN verification is claimed.
+
+## Integration with current production foundation (2026-10-14)
+
+During implementation `main` advanced to `19c17f2` through PRs #92–#94. The work was rebased onto that foundation. Its deployed, isolated `src/modules/rl-ai` assistant, five shortcuts, Sorani welcome/refusal, scoped Vazirmatn, image processing and authorized Marketplace contract are preserved. There is one assistant and one existing provider/budget service. This task's explicit AI scope is security maintenance and administrative policy, plus the approved cost-estimate improvement; it does not authorize a new identity or global redesign.
+
+### Trust and complaints
+
+The existing /impressum, /privacy and /terms can render owner-verified business information and approved multilingual policy from `src/lib/business-approved.json`. The file deliberately contains no invented legal entity, address, register/VAT detail, retention period or complaint promise. /contact prepares a customer-reviewable complaint email using the existing contact address; the customer sends it, and no receipt/refund/deadline is claimed. New fields wait for hydration so Safari input is not silently lost. `npm run release:check` rejects the missing information before either deployment script can build/migrate/deploy. This presence check is not legal certification. The existing Cloudflare main trigger runs build/deploy directly, so the branch must NOT merge to main while the legal gate fails.
+
+### Cost transparency
+
+The existing /ai image/estimate workflow adds optional parcel dimensions, shop-to-warehouse delivery and R&L service fee inputs. The validated corridor rates, divisor, surcharge, customs planning formula and currency conversion are unchanged. Missing fee inputs remain unknown, not confirmed zero. Output labels an estimated subtotal, chargeable weight, omitted dimensions and customs uncertainty. Invalid/partial dimensions are rejected. The unchanged legacy monetary outputs and new volumetric example are regression-tested. Inputs use the existing hydration readiness guard.
+
+### Tracking
+
+Public tracking remains status/milestones only; private contact, payload and price are excluded. New explicit event-time/action/window metadata is additive. Legacy creation time is labelled as recording time and never promoted to an actual transport event or ETA. Future entries never supply an actual event time. Only an explicit, consistent estimate window is presented as an estimate. Staff must enter the time of a real milestone; future actual times/reversed windows fail validation. Customer next steps point to the account for quote decisions and to existing official contact for invoice, delivery or exception handling. Short legacy references remain available to owner/staff account views, but anonymous lookup requires the existing high-entropy code format.
+
+### SUPER_ADMIN and module ownership
+
+- Server authority always reads approved database roles for the authenticated caller. `super_admin` covers approved administrative/seller/courier permissions without relying on client claims. Ordinary admins cannot grant administrative roles; public role requests cannot request them.
+- The existing /admin adds an operational editor backed by a closed resource registry. Domain adapters own Marketplace, Bring For Me requests, Delivery/Transport, Tracking and AI-policy resources. Identity/settings are an explicit shared control plane; no new database, authentication service, routes or paid provider is introduced.
+- Strict schemas/allowlisted columns refuse arbitrary SQL, resource names, secret fields and fabricated identities. New user records are pending/disabled until the existing delivered-code flow verifies their phone. Provisioning creates no login credential, grants no administrative role and sends no message.
+- Privileged role approval requires an active existing account. Disabling an approved SUPER_ADMIN is refused; the last approved owner cannot be removed. No owner is seeded or promoted by migration.
+- New operational mutations and immutable admin audit records commit atomically. Row-version checks reject stale edits. Audit fields contain field names, not credential values. Existing compliance and domain status/history logging remain intact; archive operations preserve customer rows/history. Existing accepted-quote/compliance/status-transition rules still apply to administrative operations.
+- Offer changes retain price history and trigger existing one-shot alert notifications. Partial updates use only explicit submitted fields, preventing schema defaults from unexpectedly resetting status or other fields.
+- Additive migration `0015_rl_administration.sql` is tested on isolated PGlite, including reapplication, audit immutability, last-owner protection and cross-module CRUD. No production schema/data has been changed. A Neon staging migration and production release remain deferred until release gates can be met.
+
+### AI security maintenance
+
+The current assistant still displays curated R&L answers and approved Marketplace data only; model prose is never displayed and private workflows stay in their existing account pages. AI configuration is read through an explicit settings contract; it can disable inference or reduce the existing cap, never enable a disabled deployment or increase its budget. Policy-read outages disable inference while curated navigation/refusals can remain available. Gate/limiter outages fail closed. Per-use nonce tokens are spent atomically; unexpired spent tokens survive UTC budget rollover. Existing counter rollover refuses older-day calls, and counter mutations are atomic. Failed provider attempts remain counted. No real model invocation or paid provider request was made during these tests.
+
+Workerd-specific isolated runtime check: two tokens issued in the same millisecond differ; exactly one of 20 concurrent attempts can spend one token; replay refusal survives daily counter reset. This harness binds no AI or production resources.
+
+## Verification continuation
+
+Final source gates and review state (2026-10-14):
+
+- Unit/script gate: 481 passed, 4 existing intentional skips (231 script + 250 library passes), including PGlite cross-module integration, lifecycle, role revocation, audit immutability, concurrent mutation rules and migration reapplication. Fresh typecheck passed. Lint: 0 errors / 5 existing warnings. Generated Playwright reports/results are now excluded from lint; source rules are unchanged.
+- Final migration-free production build and Worker dry run are recorded after the mobile layout fix. No DATABASE_URL was supplied to the build; no migration ran against production.
+- Official Playwright image v1.63.0-noble: affected-page baseline capture passed 162/162. 108 expected PNGs changed, exactly AI/contact/privacy/stores-request across 3 languages and 9 browser/device projects. Logo, fonts, header, home and unaffected-route baselines stayed intact. A later stores-request-only baseline update addresses the discovered hydration shift.
+- Focused mobile improvements and preserved AI browser gate passed 28/28 (Chromium iPhone + WebKit iPhone).
+- Full suite contains 597 cases. Initial CI-style run reached its 19-minute global deadline: 267 direct passes, 4 retry passes, 4 skips; 322 remaining. Exact remaining test IDs were resumed locally with only the global deadline disabled: 300 direct passes, 9 retry passes, 12 skips, 1 failure. Individual timeouts, assertions, pixel tolerance, retries and repository CI configuration were preserved. The remaining failure identified genuine layout movement from the auth-unavailable message/fallback expansion; its source fix reserves message space and keeps fallback expansion customer-controlled. Original CLS assertion remains unchanged. Selected failure and all 13 retry cases are retested without retries below. This is not a single green CI run.
+- Combined initial/resumed coverage before that correction: 580 passed (13 on retry), 16 skipped, 1 failed. No hosted CI success is claimed.
+- Workerd isolated runtime: same-millisecond gate tokens differ; exactly 1 of 20 concurrent replay attempts succeeds; spent-token refusal survives UTC rollover. No AI or production bindings used.
+- Existing production read-only browser smoke: 6/6 (Chromium mobile/desktop and WebKit mobile). TLS trust used the environment-provided CA; certificate validation was not disabled. These smoke tests describe existing https://www.rlgo.net, not this candidate being deployed.
+- Current main 19c17f2: Actions run 38527176459 failed before job steps (scope/verify; layout skipped). The existing owner-declined billing issue is recorded in project memory. No quota/payment setting changed. Main metadata protected=false; detailed protection query returned 403. No security control or approval was bypassed.
+- Production latest read-only inspection: Worker version 0f6e2dd7-441a-4092-af4e-57715a4af7b3 at 100%, deployment 8b265311-aebb-4ce3-b5c1-18adf0562ea5, 07:16:17 UTC. This is an existing main release, not this work. Cargo migrations remain 0002–0014; 0015 has only isolated validation. Approved role inventory returned no rows. No owner was created or promoted.
+
+Release requirements still unresolved: owner-supplied legal name/form/full address/representative/register and VAT applicability/content-responsible person/verification source and date, plus approved multilingual liability, jurisdiction, complaints and retention policy; exact existing verified owner account identifier; working existing OTP delivery provider for genuine authenticated verification. Placeholders and fictional promises cannot satisfy these requirements. The presence validator is not legal certification.
+
+The Cloudflare main build trigger does not invoke release:check. Consequently this draft must not merge to main while verified legal content is missing. No paid service, public staging URL, production data write, new auth provider or real model call was introduced. Native hardware/camera, real OTP and authenticated production operations remain unverified.
+
+### Final hydration-shift correction gate
+
+The warning now occupies its final geometry in server HTML; availability updates change only visibility. Email fallback remains clearly discoverable but expands only on customer action. This prevents availability responses from moving the form or product-link panel. The original strict CLS assertion is preserved. Final source typecheck, lint (0 errors / 5 existing warnings), database-free production build and Worker dry run passed. All 27 stores-request captures passed. All 14 prior failure/retry cases passed in the official image with one worker and **zero retries**, including the original mobile request CLS check. The final 45-case no-update snapshot / focused improvements gate passed 45/45 with zero retries, zero failures, zero flaky outcomes and no skipped tests. This covers all 27 request snapshots across nine device/browser projects and all nine improvement scenarios in both Chromium/WebKit iPhone. Final JSON reporter statistics: expected=45, unexpected=0, flaky=0, skipped=0. Memory link/security checks: 5/5 passed. `release:check` exits 1 with the actual missing legal fields/policies; this expected block is not a green release gate.
+
+Full-suite coverage across the documented initial run, exact remaining-ID continuation and final correction retests is 581 passing cases and 16 intentional skips; the entire suite was not completed as one uninterrupted green CI run. The final targeted gate is against the corrected source. Hosted billing remains unresolved.

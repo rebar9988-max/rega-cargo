@@ -1,5 +1,10 @@
 # Features and status (verified 2026-10-11)
 
+## 2026-10-14 implementation candidate (not live)
+
+Five improvements and server-verified SUPER_ADMIN administration exist only in `codex/rl-five-improvements-20261013`. Trust/legal content remains owner-gated; pricing formulas and isolated R&L AI identity/workflows are preserved. [Implementation and limitations](../verification/rl-five-improvements-20261013.md). Existing feature statuses below are historical unless independently reverified.
+
+
 Status: **live** = works in production · **degraded** = deployed but its backend is unavailable · **gated** = code exists, off until configured/approved · **planned**.
 Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 

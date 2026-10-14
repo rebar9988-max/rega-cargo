@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
 - Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-14**, verified R&L AI production release `481bfeb` / PR #92. See the current checkpoint below.
+- Last memory update: **2026-10-14**, five-improvement candidate on main `19c17f2`; release held for verified legal content and owner/OTP access. Existing R&L AI release and permanent baseline remain intact. See the candidate checkpoint and evidence below.
 
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
@@ -52,7 +52,15 @@ Source implementation adds the owned module, short typed responses, pre-inferenc
 | Header category strip | PR #78 live (`2e724d37`): phones/tablets get a 64px brand-red header and a swipeable category strip under it; desktop unchanged. Verified on production 21:05–21:10 UTC: 20 routes 200, Playwright 264 passed / 9 skipped / 0 failed (all Chromium devices + 360px suite), no horizontal overflow at 390/820/1280 | [design.md](docs/project-memory/design.md) |
 | Banned-products protection | Holds via the bundled list in `src/lib/compliance/rules.ts` | `wrangler tail`: "using bundled list" |
 
+## Five-improvement candidate checkpoint (2026-10-14)
+
+Branch `codex/rl-five-improvements-20261013` integrates main `19c17f2` and preserves the owner-only AI baseline. Secure opt-in drafts/email fallback, verified-content trust/complaint plumbing, transparent unchanged pricing, truthful tracking and bounded AI policy/token replay repairs are implemented. Fresh database-role authority and domain-owned SUPER_ADMIN CRUD/audit are isolated-tested; no public grants or owner provisioning. [Candidate evidence](docs/verification/rl-five-improvements-20261013.md).
+
+**Not deployed:** verified legal/business JSON and approved policies are missing; no identifiable approved SUPER_ADMIN / delivered OTP verification. User expressly forbids release with missing legal information. Migration 0015 remains unapplied remotely. Main auto-deploy bypasses the npm release gate, so do not merge this candidate until facts are supplied and verified. Existing production version inspected: `0f6e2dd7`, 100%, 07:16 UTC. Hosted main Actions `38527176459` failed before steps; no hosted green result. Final local checks and review PR are in the evidence report.
+
 ## Next safe continuation point
+
+For the five-improvement candidate: obtain owner-verified legal/business content and approved multilingual policies plus the exact verified owner account identifier; confirm a working existing OTP provider. Validate release:check, isolated migration/rollback readiness and authenticated permissions before an authorized merge/deploy. Preserve the draft PR and do not seed an arbitrary SUPER_ADMIN.
 
 - The critical domain/WebKit repair is released and verified (PR #89). Owner domain-exclusivity decision is now enforced in Cloudflare: only `https://www.rlgo.net` serves R&L; retired cargo DNS/domain and public staging/preview URLs are closed. Keep them closed; use isolated checks for staging. Preserve the apex/HTTP redirects and SW v12. Do not restore `content-visibility:auto` without the real viewport paint regression. Query current deployments before future releases; documentation-only builds may change the version ID. Native iPhone/direct IPv6/real OTP verification remains a clearly recorded follow-up, not a passed test.
 
