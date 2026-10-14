@@ -68,3 +68,8 @@ Release preflight update: existing authenticated Cloudflare connector resolves t
 
 
 2026-10-14 verified production checkpoint: PR #92 merged normally as `481bfeb`; existing Cloudflare Builds `7387019a` succeeded, Worker `c87c162d-11e9-4ca7-86e4-f6eca4a600a6`, 100%, 06:57 UTC. Genuine live planner and image inference, strict refusals, five shortcuts, authorized workflow links and eight read-only existing routes passed. Privacy-safe telemetry showed no exceptions/5xx; bindings and secrets preserved. No rollout blocker remains. Hosted Actions billing, native camera/OTP/private-order verification and field performance remain limitations; no billing or unrelated business change. Documentation-only follow-up may deploy an identical app; query current Worker state. [Evidence](../ai/rl-ai-verification-20261013.md).
+
+
+## 2026-10-14 owner-only R&L AI baseline
+
+Owner explicitly reconfirmed that R&L AI must remain a permanent R&L foundation across unrelated changes; only the owner can explicitly request an affected baseline change. Identical rules recorded in root AGENTS/CLAUDE and module AGENTS/README. General modernization/refactor requests do not authorize drift. Preserving maintenance allowed. Exact identity, tool allowlist and Sorani baseline regression checks plus governance CODEOWNERS coverage added; no application/runtime or infrastructure change. Review rules are not technical immutability or branch protection.
