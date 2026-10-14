@@ -38,6 +38,7 @@ export const identityAdminResources: Record<string, ResourceSpec> = {
     columns: [
       "id",
       "phone",
+      "email",
       "name",
       "created_at",
       "disabled_at",

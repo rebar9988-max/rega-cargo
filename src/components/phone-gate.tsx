@@ -7,6 +7,9 @@ import { btnGhost, btnPrimary, controlClass } from "@/components/field";
 import { REQUEST_COPY } from "@/lib/requests/copy";
 import { useI18n } from "@/lib/i18n";
 import { phoneBegin, phoneCheck, phoneLeave, phoneStatus, phoneWho } from "@/lib/phone/api";
+import { emailStatus } from "@/lib/email-auth/api";
+import { EMAIL_AUTH_COPY } from "@/lib/email-auth/copy";
+import { EmailSignIn } from "@/components/email-sign-in";
 import { COUNTRIES, flag, type PhoneCountry } from "@/lib/phone/format";
 
 const copy = {
@@ -185,6 +188,9 @@ const copy = {
 
 type PhoneCopy = { [K in keyof typeof copy.en]: string };
 
+/** Signed-in account: phone, email, or both. */
+export type SessionUser = { name: string; phone: string | null; email?: string | null };
+
 export function PhoneButton({
   variant = "pill",
   label,
@@ -192,12 +198,12 @@ export function PhoneButton({
 }: {
   variant?: "pill" | "icon" | "block";
   label?: string;
-  onUser?: (user: { name: string; phone: string } | null) => void;
+  onUser?: (user: SessionUser | null) => void;
 } = {}) {
   const { lang } = useI18n();
   const t: PhoneCopy = copy[lang] ?? copy.en;
   const [open, setOpen] = useState(false);
-  const [me, setMe] = useState<{ name: string; phone: string } | null>(null);
+  const [me, setMe] = useState<SessionUser | null>(null);
 
   useEffect(() => {
     void phoneWho().then((user) => setMe(user));
@@ -257,9 +263,9 @@ function PhoneDialog({
 }: {
   t: PhoneCopy;
   lang: keyof typeof UX_COPY;
-  me: { name: string; phone: string } | null;
+  me: SessionUser | null;
   onClose: () => void;
-  onUser: (user: { name: string; phone: string } | null) => void;
+  onUser: (user: SessionUser | null) => void;
 }) {
   const [country, setCountry] = useState<PhoneCountry>(COUNTRIES[0]);
   const [picking, setPicking] = useState(false);
@@ -272,6 +278,9 @@ function PhoneDialog({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [available, setAvailable] = useState<boolean | null>(null);
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+  const [method, setMethod] = useState<"email" | "phone">("email");
+  const e = EMAIL_AUTH_COPY[lang as keyof typeof EMAIL_AUTH_COPY] ?? EMAIL_AUTH_COPY.en;
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
   const closeLabel = UX_COPY[lang]?.close ?? UX_COPY.en.close;
@@ -316,10 +325,22 @@ function PhoneDialog({
       .catch(() => {
         if (live) setAvailable(false);
       });
+    emailStatus()
+      .then((status) => {
+        if (live) setEmailAvailable(status.available);
+      })
+      .catch(() => {
+        if (live) setEmailAvailable(false);
+      });
     return () => {
       live = false;
     };
   }, []);
+  // Email is the default when it can send; phone stays the only option when only phone can.
+  const both = available === true && emailAvailable === true;
+  const useEmail = emailAvailable === true && (method === "email" || available !== true);
+  const nothing = available === false && emailAvailable === false;
+  const pending = !nothing && (available === null || emailAvailable === null) && !useEmail;
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return COUNTRIES;
@@ -382,7 +403,7 @@ function PhoneDialog({
         className="flex max-h-[94vh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl outline-none md:rounded-3xl"
       >
         <div className="flex items-center justify-between gap-3 px-5 pt-5">
-          <h2 id={titleId} className="text-2xl leading-tight font-bold tracking-tight">{me ? me.name : t.title}</h2>
+          <h2 id={titleId} className="text-2xl leading-tight font-bold tracking-tight">{me ? me.name : useEmail ? e.title : t.title}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -394,11 +415,26 @@ function PhoneDialog({
         </div>
         {me ? (
           <p className="px-5 pt-2 text-sm leading-relaxed text-muted">
-            <bdi dir="ltr">{me.phone}</bdi>
+            <bdi dir="ltr">{me.phone ?? me.email}</bdi>
           </p>
-        ) : available === false ? null : (
-          <p className="px-5 pt-2 text-sm leading-relaxed text-muted">{t.lede}</p>
+        ) : nothing || pending ? null : (
+          <p className="px-5 pt-2 text-sm leading-relaxed text-muted">{useEmail ? e.lede : t.lede}</p>
         )}
+        {!me && both ? (
+          <div role="group" className="mx-5 mt-4 grid grid-cols-2 gap-1 rounded-2xl border border-line p-1">
+            {(["email", "phone"] as const).map((item) => (
+              <button
+                key={item}
+                type="button"
+                aria-pressed={method === item}
+                onClick={() => setMethod(item)}
+                className={`h-10 rounded-xl text-sm font-semibold ${method === item ? "bg-pine text-pine-ink" : "text-ink"}`}
+              >
+                {item === "email" ? e.tabEmail : e.tabPhone}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         {me ? (
           <Link to="/account" className={`${btnGhost} mt-6 w-full`} onClick={onClose}>
@@ -417,10 +453,12 @@ function PhoneDialog({
           >
             {t.out}
           </button>
-        ) : available === false ? (
+        ) : nothing ? (
           <p role="status" className="px-5 py-6 text-sm leading-relaxed text-clay">
             {t.unavailable}
           </p>
+        ) : pending ? null : useEmail ? (
+          <EmailSignIn t={e} onUser={(user) => onUser({ name: user.name, phone: null, email: user.email })} />
         ) : picking ? (
           <div className="mt-4 flex min-h-0 flex-1 flex-col border-t border-line">
             <input
