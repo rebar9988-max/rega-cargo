@@ -134,13 +134,13 @@ export function HeaderLangPicker({ lang, setLang, title }: { lang: Lang; setLang
           setOpen(window.matchMedia("(min-width: 768px)").matches ? "popover" : "sheet");
         }}
         dir="ltr"
-        className="inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1.5 rounded-full px-2 text-ink hover:bg-paper"
+        className="inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1 rounded-full px-1 text-ink hover:bg-paper md:gap-1.5 md:px-2"
       >
         <Globe className="size-5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
         <span
           lang={current.html}
           dir={current.dir}
-          className={`whitespace-nowrap text-sm leading-none font-medium ${current.dir === "rtl" ? "font-ar" : "font-sans"}`}
+          className={`max-w-[6.5rem] truncate text-sm max-[359px]:hidden leading-none font-medium md:max-w-none ${current.dir === "rtl" ? "font-ar" : "font-sans"}`}
           aria-hidden="true"
         >
           {current.short}
