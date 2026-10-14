@@ -1,5 +1,10 @@
 # Progress
 
+## 2026-10-14 beta release verified
+
+PR #95 merged as 8ae779f; Cloudflare main Build 85d441c9 succeeded, application Worker 1a514fed at 100%. Migration 0015 applied safely, no grants/customer record loss. 483 local tests (4 skips), build/type/lint/dry run pass; 12 real customer + 3 tracking/security cases passed across documented final runs on mobile/desktop/WebKit. Beta legal exception expressly authorized; public legal gate retained. Owner/OTP/native checks unavailable; Actions failed before steps, telemetry Forbidden. [Evidence](../verification/rl-five-improvements-20261013.md). Earlier in-progress/held checkpoints below are historical.
+
+
 ## 2026-10-14 beta continuation
 
 Owner expressly permits beta deployment with incomplete legal/business content, superseding the earlier hold. PR #95 remains the implementation vehicle. Explicit beta policy preserves unverified pending content and blocks incomplete formal/public release. Existing Neon dev migration validation passed; fresh local gate and production rollout are in progress. No owner/OTP bypass or new paid resource. [Evidence](../verification/rl-five-improvements-20261013.md).

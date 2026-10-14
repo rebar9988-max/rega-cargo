@@ -1,5 +1,10 @@
 # Known issues, root causes and fixes
 
+## 2026-10-14 beta rollout verification
+
+PR #95 repairs are live; production migration safely applied and preserved all business record counts. Real customer/negative-authority browser checks passed. WebKit transient environment Envoy 502 asset failures prevented one hydration attempt; independent retrieval recovered and original case passed unchanged. Node request-context direct networking and an overly narrow Unauthorized-only expectation were harness issues; same-origin browser fetch verifies the actual fail-closed auth-disabled/real-database guard. No production security bypass. Missing legal content is expressly deferred for beta; verified owner/OTP/native checks and hosted Actions billing remain follow-ups. Telemetry permission prevented a complete log check. [Evidence](../verification/rl-five-improvements-20261013.md).
+
+
 ## 2026-10-14 candidate fixes and factual release blockers
 
 Secure draft scope/expiry and unavailable-auth review fallback; Safari pre-hydration lost-input guards; partial administrative updates no longer reset defaulted fields; editor submits only schema-editable fields; pending identity verification cannot be cleared by archive/enable; active transport courier cannot be nulled; physical shipment recording timestamps are not invented event times; duplicate staff notifications avoided; AI gate replay and UTC counter races fail closed. Full browser gate found auth availability moving the mobile form; reserve warning geometry and keep fallback opening customer-controlled, preserving the existing CLS assertion. [Evidence](../verification/rl-five-improvements-20261013.md).

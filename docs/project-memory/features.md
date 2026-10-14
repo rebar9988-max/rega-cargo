@@ -1,5 +1,10 @@
 # Features and status (verified 2026-10-11)
 
+## 2026-10-14 five-improvement beta features — live
+
+PR #95 is deployed at www.rlgo.net: secure opt-in order drafts/email fallback, reviewable complaints and pending verified-content trust, transparent unchanged pricing, truthful event times/tracking next steps, isolated R&L AI security/policy maintenance and approved-role SUPER_ADMIN administration. Actual owner/OTP access cannot yet be exercised; server denial and isolated approved-domain authority are tested. Legal content remains pending by explicit beta authorization; formal public release requires completion. [Evidence](../verification/rl-five-improvements-20261013.md). Earlier candidate statuses are historical.
+
+
 ## 2026-10-14 implementation candidate (not live)
 
 Five improvements and server-verified SUPER_ADMIN administration exist only in `codex/rl-five-improvements-20261013`. Trust/legal content remains owner-gated; pricing formulas and isolated R&L AI identity/workflows are preserved. [Implementation and limitations](../verification/rl-five-improvements-20261013.md). Existing feature statuses below are historical unless independently reverified.
