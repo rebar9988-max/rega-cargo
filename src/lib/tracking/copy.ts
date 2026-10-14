@@ -21,7 +21,7 @@ export const TRACKING_COPY: Record<Lang, Copy> = {
   ckb: {
     recorded: "کاتی تۆمارکردن",
     actual: "کاتی ڕووداو",
-    uncertain: "تۆماری کۆن: کاتی ڕاستەقینەی ڕووداو دیاری نەکراوە.",
+    uncertain: "کاتی ڕاستەقینەی ڕووداو دیاری نەکراوە؛ کاتی تۆمارکردن پیشان دراوە.",
     unknownEta: "ماوەی گەیشتن هێشتا پشتڕاست نەکراوەتەوە.",
     quote: "نرخەکە لە ئەکاونتەکەت پشکنە و پەسەندی بکە یان ڕەتی بکەرەوە.",
     wait: "چاوەڕێی نوێکردنەوەی تیم بکە؛ ئەگەر پێویستت بە ڕوونکردنەوەیە پەیوەندیمان پێوە بکە.",
@@ -39,7 +39,7 @@ export const TRACKING_COPY: Record<Lang, Copy> = {
   en: {
     recorded: "Recorded at",
     actual: "Event time",
-    uncertain: "Legacy record: the actual event time was not recorded.",
+    uncertain: "The actual event time was not recorded; the recording time is shown.",
     unknownEta: "An arrival window has not been confirmed.",
     quote: "Review the quote in your account and accept or decline it.",
     wait: "Wait for the team's update; contact us if you need clarification.",
@@ -57,7 +57,7 @@ export const TRACKING_COPY: Record<Lang, Copy> = {
   de: {
     recorded: "Erfasst am",
     actual: "Ereigniszeit",
-    uncertain: "Alter Datensatz: tatsächliche Ereigniszeit nicht erfasst.",
+    uncertain: "Tatsächliche Ereigniszeit nicht erfasst; angezeigt wird die Erfassungszeit.",
     unknownEta: "Ein Ankunftszeitraum wurde noch nicht bestätigt.",
     quote: "Angebot im Konto prüfen und annehmen oder ablehnen.",
     wait: "Auf das Team-Update warten; bei Fragen kontaktieren Sie uns.",
@@ -75,7 +75,7 @@ export const TRACKING_COPY: Record<Lang, Copy> = {
   ku: {
     recorded: "Dema tomarkirinê",
     actual: "Dema bûyerê",
-    uncertain: "Tomara kevn: dema rastîn a bûyerê nehatiye tomarkirin.",
+    uncertain: "Dema rastîn a bûyerê nehatiye tomarkirin; dema tomarê tê nîşandan.",
     unknownEta: "Dema gihîştinê hîn nehatiye piştrastkirin.",
     quote: "Di hesabê xwe de nirxê kontrol bike û bipejirîne an red bike.",
     wait: "Li nûkirina tîmê bisekine; ji bo zelalkirinê têkilî bike.",
@@ -93,7 +93,7 @@ export const TRACKING_COPY: Record<Lang, Copy> = {
   ar: {
     recorded: "وقت التسجيل",
     actual: "وقت الحدث",
-    uncertain: "سجل قديم: لم يسجل وقت الحدث الفعلي.",
+    uncertain: "لم يسجل وقت الحدث الفعلي؛ يظهر وقت التسجيل.",
     unknownEta: "لم تؤكد فترة الوصول بعد.",
     quote: "راجع العرض في حسابك واقبله أو ارفضه.",
     wait: "انتظر تحديث الفريق؛ تواصل معنا للاستفسار.",
@@ -111,7 +111,7 @@ export const TRACKING_COPY: Record<Lang, Copy> = {
   fa: {
     recorded: "زمان ثبت",
     actual: "زمان رویداد",
-    uncertain: "رکورد قدیمی: زمان واقعی رویداد ثبت نشده است.",
+    uncertain: "زمان واقعی رویداد ثبت نشده؛ زمان ثبت نشان داده می‌شود.",
     unknownEta: "بازه رسیدن هنوز تأیید نشده است.",
     quote: "قیمت پیشنهادی را در حساب بررسی و قبول یا رد کنید.",
     wait: "منتظر به‌روزرسانی تیم باشید؛ برای توضیح تماس بگیرید.",
@@ -129,7 +129,7 @@ export const TRACKING_COPY: Record<Lang, Copy> = {
   tr: {
     recorded: "Kayıt zamanı",
     actual: "Olay zamanı",
-    uncertain: "Eski kayıt: gerçek olay zamanı kaydedilmemiş.",
+    uncertain: "Gerçek olay zamanı kaydedilmemiş; kayıt zamanı gösterilir.",
     unknownEta: "Varış aralığı henüz doğrulanmadı.",
     quote: "Hesabınızdaki teklifi inceleyip kabul veya reddedin.",
     wait: "Ekip güncellemesini bekleyin; açıklama için bize ulaşın.",

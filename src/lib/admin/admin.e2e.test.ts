@@ -189,6 +189,15 @@ describe("Authenticated SUPER_ADMIN management through domain adapters", () => {
         next_action: "contact",
       }),
     );
+    await sql`insert into tracking_events(id,shipment_id,title,title_ku,phase) values ('legacy-unknown-time',${order.id},'Recorded milestone','تۆماری بار','done')`;
+    const legacy = row(
+      await call("tracking", "update", { next_action: "invoice" }, { id: "legacy-unknown-time" }),
+    );
+    assert.equal(
+      legacy.occurred_at,
+      null,
+      "legacy instructions can be corrected without inventing an event time",
+    );
     await assert.rejects(
       call("tracking", "update", { occurred_at: "2099-01-01T12:00:00Z" }, { id: tracking.id }),
       /invalid/,
@@ -229,6 +238,7 @@ describe("Authenticated SUPER_ADMIN management through domain adapters", () => {
         /invalid/,
       );
       await call(kind, "update", { status: "accepted", courier_id: "owner" }, { id: job.id });
+      await assert.rejects(call(kind, "update", { courier_id: null }, { id: job.id }), /invalid/);
       await call(kind, "delete", undefined, { id: job.id });
       assert.equal((await sql`select status from job_status where job_id = ${job.id}`).length, 2);
     }
@@ -273,6 +283,23 @@ describe("Authenticated SUPER_ADMIN management through domain adapters", () => {
     await assert.rejects(
       call("roles", "create", { user_id: pending.id, role: "super_admin", status: "approved" }),
       /forbidden/,
+    );
+    await call("users", "delete", undefined, { id: pending.id });
+    await assert.rejects(
+      call("users", "update", { disabled_at: null }, { id: pending.id }),
+      /forbidden/,
+    );
+    const metadata = await call("users", "list");
+    assert.ok("editable" in metadata && metadata.editable.includes("name"));
+    assert.ok(
+      !metadata.editable.includes("provisioned_at") &&
+        !metadata.editable.includes("requires_verification"),
+    );
+    const requestMetadata = await call("orders", "list");
+    assert.ok(
+      "editable" in requestMetadata &&
+        requestMetadata.editable.includes("status") &&
+        !requestMetadata.editable.includes("name"),
     );
     await call("users", "update", { name: "Updated buyer" }, { id: "buyer" });
     await call("users", "delete", undefined, { id: "buyer" });

@@ -24,7 +24,7 @@ export const identityAdminResources: Record<string, ResourceSpec> = {
     async prepare(sql, _actor, data, current, operation) {
       if (operation !== "delete" && data.status === "approved") {
         const account = (
-          await sql`select id from phone_users where id = ${data.user_id ?? current?.user_id} and disabled_at is null`
+          await sql`select id from phone_users where id = ${data.user_id ?? current?.user_id} and disabled_at is null and requires_verification = false`
         )[0];
         if (!account) throw new MarketError("forbidden");
       }
@@ -35,7 +35,15 @@ export const identityAdminResources: Record<string, ResourceSpec> = {
     module: "identity",
     table: "phone_users",
     keys: ["id"],
-    columns: ["id", "phone", "name", "created_at", "disabled_at", "provisioned_at"],
+    columns: [
+      "id",
+      "phone",
+      "name",
+      "created_at",
+      "disabled_at",
+      "provisioned_at",
+      "requires_verification",
+    ],
     writeOnly: ["pin_hash", "pin_salt"],
     create: z
       .object({
@@ -52,6 +60,7 @@ export const identityAdminResources: Record<string, ResourceSpec> = {
     defaults: () => ({
       id: `ph_${crypto.randomUUID()}`,
       provisioned_at: new Date().toISOString(),
+      requires_verification: true,
       disabled_at: new Date().toISOString(),
     }),
     remove: () => ({ disabled_at: new Date().toISOString(), provisioned_at: null }),
@@ -62,7 +71,8 @@ export const identityAdminResources: Record<string, ResourceSpec> = {
           pin_hash: await hashCode(codeSecret(), String(data.phone), crypto.randomUUID()),
           pin_salt: crypto.randomUUID(),
         };
-      if (current?.provisioned_at && data.disabled_at === null) throw new MarketError("forbidden"); // Only the existing delivered OTP can activate a provisioned account.
+      if (current?.requires_verification && data.disabled_at === null)
+        throw new MarketError("forbidden"); // Only the existing delivered OTP can activate a provisioned account.
       if (
         data.disabled_at &&
         (

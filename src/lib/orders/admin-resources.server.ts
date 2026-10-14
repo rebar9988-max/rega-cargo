@@ -65,7 +65,7 @@ export const orderAdminResources: Record<string, ResourceSpec> = {
         if ((await checkTextServer(sql, JSON.stringify(checked.data))).decision === "block")
           throw new MarketError("prohibited");
         const contact = (
-          await sql`select name, phone from phone_users where id = ${actor} and disabled_at is null`
+          await sql`select name, phone from phone_users where id = ${actor} and disabled_at is null and requires_verification = false`
         )[0];
         if (!contact) throw new MarketError("forbidden");
         return {

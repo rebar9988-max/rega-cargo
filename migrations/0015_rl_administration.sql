@@ -3,6 +3,7 @@ alter table user_roles drop constraint if exists user_roles_role_check;
 alter table user_roles add constraint user_roles_role_check check (role in ('buyer', 'seller', 'courier', 'admin', 'super_admin'));
 alter table phone_users add column if not exists disabled_at timestamptz;
 alter table phone_users add column if not exists provisioned_at timestamptz;
+alter table phone_users add column if not exists requires_verification boolean not null default false;
 alter table products add column if not exists archived_at timestamptz;
 alter table categories add column if not exists archived_at timestamptz;
 alter table offers add column if not exists archived_at timestamptz;

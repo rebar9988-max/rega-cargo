@@ -721,7 +721,9 @@ export async function adminSet(
     if (
       ["admin", "super_admin"].includes(role) &&
       status === "approved" &&
-      !(await sql`select id from phone_users where id = ${id} and disabled_at is null`)[0]
+      !(
+        await sql`select id from phone_users where id = ${id} and disabled_at is null and requires_verification = false`
+      )[0]
     )
       throw new MarketError("forbidden");
     const rows = await sql<{ user_id: string }>`

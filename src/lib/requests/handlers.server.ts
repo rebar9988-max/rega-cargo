@@ -52,11 +52,18 @@ async function logStatus(
 }
 
 /** Records a milestone; the previous "now" milestone becomes "done". */
-async function addEvent(sql: Sql, requestId: string, title: string, titleKu: string, place = "") {
+async function addEvent(
+  sql: Sql,
+  requestId: string,
+  title: string,
+  titleKu: string,
+  place = "",
+  occurredAt: string | null = null,
+) {
   await sql`update tracking_events set phase = 'done' where shipment_id = ${requestId} and phase = 'now' and archived_at is null`;
   await sql`
     insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase, occurred_at)
-    values (${crypto.randomUUID()}, ${requestId}, ${title}, ${titleKu}, ${place}, ${place}, 'now', now())`;
+    values (${crypto.randomUUID()}, ${requestId}, ${title}, ${titleKu}, ${place}, ${place}, 'now', ${occurredAt})`;
 }
 
 async function notify(sql: Sql, userId: string, ku: string, en: string) {
@@ -236,7 +243,7 @@ export async function acceptQuote(userId: string, value: unknown, quoteId: unkno
     await sql`update shipment_requests set status = 'accepted', updated_at = now() where id = ${request.id} and status = 'quoted' returning id`;
   if (!moved[0]) throw new MarketError("invalid");
   await logStatus(sql, request.id, "accepted", "customer");
-  await addEvent(sql, request.id, ...EVENT_TITLE.accepted);
+  await addEvent(sql, request.id, ...EVENT_TITLE.accepted, "", new Date().toISOString());
   await sql`
     insert into notifications (id, user_id, body_ku, body_en)
     select distinct md5(user_id || ${`accept:${id}`}), user_id, ${`نرخ پەسەند کرا: ${request.tracking_id}`}, ${`Quote accepted: ${request.tracking_id}`}
@@ -315,7 +322,7 @@ export async function staffQuote(userId: string, input: Record<string, unknown>)
     values (${id}, ${request.id}, ${amount}, ${input.customsIncluded}, ${note}, now() + make_interval(days => ${days}), ${userId})`;
   await sql`update shipment_requests set status = 'quoted', updated_at = now() where id = ${request.id}`;
   await logStatus(sql, request.id, "quoted", "staff");
-  await addEvent(sql, request.id, ...EVENT_TITLE.quoted);
+  await addEvent(sql, request.id, ...EVENT_TITLE.quoted, "", new Date().toISOString());
   await notify(sql, request.user_id, `نرخ بۆ ${code} ئامادەیە`, `Quote ready for ${code}`);
   return { ok: true as const, id };
 }
@@ -349,7 +356,14 @@ export async function staffSetStatus(userId: string, input: Record<string, unkno
     await sql`update request_quotes set status = 'superseded', decided_at = now() where request_id = ${request.id} and status = 'sent'`;
   await logStatus(sql, request.id, to, "staff", note);
   const [title, titleKu] = EVENT_TITLE[to] ?? [to, to];
-  await addEvent(sql, request.id, title, titleKu);
+  await addEvent(
+    sql,
+    request.id,
+    title,
+    titleKu,
+    "",
+    ["reviewing", "cancelled"].includes(to) ? new Date().toISOString() : null,
+  );
   await notify(sql, request.user_id, `دۆخی ${code}: ${titleKu}`, `Status ${code}: ${title}`);
   return { ok: true as const };
 }

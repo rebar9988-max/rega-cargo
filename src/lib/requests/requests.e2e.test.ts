@@ -260,6 +260,15 @@ describe("customer requests on PGLite", () => {
 
     for (const status of ["purchased", "in_transit"])
       await requests.staffSetStatus(staff, { ref, status });
+    const statusOnly = await orders.lookupTracking(ref);
+    assert.ok("events" in statusOnly);
+    const physical = statusOnly.events?.find((event) => event.title === "In transit");
+    assert.equal(
+      physical?.at,
+      null,
+      "changing a status does not establish the physical event time",
+    );
+    assert.ok(physical?.recordedAt);
     await requests.staffAddEvent(staff, {
       ref,
       title: "Arrived at Erbil hub",

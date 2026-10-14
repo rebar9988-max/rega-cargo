@@ -48,6 +48,9 @@ export async function adminResource(
   const operation = input.operation as AdminOperation;
   if (!["list", "read", "create", "update", "delete"].includes(operation))
     throw new MarketError("invalid");
+  const editable = Object.keys(
+    (spec.update as unknown as { shape?: Record<string, unknown> }).shape ?? {},
+  );
   const table = identifier(spec.table),
     columns = spec.columns.map(identifier).join(", ");
   const keys =
@@ -73,6 +76,7 @@ export async function adminResource(
         [offset],
       ),
       keys: spec.keys,
+      editable,
     };
   }
   const current =
@@ -88,7 +92,7 @@ export async function adminResource(
   if (operation === "read") {
     const { _version, ...safe } = current!;
     void _version;
-    return { row: safe, keys: spec.keys };
+    return { row: safe, keys: spec.keys, editable };
   }
   let data: Record<string, unknown>;
   if (operation === "delete")
@@ -153,5 +157,5 @@ export async function adminResource(
     params,
   );
   if (!rows[0]) throw new MarketError("forbidden");
-  return { row: rows[0], keys: spec.keys };
+  return { row: rows[0], keys: spec.keys, editable };
 }

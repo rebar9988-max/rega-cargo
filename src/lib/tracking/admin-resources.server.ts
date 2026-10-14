@@ -36,7 +36,12 @@ export const trackingAdminResources: Record<string, ResourceSpec> = {
         throw new MarketError("notfound");
       const occurred =
         merged.occurred_at == null ? null : new Date(String(merged.occurred_at)).getTime();
-      if (merged.phase === "next" ? occurred !== null : occurred === null || occurred > Date.now())
+      if (
+        merged.phase === "next"
+          ? occurred !== null
+          : (operation === "create" && occurred === null) ||
+            (occurred !== null && occurred > Date.now())
+      )
         throw new MarketError("invalid");
       const from = merged.estimate_from,
         to = merged.estimate_to;

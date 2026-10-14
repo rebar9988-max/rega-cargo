@@ -77,8 +77,9 @@ function adapter(kind: keyof typeof schemas): ResourceSpec {
           : flow.indexOf(String(data.status)) !== flow.indexOf(String(current.status)) + 1)
       )
         throw new MarketError("invalid");
-      const courier = data.courier_id ?? current?.courier_id;
-      if (data.status && data.status !== "requested" && data.status !== "cancelled" && !courier)
+      const courier = Object.hasOwn(data, "courier_id") ? data.courier_id : current?.courier_id;
+      const resultingStatus = data.status ?? current?.status ?? "requested";
+      if (resultingStatus !== "requested" && resultingStatus !== "cancelled" && !courier)
         throw new MarketError("invalid");
       if (
         courier &&

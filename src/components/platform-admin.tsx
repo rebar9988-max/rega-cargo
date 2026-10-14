@@ -1,3 +1,4 @@
+import { useHydrated } from "@/lib/use-hydrated";
 import { useState } from "react";
 import { platformAdmin } from "@/lib/admin/api";
 import { useI18n } from "@/lib/i18n";
@@ -18,27 +19,13 @@ const RESOURCES = [
   "settings",
   "audit",
 ];
-const READONLY = new Set([
-  "id",
-  "created_at",
-  "updated_at",
-  "archived_at",
-  "user_id",
-  "owner_id",
-  "seller_id",
-  "tracking_id",
-  "estimate_eur",
-  "payload",
-  "kind",
-  "phone",
-  "updated_by",
-  "compliance_status",
-]);
 /** Authenticated operational editor. Closed server adapters validate every field and domain rule. */
 export function PlatformAdmin() {
+  const ready = useHydrated();
   const { lang } = useI18n();
   const t = ADMIN_COPY[lang];
   const [resource, setResource] = useState("products");
+  const [editable, setEditable] = useState<string[]>([]);
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [key, setKey] = useState<Record<string, unknown>>({});
   const [draft, setDraft] = useState("{}");
@@ -60,9 +47,13 @@ export function PlatformAdmin() {
         setMessage(`${t[11]} (${result.error})`);
         return;
       }
-      const body = JSON.parse(result.result) as { rows?: Record<string, unknown>[] };
+      const body = JSON.parse(result.result) as {
+        rows?: Record<string, unknown>[];
+        editable?: string[];
+      };
       if (body.rows) {
         setRows(body.rows);
+        setEditable(body.editable ?? []);
         setOffset(start);
       } else {
         setMessage(t[10]);
@@ -82,6 +73,7 @@ export function PlatformAdmin() {
         {t[1]}
         <select
           className={controlClass}
+          disabled={!ready}
           value={resource}
           onChange={(e) => {
             setResource(e.target.value);
@@ -101,19 +93,19 @@ export function PlatformAdmin() {
         </select>
       </label>
       <div className="flex flex-wrap gap-2">
-        <button className={btnGhost} disabled={busy} onClick={() => run("list", 0)}>
+        <button className={btnGhost} disabled={busy || !ready} onClick={() => run("list", 0)}>
           {t[2]}
         </button>
         <button
           className={btnGhost}
-          disabled={busy || offset === 0}
+          disabled={busy || !ready || offset === 0}
           onClick={() => run("list", Math.max(0, offset - 50))}
         >
           ← 50
         </button>
         <button
           className={btnGhost}
-          disabled={busy || rows.length < 50}
+          disabled={busy || !ready || rows.length < 50}
           onClick={() => run("list", offset + 50)}
         >
           50 →
@@ -140,6 +132,7 @@ export function PlatformAdmin() {
             {resource !== "audit" && (
               <button
                 className={btnGhost}
+                disabled={!ready || busy}
                 onClick={() => {
                   const keys =
                     resource === "roles"
@@ -151,7 +144,9 @@ export function PlatformAdmin() {
                   setDraft(
                     JSON.stringify(
                       Object.fromEntries(
-                        Object.entries(row).filter(([k]) => !READONLY.has(k) && !keys.includes(k)),
+                        Object.entries(row).filter(
+                          ([k]) => editable.includes(k) && !keys.includes(k),
+                        ),
                       ),
                       null,
                       2,
@@ -181,6 +176,7 @@ export function PlatformAdmin() {
             {t[8]}
             <textarea
               className={controlClass}
+              disabled={!ready}
               dir="ltr"
               rows={8}
               maxLength={12000}
@@ -188,7 +184,7 @@ export function PlatformAdmin() {
               onChange={(e) => setDraft(e.target.value)}
             />
           </label>
-          <button className={btnPrimary} disabled={busy}>
+          <button className={btnPrimary} disabled={busy || !ready}>
             {t[9]} · {operation === "create" ? t[3] : t[4]}
           </button>
           {Object.keys(key).length > 0 && (
@@ -196,6 +192,7 @@ export function PlatformAdmin() {
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
+                  disabled={!ready}
                   checked={confirm}
                   onChange={(e) => setConfirm(e.target.checked)}
                 />
@@ -204,7 +201,7 @@ export function PlatformAdmin() {
               <button
                 type="button"
                 className={btnGhost}
-                disabled={busy || !confirm}
+                disabled={busy || !ready || !confirm}
                 onClick={() => run("delete")}
               >
                 {t[5]}

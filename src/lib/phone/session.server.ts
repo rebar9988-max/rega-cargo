@@ -129,7 +129,7 @@ export async function currentPhoneUserId() {
   if (!token) return null;
   const sql = await getSql();
   const rows = await sql<{ user_id: string }>`
-    select s.user_id from phone_sessions s join phone_users u on u.id = s.user_id where s.token_hash = ${sha(token)} and s.expires_at > now() and u.disabled_at is null`;
+    select s.user_id from phone_sessions s join phone_users u on u.id = s.user_id where s.token_hash = ${sha(token)} and s.expires_at > now() and u.disabled_at is null and u.requires_verification = false`;
   return rows[0]?.user_id ?? null;
 }
 
@@ -236,15 +236,18 @@ export async function phoneConfirm(input: {
     name: string;
     disabled_at: string | null;
     provisioned_at: string | null;
-  }>`select id, name, disabled_at, provisioned_at from phone_users where phone = ${phone}`;
+    requires_verification: boolean;
+  }>`select id, name, disabled_at, provisioned_at, requires_verification from phone_users where phone = ${phone}`;
   if (users[0]) {
     if (users[0].disabled_at && !users[0].provisioned_at) return { error: "forbidden" as const };
     if (users[0].provisioned_at) {
       const activated =
-        await sql`update phone_users set disabled_at = null, provisioned_at = null where id = ${users[0].id} and provisioned_at is not null returning id`;
+        await sql`update phone_users set disabled_at = null, provisioned_at = null, requires_verification = false where id = ${users[0].id} and provisioned_at is not null returning id`;
       if (!activated[0]) return { error: "forbidden" as const };
       await sql`insert into user_roles(user_id, role, status, display_name, phone) values (${users[0].id}, 'buyer', 'approved', ${users[0].name}, ${phone}) on conflict (user_id, role) do nothing`;
     }
+    if (users[0].requires_verification && !users[0].provisioned_at)
+      await sql`update phone_users set requires_verification = false where id = ${users[0].id} and disabled_at is null`;
     await openSession(users[0].id);
     return { name: users[0].name, phone };
   }
