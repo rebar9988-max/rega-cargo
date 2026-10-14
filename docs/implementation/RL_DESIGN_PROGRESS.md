@@ -6,7 +6,8 @@ Last updated: 2026-10-14 (session `session_01QUGppPbUTeYsGApJpfoV8P`).
 
 * Reference: owner homepage screenshot, 1024 × 1536 (`evidence/reference-1024x1536.webp`). Measurements: `RL_REFERENCE_MEASUREMENTS.md`.
 * Base: `origin/main` @ `ddc275f` (the work was first built on a stale clone and re-applied on current `main`; the stale branch `design/rl-reference-home` is superseded by `design/rl-reference-home-v2`).
-* Production domain: `https://www.rlgo.net` only (AGENTS.md "Permanent public domain rule"). Deployment happens through the existing Cloudflare Builds trigger when `main` changes; **this session has not deployed**.
+* Production domain: `https://www.rlgo.net` only (AGENTS.md "Permanent public domain rule"). PR #100 was merged as `fb1bf7b` (merge commit, 2026-10-14 ~20:54 UTC); the existing Cloudflare Builds trigger deployed it: `https://www.rlgo.net/sw.js` changed from `rl-sw-v12` to `rl-sw-v13` within about one minute (the first poll after the merge saw v12, the second v13).
+* Live verification (read-only, Chromium against the real site, evidence `evidence/production-1024.webp`, `evidence/production-390-top.webp`): see "Production verification" below. The Worker version ID was not queried (no Cloudflare API credential in this session), so the live commit is inferred from the new service-worker version and the new markup, not read from Cloudflare.
 
 ## Implemented
 
@@ -60,8 +61,15 @@ Remaining mismatches: hero silk is a crop that starts at x≈520 and fades in (t
 * Playwright (Chromium, against the dev server, snapshots ignored): home geometry, menu / language / search sheets at 375, 390, 820, 1180, 1280, 1440 in ckb/ar/en: all pass (9 skipped by design); at 360px the new reference-homepage specs, the font-swap layout-shift test, the shipping-route test, the homepage paint test and the homepage search test pass.
 * Not verified here: the R&L AI capsule specs and the five-controls spec (the AI binding exists only in the Worker, not the dev server); `product link` and `compact forms` specs on `/stores/request` (need product-link env flags; that page is untouched); **screenshot baselines** (official Playwright Docker image unavailable, hosted Actions blocked by billing, I-7), **WebKit**, and a local `wrangler dev` run (workerd fails to start in this container). Existing screenshot baselines for `/`, the menu/search/language sheets over `/` therefore still show the old homepage and must be re-rendered in the official image.
 
+## Production verification (https://www.rlgo.net, 2026-10-14 after the deploy)
+
+* 16 routes returned 200: `/`, `/stores`, `/stores?cat=fashion`, `/stores?fav=1`, both `/stores/request?store=zalando&intent=buy|ship`, `/quote`, `/market`, `/ai`, `/track`, `/impressum`, `/privacy`, `/terms`, `/contact`, `/?q=vodka`, `/stores?q=vodka` (the banned query listed 0 products/stores).
+* At 375, 390, 430, 768, 1024 and 1440 px: no horizontal overflow, zero console errors, zero failed or ≥400 requests, five header controls left-to-right in the reference order, R&L AI capsule present, 8 category tiles, 4 product cards (the marketplace is empty, so the four labelled examples), Vazirmatn, Inter and Noto Sans Arabic loaded.
+* Interactions at 390 px: menu opens, first category tile → `/stores?cat=electronics&sub=smartphones`, R&L AI → `/ai`, header search → `/stores?q=sneakers`, hero primary → `/market`, hero secondary → `/stores/request?intent=buy`. `/?lang=ar` and `/?lang=en` render localized `h1` with `<html dir="rtl">` and the matching `lang`.
+* Not done: Lighthouse/CLS/LCP measurements (not run, so no numbers are claimed), WebKit/native iPhone, authenticated or order-submitting journeys, Cloudflare version ID / telemetry.
+
 ## Blockers / next action
 
-* Hosted Actions cannot start (billing, I-7); merge relies on the local gate above, which is reduced as listed. Never call CI green.
-* Deployment: existing Cloudflare Builds deploys `main` to the `rega-cargo` Worker (`https://www.rlgo.net`) after merge. This session has no Cloudflare credential of its own, so the live commit and browser verification must come after that build and are recorded in `docs/project-memory/deployments.md` once done.
+* Hosted Actions cannot start (the PR #100 jobs `scope` and `verify` failed in 3 s with no steps, consistent with I-7); the merge relied on the local gate above, which is reduced as listed. CI is not green.
+* Next: re-render the layout baselines for `/` (official image, or the "Cargo quality gate" workflow with `update_baselines` once Actions runs), run Lighthouse on the live home, and have the owner answer the three decisions below.
 * Owner decisions to confirm: keyed white logo variant; tracking form no longer on the home; CARE+ banner wording.

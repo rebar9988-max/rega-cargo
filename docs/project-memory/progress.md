@@ -92,4 +92,4 @@ Owner-only protection review: [PR #94](https://github.com/rebar9988-max/rega-car
 
 ## 2026-10-14 reference homepage
 
-Branch `design/rl-reference-home-v2` (on `main` @ `ddc275f`): owner screenshot implemented on `/`. Local gate and visual comparison recorded in [RL_DESIGN_PROGRESS.md](../implementation/RL_DESIGN_PROGRESS.md). Not merged/deployed by the implementing session unless that file says otherwise.
+[PR #100](https://github.com/rebar9988-max/rega-cargo/pull/100) merged as `fb1bf7b` and live at https://www.rlgo.net (verified read-only, see [RL_DESIGN_PROGRESS.md](../implementation/RL_DESIGN_PROGRESS.md)). Pending: re-render `/` layout baselines, Lighthouse, three owner decisions (keyed logo, home tracking form, CARE+ wording).

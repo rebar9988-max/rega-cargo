@@ -60,6 +60,10 @@ Owner explicitly permits incomplete legal content during beta; this supersedes t
 
 Production migration 0015 applied transactionally after existing Neon dev-branch validation/reapplication. Business record counts unchanged, no user/role grant. Fresh 483 unit/script passes (4 skips), local typecheck/lint/build/dry-run pass. Real production checks: 12 customer cases + 3 tracking/unauthenticated-denial cases passed across final separate runs, including mobile/desktop/WebKit. Environment gateway/harness corrections and the unchanged WebKit rerun are documented honestly. Ready Actions run 38569257495 failed before steps; no hosted-green claim. Real positive SUPER_ADMIN/OTP/native hardware verification remains unavailable; public privileges stay closed. Telemetry inspection was Forbidden, so no blanket runtime-log/zero-5xx claim.
 
+## Reference homepage (2026-10-14)
+
+Owner's homepage screenshot is live on `/` ([PR #100](https://github.com/rebar9988-max/rega-cargo/pull/100), main `fb1bf7b`, sw v13). Local gate only (Actions blocked, I-7); `/` screenshot baselines are stale until re-rendered in the official image. Owner to decide: keyed white logo, tracking form removed from the home, CARE+ wording. [Details and live evidence](docs/implementation/RL_DESIGN_PROGRESS.md).
+
 ## Next safe continuation point
 
 The five-improvement beta release is verified. Before official/public release: supply owner-verified legal/business content and approved multilingual policies, configure a working existing OTP delivery provider and identify/verify the exact owner account. Keep stage=beta while content is pending; stage=public restores the complete legal gate. Never seed an arbitrary SUPER_ADMIN or weaken authentication. Query latest production deployments after documentation-only builds.
