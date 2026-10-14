@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { Check, Globe } from "lucide-react";
+import { Check, ChevronDown, Globe } from "lucide-react";
 import { LANGS, langMeta, type Lang } from "@/lib/langs";
 
 /** One language row list (native name, code, check on the current one), shared by every picker. */
@@ -58,7 +58,8 @@ export function LangOptions({
 }
 
 /**
- * Header language button: globe + current code (globe only on phones, with an accessible name).
+ * Header language button: globe + the current language's native name + chevron, with no frame
+ * of its own; it takes the header's text colour (white on the red bar, ink on the white one).
  * Opens a bottom sheet on phones and a dropdown popover from md up. Escape closes and returns
  * focus to the button; the current language gets focus on open; arrow keys move through the list.
  */
@@ -127,19 +128,28 @@ export function HeaderLangPicker({ lang, setLang, title }: { lang: Lang; setLang
         data-layout="lang-button"
         aria-haspopup={open === "sheet" ? "dialog" : "listbox"}
         aria-expanded={open !== null}
-        aria-label={`${title}: ${current.name} (${current.code})`}
+        aria-label={`${title}: ${current.short === current.name ? current.name : `${current.short} – ${current.name}`} (${current.code})`}
         onClick={() => {
           if (open) return close(false);
           setOpen(window.matchMedia("(min-width: 768px)").matches ? "popover" : "sheet");
         }}
-        className={`inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1.5 rounded-full px-2 text-sm text-ink hover:bg-paper md:border md:px-3 ${
-          open ? "md:border-pine md:text-pine" : "md:border-line"
-        }`}
+        dir="ltr"
+        className="inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1 rounded-full px-1 text-ink hover:bg-paper md:gap-1.5 md:px-2"
       >
-        <Globe className="size-5 shrink-0" aria-hidden="true" />
-        <span className="hidden font-sans text-xs font-semibold tracking-wide md:inline" aria-hidden="true">
-          {current.code}
+        <Globe className="size-5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+        <span
+          lang={current.html}
+          dir={current.dir}
+          className={`rl-lang-name text-sm leading-none font-medium ${current.dir === "rtl" ? "font-ar" : "font-sans"}`}
+          aria-hidden="true"
+        >
+          {current.short}
         </span>
+        <ChevronDown
+          className={`size-3.5 shrink-0 transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
+          strokeWidth={2.25}
+          aria-hidden="true"
+        />
       </button>
       {open === "popover" ? (
         <div

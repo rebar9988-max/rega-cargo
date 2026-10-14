@@ -1628,8 +1628,18 @@
     color: var(--rl-on-brand);
     transition: background-color var(--rl-motion-fast) var(--rl-ease);
   }
-  .rl-site-header [data-layout="lang-button"] {
-    border-color: var(--rl-on-brand-line);
+  /* Language name beside the globe: capped so the action row never widens the page; below
+     360px only the globe and chevron remain (the full name stays in the aria-label). */
+  .rl-lang-name {
+    max-inline-size: var(--rl-lang-name-max);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @media (width < 22.5rem) {
+    .rl-lang-name {
+      display: none;
+    }
   }
   .rl-site-header .rl-icon-button:hover,
   .rl-site-header [data-layout="lang-button"]:hover {
