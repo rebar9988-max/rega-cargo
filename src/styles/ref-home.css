@@ -496,6 +496,8 @@
   display: flex;
   gap: 0.5rem;
   margin: 0;
+  /* Reserve the tile height so web-font swaps cannot move the sections below it. */
+  min-block-size: 10.5rem;
   padding: 0.25rem 0.125rem 0.25rem;
   list-style: none;
   overflow-x: auto;
