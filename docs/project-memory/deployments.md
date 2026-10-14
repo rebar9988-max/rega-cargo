@@ -1,5 +1,14 @@
 # CI/CD and deployments
 
+## 2026-10-14 owner-authorized beta rollout in progress
+
+Owner supersedes the earlier missing-legal-content hold specifically for beta. Source policy permits incomplete facts only during beta; public release must require completion. Actual Neon dev migration/reapplication passed; production migration 0015 applied transactionally with existing record counts unchanged and no roles granted. Fresh source gate: 483 local unit/script passes, 4 existing skips; typecheck/lint/build/dry-run passed. Browser/merge/build verification continues. Rollback Worker baseline 0f6e2dd7; preserve additive schema and all data. [Evidence](../verification/rl-five-improvements-20261013.md).
+
+## 2026-10-14 five-improvement candidate — release held
+
+No merge, deployment, staging exposure, remote migration or production data write. User prohibits release when verified legal content is missing; business-approved.json remains blank. Candidate builds locally without a database connection; migration 0015 is isolated-tested only. Existing production read-only inspection: `0f6e2dd7-441a-4092-af4e-57715a4af7b3`, 100%, 07:16 UTC. Existing main auto-build invokes build/deploy directly, so do not merge the draft until the legal gate and owner/OTP verification are satisfied. [Evidence](../verification/rl-five-improvements-20261013.md).
+
+
 Procedures (build, secrets, go-live, rollback): [DEPLOY.md](../../DEPLOY.md). Deploys, secret changes and rollbacks need **explicit owner approval** ([usage policy](../integrations/usage-policy.md)).
 
 ## CI
@@ -80,3 +89,5 @@ PR #89 merged `4465ba7`; build `ed9dc719` succeeded, migration skipped, startup 
 Release preflight update: existing authenticated Cloudflare connector resolves the direct-CLI credential gap. Verified R&L main Builds trigger and rollback version `5791d60b`, no concurrent build. GitHub main branch resource reports `protected:false`. Hosted billing failure remains; the standing full local official-image gate policy applies. No release yet.
 
 2026-10-14 release gate: final official-image full run 499 passed/16 existing skips/one unchanged navigation harness cancellation; its original case passed 3 consecutive no-retry confirmations without source change. Final affected AI/readiness/visual suite 72/72. Typecheck, 460 unit/security passes + 4 existing skips, lint 0 errors/5 existing warnings, build and dry run passed on the final application tree. [PR #92](https://github.com/rebar9988-max/rega-cargo/pull/92) ready for normal authorized merge after preflight. Hosted Actions is not green (billing); standing full local gate policy applies. No release performed yet.
+
+The existing Cloudflare production trigger deploy command is now `npm run release:check && npx wrangler deploy` (build command unchanged). This closes the previously documented automatic-workflow omission: future public-stage releases cannot silently skip legal readiness. No secret/binding/branch preview/domain changed. The owner-approved beta stage satisfies this gate while retaining visible pending legal facts.

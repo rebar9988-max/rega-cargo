@@ -3,18 +3,11 @@
  * from the generated entry. Only bound where wrangler config declares it.
  */
 import { DurableObject } from "cloudflare:workers";
-import { signAiToken, verifyAiToken } from "./src/lib/ai/challenge";
+import { signAiToken, spendAiToken } from "./src/lib/ai/challenge";
 import { consumeUsage, refundUsage, type UsageInput } from "./src/lib/ai/usage";
 
 /** Single global counter for R&L AI budgets (strongly consistent). */
 export class RlAiUsage extends DurableObject {
-  private store() {
-    const storage = this.ctx.storage;
-    return {
-      get: (key: string) => storage.get<number>(key),
-      put: (entries: Record<string, number>) => storage.put(entries),
-    };
-  }
   private async roll(day: string) {
     const storage = this.ctx.storage;
     const currentDay = await storage.get<string>("current-day");
@@ -22,7 +15,10 @@ export class RlAiUsage extends DurableObject {
     if (currentDay && day < currentDay) return false;
     if (currentDay !== day) {
       const hmac = await storage.get<string>("hmac");
+      const spent = await storage.list<number>({ prefix: "spent:" });
       await storage.deleteAll();
+      const keep = Object.fromEntries([...spent].filter(([, expiry]) => expiry > Date.now()));
+      if (Object.keys(keep).length) await storage.put(keep);
       await storage.put("current-day", day);
       if (hmac) await storage.put("hmac", hmac);
     }
@@ -39,18 +35,28 @@ export class RlAiUsage extends DurableObject {
   }
   async consume(input: UsageInput) {
     if (!(await this.roll(input.day))) return { ok: false, reason: "daily_cap" as const };
-    return consumeUsage(this.store(), input);
+    return this.ctx.storage.transaction((tx) =>
+      consumeUsage({ get: (key) => tx.get<number>(key), put: (entries) => tx.put(entries) }, input),
+    );
   }
   async refund(input: UsageInput) {
     // An inference started yesterday may fail after today's first request.
     // Its refund must neither clear today's state nor create a new day.
     if ((await this.ctx.storage.get<string>("current-day")) !== input.day) return;
-    await refundUsage(this.store(), input);
+    await this.ctx.storage.transaction((tx) =>
+      refundUsage({ get: (key) => tx.get<number>(key), put: (entries) => tx.put(entries) }, input),
+    );
   }
   async issue(now: number) {
     return signAiToken(await this.secret(), now);
   }
   async verify(token: string, now: number) {
-    return verifyAiToken(await this.secret(), token, now);
+    const secret = await this.secret();
+    return this.ctx.storage.transaction((tx) =>
+      spendAiToken(secret, token, now, {
+        get: (key) => tx.get<number>(key),
+        put: (key, expiry) => tx.put(key, expiry),
+      }),
+    );
   }
 }

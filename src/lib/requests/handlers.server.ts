@@ -21,15 +21,7 @@ export const EVENT_TITLE: Record<string, [string, string]> = {
   cancelled: ["Cancelled", "هەڵوەشێنرایەوە"],
 };
 
-async function isStaff(sql: Sql, userId: string) {
-  const rows =
-    await sql`select 1 as ok from user_roles where user_id = ${userId} and role = 'admin' and status = 'approved'`;
-  return rows.length > 0;
-}
-
-async function requireStaff(sql: Sql, userId: string) {
-  if (!(await isStaff(sql, userId))) throw new MarketError("forbidden");
-}
+import { isStaff, requireStaff } from "@/lib/auth/authority.server";
 
 function ref(value: unknown) {
   const code = normalizeTrackingId(typeof value === "string" ? value : "");
@@ -60,11 +52,18 @@ async function logStatus(
 }
 
 /** Records a milestone; the previous "now" milestone becomes "done". */
-async function addEvent(sql: Sql, requestId: string, title: string, titleKu: string, place = "") {
-  await sql`update tracking_events set phase = 'done' where shipment_id = ${requestId} and phase = 'now'`;
+async function addEvent(
+  sql: Sql,
+  requestId: string,
+  title: string,
+  titleKu: string,
+  place = "",
+  occurredAt: string | null = null,
+) {
+  await sql`update tracking_events set phase = 'done' where shipment_id = ${requestId} and phase = 'now' and archived_at is null`;
   await sql`
-    insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase)
-    values (${crypto.randomUUID()}, ${requestId}, ${title}, ${titleKu}, ${place}, ${place}, 'now')`;
+    insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase, occurred_at)
+    values (${crypto.randomUUID()}, ${requestId}, ${title}, ${titleKu}, ${place}, ${place}, 'now', ${occurredAt})`;
 }
 
 async function notify(sql: Sql, userId: string, ku: string, en: string) {
@@ -244,11 +243,11 @@ export async function acceptQuote(userId: string, value: unknown, quoteId: unkno
     await sql`update shipment_requests set status = 'accepted', updated_at = now() where id = ${request.id} and status = 'quoted' returning id`;
   if (!moved[0]) throw new MarketError("invalid");
   await logStatus(sql, request.id, "accepted", "customer");
-  await addEvent(sql, request.id, ...EVENT_TITLE.accepted);
+  await addEvent(sql, request.id, ...EVENT_TITLE.accepted, "", new Date().toISOString());
   await sql`
     insert into notifications (id, user_id, body_ku, body_en)
-    select md5(user_id || ${`accept:${id}`}), user_id, ${`نرخ پەسەند کرا: ${request.tracking_id}`}, ${`Quote accepted: ${request.tracking_id}`}
-    from user_roles where role = 'admin' and status = 'approved'
+    select distinct md5(user_id || ${`accept:${id}`}), user_id, ${`نرخ پەسەند کرا: ${request.tracking_id}`}, ${`Quote accepted: ${request.tracking_id}`}
+    from user_roles where role in ('admin', 'super_admin') and status = 'approved'
     on conflict (id) do nothing`;
   return { ok: true as const };
 }
@@ -323,7 +322,7 @@ export async function staffQuote(userId: string, input: Record<string, unknown>)
     values (${id}, ${request.id}, ${amount}, ${input.customsIncluded}, ${note}, now() + make_interval(days => ${days}), ${userId})`;
   await sql`update shipment_requests set status = 'quoted', updated_at = now() where id = ${request.id}`;
   await logStatus(sql, request.id, "quoted", "staff");
-  await addEvent(sql, request.id, ...EVENT_TITLE.quoted);
+  await addEvent(sql, request.id, ...EVENT_TITLE.quoted, "", new Date().toISOString());
   await notify(sql, request.user_id, `نرخ بۆ ${code} ئامادەیە`, `Quote ready for ${code}`);
   return { ok: true as const, id };
 }
@@ -357,7 +356,14 @@ export async function staffSetStatus(userId: string, input: Record<string, unkno
     await sql`update request_quotes set status = 'superseded', decided_at = now() where request_id = ${request.id} and status = 'sent'`;
   await logStatus(sql, request.id, to, "staff", note);
   const [title, titleKu] = EVENT_TITLE[to] ?? [to, to];
-  await addEvent(sql, request.id, title, titleKu);
+  await addEvent(
+    sql,
+    request.id,
+    title,
+    titleKu,
+    "",
+    ["reviewing", "cancelled"].includes(to) ? new Date().toISOString() : null,
+  );
   await notify(sql, request.user_id, `دۆخی ${code}: ${titleKu}`, `Status ${code}: ${title}`);
   return { ok: true as const };
 }
@@ -373,6 +379,27 @@ export async function staffAddEvent(userId: string, input: Record<string, unknow
     id: string;
   }>`select id from shipment_requests where tracking_id = ${code}`;
   if (!rows[0]) throw new MarketError("notfound");
-  await addEvent(sql, rows[0].id, title, title, place);
+  const { trackingAdminResources } = await import("../tracking/admin-resources.server");
+  const spec = trackingAdminResources.tracking;
+  const parsed = spec.create.safeParse({
+    shipment_id: rows[0].id,
+    title,
+    title_ku: title,
+    place,
+    place_ku: place,
+    phase: "now",
+    occurred_at: input.occurredAt,
+    next_action: input.nextAction ?? "none",
+    estimate_from: input.estimateFrom || null,
+    estimate_to: input.estimateTo || null,
+  });
+  if (!parsed.success) throw new MarketError("invalid");
+  const data = await spec.prepare!(sql, userId, parsed.data, null, "create");
+  await sql`
+    with recorded as (insert into tracking_events(id, shipment_id, title, title_ku, place, place_ku, phase, occurred_at, next_action, estimate_from, estimate_to)
+      values (${crypto.randomUUID()}, ${rows[0].id}, ${title}, ${title}, ${place}, ${place}, 'now', ${data.occurred_at}, ${data.next_action}, ${data.estimate_from}, ${data.estimate_to}) returning id),
+    logged as (insert into platform_audit_log(id, actor_id, module, resource, resource_id, action, fields)
+      select ${crypto.randomUUID()}, ${userId}, 'tracking', 'tracking', recorded.id, 'create', '["title","place","occurred_at","next_action","estimate_from","estimate_to"]'::jsonb from recorded returning id)
+    update tracking_events set phase = 'done' where shipment_id = ${rows[0].id} and phase = 'now' and id not in (select id from recorded) and exists(select 1 from logged)`;
   return { ok: true as const };
 }

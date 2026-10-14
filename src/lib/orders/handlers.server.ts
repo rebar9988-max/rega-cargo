@@ -1,8 +1,10 @@
 import { getSql } from "@/lib/db";
 import { auditLog, checkTextServer } from "@/lib/compliance/service.server";
 import { MarketError, cleanOptional, cleanText } from "@/lib/market";
+import { requireStaff } from "@/lib/auth/authority.server";
 import { phoneMe } from "@/lib/phone/session.server";
-import { newTrackingId, normalizeTrackingId } from "./tracking-id";
+import { trackingEvent, type TrackingEventRow } from "../tracking/presentation";
+import { newTrackingId, publicTrackingId } from "./tracking-id";
 
 /** Version of the restricted-items declaration text the user accepted. */
 export const DECLARATION_VERSION = "2026-10-09";
@@ -103,8 +105,8 @@ export async function submitRequest(
         on conflict do nothing
         returning id
       ), ev as (
-        insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase)
-      select ${crypto.randomUUID()}, req.id, 'Request received', 'داواکاری گەیشت', '', '', 'now' from req
+        insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase, occurred_at)
+      select ${crypto.randomUUID()}, req.id, 'Request received', 'داواکاری گەیشت', '', '', 'now', now() from req
       ), log as (
         insert into request_status_log (id, request_id, status, actor)
         select ${crypto.randomUUID()}, req.id, 'received', 'system' from req
@@ -128,8 +130,8 @@ export async function submitRequest(
     }
     await sql`
       insert into notifications (id, user_id, body_ku, body_en)
-      select md5(user_id || ${tracking}), user_id, ${`داواکاری ${tracking}`}, ${`Request ${tracking}`}
-      from user_roles where role = 'admin' and status = 'approved'`;
+      select distinct md5(user_id || ${tracking}), user_id, ${`داواکاری ${tracking}`}, ${`Request ${tracking}`}
+      from user_roles where role in ('admin', 'super_admin') and status = 'approved'`;
     return { id: tracking, estimate: true as const };
   } catch (err) {
     if (err instanceof MarketError) return { error: err.code };
@@ -140,36 +142,19 @@ export async function submitRequest(
 }
 
 export async function lookupTracking(id: string) {
-  const code = normalizeTrackingId(id);
+  const code = publicTrackingId(id);
   if (!code) return { error: "notfound" as const };
   try {
     const sql = await getSql();
     // Public view: status and milestones only. No name, phone, payload or price.
     const rows = await sql<{ id: string; tracking_id: string; status: string }>`
-      select id, tracking_id, status from shipment_requests where tracking_id = ${code}`;
+      select id, tracking_id, status from shipment_requests where tracking_id = ${code} and archived_at is null`;
     const row = rows[0];
     if (!row) return { error: "notfound" as const };
-    const events = await sql<{
-      title: string;
-      title_ku: string;
-      place: string;
-      place_ku: string;
-      phase: string;
-      created_at: string;
-    }>`
-      select title, title_ku, place, place_ku, phase, created_at from tracking_events where shipment_id = ${row.id} order by created_at`;
-    return {
-      id: row.tracking_id,
-      status: row.status,
-      events: events.map((event) => ({
-        title: event.title,
-        titleKu: event.title_ku,
-        place: event.place,
-        placeKu: event.place_ku,
-        phase: event.phase,
-        at: String(event.created_at),
-      })),
-    };
+    const events = await sql<TrackingEventRow>`
+      select title, title_ku, place, place_ku, phase, created_at, occurred_at, next_action, estimate_from, estimate_to
+      from tracking_events where shipment_id = ${row.id} and archived_at is null order by created_at, id`;
+    return { id: row.tracking_id, status: row.status, events: events.map(trackingEvent) };
   } catch (err) {
     if (dbUnavailable(err)) return { error: "unavailable" as const };
     console.error("[orders]", err instanceof Error ? err.message : "failed");
@@ -193,9 +178,7 @@ function productLink(payload: unknown): string | null {
 
 export async function adminOrders(userId: string) {
   const sql = await getSql();
-  const role =
-    await sql`select 1 as ok from user_roles where user_id = ${userId} and role = 'admin' and status = 'approved'`;
-  if (!role.length) throw new MarketError("forbidden");
+  await requireStaff(sql, userId);
   const rows = await sql<{
     id: string;
     tracking_id: string;

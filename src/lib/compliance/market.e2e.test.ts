@@ -337,3 +337,18 @@ describe("compliance: scan of existing data", () => {
     );
   });
 });
+
+describe("per-user action limit", () => {
+  it("holds at 20 per hour even when requests arrive together", async () => {
+    const user = "burst-reporter";
+    const results = await Promise.allSettled(
+      Array.from({ length: 30 }, (_, i) => market.reportProblem(user, `Subject ${i}`, "Body text")),
+    );
+    const ok = results.filter((r) => r.status === "fulfilled").length;
+    const limited = results.filter(
+      (r) => r.status === "rejected" && (r.reason as { code?: string }).code === "rate",
+    ).length;
+    assert.equal(ok, 20);
+    assert.equal(limited, 10);
+  });
+});

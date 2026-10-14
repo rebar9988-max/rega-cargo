@@ -241,14 +241,7 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
     return json({ ok: false, error: "unavailable" }, 503);
   }
   if (!decision.ok) return json({ ok: false, error: decision.reason }, 429);
-  const refund = async () => {
-    try {
-      await deps.usage?.refund?.(usageInput);
-    } catch {
-      // A refund is best effort. Keep the consumed budget and the original,
-      // classified provider error; never expose storage diagnostics to clients.
-    }
-  };
+  // Each provider attempt remains counted, including failures and timeouts.
 
   const started = Date.now();
   let reply: unknown;
@@ -280,7 +273,6 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
       deps.timeoutMs ?? INFERENCE_TIMEOUT_MS,
     );
   } catch (error) {
-    await refund();
     const timedOut = error instanceof Error && error.message === "timeout";
     return json({ ok: false, error: timedOut ? "timeout" : "model_error" }, timedOut ? 504 : 502);
   }
@@ -292,7 +284,6 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
       ?.finish_reason;
     const detail =
       content == null || content === "" ? "empty" : finish === "length" ? "truncated" : "schema";
-    await refund();
     return json({ ok: false, error: "invalid_output", detail }, 502);
   }
   // Compliance: a prohibited product gets a neutral "no result" (no name, no link, no search).

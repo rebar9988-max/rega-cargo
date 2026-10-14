@@ -43,7 +43,7 @@ function SellSignedIn({
   const t = marketCopy(lang);
   const [message, setMessage] = useState("");
   const [mine, setMine] = useState(initial.mine);
-  const seller = initial.me.roles.some((role) => role.role === "seller" && role.status === "approved");
+  const seller = initial.me.roles.some((role) => (role.role === "seller" || role.role === "super_admin") && role.status === "approved");
   async function refresh() {
     setMine(await marketMine());
   }

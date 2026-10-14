@@ -58,3 +58,7 @@ npm run test:layout:geometry       # layout geometry without pixel baselines
 ## R&L AI ownership and verification — 2026-10-13
 
 R&L AI conversation policy/UI is owned by `src/modules/rl-ai/`; existing `src/lib/ai/` retains approved provider/vision/budget ownership. `/api/ai/chat` uses a typed planner, never provider prose. Marketplace integration is only exported `assistantProductSearch` in `src/lib/market/assistant-contract.server.ts`, with existing public filtering and no private data. AST import tests prohibit domain internals, SQL and reverse business dependencies. Existing auth/database and private workflows remain authoritative. See [verification report](../ai/rl-ai-verification-20261013.md).
+
+## 2026-10-14 candidate administration ownership (not deployed)
+
+`src/lib/admin/` is an authenticated shared control plane with a closed resource registry, database-role authority and atomic immutable audit. Business rules remain in explicit domain adapters under existing Marketplace, orders/Bring For Me, Delivery and Tracking libraries; AI policy is exposed through its existing service contract and cannot grant access to private records or increase deployment budgets. Identity verification/roles and shared settings have explicit control-plane ownership. Existing `/admin`, unified cargo database, public routes and isolated `src/modules/rl-ai` remain intact. Additive migration 0015 is isolated-tested only; no role grant, new database or production schema change. [Candidate evidence](../verification/rl-five-improvements-20261013.md).

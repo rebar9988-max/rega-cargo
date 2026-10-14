@@ -1,0 +1,147 @@
+import type { Lang } from "../langs";
+type Copy = {
+  recorded: string;
+  actual: string;
+  uncertain: string;
+  unknownEta: string;
+  quote: string;
+  wait: string;
+  contact: string;
+  invoice: string;
+  delivery: string;
+  done: string;
+  account: string;
+  occurred: string;
+  from: string;
+  to: string;
+  action: string;
+  none: string;
+};
+export const TRACKING_COPY: Record<Lang, Copy> = {
+  ckb: {
+    recorded: "کاتی تۆمارکردن",
+    actual: "کاتی ڕووداو",
+    uncertain: "کاتی ڕاستەقینەی ڕووداو دیاری نەکراوە؛ کاتی تۆمارکردن پیشان دراوە.",
+    unknownEta: "ماوەی گەیشتن هێشتا پشتڕاست نەکراوەتەوە.",
+    quote: "نرخەکە لە ئەکاونتەکەت پشکنە و پەسەندی بکە یان ڕەتی بکەرەوە.",
+    wait: "چاوەڕێی نوێکردنەوەی تیم بکە؛ ئەگەر پێویستت بە ڕوونکردنەوەیە پەیوەندیمان پێوە بکە.",
+    contact: "بە کۆدی شوێنپێکردنەکەت پەیوەندی بە تیم بکە.",
+    invoice: "تیم داوای پسووڵەی کردووە؛ لە ڕێگای کەناڵی پەیوەندیی فەرمی بینێرە.",
+    delivery: "لەگەڵ تیم کات و شوێنی وەرگرتن پشتڕاست بکەرەوە.",
+    done: "گەیەنراوە؛ بۆ هەر کێشەیەک پەیوەندی بە تیم بکە.",
+    account: "کردنەوەی ئەکاونت",
+    occurred: "کاتی ڕاستەقینەی ڕووداو",
+    from: "سەرەتای ماوەی خەمڵێنراو",
+    to: "کۆتایی ماوەی خەمڵێنراو",
+    action: "هەنگاوی کڕیار",
+    none: "هیچ داواکارییەکی تایبەت نییە",
+  },
+  en: {
+    recorded: "Recorded at",
+    actual: "Event time",
+    uncertain: "The actual event time was not recorded; the recording time is shown.",
+    unknownEta: "An arrival window has not been confirmed.",
+    quote: "Review the quote in your account and accept or decline it.",
+    wait: "Wait for the team's update; contact us if you need clarification.",
+    contact: "Contact the team with your tracking reference.",
+    invoice: "The team requested an invoice; send it through an official contact channel.",
+    delivery: "Confirm collection or delivery arrangements with the team.",
+    done: "Delivered; contact the team about any problem.",
+    account: "Open account",
+    occurred: "Actual event time",
+    from: "Estimated window start",
+    to: "Estimated window end",
+    action: "Customer action",
+    none: "No specific action",
+  },
+  de: {
+    recorded: "Erfasst am",
+    actual: "Ereigniszeit",
+    uncertain: "Tatsächliche Ereigniszeit nicht erfasst; angezeigt wird die Erfassungszeit.",
+    unknownEta: "Ein Ankunftszeitraum wurde noch nicht bestätigt.",
+    quote: "Angebot im Konto prüfen und annehmen oder ablehnen.",
+    wait: "Auf das Team-Update warten; bei Fragen kontaktieren Sie uns.",
+    contact: "Kontaktieren Sie das Team mit Ihrer Sendungsnummer.",
+    invoice: "Das Team benötigt eine Rechnung; über einen offiziellen Kontaktkanal senden.",
+    delivery: "Abholung oder Zustellung mit dem Team abstimmen.",
+    done: "Zugestellt; bei Problemen das Team kontaktieren.",
+    account: "Konto öffnen",
+    occurred: "Tatsächliche Ereigniszeit",
+    from: "Beginn des geschätzten Zeitraums",
+    to: "Ende des geschätzten Zeitraums",
+    action: "Kundenaktion",
+    none: "Keine bestimmte Aktion",
+  },
+  ku: {
+    recorded: "Dema tomarkirinê",
+    actual: "Dema bûyerê",
+    uncertain: "Dema rastîn a bûyerê nehatiye tomarkirin; dema tomarê tê nîşandan.",
+    unknownEta: "Dema gihîştinê hîn nehatiye piştrastkirin.",
+    quote: "Di hesabê xwe de nirxê kontrol bike û bipejirîne an red bike.",
+    wait: "Li nûkirina tîmê bisekine; ji bo zelalkirinê têkilî bike.",
+    contact: "Bi koda şopandinê têkilî bi tîmê re bike.",
+    invoice: "Tîmê fatûre xwestiye; bi kanaleke fermî bişîne.",
+    delivery: "Dem û cihê wergirtinê bi tîmê re piştrast bike.",
+    done: "Hatiye radestkirin; ji bo pirsgirêkan têkilî bike.",
+    account: "Hesabê veke",
+    occurred: "Dema rastîn a bûyerê",
+    from: "Destpêka dema texmînkirî",
+    to: "Dawiya dema texmînkirî",
+    action: "Gava xerîdar",
+    none: "Daxwazeke taybet tune",
+  },
+  ar: {
+    recorded: "وقت التسجيل",
+    actual: "وقت الحدث",
+    uncertain: "لم يسجل وقت الحدث الفعلي؛ يظهر وقت التسجيل.",
+    unknownEta: "لم تؤكد فترة الوصول بعد.",
+    quote: "راجع العرض في حسابك واقبله أو ارفضه.",
+    wait: "انتظر تحديث الفريق؛ تواصل معنا للاستفسار.",
+    contact: "تواصل مع الفريق برقم التتبع.",
+    invoice: "طلب الفريق فاتورة؛ أرسلها عبر قناة اتصال رسمية.",
+    delivery: "أكد ترتيبات الاستلام أو التسليم مع الفريق.",
+    done: "تم التسليم؛ تواصل مع الفريق لأي مشكلة.",
+    account: "فتح الحساب",
+    occurred: "وقت الحدث الفعلي",
+    from: "بداية الفترة المقدرة",
+    to: "نهاية الفترة المقدرة",
+    action: "إجراء العميل",
+    none: "لا إجراء محدد",
+  },
+  fa: {
+    recorded: "زمان ثبت",
+    actual: "زمان رویداد",
+    uncertain: "زمان واقعی رویداد ثبت نشده؛ زمان ثبت نشان داده می‌شود.",
+    unknownEta: "بازه رسیدن هنوز تأیید نشده است.",
+    quote: "قیمت پیشنهادی را در حساب بررسی و قبول یا رد کنید.",
+    wait: "منتظر به‌روزرسانی تیم باشید؛ برای توضیح تماس بگیرید.",
+    contact: "با کد رهگیری با تیم تماس بگیرید.",
+    invoice: "تیم فاکتور درخواست کرده؛ از کانال رسمی ارسال کنید.",
+    delivery: "زمان و محل تحویل را با تیم تأیید کنید.",
+    done: "تحویل شد؛ برای هر مشکلی با تیم تماس بگیرید.",
+    account: "بازکردن حساب",
+    occurred: "زمان واقعی رویداد",
+    from: "شروع بازه تخمینی",
+    to: "پایان بازه تخمینی",
+    action: "اقدام مشتری",
+    none: "اقدام خاصی لازم نیست",
+  },
+  tr: {
+    recorded: "Kayıt zamanı",
+    actual: "Olay zamanı",
+    uncertain: "Gerçek olay zamanı kaydedilmemiş; kayıt zamanı gösterilir.",
+    unknownEta: "Varış aralığı henüz doğrulanmadı.",
+    quote: "Hesabınızdaki teklifi inceleyip kabul veya reddedin.",
+    wait: "Ekip güncellemesini bekleyin; açıklama için bize ulaşın.",
+    contact: "Takip kodunuzla ekibe ulaşın.",
+    invoice: "Ekip fatura istedi; resmi iletişim kanalından gönderin.",
+    delivery: "Teslim alma veya teslimat düzenini ekiple doğrulayın.",
+    done: "Teslim edildi; sorun varsa ekibe ulaşın.",
+    account: "Hesabı aç",
+    occurred: "Gerçek olay zamanı",
+    from: "Tahmini aralık başlangıcı",
+    to: "Tahmini aralık sonu",
+    action: "Müşteri adımı",
+    none: "Özel adım yok",
+  },
+};

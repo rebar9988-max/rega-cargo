@@ -1,4 +1,4 @@
-export type MarketRole = "buyer" | "seller" | "courier" | "admin";
+export type MarketRole = "buyer" | "seller" | "courier" | "admin" | "super_admin";
 export type MarketCategory = "beauty" | "fashion" | "electronics" | "home" | "baby" | "sports";
 export type Stock = "in" | "low" | "out";
 export type ReviewStatus = "pending" | "approved" | "removed";

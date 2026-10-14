@@ -1,5 +1,12 @@
 # Known issues, root causes and fixes
 
+## 2026-10-14 candidate fixes and factual release blockers
+
+Secure draft scope/expiry and unavailable-auth review fallback; Safari pre-hydration lost-input guards; partial administrative updates no longer reset defaulted fields; editor submits only schema-editable fields; pending identity verification cannot be cleared by archive/enable; active transport courier cannot be nulled; physical shipment recording timestamps are not invented event times; duplicate staff notifications avoided; AI gate replay and UTC counter races fail closed. Full browser gate found auth availability moving the mobile form; reserve warning geometry and keep fallback opening customer-controlled, preserving the existing CLS assertion. [Evidence](../verification/rl-five-improvements-20261013.md).
+
+Release blocked by blank verified business/legal file and policies, no approved owner identity/real OTP verification. Hosted main Actions still fails before job steps. These are not resolved by fictional data, weakened security or paid settings.
+
+
 Keep each entry: ID · status · symptom · verified root cause · fix/next step · evidence. Close entries, don't delete them.
 
 ## Open

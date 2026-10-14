@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
 - Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-14**, verified R&L AI production release `481bfeb` / PR #92. See the current checkpoint below.
+- Last memory update: **2026-10-14**, five-improvement beta candidate on main `19c17f2`; owner expressly permits incomplete legal content during beta. Existing R&L AI release and permanent baseline remain intact. See the candidate checkpoint and evidence below.
 
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
@@ -52,7 +52,15 @@ Source implementation adds the owned module, short typed responses, pre-inferenc
 | Header category strip | PR #78 live (`2e724d37`): phones/tablets get a 64px brand-red header and a swipeable category strip under it; desktop unchanged. Verified on production 21:05–21:10 UTC: 20 routes 200, Playwright 264 passed / 9 skipped / 0 failed (all Chromium devices + 360px suite), no horizontal overflow at 390/820/1280 | [design.md](docs/project-memory/design.md) |
 | Banned-products protection | Holds via the bundled list in `src/lib/compliance/rules.ts` | `wrangler tail`: "using bundled list" |
 
+## Five-improvement candidate checkpoint (2026-10-14)
+
+Branch `codex/rl-five-improvements-20261013` integrates main `19c17f2` and preserves the owner-only AI baseline. Secure opt-in drafts/email fallback, verified-content trust/complaint plumbing, transparent unchanged pricing, truthful tracking and bounded AI policy/token replay repairs are implemented. Fresh database-role authority and domain-owned SUPER_ADMIN CRUD/audit are isolated-tested; no public grants or owner provisioning. [Candidate evidence](docs/verification/rl-five-improvements-20261013.md).
+
+**Beta deployment newly authorized (2026-10-14):** owner explicitly defers legal/business completion until official release, superseding the earlier legal-data hold. No verified SUPER_ADMIN / delivered OTP verification is available; keep privileges closed and report this limitation. Production migration 0015 is now applied transactionally after successful existing Neon dev-branch validation/reapplication; business record counts unchanged and no roles granted. Fresh local 483-pass gate, build/typecheck/lint/dry-run passed; final mobile gate and authorized beta rollout continue. Main automatic build remains the existing deployment workflow. Existing production version inspected: `0f6e2dd7`, 100%, 07:16 UTC. Hosted main Actions `38527176459` failed before steps; no hosted green result. Final local checks and [open draft PR #95](https://github.com/rebar9988-max/rega-cargo/pull/95) are in the evidence report. Final strict affected gate: 45/45 pass with no retries, original failure/retry retests 14/14 pass; source 22ef7be. Worktree is committed/pushed; no merge/deploy.
+
 ## Next safe continuation point
+
+For the five-improvement candidate: complete the authorized beta release using the explicit beta policy, safe additive migration and existing merge/build workflow. Keep missing legal content visibly pending; stage=public must require verified facts/policies. Do not seed an arbitrary SUPER_ADMIN or weaken OTP/security. Real owner/OTP verification remains an honest limitation.
 
 - The critical domain/WebKit repair is released and verified (PR #89). Owner domain-exclusivity decision is now enforced in Cloudflare: only `https://www.rlgo.net` serves R&L; retired cargo DNS/domain and public staging/preview URLs are closed. Keep them closed; use isolated checks for staging. Preserve the apex/HTTP redirects and SW v12. Do not restore `content-visibility:auto` without the real viewport paint regression. Query current deployments before future releases; documentation-only builds may change the version ID. Native iPhone/direct IPv6/real OTP verification remains a clearly recorded follow-up, not a passed test.
 

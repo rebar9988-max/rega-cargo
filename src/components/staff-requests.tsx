@@ -6,6 +6,7 @@ import { when } from "@/lib/requests/format";
 import { useI18n } from "@/lib/i18n";
 import { REQUEST_COPY, type RequestCopy } from "@/lib/requests/copy";
 import { staffAction, staffList } from "@/lib/requests/api";
+import { TRACKING_COPY } from "@/lib/tracking/copy";
 import { STAFF_STATUSES, staffCanSet } from "@/lib/requests/validate";
 
 type Rows = Awaited<ReturnType<typeof staffList>>;
@@ -93,6 +94,12 @@ export function StaffRequestTools({ request, t }: { request: DetailLike; t: Requ
   const [note, setNote] = useState("");
   const [title, setTitle] = useState("");
   const [place, setPlace] = useState("");
+  const { lang } = useI18n();
+  const tracking = TRACKING_COPY[lang];
+  const [occurredAt, setOccurredAt] = useState("");
+  const [nextAction, setNextAction] = useState("none");
+  const [estimateFrom, setEstimateFrom] = useState("");
+  const [estimateTo, setEstimateTo] = useState("");
   const accepted = request.quotes.some((quote) => quote.status === "accepted");
   const canQuote = ["received", "reviewing", "quoted"].includes(request.status);
 
@@ -122,7 +129,15 @@ export function StaffRequestTools({ request, t }: { request: DetailLike; t: Requ
   }
   function addEvent(event: FormEvent) {
     event.preventDefault();
-    void run({ action: "event", title, place }).then(() => {
+    void run({
+      action: "event",
+      title,
+      place,
+      occurredAt: occurredAt ? new Date(occurredAt).toISOString() : "",
+      nextAction,
+      estimateFrom: estimateFrom ? new Date(estimateFrom).toISOString() : null,
+      estimateTo: estimateTo ? new Date(estimateTo).toISOString() : null,
+    }).then(() => {
       setTitle("");
       setPlace("");
     });
@@ -220,6 +235,47 @@ export function StaffRequestTools({ request, t }: { request: DetailLike; t: Requ
             maxLength={80}
             value={place}
             onChange={(event) => setPlace(event.target.value)}
+          />
+        </Field>
+        <Field label={tracking.occurred}>
+          <input
+            className={controlClass}
+            type="datetime-local"
+            dir="ltr"
+            value={occurredAt}
+            required
+            onChange={(e) => setOccurredAt(e.target.value)}
+          />
+        </Field>
+        <Field label={tracking.action}>
+          <select
+            className={controlClass}
+            value={nextAction}
+            onChange={(e) => setNextAction(e.target.value)}
+          >
+            {(["none", "wait", "invoice", "contact", "delivery"] as const).map((action) => (
+              <option key={action} value={action}>
+                {tracking[action]}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label={tracking.from}>
+          <input
+            className={controlClass}
+            type="datetime-local"
+            dir="ltr"
+            value={estimateFrom}
+            onChange={(e) => setEstimateFrom(e.target.value)}
+          />
+        </Field>
+        <Field label={tracking.to}>
+          <input
+            className={controlClass}
+            type="datetime-local"
+            dir="ltr"
+            value={estimateTo}
+            onChange={(e) => setEstimateTo(e.target.value)}
           />
         </Field>
         <div>

@@ -1,5 +1,14 @@
 # Progress
 
+## 2026-10-14 beta continuation
+
+Owner expressly permits beta deployment with incomplete legal/business content, superseding the earlier hold. PR #95 remains the implementation vehicle. Explicit beta policy preserves unverified pending content and blocks incomplete formal/public release. Existing Neon dev migration validation passed; fresh local gate and production rollout are in progress. No owner/OTP bypass or new paid resource. [Evidence](../verification/rl-five-improvements-20261013.md).
+
+## 2026-10-14 five-improvement candidate
+
+Implementation on `codex/rl-five-improvements-20261013`, rebased onto `19c17f2`; [PR #95](https://github.com/rebar9988-max/rega-cargo/pull/95) is open/draft and production merge/deploy is blocked by owner-verified legal content and verified owner/OTP access. 481 local unit/script passes, 4 existing skips; complete browser evidence and correction checkpoints in [verification](../verification/rl-five-improvements-20261013.md). Migration 0015 has isolated validation only. No production changes.
+
+
 Use Git history and PR descriptions for detail; record only status and pointers here.
 Snapshot: 2026-10-11 ~15:40 UTC, `main` @ `df8794e`.
 

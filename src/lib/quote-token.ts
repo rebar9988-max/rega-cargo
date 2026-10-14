@@ -10,7 +10,15 @@ import { dimInRange, kgInRange } from "./quote-search.ts";
 
 export const QUOTE_TTL_MS = 30 * 60 * 1000;
 
-export type QuoteInput = { fromId: string; toId: string; mode: ModeId; kg: number; l: number; w: number; h: number };
+export type QuoteInput = {
+  fromId: string;
+  toId: string;
+  mode: ModeId;
+  kg: number;
+  l: number;
+  w: number;
+  h: number;
+};
 export type QuotePayload = QuoteInput & { v: 1; total: number; chargeable: number; exp: number };
 
 const enc = new TextEncoder();
@@ -24,7 +32,9 @@ function b64url(bytes: Uint8Array): string {
 function unb64url(text: string): Uint8Array | null {
   if (!/^[A-Za-z0-9_-]*$/.test(text)) return null;
   try {
-    const bin = atob(text.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - (text.length % 4)) % 4));
+    const bin = atob(
+      text.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - (text.length % 4)) % 4),
+    );
     return Uint8Array.from(bin, (ch) => ch.charCodeAt(0));
   } catch {
     return null;
@@ -40,7 +50,13 @@ export function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
 }
 
 async function hmac(secret: string, data: string): Promise<Uint8Array> {
-  const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
   return new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(data)));
 }
 
@@ -60,17 +76,35 @@ export function priceQuote(raw: Record<string, unknown>): Omit<QuotePayload, "v"
   if (!kgInRange(kg)) return null;
   if (![l, w, h].every(dimInRange)) return null;
   const price = priceShipment({ mode, origin, dest, weightKg: kg, l, w, h });
-  return { fromId: origin.id, toId: dest.id, mode: mode.id, kg, l, w, h, total: price.total, chargeable: price.chargeable };
+  return {
+    fromId: origin.id,
+    toId: dest.id,
+    mode: mode.id,
+    kg,
+    l,
+    w,
+    h,
+    total: price.total,
+    chargeable: price.chargeable,
+  };
 }
 
-export async function signQuote(priced: Omit<QuotePayload, "v" | "exp">, secret: string, now = Date.now()): Promise<{ token: string; payload: QuotePayload }> {
+export async function signQuote(
+  priced: Omit<QuotePayload, "v" | "exp">,
+  secret: string,
+  now = Date.now(),
+): Promise<{ token: string; payload: QuotePayload }> {
   const payload: QuotePayload = { v: 1, ...priced, exp: now + QUOTE_TTL_MS };
   const body = b64url(enc.encode(JSON.stringify(payload)));
   const sig = b64url(await hmac(secret, body));
   return { token: `${body}.${sig}`, payload };
 }
 
-export async function verifyQuote(token: unknown, secret: string, now = Date.now()): Promise<QuotePayload | null> {
+export async function verifyQuote(
+  token: unknown,
+  secret: string,
+  now = Date.now(),
+): Promise<QuotePayload | null> {
   if (typeof token !== "string" || token.length > 2048) return null;
   const [body, sig, extra] = token.split(".");
   if (!body || !sig || extra !== undefined) return null;
@@ -87,4 +121,9 @@ export async function verifyQuote(token: unknown, secret: string, now = Date.now
   } catch {
     return null;
   }
+}
+
+/** Idempotency key for booking a verified token: one request per signed quote. */
+export function quoteBookingKey(token: string): string {
+  return `quote:${token.split(".")[1] ?? ""}`;
 }

@@ -15,6 +15,8 @@ export default tseslint.config(
       ".vercel/**",
       ".nitro/**",
       "node_modules/**",
+      "playwright-report/**",
+      "test-results/**",
       "src/routeTree.gen.ts",
     ],
   },

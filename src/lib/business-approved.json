@@ -1,0 +1,18 @@
+{
+  "legalName": "",
+  "legalForm": "",
+  "street": "",
+  "postalCode": "",
+  "city": "",
+  "country": "",
+  "representative": "",
+  "registerDetails": "",
+  "vatDetails": "",
+  "contentResponsible": "",
+  "verificationSource": "",
+  "verifiedAt": "",
+  "liability": null,
+  "jurisdiction": null,
+  "complaints": null,
+  "retention": null
+}
