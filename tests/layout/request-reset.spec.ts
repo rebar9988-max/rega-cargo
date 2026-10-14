@@ -41,7 +41,11 @@ test("exact reported buy chip does not return the completed form to the beginnin
   });
   const form = await fill(page);
   const chip = form.getByRole("link", { name: "داواکردنی کڕین", exact: true });
-  await chip.scrollIntoViewIfNeeded();
+  // A tall tablet can fit the chip without scrolling; explicitly set the regression precondition.
+  await chip.evaluate((element) => {
+    const top = element.getBoundingClientRect().top + scrollY;
+    scrollTo(0, Math.max(1, top - 250));
+  });
   const before = await page.evaluate(() => ({ scroll: scrollY, time: performance.timeOrigin }));
   expect(before.scroll).toBeGreaterThan(0);
   await chip.click();
