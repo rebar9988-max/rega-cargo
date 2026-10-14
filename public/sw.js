@@ -10,7 +10,7 @@
  * takes over immediately; pages stay network first, so nobody gets stuck.
  * Kill switch: replace this file with one that calls self.registration.unregister().
  */
-const VERSION = "rl-sw-v12"; // retire cached HTML with WebKit's skipped-section CSS
+const VERSION = "rl-sw-v13"; // retire cached HTML before the reference homepage
 const PAGES = `${VERSION}-pages`;
 const ASSETS = `${VERSION}-assets`;
 const STATIC = `${VERSION}-static`;

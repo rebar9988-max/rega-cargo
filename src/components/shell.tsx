@@ -56,7 +56,16 @@ export function PageHeader({
   );
 }
 export type ShellSearch = { q: string; setQ: (value: string) => void };
-export function Shell({ children, search }: { children: ReactNode; search?: ShellSearch }) {
+export function Shell({
+  children,
+  search,
+  reference = false,
+}: {
+  children: ReactNode;
+  search?: ShellSearch;
+  /** Reference homepage: the five-control header, no bottom bar. */
+  reference?: boolean;
+}) {
   const { t, lang } = useI18n();
   const path = useRouterState({ select: (s) => s.location.pathname });
   useLocalizedTitle(lang, path);
@@ -65,7 +74,7 @@ export function Shell({ children, search }: { children: ReactNode; search?: Shel
       <a href="#content" className="rl-skip">
         {t.skip}
       </a>
-      <SiteHeader search={search} />
+      <SiteHeader search={search} reference={reference} />
       <main id="content" className="flex-1">
         {children}
       </main>

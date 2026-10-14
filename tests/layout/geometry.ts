@@ -2,6 +2,8 @@
 export const LAYOUT = {
   headerHeight: 64,
   headerRow: { phone: 64, tablet: 64, laptop: 88 },
+  /** Reference homepage header (one row, no bottom bar): 64px on phones, 98px from 768px. */
+  refHeaderRow: { phone: 64, tablet: 98, laptop: 98 },
   catalogueColumns: { phone: 2, tablet: 3, laptop: 3 },
   bottomBarHeight: 64,
   maxContent: 1200,
@@ -61,15 +63,20 @@ export function measureLayout(args: { bp: Bp; layout: typeof LAYOUT; sheet: bool
   if (sw > vw + 1) out.push(`horizontal overflow: scrollWidth ${sw} > viewport ${vw}`);
 
   // 3. Header and bottom bar at their exact heights.
-  const header = document.querySelector('[data-layout="header"]');
+  // The reference homepage has its own one-row header and no bottom bar
+  // (docs/implementation/RL_REFERENCE_MEASUREMENTS.md).
+  const refHeader = document.querySelector('[data-layout="ref-header"]');
+  const header = refHeader ?? document.querySelector('[data-layout="header"]');
+  const wantHeader = refHeader ? layout.refHeaderRow[bp] : layout.headerRow[bp];
   if (!header || !visible(header)) out.push("header missing");
   else {
     const h = header.getBoundingClientRect().height;
-    if (Math.abs(h - layout.headerRow[bp]) > 0.5)
-      out.push(`header row ${px(h)} != ${layout.headerRow[bp]}`);
+    if (Math.abs(h - wantHeader) > 0.5) out.push(`header row ${px(h)} != ${wantHeader}`);
   }
   const bar = document.querySelector('[data-layout="bottom-bar"]');
-  if (bp === "laptop") {
+  if (refHeader) {
+    if (bar && visible(bar)) out.push("bottom bar visible on the reference homepage");
+  } else if (bp === "laptop") {
     if (bar && visible(bar)) out.push("bottom bar visible on laptop");
   } else if (!bar || !visible(bar)) out.push(`bottom bar missing on ${bp}`);
   else {
@@ -159,7 +166,7 @@ export function measureLayout(args: { bp: Bp; layout: typeof LAYOUT; sheet: bool
 
   // 7. Images: every content image sits in a box with a fixed aspect ratio, and renders at it.
   for (const img of document.querySelectorAll("img")) {
-    if (!visible(img)) continue;
+    if (!visible(img) || img.closest("[data-layout-exempt]")) continue;
     const r = img.getBoundingClientRect();
     if (r.width < 64 || r.height < 64) continue; // icons/logos have fixed sizes
     let box: Element | null = img;

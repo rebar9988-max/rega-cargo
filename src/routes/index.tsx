@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
 import { BazaarPage } from "@/components/bazaar-page";
-import { PremiumHome } from "@/components/premium-home";
+import { RefHome } from "@/components/ref-home";
 import { Shell } from "@/components/shell";
 import { validateBazaarSearch } from "@/lib/bazaar-search";
 import { marketHome } from "@/lib/market/api";
@@ -46,8 +46,8 @@ function HomePage() {
   )
     return <BazaarPage home />;
   return (
-    <Shell>
-      <PremiumHome market={market} />
+    <Shell reference>
+      <RefHome market={market} />
     </Shell>
   );
 }

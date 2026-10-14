@@ -34,3 +34,7 @@ Below 1024px the header is one 64px brand-red row (menu, logo, search button, la
 ## R&L AI ownership and verification — 2026-10-13
 
 AI-scoped white/red restrained cards, existing tokens and official brand; reuse existing Vazirmatn v33.003 variable WOFF2 only inside assistant/image UI. Global Noto/Inter, homepage, header/footer and assets unchanged. Only 27 intentional `/ai` baselines updated in official Playwright 1.63 image after visual review. Keep correct RTL and bidi-isolated mixed text. See [verification report](../ai/rl-ai-verification-20261013.md).
+
+## Reference homepage — 2026-10-14
+
+`components/ref-home.tsx` + `styles/ref-home.css` (unlayered, scoped to `.rl-ref*`) own the home; `SiteHeader reference` renders the five-control header (physical order logo · language · search · R&L AI · menu, row isolated `dir="ltr"` while `<html dir>` stays rtl). Homepage-scoped font: Vazirmatn v33.003 (other routes keep Noto Sans Arabic). Measurements and evidence: [RL_REFERENCE_MEASUREMENTS.md](../implementation/RL_REFERENCE_MEASUREMENTS.md). The layout lock measures the reference header (`data-layout="ref-header"`, 64/98/98px) and exempts `.rl-ref` from the type-scale and image-ratio checks (`data-layout-exempt`); screenshot baselines for `/` must be re-rendered in the official image.

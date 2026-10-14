@@ -64,11 +64,11 @@ test("homepage search uses internal marketplace and displays honest data states"
   page,
 }) => {
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
-  const search = page.locator('main form[role="search"]');
-  await expect(search).toHaveAttribute("action", "/market");
-  await search.locator('input[type="search"]').fill("kettle");
-  await search.locator('button[type="submit"]').click();
-  await expect(page).toHaveURL(/\/market\?.*q=kettle/);
+  // The reference homepage keeps search in its header; it opens the existing store search.
+  const search = page.locator('[data-layout="ref-header"] input[type="search"]');
+  await search.fill("kettle");
+  await search.press("Enter");
+  await expect(page).toHaveURL(/\/stores\?.*q=kettle/);
   await expect(page.locator("main")).not.toContainText(/Guaranteed delivery|Official partner/);
 });
 
