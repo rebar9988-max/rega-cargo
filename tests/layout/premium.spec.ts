@@ -548,3 +548,57 @@ test("header category strip: directly under the header, swipeable, active state,
   await page.locator('[data-layout="search-button"]').click();
   await expect(page.locator('input[type="search"][aria-expanded="true"]')).toBeFocused();
 });
+
+test("refinement: header, hero and sections share one content edge; touch targets stay 44px", async ({
+  page,
+}) => {
+  const edges = () =>
+    page.evaluate(() => {
+      const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect();
+      return {
+        brand: Math.round(box(".rl-ref-brand").left),
+        menu: Math.round(box(".rl-ref-menu").right),
+        head: Math.round(box(".rl-ref-section .rl-ref-head").left),
+        headEnd: Math.round(box(".rl-ref-section .rl-ref-head").right),
+        lineOne: Math.round(box(".rl-ref-title-1").left),
+        lineTwo: Math.round(box(".rl-ref-title-2").left),
+        eyebrow: Math.round(box(".rl-ref-eyebrow").left),
+      };
+    });
+  for (const width of [360, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const lang of ["ckb", "ar", "en"]) {
+      await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+      await page.evaluate(() => document.fonts.ready);
+      const e = await edges();
+      const at = `${lang} ${width}`;
+      expect(e.brand, at).toBe(e.head);
+      expect(e.menu, at).toBe(e.headEnd);
+      // Both headline lines start where the eyebrow starts, in every script.
+      expect(e.lineOne, at).toBe(e.eyebrow);
+      expect(e.lineTwo, at).toBe(e.eyebrow);
+      // From laptop widths beyond the 1200px column the hero copy starts on that column.
+      if (width >= 1440) expect(e.eyebrow, at).toBe(e.head);
+    }
+  }
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+  const small = await page.evaluate(() =>
+    [
+      ...document.querySelectorAll<HTMLElement>(
+        '[data-layout="ref-header"] a, [data-layout="ref-header"] button, .rl-ref-link, .rl-site-footer nav a, .rl-site-footer .rl-button',
+      ),
+    ]
+      .map((el) => ({ el, r: el.getBoundingClientRect() }))
+      .filter(({ r }) => r.width > 0 && (r.width < 44 || r.height < 44))
+      .map(
+        ({ el, r }) =>
+          `${el.textContent?.trim() || el.getAttribute("aria-label")} ${r.width}x${r.height}`,
+      ),
+  );
+  expect(small).toEqual([]);
+  // No bottom bar on the reference homepage, so the footer reserves no space for one.
+  expect(
+    await page.locator(".rl-site-footer").evaluate((el) => getComputedStyle(el).paddingBlockEnd),
+  ).toBe("0px");
+});

@@ -7,7 +7,7 @@ import { ITEMS_COPY } from "@/lib/items-copy";
 export function ItemsLink({ className = "" }: { className?: string }) {
   const { lang } = useI18n();
   return (
-    <Link to="/prohibited-items" className={`inline-flex min-h-10 items-center gap-2 text-sm font-medium text-pine underline underline-offset-4 ${className}`}>
+    <Link to="/prohibited-items" className={`inline-flex min-h-12 items-center gap-2 text-sm font-medium text-pine underline underline-offset-4 ${className}`}>
       <ShieldAlert className="size-4 shrink-0" aria-hidden="true" />
       {ITEMS_COPY[lang].link}
     </Link>
