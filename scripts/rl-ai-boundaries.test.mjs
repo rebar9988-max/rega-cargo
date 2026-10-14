@@ -73,9 +73,11 @@ test("R&L AI only accesses explicit public contracts, never business internals o
       ).replace(/\.(?:tsx?|css)$/, "");
       if (target.startsWith("src/modules/rl-ai/")) continue;
       const contract =
-        file.includes("/infrastructure/") &&
-        ((file.endsWith("marketplace-client.ts") && target === "src/lib/market/assistant-contract.server") ||
-          (file.endsWith("ai-gateway-adapter.ts") && target === "src/lib/ai/gate.server"));
+        (file.includes("/ui/") && target === "src/lib/use-hydrated") ||
+        (file.includes("/infrastructure/") &&
+          ((file.endsWith("marketplace-client.ts") &&
+            target === "src/lib/market/assistant-contract.server") ||
+            (file.endsWith("ai-gateway-adapter.ts") && target === "src/lib/ai/gate.server")));
       if (!allowed.has(target) && !contract) violations.push(`${file}: ${target}`);
     }
   }

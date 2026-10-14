@@ -1,3 +1,4 @@
+import { useHydrated } from "@/lib/use-hydrated";
 import { AssistantHome } from "@/modules/rl-ai/ui/assistant-home";
 import { CHAT_COPY } from "@/modules/rl-ai/ui/assistant-copy";
 import { sniffKind, readDimensions } from "@/lib/ai/image";
@@ -62,6 +63,7 @@ function errorText(t: AiCopy, code: string | undefined) {
 }
 
 export function AiPage() {
+  const ready = useHydrated();
   const { lang } = useI18n();
   const t: AiCopy = AI_COPY[lang] ?? AI_COPY.en;
   const categories = storeCopy(lang).categories;
@@ -188,7 +190,7 @@ export function AiPage() {
                   type="checkbox"
                   className="mt-0.5 size-6 shrink-0 accent-[var(--color-pine)]"
                   checked={consent}
-                  disabled={busy}
+                  disabled={busy || !ready}
                   onChange={(event) => setConsent(event.target.checked)}
                 />
                 <p className="min-w-0 flex-1 text-sm leading-relaxed">
@@ -367,6 +369,7 @@ function ResultCard({
 
 function EstimateCard({ t }: { t: AiCopy }) {
   const { lang } = useI18n();
+  const ready = useHydrated();
   const [price, setPrice] = useState("");
   const [weight, setWeight] = useState("");
   const [originId, setOriginId] = useState(ORIGINS[0].id);
@@ -396,6 +399,7 @@ function EstimateCard({ t }: { t: AiCopy }) {
             inputMode="decimal"
             dir="ltr"
             className={controlClass}
+            disabled={!ready}
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
@@ -405,6 +409,7 @@ function EstimateCard({ t }: { t: AiCopy }) {
             inputMode="decimal"
             dir="ltr"
             className={controlClass}
+            disabled={!ready}
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
           />
@@ -412,6 +417,7 @@ function EstimateCard({ t }: { t: AiCopy }) {
         <Field label={t.from}>
           <select
             className={controlClass}
+            disabled={!ready}
             value={originId}
             onChange={(e) => setOriginId(e.target.value)}
           >
@@ -425,6 +431,7 @@ function EstimateCard({ t }: { t: AiCopy }) {
         <Field label={t.to}>
           <select
             className={controlClass}
+            disabled={!ready}
             value={destId}
             onChange={(e) => setDestId(e.target.value)}
           >
@@ -438,6 +445,7 @@ function EstimateCard({ t }: { t: AiCopy }) {
         <Field label={t.contents}>
           <select
             className={controlClass}
+            disabled={!ready}
             value={contents}
             onChange={(e) => setContents(e.target.value as Contents)}
           >

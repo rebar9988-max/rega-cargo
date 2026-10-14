@@ -4,6 +4,9 @@ Source branch: `codex/rl-ai-domain-lock-20261013`, based on `main` `631549f`. Ca
 
 ## Changes and ownership
 
+Continuation 2026-10-14: managed environment restart interrupted the first full run at case 391; preserved its artifacts and restarted. Generated Playwright trace JavaScript made a resumed ESLint run inspect build reports. Reports were archived outside the source tree; no source lint rule was suppressed. The completed full run then exposed two genuine WebKit first-interaction defects: a shortcut click was lost and image consent reset during hydration. Reused the existing `useHydrated` contract solely in AI controls and added a test holding all JavaScript until disabled SSR controls are observed, then proving the first shortcut/checkbox works. Final affected suite passed 72/72 in the official image. No unrelated implementation or screenshot baseline changed.
+
+
 - `src/modules/rl-ai/`: owner-protected purpose, deterministic scope preflight, bounded typed model plan, server-approved short response keys and links, read-only orchestration, seven-language welcome/chat and scoped Vazirmatn styling.
 - `/api/ai/chat`: thin transport; existing Workers AI Gemma binding, challenge, per-IP limiter and Durable Object budgets. No new provider, paid service, database, authentication system or infrastructure setting.
 - `src/lib/market/assistant-contract.server.ts`: necessary public read integration, delegating to existing Marketplace filtering with `userId: null`. Only public product names, slug and verified offer total projected. Marketplace implementation, authorization and tables unchanged.
@@ -26,7 +29,9 @@ Source branch: `codex/rl-ai-domain-lock-20261013`, based on `main` `631549f`. Ca
 | Worker dry run | Passed; no remote deployment |
 | Focused actual browser interactions | 12 passed in official Playwright 1.63 image, Chromium phone/laptop and WebKit phone, no retries |
 | Intentional `/ai` baseline rendering | 27 passed in official image, ckb/ar/en across existing Chromium/WebKit projects; only `/ai` baseline files changed |
-| Full official-image gate | Running; final result will replace this line before handoff |
+| Full platform browser run | 489 passed, 16 existing skips; 2 R&L AI first-interaction failures reproduced and fixed, no baseline/tolerance changes |
+| Final affected AI/readiness/visual gate | 72 passed with no retries, including held-JavaScript first-interaction checks on all Chromium/WebKit projects; final typecheck, 460 unit/security tests, lint/build/dry run passed |
+| Final full platform confirmation | Running after the isolated readiness fix; final result will replace this line before release |
 
 Focused browser checks send actual local refusal/workflow requests. Image provider failures are simulated, and provider planning/timeouts are unit fixtures; no local paid-capable inference is performed. Real production provider inference remains unverified for this change.
 

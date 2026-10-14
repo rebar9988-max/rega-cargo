@@ -27,9 +27,15 @@ export function instructionAttack(text: string): boolean {
 }
 
 export function unrelatedTask(text: string): boolean {
-  const n = normalizeScopeText(text);
+  // A tracking/product code is customer data, not a programming request.
+  const n = normalizeScopeText(text)
+    .replace(
+      /\b(?:tracking|product|order|parcel|model|shipping)\s+codes?\b|\bbarcodes?\b/gu,
+      "reference",
+    )
+    .replace(/کۆدی\s+(?:شوێنپێکردن|داواکاری|کاڵا)/gu, "reference");
   // Detect the requested task, not brand/city/category mentions (e.g. sports shoes).
-  return /(?:write|debug|implement|generate|explain|teach|solve|calculate).{0,35}(?:code|python|javascript|programming|algorithm|essay|homework|equation|politics|religion|history|ai model)|(?:who|when).{0,25}(?:president|won|election|match|war)|(?:tell|give|write).{0,20}(?:joke|story|poem)|(?:capital of|weather in|football score)|(?:کۆد|بەرنامەنووسی|سیاسەت|مێژوو).{0,30}(?:بنووسە|ڕوون|فێر)|(?:چەندە|چییە).{0,20}(?:پایتەخت)|(?:اكتب|اشرح).{0,30}(?:كود|سياسة|قصيدة)/iu.test(
+  return /(?:write|debug|implement|generate|explain|teach|solve|calculate).{0,35}(?:code|python|javascript|programming|algorithm|essay|homework|equation|politics|religion|history|ai model)|(?:discuss|debate|give.{0,15}opinion).{0,35}(?:politics|religion|elections|football|general ai)|(?:who|when).{0,25}(?:president|won|election|match|war)|(?:tell|give|write).{0,20}(?:joke|story|poem)|(?:capital of|weather in|football score)|(?:کۆد|بەرنامەنووسی|سیاسەت|مێژوو).{0,30}(?:بنووسە|ڕوون|فێر)|(?:چەندە|چییە).{0,20}(?:پایتەخت)|(?:اكتب|اشرح).{0,30}(?:كود|سياسة|قصيدة)/iu.test(
     n,
   );
 }

@@ -1,6 +1,33 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("R&L AI owned customer experience", () => {
+  test("first interactions wait for handlers and work after held JavaScript arrives", async ({
+    page,
+  }) => {
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route("**/assets/*.js", async (route) => {
+      await held;
+      await route.continue();
+    });
+    await page.goto("/ai?lang=en", { waitUntil: "commit" });
+    const start = page.getByRole("button", { name: "Chat with R&L AI", exact: true });
+    const bring = page.getByRole("button", { name: "Bring For Me", exact: true });
+    const consent = page.locator("#rl-ai-image").getByRole("checkbox");
+    await expect(start).toBeDisabled();
+    await expect(bring).toBeDisabled();
+    await expect(consent).toBeDisabled();
+    release();
+    await page.waitForLoadState("networkidle");
+    await expect(bring).toBeEnabled();
+    await bring.click();
+    await expect(page.locator("#rl-ai-input")).toHaveValue("Bring For Me");
+    await expect(consent).toBeEnabled();
+    await consent.check();
+    await expect(consent).toBeChecked();
+  });
   test("welcome, five real shortcuts, Sorani typography and mobile geometry", async ({ page }) => {
     await page.goto("/ai?lang=ckb", { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "R&L AI", exact: true })).toBeVisible();

@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { useHydrated } from "@/lib/use-hydrated";
 import { useI18n } from "@/lib/i18n";
 import { langMeta } from "@/lib/langs";
 import { gateFields } from "@/lib/ai/gate-client";
@@ -42,6 +43,7 @@ function errorKey(code: string): ChatCopyKey {
 export function AssistantHome() {
   const { lang } = useI18n();
   const t = CHAT_COPY[lang];
+  const ready = useHydrated();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -184,6 +186,8 @@ export function AssistantHome() {
           type="button"
           className="rl-button"
           data-variant="primary"
+          disabled={!ready}
+          aria-busy={!ready || undefined}
           onClick={() => {
             setOpen(true);
             window.requestAnimationFrame(() => input.current?.focus());
@@ -195,7 +199,7 @@ export function AssistantHome() {
       </div>
       <div className={styles.shortcuts} aria-label={t.suggestions}>
         {shortcuts.map(({ key, icon: Icon }) => (
-          <button type="button" key={key} onClick={() => choose(key)}>
+          <button type="button" key={key} disabled={!ready} onClick={() => choose(key)}>
             <span className={styles.shortcutIcon}>
               <Icon aria-hidden />
             </span>
