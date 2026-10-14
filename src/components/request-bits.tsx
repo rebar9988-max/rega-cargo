@@ -35,7 +35,7 @@ export function RequestHelp({ t, refCode }: { t: RequestCopy; refCode?: string }
       <span className="text-muted">{t.contactHelp}</span>
       <a
         href={`mailto:${CONTACT_EMAIL}${subject}`}
-        className="inline-flex min-h-10 items-center font-medium text-pine underline underline-offset-4"
+        className="inline-flex min-h-12 items-center font-medium text-pine underline underline-offset-4"
       >
         <bdi dir="ltr">{CONTACT_EMAIL}</bdi>
       </a>

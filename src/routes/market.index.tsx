@@ -83,7 +83,7 @@ function MarketHome() {
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
       <div className="page rl-compare-page">
-        <div className="flex flex-wrap gap-3 text-sm">
+        <div className="rl-compare-actions">
           <Link to="/market/sell" className="text-pine">
             {t.sell}
           </Link>
@@ -237,13 +237,13 @@ function MarketHome() {
             <button
               type="button"
               aria-label={PAGES_COPY[lang].prev}
-              className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine"
+              className="inline-flex size-12 items-center justify-center rounded-full text-sm text-pine"
               onClick={() => set({ page: search.page - 1 })}
             >
               ←
             </button>
           ) : null}
-          <span className="text-sm text-muted">
+          <span className="inline-flex items-center text-sm text-muted">
             <bdi dir="ltr">
               {search.page} / {data.pages}
             </bdi>
@@ -252,7 +252,7 @@ function MarketHome() {
             <button
               type="button"
               aria-label={PAGES_COPY[lang].next}
-              className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine"
+              className="inline-flex size-12 items-center justify-center rounded-full text-sm text-pine"
               onClick={() => navigate({ search: { ...search, page: search.page + 1 } })}
             >
               →

@@ -1,5 +1,11 @@
 # Known issues, root causes and fixes
 
+## 2026-10-14 UI refinement findings
+
+- `tests/layout/domain.spec.ts` "complete pages hydrate…" waited for `main form button[type=submit]` on `/`, which PR #100 removed; it failed on live production too. Now waits for the hydrated footer theme button (disabled until `useHydrated`), same strength.
+- Open, not changed: Bring For Me draft checkbox label 26 px tall (owned by draft PR #97); hero primary gradient top `#f10208` with 16 px white text ≈4.4:1 on phones (brand colour, owner decision); layout-lock screenshot baselines need re-rendering in the official image for every route's footer plus `/`, `/market`, `/track` (Docker daemon unavailable here, Actions billing I-7).
+
+
 ## 2026-10-14 beta rollout verification
 
 PR #95 repairs are live; production migration safely applied and preserved all business record counts. Real customer/negative-authority browser checks passed. WebKit transient environment Envoy 502 asset failures prevented one hydration attempt; independent retrieval recovered and original case passed unchanged. Node request-context direct networking and an overly narrow Unauthorized-only expectation were harness issues; same-origin browser fetch verifies the actual fail-closed auth-disabled/real-database guard. No production security bypass. Missing legal content is expressly deferred for beta; verified owner/OTP/native checks and hosted Actions billing remain follow-ups. Telemetry permission prevented a complete log check. [Evidence](../verification/rl-five-improvements-20261013.md).

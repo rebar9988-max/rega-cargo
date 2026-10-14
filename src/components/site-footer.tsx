@@ -11,13 +11,13 @@ import { ITEMS_COPY } from "@/lib/items-copy";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { JOURNEY_COPY } from "@/lib/journey-copy";
-export function SiteFooter() {
+export function SiteFooter({ bottomBar = true }: { bottomBar?: boolean }) {
   const { lang, t, setLang } = useI18n();
   const c = redesignCopy(lang);
   const j = JOURNEY_COPY[lang];
   const legal = SITE_COPY[lang].legal;
   return (
-    <footer className="rl-site-footer rl-defer clear-bottom-bar">
+    <footer className={`rl-site-footer rl-defer ${bottomBar ? "clear-bottom-bar" : ""}`}>
       <div className="page rl-footer-grid">
         <div className="rl-stack">
           <Mark />
