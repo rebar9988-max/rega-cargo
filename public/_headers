@@ -16,6 +16,10 @@
   cache-control: public, max-age=2592000, stale-while-revalidate=604800
 /rl-mark-168.webp
   cache-control: public, max-age=2592000, stale-while-revalidate=604800
+/rl-mark-white-336.webp
+  cache-control: public, max-age=2592000, stale-while-revalidate=604800
+/home/*
+  cache-control: public, max-age=2592000, stale-while-revalidate=604800
 /favicon.png
   cache-control: public, max-age=86400, stale-while-revalidate=604800
 /favicon.svg

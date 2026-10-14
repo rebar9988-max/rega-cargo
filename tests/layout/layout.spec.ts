@@ -41,7 +41,10 @@ async function open(page: Page, path: string, lang: string) {
     window.scrollTo(0, 0);
   });
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-  await expect(page.locator(".rl-site-header")).toHaveAttribute("data-shrunk", "false");
+  await expect(page.locator(".rl-site-header, .rl-ref-header")).toHaveAttribute(
+    "data-shrunk",
+    "false",
+  );
 }
 
 /** Load every image (incl. lazy ones below the fold) and the web fonts before measuring. */
@@ -61,7 +64,10 @@ async function settle(page: Page) {
       .toBe(true);
     await expect(page.locator(".rl-quick-options")).toBeVisible();
     await page.evaluate(() => window.scrollTo(0, 0));
-    await expect(page.locator(".rl-site-header")).toHaveAttribute("data-shrunk", "false");
+    await expect(page.locator(".rl-site-header, .rl-ref-header")).toHaveAttribute(
+      "data-shrunk",
+      "false",
+    );
   }
   await page.evaluate(async () => {
     // Full-page snapshots measure all deferred sections, including those below the viewport.
@@ -108,7 +114,10 @@ async function documentShot(page: Page, name: string) {
   try {
     await page.setViewportSize({ ...viewport, height });
     await page.evaluate(() => window.scrollTo(0, 0));
-    await expect(page.locator(".rl-site-header")).toHaveAttribute("data-shrunk", "false");
+    await expect(page.locator(".rl-site-header, .rl-ref-header")).toHaveAttribute(
+      "data-shrunk",
+      "false",
+    );
     const expanded = (await page.locator("main").boundingBox())!;
     for (const key of ["x", "y", "width", "height"] as const)
       expect(
@@ -127,9 +136,16 @@ async function geometry(page: Page, bp: Bp, sheet = false) {
   // Scroll restoration and WebKit's grid layout may settle a frame after the header state.
   await expect
     .poll(() =>
-      page.locator('[data-layout="header"]').evaluate((el) => el.getBoundingClientRect().height),
+      page
+        .locator('[data-layout="ref-header"], [data-layout="header"]')
+        .first()
+        .evaluate((el) => el.getBoundingClientRect().height),
     )
-    .toBe(LAYOUT.headerRow[bp]);
+    .toBe(
+      (await page.locator('[data-layout="ref-header"]').count())
+        ? LAYOUT.refHeaderRow[bp]
+        : LAYOUT.headerRow[bp],
+    );
   const issues = await page.evaluate(measureLayout, { bp, layout: LAYOUT, sheet });
   expect(issues, issues.join("\n")).toEqual([]);
 }
@@ -177,8 +193,11 @@ for (const lang of LANGS) {
 
     test(`search sheet ${lang}`, async ({ page, breakpoint }) => {
       await open(page, "/", lang);
-      // Phones and tablets open the field from the header's search button.
-      if (breakpoint === "laptop") await page.locator('input[type="search"]').first().click();
+      // Phones and tablets open the field from the header's search button; the reference
+      // homepage header shows the field itself at every width.
+      const field = (await page.locator('[data-layout="ref-header"]').count()) > 0;
+      if (breakpoint === "laptop" || field)
+        await page.locator('input[type="search"]').first().click();
       else await page.locator('[data-layout="search-button"]').click();
       await expect(page.locator('input[type="search"][aria-expanded="true"]')).toBeVisible();
       // The suggestion list mounts lazily; capture the sheet only once its content is there.

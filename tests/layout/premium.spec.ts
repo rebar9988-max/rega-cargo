@@ -53,7 +53,7 @@ test("shipping stays on its own route even with a remembered delivery preference
     await expect(page.locator(".rl-quote-option, .rl-quick-calc")).toHaveCount(0);
   }
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
-  await page.locator(".rl-hero-secondary").click();
+  await page.locator('main a[href^="/quote"]').first().click();
   await expect(page).toHaveURL(/\/quote/);
   await expect(page.locator(".rl-shipping-page h1")).toBeVisible();
   await expect(page.locator(".rl-quote-option")).toHaveCount(3);
@@ -241,19 +241,15 @@ test("catalogue: ten category rows, direct URLs, history, subcategories and hone
   await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
 });
 
-test("hero: the AI call to action opens the existing assistant in the chosen language", async ({
-  page,
-}) => {
+test("R&L AI capsule opens the existing assistant in the chosen language", async ({ page }) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    const cta = page.locator(".rl-ai-hero .rl-ai-hero-cta");
+    const cta = page.locator(".rl-ref-ai");
     await expect(cta).toHaveCount(1);
     await expect(cta).toBeVisible();
-    await expect(cta).toHaveClass(/rl-hero-assist/);
+    await expect(cta).toContainText("R&L AI");
     await expect(cta).toHaveAttribute("href", new RegExp(`^/ai(\\?lang=${lang})?$`));
-    // Visible without scrolling on a phone, and a comfortable touch target.
     const box = await cta.boundingBox();
-    expect(box!.y + box!.height, lang).toBeLessThanOrEqual(800);
     expect(box!.height, lang).toBeGreaterThanOrEqual(44);
     await cta.click();
     await expect(page).toHaveURL(/\/ai/);
@@ -261,75 +257,86 @@ test("hero: the AI call to action opens the existing assistant in the chosen lan
     await expect(page.locator("main h1")).toBeVisible();
     // Back returns to the homepage with the hero in place.
     await page.goBack();
-    await expect(page.locator(".rl-ai-hero h1")).toBeVisible();
+    await expect(page.locator(".rl-ref-hero h1")).toBeVisible();
     await page.goForward();
     await expect(page).toHaveURL(/\/ai/);
   }
-  // Keyboard: the CTA is reachable and activates with Enter.
+  // Keyboard: the capsule is reachable and activates with Enter.
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
-  await page.locator(".rl-ai-hero-cta").focus();
+  await page.locator(".rl-ref-ai").focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/ai/);
 });
 
-test("hero: one static section right under the header, same place in every language", async ({
-  page,
-}) => {
-  await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
-  // No carousel, no slides: exactly one hero, and it is the first section in <main>.
-  await expect(page.locator(".rl-ai-hero")).toHaveCount(1);
-  await expect(page.locator(".rl-hero-slide, .rl-carousel-dot")).toHaveCount(0);
-  await expect(page.locator("main section").first()).toHaveClass(/rl-ai-hero/);
-  const heroTop = async () => (await page.locator(".rl-ai-hero").boundingBox())!.y;
-  const ctaCenter = async () => {
-    const b = (await page.locator(".rl-ai-hero-cta").boundingBox())!;
-    return b.x + b.width / 2;
-  };
-  const top = await heroTop();
-  const center = await ctaCenter();
-  for (const lang of ["ckb", "ar", "fa", "en", "de", "tr", "ku"]) {
-    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    expect(Math.round(await heroTop()), lang).toBe(Math.round(top));
-    // The CTA stays centred whatever the text direction.
-    expect(Math.abs((await ctaCenter()) - center), lang).toBeLessThanOrEqual(1);
-    // The header does not overlap the hero, and nothing scrolls sideways.
-    const header = await page.locator("header").first().boundingBox();
-    expect(header!.y + header!.height, lang).toBeLessThanOrEqual(Math.ceil(await heroTop()));
-    expect(
-      await page.evaluate(() => document.documentElement.scrollWidth),
-      lang,
-    ).toBeLessThanOrEqual(360);
-    // A refresh renders the same hero in the same place.
-    await page.reload({ waitUntil: "networkidle" });
-    expect(Math.round(await heroTop()), `${lang} reload`).toBe(Math.round(top));
-  }
-});
-
-test("hero: marketplace and Bring For Me are primary, with tracking immediately available", async ({
+test("reference homepage: five header controls in the reference's physical order", async ({
   page,
 }) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    const shop = page.locator(".rl-ai-hero .rl-hero-shop");
-    const bring = page.locator(".rl-ai-hero .rl-hero-bring");
-    await expect(shop).toHaveAttribute("href", /\/market/);
-    await expect(bring).toHaveAttribute("href", /\/stores\/request/);
-    const ai = (await page.locator(".rl-ai-hero-cta").boundingBox())!;
-    for (const action of [shop, bring]) {
-      const box = (await action.boundingBox())!;
-      expect(box.height).toBeGreaterThanOrEqual(44);
-      expect(box.y + box.height).toBeLessThanOrEqual(ai.y);
-    }
-    const nav = page.locator('[data-layout="bottom-bar"]');
-    await expect(nav.locator('a[href^="/track"]')).toBeVisible();
-    await expect(nav.locator('a[href^="/stores/request"]')).toBeVisible();
-    await expect(nav.locator('a[href^="/market"]')).toBeVisible();
-    await expect(page.locator('[data-layout="category-strip"]')).toHaveCount(0);
-    await page.locator('.rl-home-track-form input[name="id"]').fill("RG-TEST-TEST-TEST");
-    await page.locator(".rl-home-track-form button").click();
-    await expect(page).toHaveURL(/\/track.*id=RG-TEST-TEST-TEST/);
+    const row = page.locator('[data-layout="ref-header"]');
+    await expect(row).toBeVisible();
+    // The page is rtl, but the reference fixes the physical order: logo, language, search,
+    // R&L AI, menu, left to right.
+    const xs = await Promise.all(
+      [
+        row.locator(".rl-ref-brand"),
+        row.locator('[data-layout="lang-button"]'),
+        row.locator('input[type="search"]'),
+        row.locator(".rl-ref-ai"),
+        row.locator('[data-layout="menu-button"]'),
+      ].map(async (el) => {
+        await expect(el, lang).toBeVisible();
+        return (await el.boundingBox())!.x;
+      }),
+    );
+    expect(xs, lang).toEqual([...xs].sort((a, b) => a - b));
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(overflow, lang).toBe(0);
+    // The logo is the owner's artwork, only keyed onto the red header.
+    await expect(row.locator(".rl-ref-brand img")).toHaveAttribute(
+      "src",
+      "/rl-mark-white-336.webp",
+    );
+    // No bottom navigation on the reference homepage.
+    await expect(page.locator('[data-layout="bottom-bar"]')).toHaveCount(0);
   }
+});
+
+test("reference homepage: sections, honest content and every service reachable", async ({
+  page,
+}) => {
+  await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+  const sections = await page
+    .locator(".rl-ref > section")
+    .evaluateAll((els) => els.map((el) => el.className.split(" ")[0]));
+  expect(sections).toEqual([
+    "rl-ref-hero",
+    "rl-ref-section",
+    "rl-ref-section",
+    "rl-ref-banners",
+    "rl-ref-section",
+  ]);
+  await expect(page.locator("main h1")).toHaveCount(1);
+  await expect(page.locator(".rl-ref-cats li")).toHaveCount(8);
+  await expect(page.locator(".rl-ref-banner")).toHaveCount(2);
+  await expect(page.locator(".rl-ref-benefits li")).toHaveCount(4);
+  // Marketplace and Bring For Me are the two hero actions; tracking and shipping prices are
+  // one tap away from the benefit cards.
+  const actions = page.locator(".rl-ref-actions a");
+  await expect(actions).toHaveCount(2);
+  await expect(actions.nth(0)).toHaveAttribute("href", /\/market/);
+  await expect(actions.nth(1)).toHaveAttribute("href", /\/stores\/request/);
+  for (const href of ["/track", "/quote", "/stores/request"])
+    await expect(page.locator(`.rl-ref-benefits a[href^="${href}"]`)).toHaveCount(1);
+  // No invented commerce: no currency amounts, discounts or ratings in the page body.
+  const body = (await page.locator(".rl-ref").innerText()).replace(/\s+/g, " ");
+  expect(body).not.toMatch(/[€$]\s?\d|\d\s?(€|%)|★/);
+  // The CARE+ banner states that the service is not available yet.
+  await expect(page.locator(".rl-ref-soon")).toHaveCount(1);
+  // Category tiles open real catalogue views.
+  await page.locator(".rl-ref-cats li").first().locator("a").click();
+  await expect(page).toHaveURL(/\/stores\?.*cat=electronics/);
+  await expect(page).toHaveURL(/sub=smartphones/);
 });
 
 test("shipping: the parcel card only links to tracking and invents no shipment", async ({
@@ -452,10 +459,16 @@ test("accessibility: every homepage landmark is named and all page text sits in 
   page,
 }) => {
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
-  // The announcement bar is a region named by its own text (no text outside landmarks).
+  // The reference homepage has no announcement bar; wherever one is shown it is a region named
+  // by its own text (no text outside landmarks).
   const bar = page.locator("section.rl-announcement");
-  await expect(bar).toHaveAttribute("aria-labelledby", "rl-announcement-text");
-  await expect(bar.locator("#rl-announcement-text")).toBeVisible();
+  if (await bar.count()) {
+    await expect(bar).toHaveAttribute("aria-labelledby", "rl-announcement-text");
+    await expect(bar.locator("#rl-announcement-text")).toBeVisible();
+  }
+  await expect(
+    page.locator(".rl-ref section[aria-labelledby], .rl-ref section[aria-label]"),
+  ).toHaveCount(5);
   const outside = await page.evaluate(() => {
     const landmarks =
       "header, nav, main, footer, aside, section[aria-labelledby], section[aria-label]";

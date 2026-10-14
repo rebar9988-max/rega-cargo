@@ -1,0 +1,67 @@
+# R&L reference homepage: progress checkpoint
+
+Last updated: 2026-10-14 (session `session_01QUGppPbUTeYsGApJpfoV8P`).
+
+## State
+
+* Reference: owner homepage screenshot, 1024 × 1536 (`evidence/reference-1024x1536.webp`). Measurements: `RL_REFERENCE_MEASUREMENTS.md`.
+* Base: `origin/main` @ `ddc275f` (the work was first built on a stale clone and re-applied on current `main`; the stale branch `design/rl-reference-home` is superseded by `design/rl-reference-home-v2`).
+* Production domain: `https://www.rlgo.net` only (AGENTS.md "Permanent public domain rule"). Deployment happens through the existing Cloudflare Builds trigger when `main` changes; **this session has not deployed**.
+
+## Implemented
+
+* `src/components/ref-home.tsx`: hero, 8 category positions, 4 featured products, two banners, 4 benefit cards.
+* `src/components/site-header.tsx` + `shell.tsx`: `reference` variant = five-control header (logo, language, search, R&L AI, menu), no announcement bar, no primary-nav row, no bottom bar. Every other route keeps the existing header. The R&L AI capsule only links to the existing `/ai` route; the AI module is untouched.
+* `src/routes/index.tsx`: home without filters renders `RefHome` with the existing `marketHome` loader data; filtered home URLs (`/?q=`, `?cat=` …) still render `BazaarPage`.
+* `src/lib/ref-home-copy.ts` (ckb, ar, en; fa/de/tr/ku reuse English, `TODO(translate-review)`), `src/lib/ref-home-data.ts` (category mapping, compliance-filtered fallback examples).
+* `src/styles/ref-home.css`: unlayered, scoped to `.rl-ref*`.
+* Assets: `public/home/*`, `public/rl-mark-white-336.webp`; cache rules in `public/_headers`; service worker `rl-sw-v13`.
+* Tests: `src/lib/ref-home-data.test.ts`; Playwright: new reference-home specs in `premium.spec.ts` replace the old hero specs; `geometry.ts` / `layout.spec.ts` measure the reference header.
+
+## Deliberate differences from the reference (hard rules win)
+
+| Reference | Implemented | Why |
+|---|---|---|
+| Product prices (€1,199 …), strike-through price, "new / sale / discount" badges, cart | Real marketplace products from the existing `marketHome` loader (name, stored lowest verified offer in IQD, offer count; the round control opens the product page). While the marketplace has no products the row shows four bundled example photographs labelled "Example" with "price awaiting confirmation" | AGENTS.md rule 1: no invented prices, discounts or stock |
+| iPhone / AirPods / MacBook / Smart Watch X | Whatever the marketplace lists; fallback earbuds, sneakers, kettle, perfume | Reference products are not in the catalogue |
+| Hero secondary "see discounts" | "Bring For Me" → `/stores/request?intent=buy`; primary "browse and buy" → `/market` | No discounts exist; keeps Marketplace and Bring For Me as the two primary actions |
+| Banner "from everywhere in the world" | "From European stores to Kurdistan and Iraq" | Only the Europe corridor is supported |
+| CARE+ banner with a purchase CTA | "Coming soon" badge, "not available yet", CTA → `/contact` | CARE+ is not an operating service; no protection promise |
+| Benefits: discounts, flexible payment, gift cards, favourites | Clear prices (→ `/quote`), parcel tracking (→ `/track`), store requests (→ `/stores/request`), saved stores (→ `/stores?fav=1`) | Only real platform features |
+| "Wearables" tile | opens electronics accessories | catalogue has no wearables subgroup |
+| Heading spelling "پێشنیهادە" | "پێشنیارە" | Official Sorani orthography (flagged `TODO(translate-review)`) |
+| Footer absent | Existing footer kept | Impressum / privacy / terms links are required |
+| Old home: tracking form card, brand-logo strip, "Bring For Me" process steps, delivery card, trust and restrictions sections | Removed from `/` only (all still exist on their own routes) | The reference has none of them. **Owner decision needed:** the old home carried a tracking-number form; tracking is now one benefit card, the menu and `/track` (identity rule: tracking must stay first-class). The prohibited-items link now lives in the footer/menu, not on the home |
+| Logo on red | Keyed (red → transparent) derivative of the owner's logo | The reference shows the white variant. **Owner should confirm**; revert = swap one `<img src>` back to `/rl-mark-168.webp` |
+| Category list only in the marketplace (2d02a7d) | Category tiles on the home | The owner's reference shows them; this supersedes the earlier decision |
+
+Not touched: R&L AI module, pricing, auth, payment, database, other routes, language IDs.
+
+## Visual comparison (Chromium, 1024 × 1536, DPR 1, fonts loaded)
+
+Grayscale 8×8-block SSIM / mean absolute error against the reference, per strip. Scores are low in text-heavy and photo-heavy strips because product data, headline glyph shapes and copy legitimately differ; geometry is the better measure (see measurements table).
+
+| Strip | SSIM | MAE |
+|---|---|---|
+| Header 0–96 | 0.59 | 25.9 |
+| Hero 98–592 | 0.60 | 48.6 |
+| Categories 600–832 | 0.71 | 17.3 |
+| Featured 840–1120 | 0.58 | 40.8 |
+| Banners 1120–1360 | 0.39 | 47.3 |
+| Benefits 1360–1456 | 0.57 | 23.3 |
+
+Remaining mismatches: hero silk is a crop that starts at x≈520 and fades in (the reference's silk continues behind the text), logo is a square mark rather than the wider reference crop, banner art is cropped from flattened pixels, product photos differ, headline glyphs differ slightly in width (Vazirmatn vs the reference face).
+
+## Checks run locally (on `main` @ `ddc275f` + this change)
+
+* `tsc --noEmit`: pass. `eslint .`: 0 errors (5 existing warnings). `npm run release:check`: passes in the owner-authorized beta stage.
+* `npm test`: 231 + 255 pass, 0 fail (the first run is the script tests, 4 existing skips), including the new `ref-home-data.test.ts`, `i18n-coverage`, `layout-lock` and project-memory checks.
+* `DATABASE_URL='' npm run build` and `npm run cf:dry-run`: pass.
+* Playwright (Chromium, against the dev server, snapshots ignored): home geometry, menu / language / search sheets at 375, 390, 820, 1180, 1280, 1440 in ckb/ar/en: all pass (9 skipped by design); at 360px the new reference-homepage specs, the font-swap layout-shift test, the shipping-route test, the homepage paint test and the homepage search test pass.
+* Not verified here: the R&L AI capsule specs and the five-controls spec (the AI binding exists only in the Worker, not the dev server); `product link` and `compact forms` specs on `/stores/request` (need product-link env flags; that page is untouched); **screenshot baselines** (official Playwright Docker image unavailable, hosted Actions blocked by billing, I-7), **WebKit**, and a local `wrangler dev` run (workerd fails to start in this container). Existing screenshot baselines for `/`, the menu/search/language sheets over `/` therefore still show the old homepage and must be re-rendered in the official image.
+
+## Blockers / next action
+
+* Hosted Actions cannot start (billing, I-7); merge relies on the local gate above, which is reduced as listed. Never call CI green.
+* Deployment: existing Cloudflare Builds deploys `main` to the `rega-cargo` Worker (`https://www.rlgo.net`) after merge. This session has no Cloudflare credential of its own, so the live commit and browser verification must come after that build and are recorded in `docs/project-memory/deployments.md` once done.
+* Owner decisions to confirm: keyed white logo variant; tracking form no longer on the home; CARE+ banner wording.
