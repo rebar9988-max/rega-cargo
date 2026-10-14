@@ -1,5 +1,10 @@
 # Progress
 
+## 2026-10-14 UI/UX refinement (spacing, alignment, touch targets)
+
+Owner's strict refinement prompt (no redesign). Branch `claude/ui-refinement-20261014` from main `f207338`. 15 measured issues fixed in presentation only (home header/hero alignment, phone header targets, tablet product columns, footer targets/spacing, store-card/chip/legal/market/link targets, `/market` spacing, `/track` form width). 392-page Chromium audit before/after: overflow 0/0, target detections 2,489 → 91 (remaining: Bring For Me draft checkbox owned by open PR #97). Local gate: typecheck, lint 0 errors, 486 unit passes, build, dry-run; Chromium layout lock 394 passed / 12 existing skips / 0 failed (no WebKit/pixels: no Docker daemon). [PR #102](https://github.com/rebar9988-max/rega-cargo/pull/102). Five module boundaries, R&L AI baseline, copy, routes, pricing and compliance untouched. [Report](../verification/ui-refinement-20261014.md).
+
+
 ## 2026-10-14 beta release verified
 
 PR #95 merged as 8ae779f; Cloudflare main Build 85d441c9 succeeded, application Worker 1a514fed at 100%. Migration 0015 applied safely, no grants/customer record loss. 483 local tests (4 skips), build/type/lint/dry run pass; 12 real customer + 3 tracking/security cases passed across documented final runs on mobile/desktop/WebKit. Beta legal exception expressly authorized; public legal gate retained. Owner/OTP/native checks unavailable; Actions failed before steps, telemetry Forbidden. [Evidence](../verification/rl-five-improvements-20261013.md). Earlier in-progress/held checkpoints below are historical.
