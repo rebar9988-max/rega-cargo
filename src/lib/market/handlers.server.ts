@@ -26,6 +26,8 @@ import {
   type JobStatus,
 } from "@/lib/market";
 
+import { hasApprovedRole, isSuperAdmin } from "@/lib/auth/authority";
+
 const PAGE = 8;
 
 async function sqlOf() {
@@ -69,14 +71,35 @@ async function roles(sql: Sql, userId: string) {
 }
 
 function approved(rows: { role: string; status: string }[], role: string) {
-  return rows.some((row) => row.role === role && row.status === "approved");
+  return hasApprovedRole(rows, role);
 }
 
+/**
+ * 20 actions of one kind per user per hour. One atomic upsert (the row lock
+ * serialises parallel requests), so a burst of simultaneous calls cannot all
+ * pass a count taken before any of them was recorded.
+ */
 async function limit(sql: Sql, userId: string, action: string) {
-  const rows = await sql<{ n: number }>`
-    select count(*) as n from action_log
-    where user_id = ${userId} and action = ${action} and created_at > now() - interval '1 hour'`;
-  if (Number(rows[0]?.n ?? 0) >= 20) throw new MarketError("rate");
+  const rows = await sql<{ allowed: boolean }>`
+    insert into rate_counters (key, n, window_start, allowed)
+    values (${`action:${action}:${userId}`}, 1, now(), true)
+    on conflict (key) do update set
+      allowed = case
+        when rate_counters.window_start < now() - interval '1 hour' then true
+        when rate_counters.n < 20 then true
+        else false
+      end,
+      window_start = case
+        when rate_counters.window_start < now() - interval '1 hour' then now()
+        else rate_counters.window_start
+      end,
+      n = case
+        when rate_counters.window_start < now() - interval '1 hour' then 1
+        when rate_counters.n < 20 then rate_counters.n + 1
+        else rate_counters.n
+      end
+    returning allowed`;
+  if (rows[0]?.allowed !== true) throw new MarketError("rate");
   await sql`insert into action_log (id, user_id, action) values (${crypto.randomUUID()}, ${userId}, ${action})`;
 }
 
@@ -87,8 +110,8 @@ async function notify(sql: Sql, userId: string, bodyKu: string, bodyEn: string) 
 async function notifyAdmins(sql: Sql, bodyKu: string, bodyEn: string) {
   await sql`
     insert into notifications (id, user_id, body_ku, body_en)
-    select md5(user_id || clock_timestamp()::text || random()::text), user_id, ${bodyKu}, ${bodyEn}
-    from user_roles where role = 'admin' and status = 'approved'`;
+    select distinct md5(user_id || clock_timestamp()::text || random()::text), user_id, ${bodyKu}, ${bodyEn}
+    from user_roles where role in ('admin', 'super_admin') and status = 'approved'`;
 }
 
 function log(action: string, userId: string) {
@@ -190,7 +213,7 @@ export async function listProducts(input: ListInput) {
              count(*)::int as offer_count,
              bool_or(o.stock <> 'out') as available
       from offers o
-      join user_roles r on r.user_id = o.seller_id and r.role = 'seller' and r.status = 'approved'
+      join lateral (select display_name, city from user_roles where user_id = o.seller_id and role in ('seller', 'super_admin') and status = 'approved' order by (role = 'seller') desc limit 1) r on true
       where o.status = 'approved'
       group by o.product_id
     )
@@ -199,7 +222,7 @@ export async function listProducts(input: ListInput) {
            l.lowest, l.offer_count, l.available,
            count(*) over()::int as total_count
     from products p
-    join categories c on c.id = p.category_id
+    join categories c on c.id = p.category_id and c.archived_at is null
     left join live l on l.product_id = p.id
     where p.status = 'approved' and p.compliance_status = 'ok'
       and (${pattern}::text is null or p.name_ku ilike ${pattern} escape '\\' or p.name_en ilike ${pattern} escape '\\' or p.brand ilike ${pattern} escape '\\')
@@ -234,7 +257,7 @@ export async function listProducts(input: ListInput) {
     id: string;
     name_ku: string;
     name_en: string;
-  }>`select id, name_ku, name_en from categories order by name_en`;
+  }>`select id, name_ku, name_en from categories where archived_at is null order by name_en`;
   const total = blockedQuery ? 0 : Number(rows[0]?.total_count ?? 0);
   return {
     items: visible.map((row) => ({
@@ -258,7 +281,7 @@ export async function getProduct(slug: string, userId: string | null) {
   const sql = await sqlOf();
   const found = await sql<Record<string, unknown>>`
     select p.*, c.name_ku as category_ku, c.name_en as category_en
-    from products p join categories c on c.id = p.category_id
+    from products p join categories c on c.id = p.category_id and c.archived_at is null
     where p.slug = ${slug} and p.status = 'approved' and p.compliance_status = 'ok'`;
   const product = found[0];
   if (!product) throw new MarketError("notfound");
@@ -276,7 +299,7 @@ export async function getProduct(slug: string, userId: string | null) {
     select o.id, o.price_iqd, o.shipping_iqd, o.stock, o.contact, o.seller_id, o.updated_at,
            coalesce(r.display_name, o.seller_id) as seller_name, r.city
     from offers o
-    join user_roles r on r.user_id = o.seller_id and r.role = 'seller' and r.status = 'approved'
+    join lateral (select display_name, city from user_roles where user_id = o.seller_id and role in ('seller', 'super_admin') and status = 'approved' order by (role = 'seller') desc limit 1) r on true
     where o.product_id = ${product.id} and o.status = 'approved'`;
   const offers = rankOffers(
     raw.map((row) => ({
@@ -345,7 +368,7 @@ async function checkAlerts(sql: Sql, productId: string) {
     with live as (
       select min(o.price_iqd + o.shipping_iqd) as total
       from offers o
-      join user_roles r on r.user_id = o.seller_id and r.role = 'seller' and r.status = 'approved'
+      join lateral (select display_name, city from user_roles where user_id = o.seller_id and role in ('seller', 'super_admin') and status = 'approved' order by (role = 'seller') desc limit 1) r on true
       where o.product_id = ${productId} and o.status = 'approved' and o.stock <> 'out'
     ), reset as (
       update price_alerts set notified = false
@@ -361,7 +384,7 @@ async function checkAlerts(sql: Sql, productId: string) {
       returning user_id, target_iqd
     )
     insert into notifications (id, user_id, body_ku, body_en)
-    select md5(user_id || target_iqd::text || clock_timestamp()::text), user_id,
+    select distinct md5(user_id || target_iqd::text || clock_timestamp()::text), user_id,
            'نرخ کەوتە ژێر ' || target_iqd::text, 'A price fell under ' || target_iqd::text
     from hits`;
 }
@@ -631,12 +654,13 @@ export async function adminQueue(userId: string) {
       >`select o.id, p.slug, p.name_ku, o.seller_id, o.price_iqd, o.shipping_iqd from offers o join products p on p.id = o.product_id where o.status = 'pending' order by o.created_at`,
       sql<
         Record<string, unknown>
-      >`select id, subject, body, created_at from reports order by created_at desc limit 20`,
+      >`select id, subject, body, created_at from reports where status = 'open' and archived_at is null order by created_at desc limit 20`,
       sql<
         Record<string, unknown>
       >`select id, rating, body from reviews where status = 'pending' and product_id is not null order by created_at limit 20`,
     ]);
   return {
+    superAdmin: isSuperAdmin(mine),
     pendingRoles: pendingRoles.map((row) => ({
       userId: String(row.user_id),
       role: String(row.role),
@@ -692,6 +716,14 @@ export async function adminSet(
   if (!status) throw new MarketError("invalid");
   if (input.kind === "role") {
     const role = cleanText(input.role, 20);
+    if (!["buyer", "seller", "courier"].includes(role) && !isSuperAdmin(mine))
+      throw new MarketError("forbidden");
+    if (
+      ["admin", "super_admin"].includes(role) &&
+      status === "approved" &&
+      !(await sql`select id from phone_users where id = ${id} and disabled_at is null`)[0]
+    )
+      throw new MarketError("forbidden");
     const rows = await sql<{ user_id: string }>`
       update user_roles set status = ${status} where user_id = ${id} and role = ${role} and status <> ${status} returning user_id`;
     if (!rows[0]) throw new MarketError("notfound");

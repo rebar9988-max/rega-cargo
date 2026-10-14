@@ -13,9 +13,23 @@ import { orderTrack } from "@/lib/orders/api";
 import { DECLARE_COPY } from "@/lib/declare-copy";
 import { UX_COPY, type UxCopy } from "@/lib/ux-copy";
 import { ContactNote } from "@/components/contact-note";
+import { TRACKING_COPY } from "@/lib/tracking/copy";
+import { trackingAction } from "@/lib/tracking/presentation";
+import { REQUEST_COPY } from "@/lib/requests/copy";
 import type { Lang } from "@/lib/langs";
 
-type LiveEvent = { title: string; titleKu: string; place?: string; placeKu?: string; phase: string; at?: string };
+type LiveEvent = {
+  title: string;
+  titleKu: string;
+  place?: string;
+  placeKu?: string;
+  phase: string;
+  at?: string | null;
+  recordedAt?: string | null;
+  nextAction?: string;
+  estimateFrom?: string | null;
+  estimateTo?: string | null;
+};
 type LiveResult = { error?: string; id?: string; status?: string; events?: LiveEvent[] };
 
 const DEV = import.meta.env.DEV;
@@ -73,7 +87,11 @@ function TrackPage() {
   return (
     <Shell>
       <DeliveryTabs active="/track" />
-      <PageHeader kicker={t.trackKicker} title={t.trackTitle} lede={DEV ? t.trackLede : ux.trackLede} />
+      <PageHeader
+        kicker={t.trackKicker}
+        title={t.trackTitle}
+        lede={DEV ? t.trackLede : ux.trackLede}
+      />
       <div className="page flex flex-col gap-10 py-12 md:py-16">
         <form
           className="flex flex-col gap-3 md:flex-row"
@@ -99,40 +117,57 @@ function TrackPage() {
               {ux.trackHint}
             </span>
           </label>
-          <button type="submit" disabled={loading} aria-busy={loading} className={`${btnPrimary} md:mb-7 md:self-end disabled:opacity-60`}>
+          <button
+            type="submit"
+            disabled={loading}
+            aria-busy={loading}
+            className={`${btnPrimary} md:mb-7 md:self-end disabled:opacity-60`}
+          >
             {t.trackButton}
           </button>
         </form>
 
         {DEV ? (
-        <div>
-          <p className="text-sm font-medium">{t.samples}</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {SHIPMENTS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => void navigate({ to: "/track", search: { id: item.id } })}
-                className={`h-12 rounded-full border px-4 text-sm ${item.id === shipment?.id ? "border-pine bg-pine text-pine-ink" : "border-line bg-surface"}`}
-              >
-                <bdi dir="ltr">{item.id}</bdi>
-              </button>
-            ))}
+          <div>
+            <p className="text-sm font-medium">{t.samples}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {SHIPMENTS.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => void navigate({ to: "/track", search: { id: item.id } })}
+                  className={`h-12 rounded-full border px-4 text-sm ${item.id === shipment?.id ? "border-pine bg-pine text-pine-ink" : "border-line bg-surface"}`}
+                >
+                  <bdi dir="ltr">{item.id}</bdi>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
         ) : null}
 
         <div aria-live="polite" className="-mt-4 flex flex-col gap-3">
           {loading ? (
             <p role="status" className="flex items-center gap-2 text-sm text-muted">
-              <span className="size-4 animate-spin rounded-full border-2 border-line border-t-pine" aria-hidden="true" />
+              <span
+                className="size-4 animate-spin rounded-full border-2 border-line border-t-pine"
+                aria-hidden="true"
+              />
               {ux.trackLoading}
             </p>
           ) : null}
-          {missing ? <p className="text-sm text-clay">{DEV ? t.notFound : ux.trackNotFound}</p> : null}
-          {live?.error === "rate" ? <p className="text-sm text-clay">{DECLARE_COPY[lang].rate}</p> : null}
+          {missing ? (
+            <p className="text-sm text-clay">{DEV ? t.notFound : ux.trackNotFound}</p>
+          ) : null}
+          {live?.error === "rate" ? (
+            <p className="text-sm text-clay">{DECLARE_COPY[lang].rate}</p>
+          ) : null}
           {live?.error === "unavailable" ? (
-            <ContactNote role="status" pre={ux.trackUnavailablePre} post={ux.trackUnavailablePost} className="max-w-2xl rounded-2xl border border-line bg-surface p-5 text-ink" />
+            <ContactNote
+              role="status"
+              pre={ux.trackUnavailablePre}
+              post={ux.trackUnavailablePost}
+              className="max-w-2xl rounded-2xl border border-line bg-surface p-5 text-ink"
+            />
           ) : null}
         </div>
         {live && !live.error && live.events ? <LiveTrack data={live} lang={lang} ux={ux} /> : null}
@@ -248,21 +283,30 @@ function TrackPage() {
   );
 }
 
-function when(at: string | undefined) {
+function when(at: string | null | undefined) {
   if (!at) return null;
   const date = new Date(at);
   if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat(NUM_LOCALE, { dateStyle: "medium", timeStyle: "short" }).format(date);
+  return new Intl.DateTimeFormat(NUM_LOCALE, { dateStyle: "medium", timeStyle: "short" }).format(
+    date,
+  );
 }
 
 /** Real tracking record: status, last update, next step (labelled as an estimate). Shows only what the server returned. */
 function LiveTrack({ data, lang, ux }: { data: LiveResult; lang: Lang; ux: UxCopy }) {
   const events = data.events ?? [];
-  const title = (event: LiveEvent) => (lang === "ckb" ? event.titleKu || event.title : localizedTrack(lang, event.title, event.titleKu));
+  const title = (event: LiveEvent) =>
+    lang === "ckb"
+      ? event.titleKu || event.title
+      : localizedTrack(lang, event.title, event.titleKu);
   const past = events.filter((event) => event.phase !== "next");
-  const current = events.find((event) => event.phase === "now") ?? past[past.length - 1];
+  const current = past[past.length - 1];
+  const copy = TRACKING_COPY[lang];
+  const action = trackingAction(data.status ?? "", current?.nextAction ?? "none");
+  const statusLabel =
+    REQUEST_COPY[lang].statuses[data.status ?? ""] ?? (current ? title(current) : "—");
   const next = events.find((event) => event.phase === "next");
-  const updated = when(current?.at);
+  const updated = when(events[events.length - 1]?.recordedAt);
   return (
     <article className="flex flex-col gap-6 rounded-2xl border border-line bg-surface p-5 md:p-6">
       <h2 className="text-2xl leading-tight font-bold">
@@ -272,7 +316,7 @@ function LiveTrack({ data, lang, ux }: { data: LiveResult; lang: Lang; ux: UxCop
         <dl className="grid gap-4 md:grid-cols-3">
           <div>
             <dt className="text-xs text-muted">{ux.status}</dt>
-            <dd className="mt-1 font-semibold text-pine">{title(current)}</dd>
+            <dd className="mt-1 font-semibold text-pine">{statusLabel}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted">{ux.lastUpdate}</dt>
@@ -282,9 +326,12 @@ function LiveTrack({ data, lang, ux }: { data: LiveResult; lang: Lang; ux: UxCop
             <dt className="text-xs text-muted">{ux.nextStep}</dt>
             <dd className="mt-1 font-medium">
               {next ? title(next) : "—"}
-              {next && when(next.at) ? (
+              {next?.estimateFrom && next?.estimateTo ? (
                 <span className="block text-xs font-normal text-muted">
-                  <bdi dir="ltr">{when(next.at)}</bdi> · {ux.estimate}
+                  <bdi dir="ltr">
+                    {when(next.estimateFrom)} — {when(next.estimateTo)}
+                  </bdi>{" "}
+                  · {ux.estimate}
                 </span>
               ) : null}
             </dd>
@@ -293,14 +340,43 @@ function LiveTrack({ data, lang, ux }: { data: LiveResult; lang: Lang; ux: UxCop
       ) : (
         <p className="text-sm text-muted">{ux.noEvents}</p>
       )}
+      <div className="flex flex-col gap-3 border-t border-line pt-4 text-sm">
+        <h3 className="font-bold">{copy.action}</h3>
+        <p>{copy[action as keyof typeof copy]}</p>
+        <p className="text-muted">
+          {(next ?? current)?.estimateFrom && (next ?? current)?.estimateTo ? (
+            <>
+              <bdi dir="ltr">
+                {when((next ?? current)?.estimateFrom)} — {when((next ?? current)?.estimateTo)}
+              </bdi>{" "}
+              · {ux.estimate}
+            </>
+          ) : (
+            copy.unknownEta
+          )}
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a className="underline" href="/account">
+            {copy.account}
+          </a>
+          <a className="underline" href="/contact">
+            {copy.contact}
+          </a>
+        </div>
+      </div>
       {past.length ? (
         <ol className="flex flex-col gap-3 border-t border-line pt-4 text-sm">
           {past.map((event, index) => (
-            <li key={`${event.title}-${index}`} className="flex flex-wrap items-baseline justify-between gap-2">
+            <li
+              key={`${event.title}-${index}`}
+              className="flex flex-wrap items-baseline justify-between gap-2"
+            >
               <span className={event === current ? "font-semibold" : ""}>{title(event)}</span>
-              {when(event.at) ? (
+              {!event.at ? <span className="text-xs text-muted">{copy.uncertain}</span> : null}
+              {when(event.at ?? event.recordedAt) ? (
                 <span className="text-xs text-muted">
-                  <bdi dir="ltr">{when(event.at)}</bdi>
+                  <bdi dir="ltr">{when(event.at ?? event.recordedAt)}</bdi> ·{" "}
+                  {event.at ? copy.actual : copy.recorded}
                 </span>
               ) : null}
             </li>

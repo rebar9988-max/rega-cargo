@@ -260,7 +260,13 @@ describe("customer requests on PGLite", () => {
 
     for (const status of ["purchased", "in_transit"])
       await requests.staffSetStatus(staff, { ref, status });
-    await requests.staffAddEvent(staff, { ref, title: "Arrived at Erbil hub", place: "Erbil" });
+    await requests.staffAddEvent(staff, {
+      ref,
+      title: "Arrived at Erbil hub",
+      place: "Erbil",
+      occurredAt: "2026-10-10T12:00:00Z",
+      nextAction: "contact",
+    });
     await assert.rejects(
       requests.staffSetStatus(staff, { ref, status: "purchased" }),
       (err) => code(err) === "invalid",
@@ -371,10 +377,19 @@ describe("customer requests on PGLite", () => {
 
   it("records the contents declaration for store orders too", async () => {
     const sql = await getSql();
-    const aza = (await sql<{ id: string }>`select id from phone_users where phone = '+9647501110001'`)[0].id;
-    const made = await orders.submitRequest(aza, "store", { intent: "buy", url: "https://www.zalando.de/x", qty: 1, dest: "ebl", declared: true }, null);
+    const aza = (
+      await sql<{ id: string }>`select id from phone_users where phone = '+9647501110001'`
+    )[0].id;
+    const made = await orders.submitRequest(
+      aza,
+      "store",
+      { intent: "buy", url: "https://www.zalando.de/x", qty: 1, dest: "ebl", declared: true },
+      null,
+    );
     assert.ok("id" in made);
-    const rows = await sql<{ kind: string }>`select d.kind from declarations d join shipment_requests r on r.id = d.ref_id where r.tracking_id = ${made.id}`;
+    const rows = await sql<{
+      kind: string;
+    }>`select d.kind from declarations d join shipment_requests r on r.id = d.ref_id where r.tracking_id = ${made.id}`;
     assert.equal(rows[0]?.kind, "store");
   });
 });

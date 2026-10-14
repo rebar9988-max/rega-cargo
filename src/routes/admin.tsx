@@ -9,6 +9,7 @@ import { viewerState } from "@/lib/viewer/api";
 import { iqd, marketCopy } from "@/lib/market-copy";
 import { marketAdmin, marketAdminComplianceScan, marketAdminSet } from "@/lib/market/api";
 import { staffList } from "@/lib/requests/api";
+import { PlatformAdmin } from "@/components/platform-admin";
 import { StaffRequestList } from "@/components/staff-requests";
 
 export const Route = createFileRoute("/admin")({
@@ -213,6 +214,7 @@ function AdminSignedIn({
           ) : null}
         </Section>
         <StaffRequestList initial={initial.orders} />
+        {market.superAdmin ? <PlatformAdmin /> : null}
       </div>
     </Shell>
   );

@@ -14,7 +14,14 @@ import {
 } from "@/lib/phone/codes";
 import { messageLines } from "@/lib/phone/send.server";
 
-const COOKIE = "rl_phone";
+/**
+ * `__Host-` makes the browser refuse a same-named cookie set with a Domain
+ * attribute, so a sibling subdomain cannot plant a session here. The prefix
+ * requires Secure, so plain-http local dev keeps the bare name.
+ */
+function cookieName() {
+  return secureCookie() ? "__Host-rl_phone" : "rl_phone";
+}
 const MONTH = 60 * 60 * 24 * 30;
 const HOUR_LIMIT = 8;
 const IP_HOUR_LIMIT = 30;
@@ -46,7 +53,7 @@ function clientIp() {
 }
 
 function writeCookie(token: string | null) {
-  setCookie(COOKIE, token ?? "", {
+  setCookie(cookieName(), token ?? "", {
     path: "/",
     httpOnly: true,
     secure: secureCookie(),
@@ -88,10 +95,15 @@ async function bump(key: string, limit: number, window: "hour" | "day") {
   return rows[0]?.allowed !== true && rows[0]?.allowed !== ("t" as unknown);
 }
 
-async function limited(phone: string, ip: string) {
+/**
+ * Sending codes and checking codes have separate per-IP budgets, so many
+ * customers behind one carrier IP (CGNAT) do not use up each other's sign-ins
+ * twice, and code guessing cannot starve code sending.
+ */
+async function limited(phone: string, ip: string, scope: "send" | "pin") {
   const day = new Date().toISOString().slice(0, 10);
   const phoneHour = await bump(`phone:hour:${phone}`, HOUR_LIMIT, "hour");
-  const ipHour = await bump(`ip:hour:${ip}`, IP_HOUR_LIMIT, "hour");
+  const ipHour = await bump(`ip:${scope}:hour:${ip}`, IP_HOUR_LIMIT, "hour");
   const phoneDay = await bump(`phone:day:${phone}:${day}`, DAY_LIMIT, "day");
   return phoneHour || ipHour || phoneDay;
 }
@@ -105,16 +117,19 @@ async function sweep() {
       delete from phone_sessions where expires_at < now() returning 1
     ), gone_log as (
       delete from action_log where created_at < now() - interval '7 days' returning 1
+    ), gone_counters as (
+      -- Hourly windows and dated daily keys are dead after two days.
+      delete from rate_counters where window_start < now() - interval '2 days' returning 1
     )
     select 1`;
 }
 
 export async function currentPhoneUserId() {
-  const token = getCookie(COOKIE);
+  const token = getCookie(cookieName());
   if (!token) return null;
   const sql = await getSql();
   const rows = await sql<{ user_id: string }>`
-    select user_id from phone_sessions where token_hash = ${sha(token)} and expires_at > now()`;
+    select s.user_id from phone_sessions s join phone_users u on u.id = s.user_id where s.token_hash = ${sha(token)} and s.expires_at > now() and u.disabled_at is null`;
   return rows[0]?.user_id ?? null;
 }
 
@@ -122,7 +137,10 @@ export async function phoneMe() {
   const id = await currentPhoneUserId();
   if (!id) return null;
   const sql = await getSql();
-  const rows = await sql<{ name: string; phone: string }>`select name, phone from phone_users where id = ${id}`;
+  const rows = await sql<{
+    name: string;
+    phone: string;
+  }>`select name, phone from phone_users where id = ${id}`;
   return rows[0] ? { name: rows[0].name, phone: rows[0].phone } : null;
 }
 
@@ -133,7 +151,8 @@ export function phoneDeliveryConfigured() {
 
 async function sendAndStore(phone: string, code: string) {
   const sent = phoneTestSinkEnabled()
-    ? ((globalThis as { __rlLastCode?: string }).__rlLastCode = code, { whatsapp: true, sms: false })
+    ? (((globalThis as { __rlLastCode?: string }).__rlLastCode = code),
+      { whatsapp: true, sms: false })
     : await deliverCode(phone, code);
   if (!sent.whatsapp && !sent.sms) return null;
   const sql = await getSql();
@@ -183,7 +202,7 @@ export async function phoneStart(dial: unknown, national: unknown, turnstileToke
   const cool = await sql<{ ok: boolean }>`
     select sent_at > now() - interval '60 seconds' as ok from phone_codes where phone = ${phone} and expires_at > now()`;
   if (cool[0]?.ok === true) return { error: "rate" as const };
-  if (await limited(phone, clientIp())) return { error: "rate" as const };
+  if (await limited(phone, clientIp(), "send")) return { error: "rate" as const };
   const code = await randomCode();
   const sent = await sendAndStore(phone, code);
   if (!sent) return { error: "unavailable" as const };
@@ -199,20 +218,39 @@ async function openSession(userId: string) {
   writeCookie(token);
 }
 
-export async function phoneConfirm(input: { dial?: unknown; national?: unknown; pin?: unknown; name?: unknown }) {
+export async function phoneConfirm(input: {
+  dial?: unknown;
+  national?: unknown;
+  pin?: unknown;
+  name?: unknown;
+}) {
   if (!phoneDeliveryConfigured()) return { error: "unavailable" as const };
   const phone = toE164(String(input.dial ?? ""), String(input.national ?? ""));
   const pin = cleanPin(String(input.pin ?? ""));
   if (!phone || !pin) return { error: "invalid" as const };
-  if (await limited(`pin:${phone}`, clientIp())) return { error: "rate" as const };
+  if (await limited(`pin:${phone}`, clientIp(), "pin")) return { error: "rate" as const };
   if (!(await consumeDeliveredCode(phone, pin))) return { error: "wrong" as const };
   const sql = await getSql();
-  const users = await sql<{ id: string; name: string }>`select id, name from phone_users where phone = ${phone}`;
+  const users = await sql<{
+    id: string;
+    name: string;
+    disabled_at: string | null;
+    provisioned_at: string | null;
+  }>`select id, name, disabled_at, provisioned_at from phone_users where phone = ${phone}`;
   if (users[0]) {
+    if (users[0].disabled_at && !users[0].provisioned_at) return { error: "forbidden" as const };
+    if (users[0].provisioned_at) {
+      const activated =
+        await sql`update phone_users set disabled_at = null, provisioned_at = null where id = ${users[0].id} and provisioned_at is not null returning id`;
+      if (!activated[0]) return { error: "forbidden" as const };
+      await sql`insert into user_roles(user_id, role, status, display_name, phone) values (${users[0].id}, 'buyer', 'approved', ${users[0].name}, ${phone}) on conflict (user_id, role) do nothing`;
+    }
     await openSession(users[0].id);
     return { name: users[0].name, phone };
   }
-  const name = String(input.name ?? "").trim().replace(/\s+/g, " ");
+  const name = String(input.name ?? "")
+    .trim()
+    .replace(/\s+/g, " ");
   if (name.length < 2 || name.length > 40) return { error: "invalid" as const };
   const id = `ph_${crypto.randomUUID()}`;
   const salt = randomBytes(16).toString("hex");
@@ -228,7 +266,12 @@ export async function phoneConfirm(input: { dial?: unknown; national?: unknown; 
   return { name, phone };
 }
 
-export async function phoneRegister(input: { dial?: unknown; national?: unknown; name?: unknown; pin?: unknown }) {
+export async function phoneRegister(input: {
+  dial?: unknown;
+  national?: unknown;
+  name?: unknown;
+  pin?: unknown;
+}) {
   return phoneConfirm(input);
 }
 
@@ -237,7 +280,7 @@ export async function phoneLogin(input: { dial?: unknown; national?: unknown; pi
 }
 
 export async function phoneLogout() {
-  const token = getCookie(COOKIE);
+  const token = getCookie(cookieName());
   if (token) {
     const sql = await getSql();
     await sql`delete from phone_sessions where token_hash = ${sha(token)}`;
