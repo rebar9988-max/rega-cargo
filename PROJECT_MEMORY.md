@@ -9,6 +9,10 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-14**, verified R&L AI production release `481bfeb` / PR #92. See the current checkpoint below.
 
 
+## R&L AI owner-only permanent baseline (2026-10-14)
+
+Owner explicitly reconfirmed: the approved R&L AI foundation must survive every unrelated R&L change; only a new explicit owner request for the affected AI change authorizes a baseline change. Broad redesign/refactor/upgrade requests are insufficient. Preserving bug/security maintenance remains allowed. Read the identical OWNER-ONLY R&L AI BASELINE rule in root AGENTS/CLAUDE and module AGENTS/README before editing. Regression checks pin the official identity, tool allowlist and approved Sorani welcome/refusal/shortcuts; CODEOWNERS also covers the governance entry points. These checks and review rules detect accidental drift, but are not technical immutability or enabled branch protection.
+
 ## R&L AI modernization checkpoint (2026-10-13)
 
 Owner-authorized isolated work is on `codex/rl-ai-domain-lock-20261013`, based on `631549f`. Identity: **R&L AI — یاریدەدەری زیرەکی کڕیار**; strictly R&L Marketplace, Bring For Me, Delivery / Tracking support. Read [module rules](src/modules/rl-ai/AGENTS.md) and [ownership/contracts](src/modules/rl-ai/README.md) before modifying AI. These invariants need an explicit new owner instruction to change; ordinary preserving maintenance is allowed.

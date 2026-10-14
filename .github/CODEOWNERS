@@ -8,3 +8,9 @@
 /exports.cloudflare.ts @rebar9988-max
 /scripts/rl-ai-boundaries.test.mjs @rebar9988-max
 /src/lib/market/assistant-contract.server.ts @rebar9988-max
+
+# Owner-only baseline governance must retain owner review coverage.
+/AGENTS.md @rebar9988-max
+/CLAUDE.md @rebar9988-max
+/PROJECT_MEMORY.md @rebar9988-max
+/.github/CODEOWNERS @rebar9988-max

@@ -17,3 +17,7 @@ White/red restrained cards, existing official mark and tokens, scoped Vazirmatn 
 ## Verification
 
 `npm test` includes module security/integration tests and import boundaries; `tests/layout/rl-ai.spec.ts` covers interactions and RTL. Follow the repository's full migration-free build and official-image layout gate. Documentation and CODEOWNERS express governance; they do not make files immutable. Repository protections must be checked live before release.
+
+## OWNER-ONLY R&L AI BASELINE — 2026-10-14
+
+Explicit owner instruction: R&L AI is part of the permanent R&L foundation. Preserve its approved identity, customer-only domain, isolated module/contracts, privacy/security, verified-data responses, official red/white design, Sorani Vazirmatn/RTL, five shortcuts and existing image workflow across every unrelated change. A general request to redesign, modernize, refactor or upgrade R&L does not authorize changing this R&L AI baseline. Only a new explicit owner instruction specifically requesting the affected R&L AI change authorizes it; record that instruction and its scope in project memory. Bug fixes, security updates and internal maintenance may proceed only when they preserve the baseline. Never remove or weaken these rules, their tests or owner-review coverage to make another task pass.

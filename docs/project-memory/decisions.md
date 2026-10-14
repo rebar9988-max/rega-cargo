@@ -40,3 +40,10 @@ Owner explicitly requested closure of old domains and exclusive public service a
 ## R&L AI ownership and verification — 2026-10-13
 
 Owner explicitly authorized end-to-end R&L AI modernization only. Preserve identity, R&L-only purpose, isolated ownership, authorized contracts, privacy, brand and Sorani typography. Reuse selected #69 typed-chat primitives and #68 budget hardening without merging stale unrelated branches. No provider prose/private data enters the assistant response. Missing release credentials/protection visibility are external blockers, not permission to bypass safeguards. See [verification report](../ai/rl-ai-verification-20261013.md).
+
+
+## 2026-10-14 owner-only R&L AI baseline
+
+Owner explicitly reconfirmed that R&L AI must remain a permanent R&L foundation across unrelated changes; only the owner can explicitly request an affected baseline change. Identical rules recorded in root AGENTS/CLAUDE and module AGENTS/README. General modernization/refactor requests do not authorize drift. Preserving maintenance allowed. Exact identity, tool allowlist and Sorani baseline regression checks plus governance CODEOWNERS coverage added; no application/runtime or infrastructure change. Review rules are not technical immutability or branch protection.
+
+Source: owner chat, 2026-10-14 — “دەبێ ئەوە لە بنچینەوە لەناو R&Lتۆمار بكرێ واتا لەگەل هیچ گۆڕانكاریەك نەگۆڕێ مەگەر خۆم داوی بكەم”. The authorized scope is permanent AI baseline preservation and owner-only changes, not a redesign or new architecture. Focused governance/memory tests: 10 passed. Three isolated mutation experiments proved identity, tool expansion and refusal drift fail the baseline check; production sources were never mutated.

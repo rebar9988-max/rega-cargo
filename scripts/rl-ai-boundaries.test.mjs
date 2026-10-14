@@ -116,3 +116,78 @@ test("module invariants are present in both agent entry points and owner governa
   const route = readFileSync("server/routes/api/ai/chat.ts", "utf8");
   assert.ok(!/lib\/(?:db|market\/handlers|requests\/handlers)/.test(route));
 });
+
+test("owner-only baseline rule is identical and retains governance review coverage", () => {
+  const marker = "## OWNER-ONLY R&L AI BASELINE — 2026-10-14";
+  const rules = [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "src/modules/rl-ai/AGENTS.md",
+    "src/modules/rl-ai/README.md",
+  ].map((file) => {
+    const text = readFileSync(file, "utf8");
+    assert.equal(text.split(marker).length, 2, `${file}: missing/duplicate owner rule`);
+    return text.split(marker)[1].split(/\n## /)[0].trim();
+  });
+  for (const rule of rules) {
+    assert.equal(rule, rules[0]);
+    assert.ok(
+      rule.includes(
+        "Only a new explicit owner instruction specifically requesting the affected R&L AI change",
+      ),
+    );
+    assert.ok(
+      rule.includes(
+        "A general request to redesign, modernize, refactor or upgrade R&L does not authorize",
+      ),
+    );
+    assert.ok(
+      rule.includes("Never remove or weaken these rules, their tests or owner-review coverage"),
+    );
+  }
+  const owners = readFileSync(".github/CODEOWNERS", "utf8").split("\n");
+  for (const file of ["AGENTS.md", "CLAUDE.md", "PROJECT_MEMORY.md", ".github/CODEOWNERS"])
+    assert.ok(owners.includes(`/${file} @rebar9988-max`), file);
+});
+
+test("owner-approved AI identity, tools and Sorani customer baseline cannot drift silently", async () => {
+  // Independent acceptance values, not snapshots regenerated from the implementation.
+  // Change these only with a new explicit owner instruction recorded in project memory.
+  async function load(file) {
+    const { outputText } = ts.transpileModule(readFileSync(file, "utf8"), {
+      compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ESNext },
+    });
+    return import(`data:text/javascript;base64,${Buffer.from(outputText).toString("base64")}`);
+  }
+  const policy = await load("src/modules/rl-ai/domain/scope-policy.ts");
+  assert.equal(policy.RL_AI_IDENTITY, "R&L AI — یاریدەدەری زیرەکی کڕیار");
+  assert.deepEqual(policy.RL_AI_TOOLS, [
+    "marketplace.read",
+    "bring.navigate",
+    "delivery.navigate",
+    "tracking.navigate",
+    "support.navigate",
+    "image.identify",
+  ]);
+  const { CHAT_COPY } = await load("src/modules/rl-ai/ui/assistant-copy.ts");
+  assert.equal(CHAT_COPY.ckb.subtitle, "یاریدەدەری زیرەکی کڕیار");
+  assert.equal(CHAT_COPY.ckb.start, "گفتوگۆ لەگەڵ R&L AI");
+  assert.equal(
+    CHAT_COPY.ckb.intro,
+    "بەخێربێیت بۆ R&L AI. دەتوانم لە دۆزینەوەی کاڵا، داواکردن و گەیاندن یارمەتیت بدەم.",
+  );
+  assert.equal(
+    CHAT_COPY.ckb.refusal,
+    "ببورە، من تەنها بۆ یارمەتیدانت لە خزمەتگوزارییەکانی R&L دامەزراوم. دەتوانم لە بازاڕ، داواکردنی کاڵا و گەیاندن یارمەتیت بدەم.",
+  );
+  assert.deepEqual(
+    ["shop", "compare", "bring", "track", "how"].map((key) => CHAT_COPY.ckb[key]),
+    [
+      "کاڵایەکم بۆ بدۆزەوە",
+      "بەراوردی دوو کاڵام بۆ بکە",
+      "کاڵام بۆ بهێنەوە",
+      "داواکارییەکەم لە کوێیە؟",
+      "چۆن کاڵا داوا بکەم؟",
+    ],
+  );
+});
