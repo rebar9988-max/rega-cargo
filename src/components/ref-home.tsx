@@ -20,6 +20,7 @@ import { DEFAULT_MARKET_SEARCH } from "@/lib/market/search";
 import { JOURNEY_COPY } from "@/lib/journey-copy";
 import { iqd, marketCopy } from "@/lib/market-copy";
 import type { DiscoveryData } from "./market-discovery";
+import { useHydrated } from "@/lib/use-hydrated";
 
 function SectionHead({ id, title, action }: { id: string; title: string; action: ReactNode }) {
   return (
@@ -34,6 +35,7 @@ export function RefHome({ market }: { market: DiscoveryData | null }) {
   const { lang } = useI18n();
   const j = JOURNEY_COPY[lang];
   const m = marketCopy(lang);
+  const hydrated = useHydrated();
   const c = refHomeCopy(lang);
   const sc = storeCopy(lang);
   const rc = redesignCopy(lang);
@@ -42,7 +44,7 @@ export function RefHome({ market }: { market: DiscoveryData | null }) {
   // row while the marketplace has none. Prices are only the stored lowest verified offer.
   const listed = market && !("error" in market) ? market.items.slice(0, 4) : [];
   return (
-    <div className="rl-ref" data-layout-exempt>
+    <div className="rl-ref" data-layout-exempt data-hydrated={hydrated}>
       <section className="rl-ref-hero" aria-labelledby="rl-ref-title">
         <div className="rl-ref-hero-copy" dir="ltr">
           <p className="rl-ref-eyebrow" dir="auto">

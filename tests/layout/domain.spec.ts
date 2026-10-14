@@ -20,8 +20,9 @@ test("complete pages hydrate after repeat visits and delayed asset responses", a
     // SSR visibility/network idle can precede lazy route hydration. Wait for
     // each journey's usable controls before a new document navigation can
     // cancel its imports and trigger TanStack's missing-module reload.
+    // The reference homepage has no form; its root reports when React has hydrated it.
     if (path.startsWith("/?"))
-      await expect(page.locator('main form button[type="submit"]').first()).toBeEnabled();
+      await expect(page.locator(".rl-ref")).toHaveAttribute("data-hydrated", "true");
     if (path.startsWith("/stores?"))
       await expect(page.locator(".rl-audience-chips button").first()).toBeEnabled();
     if (path.startsWith("/stores/request"))
