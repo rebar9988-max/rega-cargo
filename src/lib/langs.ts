@@ -1,6 +1,6 @@
 export const LANGS = [
   { id: "ckb", code: "CKB", name: "کوردیی ناوەندی", short: "کوردی", dir: "rtl", html: "ckb" },
-  { id: "ku", code: "KU", name: "Kurmancî (Badînî)", short: "Kurmancî", dir: "ltr", html: "ku" },
+  { id: "ku", code: "KU", name: "Kurmancî (Badînî)", short: "Kurdî", dir: "ltr", html: "ku" },
   { id: "de", code: "DE", name: "Deutsch", short: "Deutsch", dir: "ltr", html: "de" },
   { id: "en", code: "EN", name: "English", short: "English", dir: "ltr", html: "en" },
   { id: "ar", code: "AR", name: "العربية", short: "العربية", dir: "rtl", html: "ar" },

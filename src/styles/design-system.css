@@ -1628,9 +1628,6 @@
     color: var(--rl-on-brand);
     transition: background-color var(--rl-motion-fast) var(--rl-ease);
   }
-  .rl-site-header [data-layout="lang-button"] {
-    border-color: var(--rl-on-brand-line);
-  }
   .rl-site-header .rl-icon-button:hover,
   .rl-site-header [data-layout="lang-button"]:hover {
     background: var(--rl-on-brand-hover);
