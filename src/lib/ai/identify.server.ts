@@ -67,7 +67,7 @@ export type IdentifyResponse =
   | { ok: false; error: string; detail?: string };
 
 const SYSTEM_PROMPT = [
-  "You identify retail products in a single photo for a shipping company's customers.",
+  "You are R&L AI — the strictly bounded customer assistant for R&L Marketplace, Bring For Me and Delivery/Tracking. Identify only the retail product in this photo.",
   "Reply ONLY with JSON matching the given schema. All text in English.",
   "category: electronics = devices, audio, phones, computers, cables; beauty = cosmetics, skincare, hair care, perfume; fashion = clothing, shoes, bags, watches, jewellery; home = kitchen appliances, cookware, furniture, decor, tools; baby = baby and kids products, toys; sports = sports and outdoor gear; general = food, drinks and anything else, or if unsure.",
   "brand/model: only if clearly visible or unmistakable, else null. Never guess a brand. model is a product line or model name/number, never a generic type like 'electric kettle'.",
@@ -95,7 +95,7 @@ function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return request.headers.get("sec-fetch-site") !== "cross-site";
   try {
-    return new URL(origin).host === new URL(request.url).host;
+    return new URL(origin).origin === new URL(request.url).origin;
   } catch {
     return false;
   }
@@ -153,17 +153,26 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
   if (!aiEnabled(env)) return json({ ok: false, error: "disabled" }, 404);
   if (request.method !== "POST") return json({ ok: false, error: "method" }, 405);
   if (!sameOrigin(request)) return json({ ok: false, error: "forbidden" }, 403);
-  if (
-    deps.limit &&
-    !(await deps.limit(ipKey(request.headers.get("cf-connecting-ip") ?? "unknown")))
-  )
-    return json({ ok: false, error: "rate_limited" }, 429);
+  if (deps.limit) {
+    try {
+      if (!(await deps.limit(ipKey(request.headers.get("cf-connecting-ip") ?? "unknown"))))
+        return json({ ok: false, error: "rate_limited" }, 429);
+    } catch {
+      // A failed safety gate must never permit provider work.
+      return json({ ok: false, error: "unavailable" }, 503);
+    }
+  }
   if (!env.AI || !deps.usage) return json({ ok: false, error: "unavailable" }, 503);
 
   const cap = MAX_IMAGE_BYTES + 64_000;
   const declared = Number(request.headers.get("content-length") ?? "0");
   if (declared > cap) return json({ ok: false, error: "too_large" }, 413);
-  const bytesIn = await readCapped(request, cap);
+  let bytesIn: Awaited<ReturnType<typeof readCapped>>;
+  try {
+    bytesIn = await readCapped(request, cap);
+  } catch {
+    return json({ ok: false, error: "bad_request" }, 400);
+  }
   if (!bytesIn) return json({ ok: false, error: "too_large" }, 413);
 
   let form: FormData;
@@ -176,24 +185,28 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
     return json({ ok: false, error: "bad_request" }, 400);
   }
   if (!deps.skipGate) {
-    const turnstile = deps.turnstileSecret?.trim();
-    if (turnstile) {
-      const ok = await verifyTurnstile(
-        turnstile,
-        String(form.get("turnstile") ?? ""),
-        ipKey(request.headers.get("cf-connecting-ip") ?? ""),
-      );
-      if (!ok) return json({ ok: false, error: "forbidden" }, 403);
-    } else if (deps.verifyToken) {
-      const nowMs = (deps.now ?? (() => new Date()))().getTime();
-      const ok = await deps.verifyToken(String(form.get("token") ?? ""), nowMs);
-      if (!ok) return json({ ok: false, error: "forbidden" }, 403);
-    } else if (deps.tokenSecret) {
-      const nowMs = (deps.now ?? (() => new Date()))().getTime();
-      const ok = await verifyAiToken(deps.tokenSecret, String(form.get("token") ?? ""), nowMs);
-      if (!ok) return json({ ok: false, error: "forbidden" }, 403);
-    } else {
-      return json({ ok: false, error: "forbidden" }, 403);
+    try {
+      const turnstile = deps.turnstileSecret?.trim();
+      if (turnstile) {
+        const ok = await verifyTurnstile(
+          turnstile,
+          String(form.get("turnstile") ?? ""),
+          ipKey(request.headers.get("cf-connecting-ip") ?? ""),
+        );
+        if (!ok) return json({ ok: false, error: "forbidden" }, 403);
+      } else if (deps.verifyToken) {
+        const nowMs = (deps.now ?? (() => new Date()))().getTime();
+        const ok = await deps.verifyToken(String(form.get("token") ?? ""), nowMs);
+        if (!ok) return json({ ok: false, error: "forbidden" }, 403);
+      } else if (deps.tokenSecret) {
+        const nowMs = (deps.now ?? (() => new Date()))().getTime();
+        const ok = await verifyAiToken(deps.tokenSecret, String(form.get("token") ?? ""), nowMs);
+        if (!ok) return json({ ok: false, error: "forbidden" }, 403);
+      } else {
+        return json({ ok: false, error: "forbidden" }, 403);
+      }
+    } catch {
+      return json({ ok: false, error: "unavailable" }, 503);
     }
   }
   if (form.get("consent") !== "1") return json({ ok: false, error: "consent_required" }, 400);
@@ -220,9 +233,22 @@ export async function handleIdentify(request: Request, deps: IdentifyDeps): Prom
     perVisitorDaily: PER_VISITOR_DAILY,
     reserve: dailyCap > NEW_VISITOR_RESERVE ? NEW_VISITOR_RESERVE : 0,
   };
-  const decision = await deps.usage.consume(usageInput);
+  let decision: UsageDecision;
+  try {
+    decision = await deps.usage.consume(usageInput);
+  } catch {
+    // Never start paid-capable provider work without a confirmed budget slot.
+    return json({ ok: false, error: "unavailable" }, 503);
+  }
   if (!decision.ok) return json({ ok: false, error: decision.reason }, 429);
-  const refund = () => deps.usage?.refund?.(usageInput);
+  const refund = async () => {
+    try {
+      await deps.usage?.refund?.(usageInput);
+    } catch {
+      // A refund is best effort. Keep the consumed budget and the original,
+      // classified provider error; never expose storage diagnostics to clients.
+    }
+  };
 
   const started = Date.now();
   let reply: unknown;

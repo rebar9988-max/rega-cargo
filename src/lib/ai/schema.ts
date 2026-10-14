@@ -1,3 +1,4 @@
+import { instructionAttack, unrelatedTask } from "../../modules/rl-ai/domain/scope-policy.ts";
 import { z } from "zod";
 import { STORES } from "../stores.ts";
 
@@ -58,17 +59,19 @@ const PRICE_RE = /(?:[€$£¥]\s?\d[\d.,]*|\d[\d.,]*\s?(?:€|eur|euro|usd|\$|i
 /** Plain text only: no tags, no control chars, no links, no prices. */
 export function cleanText(value: unknown, max: number): string {
   if (typeof value !== "string") return "";
-  return value
-    .replace(/<[^>]*>/g, " ")
-    .replace(/[<>]/g, " ")
-    .replace(URL_RE, " ")
-    .replace(PRICE_RE, " ")
-    .replace(STORE_RE, " ")
-    // eslint-disable-next-line no-control-regex -- stripping control chars is the point
-    .replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, max);
+  return (
+    value
+      .replace(/<[^>]*>/g, " ")
+      .replace(/[<>]/g, " ")
+      .replace(URL_RE, " ")
+      .replace(PRICE_RE, " ")
+      .replace(STORE_RE, " ")
+      // eslint-disable-next-line no-control-regex -- stripping control chars is the point
+      .replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, max)
+  );
 }
 
 function cleanList(values: unknown, max: number, itemMax: number): string[] {
@@ -124,6 +127,7 @@ export function parseIdentifyOutput(content: unknown): IdentifyResult | null {
   const parsed = rawSchema.safeParse(value);
   if (!parsed.success) return null;
   const data = parsed.data;
+  if (instructionAttack(JSON.stringify(data)) || unrelatedTask(JSON.stringify(data))) return null;
   const category = (AI_CATEGORIES as readonly string[]).includes(data.category)
     ? (data.category as AiCategory)
     : "general";

@@ -1,6 +1,8 @@
 /**
  * Request budgets for R&L AI: a per-visitor hourly limit and a hard daily cap
- * across all visitors (keeps Workers AI inside its free daily allocation).
+ * across all visitors. Failed inference can still consume provider resources,
+ * so the attempt budget is never refunded. A request cap alone does not prove
+ * usage stays within a provider's free token/compute allowance.
  * The decision logic is pure; production state lives in one Durable Object
  * (strongly consistent, so the cap is exact), tests use the in-memory store.
  */
@@ -25,6 +27,7 @@ export interface UsageStore {
 
 export async function consumeUsage(store: UsageStore, input: UsageInput): Promise<UsageDecision> {
   const dayKey = `day:${input.day}`;
+  const attemptKey = `attempts:${input.day}`;
   const visitorKey = `ip:${input.hour}:${input.visitor}`;
   const dayVisitorKey = `ipday:${input.day}:${input.visitor}`;
   const visitorCount = (await store.get(visitorKey)) ?? 0;
@@ -33,11 +36,14 @@ export async function consumeUsage(store: UsageStore, input: UsageInput): Promis
   const perDay = input.perVisitorDaily ?? Number.POSITIVE_INFINITY;
   if (visitorDay >= perDay) return { ok: false, reason: "rate_limited" };
   const dayCount = (await store.get(dayKey)) ?? 0;
+  // Carry existing daily usage forward when this key first appears after an upgrade.
+  const attempts = Math.max(dayCount, (await store.get(attemptKey)) ?? 0);
   const reserve = input.reserve ?? 0;
   const ceiling = visitorDay === 0 ? input.dailyCap : Math.max(0, input.dailyCap - reserve);
-  if (dayCount >= ceiling) return { ok: false, reason: "daily_cap" };
+  if (attempts >= ceiling) return { ok: false, reason: "daily_cap" };
   await store.put({
     [dayKey]: dayCount + 1,
+    [attemptKey]: attempts + 1,
     [visitorKey]: visitorCount + 1,
     [dayVisitorKey]: visitorDay + 1,
   });
@@ -48,6 +54,7 @@ export async function refundUsage(
   store: UsageStore,
   input: { day: string; hour: string; visitor: string },
 ): Promise<void> {
+  // Restore visitor/success allowances only: provider attempts remain charged.
   const dayKey = `day:${input.day}`;
   const visitorKey = `ip:${input.hour}:${input.visitor}`;
   const dayVisitorKey = `ipday:${input.day}:${input.visitor}`;
@@ -97,7 +104,9 @@ export function ipKey(ip: string): string {
   const [head, tail = ""] = raw.split("::");
   const left = head ? head.split(":") : [];
   const right = tail ? tail.split(":") : [];
-  const fill = raw.includes("::") ? Array(Math.max(0, 8 - left.length - right.length)).fill("0") : [];
+  const fill = raw.includes("::")
+    ? Array(Math.max(0, 8 - left.length - right.length)).fill("0")
+    : [];
   const groups = [...left, ...fill, ...right].map((g) => (g || "0").replace(/^0+(?=.)/, ""));
   return `${groups.slice(0, 4).join(":")}::/64`;
 }

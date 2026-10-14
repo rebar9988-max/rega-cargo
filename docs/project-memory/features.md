@@ -29,3 +29,7 @@ Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 ## Pending source change: shipping separation ([PR #72](https://github.com/rebar9988-max/rega-cargo/pull/72), 2026-10-12)
 
 The home calculator and tracking entry move to a dedicated `components/shipping-page.tsx` on `/quote`, with `styles/shipping.css`. `/stores` and legacy filtered home URLs stay catalogue-only. Home navigation continues to link to shopping and shipping. Quote parameters, calculation, local device saves and booking APIs remain supported; this is not a backend recovery. See [verification](../redesign/shipping-separation.md). Not merged or deployed.
+
+## R&L AI ownership and verification — 2026-10-13
+
+`/ai` source now has the premium welcome, five real intent shortcuts and keyboard-accessible Sorani chat; existing photo/camera/estimate remains with preview/removal before explicit processing. Conversation lives in page memory, clears on locale/session changes and reset requires confirmation. Tracking links to existing secure workflows; no fabricated private record. Source only, pending release. See [verification report](../ai/rl-ai-verification-20261013.md).

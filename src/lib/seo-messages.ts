@@ -31,9 +31,9 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "یەک کاڵا، چەند فرۆشیار. هەرزانترین کۆی نرخ لە سەرەوەیە. بێ پارەدان، بێ ڕیکلام، بێ شوێنی پارەدراو.",
     },
     "/ai": {
-      title: "وێنەی کاڵایەک بگرە، بزانە چییە. · R&L",
+      title: "R&L AI",
       description:
-        "وێنەیەک بنێرە یان بیگرە؛ R&L AI جۆری کاڵا، براند و نووسینی سەر کاڵاکە پێشنیار دەکات. هەرگیز نرخ یان فرۆشگا پیشان نادات.",
+        "بەخێربێیت بۆ R&L AI. دەتوانم لە دۆزینەوەی کاڵا، داواکردن و گەیاندن یارمەتیت بدەم.",
     },
     "/impressum": {
       title: "زانیاریی یاسایی (Impressum) · R&L",
@@ -75,9 +75,8 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "Yek berhem, çend firoşkar. Tevahiya herî erzan di pêşiyê de ye. Bê dayîn, bê reklam, bê cihê bi pere.",
     },
     "/ai": {
-      title: "Wêneyê berhemekê bigire. Bizane ew çi ye. · R&L",
-      description:
-        "Wêneyekî bişîne an bigire: R&L AI cureyê berhemê, marka û nivîsa li ser wê pêşniyar dike. Ew qet biha an firoşgehan nîşan nade.",
+      title: "R&L AI",
+      description: "Alîkarê R&L ji bo bazar, daxwaza berheman û gihandinê.",
     },
     "/impressum": {
       title: "Agahiyên qanûnî (Impressum) · R&L",
@@ -119,9 +118,8 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "Ein Produkt, mehrere Anbieter. Die günstigste Gesamtsumme steht oben. Keine Zahlung, keine Werbung, kein bezahlter Platz.",
     },
     "/ai": {
-      title: "Produkt fotografieren. Erfahren, was es ist. · R&L",
-      description:
-        "Foto hochladen oder aufnehmen – R&L AI schlägt Produktkategorie, Marke und aufgedruckten Text vor. Preise oder Shops zeigt es nie.",
+      title: "R&L AI",
+      description: "R&L Kundenassistent für Marktplatz, Produktanfragen und Lieferung.",
     },
     "/impressum": {
       title: "Impressum · R&L",
@@ -163,9 +161,8 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "One product, several sellers. The cheapest total is first. No payment, no ads, no paid place.",
     },
     "/ai": {
-      title: "Photograph a product. See what it is. · R&L",
-      description:
-        "Upload or take a photo: R&L AI suggests the product category, brand and printed text. It never shows prices or shops.",
+      title: "R&L AI",
+      description: "R&L customer assistant for Marketplace, Bring For Me and Delivery / Tracking.",
     },
     "/impressum": {
       title: "Legal notice (Impressum) · R&L",
@@ -207,9 +204,8 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "منتج واحد وعدة بائعين. أقل إجمالي في المقدمة. بلا دفع ولا إعلانات ولا مكان مدفوع.",
     },
     "/ai": {
-      title: "صوّر منتجًا. اعرف ما هو. · R&L",
-      description:
-        "ارفع صورة أو التقطها؛ يقترح R&L AI فئة المنتج والعلامة التجارية والنص المطبوع عليه. لا يعرض أسعارًا أو متاجر أبدًا.",
+      title: "R&L AI",
+      description: "مساعد R&L للعملاء في السوق وطلبات المنتجات والتوصيل.",
     },
     "/impressum": {
       title: "البيانات القانونية (Impressum) · R&L",
@@ -251,9 +247,8 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "یک کالا، چند فروشنده. ارزان‌ترین قیمت کل اول می‌آید. بدون پرداخت، بدون تبلیغ، بدون جایگاه پولی.",
     },
     "/ai": {
-      title: "از کالا عکس بگیرید. ببینید چیست. · R&L",
-      description:
-        "عکسی بارگذاری کنید یا بگیرید؛ R&L AI دسته‌بندی کالا، برند و متن چاپ‌شده روی آن را پیشنهاد می‌دهد. هرگز قیمت یا فروشگاه نشان نمی‌دهد.",
+      title: "R&L AI",
+      description: "دستیار مشتری R&L برای بازار، درخواست محصول و ارسال.",
     },
     "/impressum": {
       title: "اطلاعات حقوقی (Impressum) · R&L",
@@ -295,9 +290,8 @@ export const SEO_MESSAGES: Record<Lang, Record<string, { title: string; descript
         "Bir ürün, birden fazla satıcı. En düşük toplam en üstte. Ödeme yok, reklam yok, ücretli sıralama yok.",
     },
     "/ai": {
-      title: "Ürünün fotoğrafını çekin. Ne olduğunu görün. · R&L",
-      description:
-        "Bir fotoğraf yükleyin veya çekin: R&L AI ürün kategorisini, markayı ve üzerindeki yazıyı önerir. Asla fiyat veya mağaza göstermez.",
+      title: "R&L AI",
+      description: "Pazar, ürün talepleri ve teslimat için R&L müşteri asistanı.",
     },
     "/impressum": {
       title: "Künye (Impressum) · R&L",
