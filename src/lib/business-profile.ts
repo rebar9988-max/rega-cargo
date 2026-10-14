@@ -48,3 +48,20 @@ export function businessReadiness(
     profile: missing.length === 0 ? (value as BusinessProfile) : null,
   };
 }
+
+/** Owner-controlled release stage never promotes incomplete facts to verified legal content. */
+export function releaseReadiness(business: unknown, policy: unknown, now = Date.now()) {
+  const legal = businessReadiness(business, now);
+  const config =
+    policy && typeof policy === "object" && !Array.isArray(policy)
+      ? (policy as Record<string, unknown>)
+      : {};
+  const stage = config.stage === "beta" || config.stage === "public" ? config.stage : null;
+  const betaException = stage === "beta" && config.allowIncompleteLegalInfo === true;
+  return {
+    ...legal,
+    stage,
+    betaException,
+    allowed: stage !== null && (legal.ready || betaException),
+  };
+}

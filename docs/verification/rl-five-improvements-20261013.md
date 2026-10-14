@@ -1,5 +1,13 @@
 # R&L five improvements — implementation and release evidence
 
+## Current beta release authorization (2026-10-14)
+
+The owner explicitly authorized production deployment as beta and deferred completing legal/business content until official public release. This supersedes the earlier legal-data release hold documented below. `src/lib/release-policy.json` explicitly permits incomplete legal content only at the beta stage; switching to public restores the complete verified-content requirement. `businessReadiness` continues returning ready=false/profile=null for missing facts. Pending customer notices remain visible. No authentication or administrative authority requirement is weakened; no arbitrary owner is seeded. Real owner/OTP verification remains unavailable and is reported as a limitation.
+
+Existing Neon `dev-migration-check` branch was used, without creating paid resources or exposing staging. Migration 0014 brought that existing test branch to the production baseline, then 0015 applied in one transaction and reapplication passed. The Neon prepared-query adapter initially rejected a multi-statement file; the transaction rolled back. Statements were then split while preserving dollar-quoted PL/pgSQL functions, and the corrected transactional invocation succeeded. Expected schema fields and immutable-audit / last-owner triggers were read back successfully. Production inventory before migration: zero products/offers/users/roles/requests/transport/tracking records; migrations 0002–0014. Production migration/deployment remains pending at this checkpoint.
+
+Prior held-release history follows; it is not the current authorization state.
+
 Initial base: main 631549f; current integration base: main 19c17f2, canonical production https://www.rlgo.net. Work branch: codex/rl-five-improvements-20261013. Scope: Marketplace, Bring For Me, Delivery/Tracking and the existing AI service. No changes to REGA Platform, public hostnames, pricing rates, branding or customer records.
 
 ## Step 0: current-state audit
@@ -82,3 +90,15 @@ Full-suite coverage across the documented initial run, exact remaining-ID contin
 ## Published review state
 
 [Draft PR #95](https://github.com/rebar9988-max/rega-cargo/pull/95) is open, not merged, targeting main 19c17f2. Source correction/baselines: 22ef7be; initial final evidence: 14e097b. Seven implementation/verification commits were pushed on the isolated feature branch. Production remains the pre-existing 0f6e2dd7 version; no migration, role grant or deployment occurred. Hosted draft jobs skip by existing policy; this is not hosted CI success. The official-image verification container was removed after completion; repository files and test evidence remain available.
+
+## Beta deployment preflight (supersedes the historical hold)
+
+Fresh local gate: 231 script passes / 4 intentional skips plus 252 library/integration passes = 483 passes. Typecheck passed; lint 0 errors / 5 existing warnings. Database-free production build and Worker dry run passed. Beta release:check passes with an explicit incomplete/unverified-content warning; the public-stage requirement remains tested. No UI baseline changed for the release-stage adjustment.
+
+Production migration 0015 applied successfully on verified `old-cherry-79292410`, branch `br-raspy-snow-bagdgpk4`, database `cargo`, in one transaction with advisory lock, 5-second lock timeout and 60-second statement timeout. The marker was inserted atomically. Before/after counts remain zero for products, offers, phone users, roles, shipment/delivery/transport requests and tracking events. No user or role was granted. The existing dev branch migration and reapplication passed before production. No new branch/compute/service or public staging URL was created.
+
+Rollback baseline is existing Worker version `0f6e2dd7-441a-4092-af4e-57715a4af7b3`. Migration is additive and old columns remain intact; rollback the Worker version while retaining schema/data, never delete customer records or the audit table. Public and pending identities stay denied administrative access. Real owner identity, positive authenticated SUPER_ADMIN CRUD and delivered OTP remain unavailable; do not claim those checks or fabricate a bootstrap identity. Existing main metadata protected=false, no reviews on PR #95; mandatory protections/approval must still be respected if they appear before merge.
+
+The existing Cloudflare production trigger deploy command is now `npm run release:check && npx wrangler deploy` (build command unchanged). This closes the previously documented automatic-workflow omission: future public-stage releases cannot silently skip legal readiness. No secret/binding/branch preview/domain changed. The owner-approved beta stage satisfies this gate while retaining visible pending legal facts.
+
+Fresh beta mobile browser gate: 27 passed and one WebKit draft case reached the unchanged 45-second test deadline while local Worker connections dropped/recovered. The original failed Sorani case then passed three consecutive isolated runs with zero retries and unchanged assertions/timeouts. All 28 unique required focused cases have passed across these runs. This is not a single 28/28 uninterrupted run, and no tolerance/CI config or source UI was changed to obtain it. Final memory checks passed 5/5.
