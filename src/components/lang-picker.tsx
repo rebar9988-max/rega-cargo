@@ -132,7 +132,7 @@ export function HeaderLangPicker({ lang, setLang, title }: { lang: Lang; setLang
           if (open) return close(false);
           setOpen(window.matchMedia("(min-width: 768px)").matches ? "popover" : "sheet");
         }}
-        className={`inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1.5 rounded-full px-2 text-sm text-ink hover:bg-paper md:border md:px-3 ${
+        className={`inline-flex h-12 min-w-12 shrink-0 items-center justify-center gap-1.5 rounded-full px-2 text-sm text-ink hover:bg-paper md:border md:px-3 ${
           open ? "md:border-pine md:text-pine" : "md:border-line"
         }`}
       >

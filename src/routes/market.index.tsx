@@ -83,16 +83,16 @@ function MarketHome() {
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
       <div className="page rl-compare-page">
-        <div className="flex flex-wrap gap-3 text-sm">
-          <Link to="/market/sell" className="text-pine">
+        <div className="flex flex-wrap gap-x-3 text-sm">
+          <Link to="/market/sell" className="inline-flex min-h-12 min-w-12 items-center justify-center text-pine">
             {t.sell}
           </Link>
-          <Link to="/admin" className="text-pine">
+          <Link to="/admin" className="inline-flex min-h-12 min-w-12 items-center justify-center text-pine">
             {t.admin}
           </Link>
           <button
             type="button"
-            className="text-pine"
+            className="inline-flex min-h-12 min-w-12 items-center justify-center text-pine"
             onClick={() => set({ saved: search.saved === "1" ? "" : "1" })}
           >
             {t.favorite}
