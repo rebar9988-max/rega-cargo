@@ -461,6 +461,8 @@
 
 /* ---------- Section heads ---------- */
 .rl-ref-head {
+  /* Reserve the heading row so a web-font swap cannot push the rail below it down. */
+  min-block-size: 2.875rem;
   direction: ltr;
   display: flex;
   align-items: baseline;
