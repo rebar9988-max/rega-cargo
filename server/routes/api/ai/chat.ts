@@ -3,9 +3,15 @@ import { searchMarketplace } from "../../../../src/modules/rl-ai/infrastructure/
 import { verifyGate } from "../../../../src/modules/rl-ai/infrastructure/ai-gateway-adapter";
 import { aiEnv } from "../../../../src/lib/ai/env.server";
 
-export default function chatRoute(event: { req: Request }) {
+import { configureAssistant } from "../../../../src/lib/admin/ai-contract.server";
+
+export default async function chatRoute(event: { req: Request }) {
   try {
-    return handleAssistant(event.req, { ...aiEnv(), gate: verifyGate, search: searchMarketplace });
+    return handleAssistant(event.req, {
+      ...(await configureAssistant(aiEnv())),
+      gate: verifyGate,
+      search: searchMarketplace,
+    });
   } catch {
     return Response.json(
       { ok: false, error: "unavailable" },

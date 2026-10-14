@@ -1,9 +1,23 @@
 import { aiEnv, turnstileSiteKey } from "../../../../src/lib/ai/env.server";
 import { signAiToken } from "../../../../src/lib/ai/challenge";
 
-export default async function challengeRoute() {
+export default async function challengeRoute(event: { req: Request }) {
   const headers = { "cache-control": "no-store" };
   try {
+    const binding = (
+      globalThis as {
+        __env__?: { RL_LIMIT?: { limit(input: { key: string }): Promise<{ success: boolean }> } };
+      }
+    ).__env__?.RL_LIMIT;
+    if (
+      binding &&
+      !(
+        await binding.limit({
+          key: `ai-challenge:${event.req.headers.get("cf-connecting-ip") ?? "unknown"}`,
+        })
+      ).success
+    )
+      return Response.json({ mode: "unavailable" }, { status: 429, headers });
     const siteKey = turnstileSiteKey();
     const deps = aiEnv();
     if (siteKey && deps.turnstileSecret) {

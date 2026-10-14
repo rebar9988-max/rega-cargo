@@ -41,10 +41,20 @@ export function aiEnv(): IdentifyDeps {
     usage,
     turnstileSecret: raw.TURNSTILE_SECRET ?? process.env.TURNSTILE_SECRET,
     tokenSecret:
-      raw.AI_TOKEN_SECRET ?? process.env.AI_TOKEN_SECRET ?? process.env.BETTER_AUTH_SECRET,
+      raw.AI_TOKEN_SECRET ??
+      process.env.AI_TOKEN_SECRET ??
+      ((raw.BETTER_AUTH_SECRET ?? process.env.BETTER_AUTH_SECRET)
+        ? `rl-ai-gate-v1\n${raw.BETTER_AUTH_SECRET ?? process.env.BETTER_AUTH_SECRET}`
+        : undefined),
     verifyToken: stub ? (token, now) => stub.verify(token, now) : undefined,
     limit: raw.RL_LIMIT
-      ? async (ip) => (await raw.RL_LIMIT!.limit({ key: `ai:${ip}` })).success
+      ? async (ip) => {
+          try {
+            return (await raw.RL_LIMIT!.limit({ key: `ai:${ip}` })).success;
+          } catch {
+            return false;
+          }
+        }
       : undefined,
   };
 }
