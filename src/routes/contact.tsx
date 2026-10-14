@@ -6,6 +6,8 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 import { useI18n } from "@/lib/i18n";
 import { btnPrimary } from "@/components/field";
 import { UX_COPY } from "@/lib/ux-copy";
+import { ComplaintPanel } from "@/components/complaint-panel";
+import { TrustSummary } from "@/components/trust-summary";
 
 export const Route = createFileRoute("/contact")({
   head: () =>
@@ -31,8 +33,13 @@ function ContactPage() {
             <Mail className="size-6" aria-hidden="true" />
           </span>
           <span className="flex min-w-0 flex-col items-start gap-1">
-            <span dir="auto" className="text-sm text-muted">{t.contactEmailLabel}</span>
-            <bdi dir="ltr" className="truncate text-lg font-semibold text-ink group-hover:text-pine md:text-xl">
+            <span dir="auto" className="text-sm text-muted">
+              {t.contactEmailLabel}
+            </span>
+            <bdi
+              dir="ltr"
+              className="truncate text-lg font-semibold text-ink group-hover:text-pine md:text-xl"
+            >
               {CONTACT_EMAIL}
             </bdi>
           </span>
@@ -41,6 +48,8 @@ function ContactPage() {
           <Mail className="size-4" aria-hidden="true" />
           {UX_COPY[lang].sendEmail}
         </a>
+        <ComplaintPanel />
+        <TrustSummary />
       </div>
     </Shell>
   );

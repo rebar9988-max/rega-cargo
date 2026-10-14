@@ -176,7 +176,11 @@ function mockAi(
 function upload(opts: { consent?: string; bytes?: Uint8Array; origin?: string } = {}) {
   const form = new FormData();
   if (opts.consent !== undefined) form.set("consent", opts.consent);
-  form.set("image", new Blob([new Uint8Array(opts.bytes ?? jpeg(800, 600))], { type: "image/jpeg" }), "p.jpg");
+  form.set(
+    "image",
+    new Blob([new Uint8Array(opts.bytes ?? jpeg(800, 600))], { type: "image/jpeg" }),
+    "p.jpg",
+  );
   return new Request("https://rl.test/api/ai/identify", {
     method: "POST",
     body: form,
@@ -189,7 +193,8 @@ const on: IdentifyEnv = { RL_AI_ENABLED: "true", RL_AI_DAILY_CAP: "2" };
 test("feature flag off (production default) hides the endpoint and status", async () => {
   const res = await handleIdentify(upload({ consent: "1" }), {
     env: { AI: mockAi({}) },
-    skipGate: true, usage: storeLimiter(memoryUsageStore()),
+    skipGate: true,
+    usage: storeLimiter(memoryUsageStore()),
   });
   assert.equal(res.status, 404);
   assert.deepEqual(await handleStatus({ RL_AI_ENABLED: "false", AI: mockAi({}) }).json(), {
@@ -202,7 +207,11 @@ test("feature flag off (production default) hides the endpoint and status", asyn
 
 test("consent, origin and image validation happen before any inference", async () => {
   const calls: Array<{ model: string; input: Record<string, unknown> }> = [];
-  const deps = { env: { ...on, AI: mockAi({}, calls) }, skipGate: true, usage: storeLimiter(memoryUsageStore()) };
+  const deps = {
+    env: { ...on, AI: mockAi({}, calls) },
+    skipGate: true,
+    usage: storeLimiter(memoryUsageStore()),
+  };
   assert.equal((await handleIdentify(upload({}), deps)).status, 400);
   assert.equal(
     (await handleIdentify(upload({ consent: "1", origin: "https://evil.test" }), deps)).status,
@@ -233,7 +242,8 @@ test("valid photo → strict JSON result from the mocked model; no prices or lin
   };
   const res = await handleIdentify(upload({ consent: "1" }), {
     env: { ...on, AI: mockAi(reply, calls) },
-    skipGate: true, usage: storeLimiter(memoryUsageStore()),
+    skipGate: true,
+    usage: storeLimiter(memoryUsageStore()),
   });
   assert.equal(res.status, 200);
   assert.equal(res.headers.get("cache-control"), "no-store");
@@ -271,7 +281,8 @@ test("daily cap, per-visitor limit, timeout and bad output map to clear errors",
   };
   const timedOut = await handleIdentify(upload({ consent: "1" }), {
     env: { ...on, RL_AI_DAILY_CAP: "100", AI: slow },
-    skipGate: true, usage: storeLimiter(memoryUsageStore()),
+    skipGate: true,
+    usage: storeLimiter(memoryUsageStore()),
     timeoutMs: 20,
   });
   assert.equal(timedOut.status, 504);
@@ -282,7 +293,8 @@ test("daily cap, per-visitor limit, timeout and bad output map to clear errors",
       RL_AI_DAILY_CAP: "100",
       AI: mockAi({ choices: [{ message: { content: "sorry, no JSON" } }] }),
     },
-    skipGate: true, usage: storeLimiter(memoryUsageStore()),
+    skipGate: true,
+    usage: storeLimiter(memoryUsageStore()),
   });
   assert.equal(garbage.status, 502);
   assert.equal(((await garbage.json()) as { error: string }).error, "invalid_output");
@@ -306,6 +318,10 @@ test("landed-cost estimate = item + corridor shipping + duty estimate", () => {
     totalEur: 172,
     totalIqd: 261440,
     chargeableKg: 2,
+    dimensionsKnown: false,
+    shopShippingEur: null,
+    serviceFeeEur: null,
+    unknownCosts: ["dimensions", "shopShipping", "serviceFee"],
   });
   const commercial = landedEstimate({
     priceEur: 300,
@@ -319,6 +335,34 @@ test("landed-cost estimate = item + corridor shipping + duty estimate", () => {
   assert.equal(commercial.totalEur, 374);
   assert.equal(landedEstimate({ priceEur: Number.NaN, weightKg: 1 }), null);
   assert.equal(landedEstimate({ priceEur: 10, weightKg: 0 }), null);
+});
+
+test("landed estimate uses the unchanged volumetric formula and identifies unknown costs", () => {
+  const dimensional = landedEstimate({
+    priceEur: 100,
+    weightKg: 3.2,
+    modeId: "express",
+    l: 40,
+    w: 30,
+    h: 20,
+    shopShippingEur: 4.99,
+    serviceFeeEur: 0,
+  });
+  assert.ok(dimensional);
+  assert.equal(dimensional.chargeableKg, 4.8);
+  assert.equal(dimensional.dimensionsKnown, true);
+  assert.deepEqual(dimensional.unknownCosts, []);
+  assert.equal(
+    dimensional.totalEur,
+    Math.round((dimensional.itemEur + dimensional.shippingEur + dimensional.dutyEur + 4.99) * 100) /
+      100,
+  );
+  const missing = landedEstimate({ priceEur: 100, weightKg: 3.2 });
+  assert.ok(missing);
+  assert.equal(missing.shopShippingEur, null);
+  assert.notEqual(missing.shopShippingEur, 0);
+  assert.equal(landedEstimate({ priceEur: 100, weightKg: 3.2, l: 40 }), null);
+  assert.equal(landedEstimate({ priceEur: 100, weightKg: 3.2, serviceFeeEur: -1 }), null);
 });
 
 test("header flag: on only with RL_AI_ENABLED=true and an AI binding", async () => {
@@ -349,8 +393,16 @@ test("rate-limit key: IPv4 as is, IPv6 grouped by /64", async () => {
 
 test("per-visitor daily limit, reserved share for new visitors, and refund", async () => {
   const store = memoryUsageStore();
-  const base = { day: "2026-10-08", hour: "2026-10-08T21", dailyCap: 100, perVisitorHourly: 10, perVisitorDaily: 5, reserve: 20 };
-  for (let i = 0; i < 5; i++) assert.equal((await consumeUsage(store, { ...base, visitor: "a" })).ok, true);
+  const base = {
+    day: "2026-10-08",
+    hour: "2026-10-08T21",
+    dailyCap: 100,
+    perVisitorHourly: 10,
+    perVisitorDaily: 5,
+    reserve: 20,
+  };
+  for (let i = 0; i < 5; i++)
+    assert.equal((await consumeUsage(store, { ...base, visitor: "a" })).ok, true);
   assert.equal((await consumeUsage(store, { ...base, visitor: "a" })).ok, false);
   const near = memoryUsageStore();
   near.data.set("day:2026-10-08", 80);
@@ -371,16 +423,44 @@ test("per-IP burst limit answers 429 before the body is read; oversized upload i
     usage: storeLimiter(memoryUsageStore()),
     limit: async () => ++n <= 1,
   };
-  assert.equal((await handleIdentify(upload({ consent: "1", bytes: new TextEncoder().encode("x") }), deps)).status, 415);
+  assert.equal(
+    (await handleIdentify(upload({ consent: "1", bytes: new TextEncoder().encode("x") }), deps))
+      .status,
+    415,
+  );
   assert.equal((await handleIdentify(upload({ consent: "1" }), deps)).status, 429);
   const big = new Uint8Array(MAX_IMAGE_BYTES + 100_000);
   big.set([0xff, 0xd8, 0xff]);
-  assert.equal((await handleIdentify(upload({ consent: "1", bytes: big }), { ...deps, limit: undefined })).status, 413);
+  assert.equal(
+    (await handleIdentify(upload({ consent: "1", bytes: big }), { ...deps, limit: undefined }))
+      .status,
+    413,
+  );
   assert.equal(calls.length, 0);
 });
 
 test("AI text never names a shop, a price or a link", () => {
-  assert.equal(cleanText("Nike Air from Amazon, €49.99, see zalando.de", 80), "Nike Air from , see");
+  assert.equal(
+    cleanText("Nike Air from Amazon, €49.99, see zalando.de", 80),
+    "Nike Air from , see",
+  );
   assert.equal(cleanText("eBay seller says 20 EUR", 80), "seller says");
   assert.equal(cleanText("Admiral cream", 80), "Admiral cream");
+});
+
+test("failed provider attempts cannot refund the shared AI budget", async () => {
+  const usage = storeLimiter(memoryUsageStore());
+  const deps = {
+    env: {
+      ...on,
+      RL_AI_DAILY_CAP: "1",
+      AI: mockAi({ choices: [{ message: { content: "invalid JSON" } }] }),
+    },
+    skipGate: true,
+    usage,
+  };
+  assert.equal((await handleIdentify(upload({ consent: "1" }), deps)).status, 502);
+  const second = await handleIdentify(upload({ consent: "1" }), deps);
+  assert.equal(second.status, 429);
+  assert.equal((await second.json()).error, "daily_cap");
 });

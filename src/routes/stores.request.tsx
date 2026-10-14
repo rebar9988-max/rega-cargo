@@ -32,6 +32,7 @@ import { REQUEST_COPY as ACCOUNT_REQUEST_COPY } from "@/lib/requests/copy";
 import { useOrderDraft } from "@/lib/orders/use-draft";
 import { DRAFT_COPY } from "@/lib/orders/draft-copy";
 import { OrderFallback } from "@/components/order-fallback";
+import { TrustSummary } from "@/components/trust-summary";
 import { useOrderAvailability } from "@/lib/orders/use-availability";
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -452,6 +453,7 @@ function RequestPage() {
           </div>
         )}
         <aside className="rl-form-aside">
+          <TrustSummary />
           <div className="rl-card rl-stack">
             <h2 className="text-2xl leading-tight font-bold">{j.review}</h2>
             <p className="text-sm text-muted">{intent === "ship" ? t.shipBody : t.whoBody}</p>

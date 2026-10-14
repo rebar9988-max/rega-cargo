@@ -21,6 +21,7 @@ import {
   type Contents,
 } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
+import { COST_COPY } from "@/lib/cost-copy";
 import { storeCopy } from "@/lib/store-copy";
 
 const MAX_SIDE = 1024;
@@ -367,24 +368,39 @@ function ResultCard({
   );
 }
 
+function estimateNumber(value: string) {
+  return /^\d+(?:[.,]\d{1,3})?$/.test(value.trim()) ? Number(value.trim().replace(",", ".")) : NaN;
+}
+
 function EstimateCard({ t }: { t: AiCopy }) {
-  const { lang } = useI18n();
   const ready = useHydrated();
+  const { lang } = useI18n();
+  const c = COST_COPY[lang];
   const [price, setPrice] = useState("");
   const [weight, setWeight] = useState("");
   const [originId, setOriginId] = useState(ORIGINS[0].id);
   const [destId, setDestId] = useState(DESTS[0].id);
   const [contents, setContents] = useState<Contents>("personal");
+  const [length, setLength] = useState("");
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
+  const [shopShipping, setShopShipping] = useState("");
+  const [serviceFee, setServiceFee] = useState("");
   const estimate = useMemo(
     () =>
       landedEstimate({
-        priceEur: Number.parseFloat(price.replace(",", ".")),
-        weightKg: Number.parseFloat(weight.replace(",", ".")),
+        priceEur: estimateNumber(price),
+        weightKg: estimateNumber(weight),
         originId,
         destId,
         contents,
+        l: length.trim() ? estimateNumber(length) : undefined,
+        w: width.trim() ? estimateNumber(width) : undefined,
+        h: height.trim() ? estimateNumber(height) : undefined,
+        shopShippingEur: shopShipping.trim() ? estimateNumber(shopShipping) : undefined,
+        serviceFeeEur: serviceFee.trim() ? estimateNumber(serviceFee) : undefined,
       }),
-    [price, weight, originId, destId, contents],
+    [price, weight, originId, destId, contents, length, width, height, shopShipping, serviceFee],
   );
 
   return (
@@ -454,6 +470,31 @@ function EstimateCard({ t }: { t: AiCopy }) {
           </select>
         </Field>
       </div>
+      <details className="rl-stack">
+        <summary className="rl-mobile-menu-link">{c.optional}</summary>
+        <div className="grid gap-4 md:grid-cols-2">
+          {(
+            [
+              [c.length, length, setLength],
+              [c.width, width, setWidth],
+              [c.height, height, setHeight],
+              [c.shopShipping, shopShipping, setShopShipping],
+              [c.serviceFee, serviceFee, setServiceFee],
+            ] as const
+          ).map(([label, value, set]) => (
+            <Field key={label} label={label}>
+              <input
+                className={controlClass}
+                disabled={!ready}
+                inputMode="decimal"
+                dir="ltr"
+                value={value}
+                onChange={(e) => set(e.target.value)}
+              />
+            </Field>
+          ))}
+        </div>
+      </details>
       {estimate ? (
         <dl className="rounded-xl bg-paper p-4">
           <Row label={t.item}>
@@ -465,7 +506,28 @@ function EstimateCard({ t }: { t: AiCopy }) {
           <Row label={t.duty}>
             <bdi dir="ltr">{formatEur(estimate.dutyEur)}</bdi>
           </Row>
-          <Row label={t.total}>
+          <Row label={c.shopShipping}>
+            <span>
+              {estimate.shopShippingEur === null ? (
+                c.unknown
+              ) : (
+                <bdi dir="ltr">{formatEur(estimate.shopShippingEur)}</bdi>
+              )}
+            </span>
+          </Row>
+          <Row label={c.serviceFee}>
+            <span>
+              {estimate.serviceFeeEur === null ? (
+                c.unknown
+              ) : (
+                <bdi dir="ltr">{formatEur(estimate.serviceFeeEur)}</bdi>
+              )}
+            </span>
+          </Row>
+          <Row label={c.chargeable}>
+            <bdi dir="ltr">{estimate.chargeableKg}</bdi>
+          </Row>
+          <Row label={c.subtotal}>
             <span className="font-semibold">
               <bdi dir="ltr">{formatEur(estimate.totalEur)}</bdi> ·{" "}
               <bdi dir="ltr">{formatIqdFromEur(estimate.totalEur)}</bdi>
@@ -473,6 +535,10 @@ function EstimateCard({ t }: { t: AiCopy }) {
           </Row>
         </dl>
       ) : null}
+      {estimate && !estimate.dimensionsKnown ? (
+        <p className="text-sm text-clay">{c.weightOnly}</p>
+      ) : null}
+      <p className="text-xs text-muted">{c.note}</p>
       <p className="text-xs text-muted">{t.estimateNote}</p>
     </section>
   );

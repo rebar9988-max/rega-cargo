@@ -1,0 +1,95 @@
+import type { Lang } from "./langs";
+const en = {
+  title: "Your purchase and delivery",
+  complaint: "Report a problem",
+  reference: "R&L reference (optional)",
+  details: "What happened?",
+  help: "Include your reference, a description and any relevant dates. Attach product or parcel photos in your email if useful. Do not send passwords, OTP or payment-card details.",
+  send: "Prepare complaint email",
+  note: "You send the email yourself. This does not confirm receipt or a refund. R&L must review the case.",
+  policy: "Complaint and return terms",
+  provider: "Provider information",
+  pending:
+    "Verified company details and final complaint terms are still pending. No compensation or response deadline is promised here.",
+};
+export const TRUST_COPY: Record<Lang, typeof en> = {
+  en,
+  ckb: {
+    title: "کڕین و گەیاندنی تۆ",
+    complaint: "ڕاگەیاندنی کێشە",
+    reference: "کۆدی R&L (ئارەزوومەندانە)",
+    details: "چی ڕوویداوە؟",
+    help: "کۆد، باسێکی کێشە و بەروارە پەیوەندیدارەکان بنووسە. ئەگەر بەسوودە، وێنەی کاڵا یان پاکەت لە ئیمەیڵەکە زیاد بکە. وشەی نهێنی، OTP یان زانیاریی کارتی پارەدان مەبنێرە.",
+    send: "ئامادەکردنی ئیمەیڵی سکاڵا",
+    note: "خۆت ئیمەیڵەکە دەنێریت. ئەمە پشتڕاستکردنەوەی وەرگرتن یان گەڕاندنەوەی پارە نییە. R&L دەبێت کەیسەکە بپشکنێت.",
+    policy: "مەرجی سکاڵا و گەڕاندنەوە",
+    provider: "زانیاریی دابینکەر",
+    pending:
+      "زانیاریی پشتڕاستکراوەی کۆمپانیا و مەرجی کۆتاییی سکاڵا هێشتا چاوەڕوانن. لێرە بەڵێنی قەرەبوو یان کاتی وەڵامدانەوە نادرێت.",
+  },
+  ar: {
+    title: "شراؤك وتوصيلك",
+    complaint: "الإبلاغ عن مشكلة",
+    reference: "مرجع R&L (اختياري)",
+    details: "ماذا حدث؟",
+    help: "اكتب المرجع ووصف المشكلة والتواريخ المتعلقة بها. أرفق صور المنتج أو الطرد في بريدك إن كانت مفيدة. لا ترسل كلمات المرور أو OTP أو بيانات بطاقة الدفع.",
+    send: "إعداد بريد الشكوى",
+    note: "ترسل البريد بنفسك. هذا لا يؤكد الاستلام أو رد المال. يجب أن يراجع R&L الحالة.",
+    policy: "شروط الشكاوى والإرجاع",
+    provider: "معلومات مقدم الخدمة",
+    pending:
+      "بيانات الشركة الموثقة وشروط الشكاوى النهائية ما زالت معلقة. لا نعد هنا بتعويض أو موعد للرد.",
+  },
+  ku: {
+    title: "Kirîn û gihandina te",
+    complaint: "Pirsgirêkê ragihîne",
+    reference: "Koda R&L (bijarte)",
+    details: "Çi qewimî?",
+    help: "Kod, ravekirina pirsgirêkê û tarîxên têkildar binivîse. Ger pêwîst be wêneyên hilber an paketê bi e-nameyê ve girêde. Şîfre, OTP an agahiyên karta dravê neşîne.",
+    send: "E-nameya şikayetê amade bike",
+    note: "Tu e-nameyê bi xwe dişînî. Ev wergirtin an vegerandina dravê piştrast nake. R&L divê rewşê binirxîne.",
+    policy: "Mercên şikayet û vegerandinê",
+    provider: "Agahiyên peydaker",
+    pending:
+      "Agahiyên piştrastkirî yên şirketê û mercên dawî hê ne amade ne. Li vir sozê tezmînat an dema bersivê nayê dayîn.",
+  },
+  de: {
+    title: "Ihr Einkauf und Ihre Lieferung",
+    complaint: "Problem melden",
+    reference: "R&L-Referenz (optional)",
+    details: "Was ist passiert?",
+    help: "Referenz, Beschreibung und relevante Daten angeben. Bei Bedarf Produkt- oder Paketfotos an die E-Mail anhängen. Keine Passwörter, OTP oder Kartendaten senden.",
+    send: "Beschwerde-E-Mail vorbereiten",
+    note: "Sie senden die E-Mail selbst. Dies bestätigt weder Eingang noch Erstattung. R&L muss den Fall prüfen.",
+    policy: "Beschwerde- und Rückgabebedingungen",
+    provider: "Anbieterinformationen",
+    pending:
+      "Verifizierte Unternehmensdaten und endgültige Beschwerdebedingungen stehen noch aus. Hier wird weder Entschädigung noch Antwortfrist zugesagt.",
+  },
+  fa: {
+    title: "خرید و تحویل شما",
+    complaint: "گزارش مشکل",
+    reference: "کد R&L (اختیاری)",
+    details: "چه اتفاقی افتاده؟",
+    help: "کد، شرح مشکل و تاریخ‌های مرتبط را بنویس. در صورت نیاز عکس محصول یا بسته را به ایمیل پیوست کن. رمز عبور، OTP یا اطلاعات کارت پرداخت نفرست.",
+    send: "آماده کردن ایمیل شکایت",
+    note: "ایمیل را خودت ارسال می‌کنی. این تأیید دریافت یا بازپرداخت نیست. R&L باید موضوع را بررسی کند.",
+    policy: "شرایط شکایت و بازگشت",
+    provider: "اطلاعات ارائه‌دهنده",
+    pending:
+      "اطلاعات تأییدشده شرکت و شرایط نهایی شکایت هنوز آماده نیست. اینجا وعده جبران یا زمان پاسخ داده نمی‌شود.",
+  },
+  tr: {
+    title: "Satın almanız ve teslimatınız",
+    complaint: "Sorun bildir",
+    reference: "R&L referansı (isteğe bağlı)",
+    details: "Ne oldu?",
+    help: "Referansı, sorunu ve ilgili tarihleri yazın. Gerekirse ürün veya paket fotoğraflarını e-postaya ekleyin. Şifre, OTP veya ödeme kartı bilgileri göndermeyin.",
+    send: "Şikayet e-postası hazırla",
+    note: "E-postayı kendiniz gönderirsiniz. Bu, alındığını veya iade yapıldığını doğrulamaz. R&L durumu incelemelidir.",
+    policy: "Şikayet ve iade koşulları",
+    provider: "Sağlayıcı bilgileri",
+    pending:
+      "Doğrulanmış şirket bilgileri ve nihai şikayet koşulları henüz hazır değil. Burada tazminat veya yanıt süresi vaat edilmez.",
+  },
+};
