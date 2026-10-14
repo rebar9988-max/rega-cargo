@@ -19,8 +19,13 @@ export function OrderFallback({
   const [message, setMessage] = useState("");
   const summary = rows.map(([label, value]) => `${label}: ${value}`).join("\n");
   return (
-    <details className="rl-card rl-stack" open={unavailable || undefined} data-order-fallback>
+    <details className="rl-card rl-stack" data-order-fallback>
       <summary className="rl-mobile-menu-link">{t.fallback}</summary>
+      {unavailable ? (
+        <p role="status" className="text-sm text-muted">
+          {t.unavailable}
+        </p>
+      ) : null}
       <p className="text-sm text-muted">{t.note}</p>
       <label className="rl-stack text-sm">
         {t.summary}

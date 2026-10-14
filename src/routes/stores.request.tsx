@@ -233,11 +233,13 @@ function RequestPage() {
         ) : (
           <div className="flex flex-col gap-6">
             <form ref={formRef} noValidate onSubmit={submit} className="rl-card rl-request-form">
-              {unavailable ? (
-                <p role="status" className="text-sm text-muted">
-                  {dc.unavailable}
-                </p>
-              ) : null}
+              <p
+                role="status"
+                className={`text-sm text-muted ${unavailable ? "" : "invisible"}`}
+                aria-hidden={!unavailable}
+              >
+                {dc.unavailable}
+              </p>
               <div className="rl-stack">
                 <label className="flex items-start gap-3 text-sm">
                   <input
