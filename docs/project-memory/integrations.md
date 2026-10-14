@@ -24,6 +24,11 @@ current plan (staging `limits.cpu_ms` implies Workers Paid on that account — v
 
 ## R&L AI ownership and verification — 2026-10-13
 
+The source-stage observations below are historical and superseded by the verified production checkpoint at the end of this section.
+
 This Codex session has working existing GitHub read/source tools and local Docker/Playwright. Cloudflare direct credentials are not configured; `wrangler whoami` is unauthenticated. Hosted Actions cannot start (billing annotation). GitHub protection/deployment reads return 403. Existing Workers AI Gemma and Durable Object binding/config are preserved; no new AI Gateway or paid service introduced. See [verification report](../ai/rl-ai-verification-20261013.md).
 
 Release preflight update: existing authenticated Cloudflare connector resolves the direct-CLI credential gap. Verified R&L main Builds trigger and rollback version `5791d60b`, no concurrent build. GitHub main branch resource reports `protected:false`. Hosted billing failure remains; the standing full local official-image gate policy applies. No release yet.
+
+
+2026-10-14 verified production checkpoint: PR #92 merged normally as `481bfeb`; existing Cloudflare Builds `7387019a` succeeded, Worker `c87c162d-11e9-4ca7-86e4-f6eca4a600a6`, 100%, 06:57 UTC. Genuine live planner and image inference, strict refusals, five shortcuts, authorized workflow links and eight read-only existing routes passed. Privacy-safe telemetry showed no exceptions/5xx; bindings and secrets preserved. No rollout blocker remains. Hosted Actions billing, native camera/OTP/private-order verification and field performance remain limitations; no billing or unrelated business change. Documentation-only follow-up may deploy an identical app; query current Worker state. [Evidence](../ai/rl-ai-verification-20261013.md).

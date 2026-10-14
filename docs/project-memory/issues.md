@@ -93,8 +93,13 @@ Previous configuration intentionally retained `cargo.regaplatform.com` and publi
 
 ## R&L AI ownership and verification — 2026-10-13
 
+The source-stage observations below are historical and superseded by the verified production checkpoint at the end of this section.
+
 R&L AI source defects repaired: photo selection previously processed immediately; rate-limiter failures previously permitted inference; refunded failures could reopen provider-attempt budget; stale refunds could roll UTC state backwards. Actual workerd tests cover the repairs. The first API adapter caused Nitro/SSR entrypoint export pollution; the necessary public Marketplace server contract resolved it without changing business logic. Billing/missing credentials/protection visibility block rollout. See [verification report](../ai/rl-ai-verification-20261013.md).
 
 Release preflight update: existing authenticated Cloudflare connector resolves the direct-CLI credential gap. Verified R&L main Builds trigger and rollback version `5791d60b`, no concurrent build. GitHub main branch resource reports `protected:false`. Hosted billing failure remains; the standing full local official-image gate policy applies. No release yet.
 
 2026-10-14 continuation: full browser run 489 passed/16 existing skips/2 failed; failures were AI shortcut/consent hydration races. Fixed with existing `useHydrated` in AI controls only, added held-JavaScript first-interaction regression. Final affected official-image suite passed 72/72 without retries or baseline changes. Final full confirmation is running; no deployment yet.
+
+
+2026-10-14 verified production checkpoint: PR #92 merged normally as `481bfeb`; existing Cloudflare Builds `7387019a` succeeded, Worker `c87c162d-11e9-4ca7-86e4-f6eca4a600a6`, 100%, 06:57 UTC. Genuine live planner and image inference, strict refusals, five shortcuts, authorized workflow links and eight read-only existing routes passed. Privacy-safe telemetry showed no exceptions/5xx; bindings and secrets preserved. No rollout blocker remains. Hosted Actions billing, native camera/OTP/private-order verification and field performance remain limitations; no billing or unrelated business change. Documentation-only follow-up may deploy an identical app; query current Worker state. [Evidence](../ai/rl-ai-verification-20261013.md).
