@@ -66,6 +66,8 @@ test("homepage search uses internal marketplace and displays honest data states"
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
   // The reference homepage keeps search in its header; it opens the existing store search.
   const search = page.locator('[data-layout="ref-header"] input[type="search"]');
+  // Wait for hydration first: a fill before the handlers attach can be lost on WebKit.
+  await expect(page.locator(".rl-ref")).toHaveAttribute("data-hydrated", "true");
   await search.fill("kettle");
   await search.press("Enter");
   await expect(page).toHaveURL(/\/stores\?.*q=kettle/);
