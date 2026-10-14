@@ -10,7 +10,7 @@ Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 | `/stores/request?store=..&intent=buy\|ship` | `routes/stores.request.tsx`, `lib/orders/` | degraded | Needs DB; mandatory prohibited-items declaration |
 | `/quote` | `routes/quote.tsx`, `components/quote-panel.tsx`, `lib/corridor.ts` | live (pricing) / degraded (saving) | Chargeable weight = max(actual, volumetric); EUR + IQD |
 | `/market`, `/market/$slug`, `/market/sell` | `routes/market*.tsx`, `lib/market/` | **degraded** | Shows error state until DB is repointed (issues I-1) |
-| `/ai` (R&L AI product identification) | `routes/ai.tsx`, `components/ai-page.tsx`, `server/routes/api/ai/*` | live | Daily cap 200, Turnstile when configured, upload needs consent |
+| `/ai` (R&L AI customer assistance + product identification) | `modules/rl-ai/`, `routes/ai.tsx`, `components/ai-page.tsx`, `server/routes/api/ai/*` | live, PR #92 verified 2026-10-14 | R&L-only typed replies, five shortcuts; existing daily cap 200, Turnstile when configured, messages/uploads need consent |
 | Product-link check | `lib/product-link/` | gated → on (`PRODUCT_LINK_ENABLED=true`) | SSRF-safe URL parsing, shipping estimate |
 | Search + autocomplete | `lib/search/`, `components/search-*.tsx` | live | Compliance-screened |
 | Banned-products filter | `lib/compliance/`, migrations `0011`, `0012` | live (bundled list) | Permanent, no off switch; DB rules add on top when reachable |
