@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
 import { BazaarPage } from "@/components/bazaar-page";
-import { PremiumHome } from "@/components/premium-home";
+import { RefHome } from "@/components/ref-home";
 import { DeliveryHub, ServiceSwitch } from "@/components/delivery-hub";
 import { validateBazaarSearch } from "@/lib/bazaar-search";
 import { initialService } from "@/lib/service-initial";
@@ -26,7 +26,7 @@ function HomePage() {
     <BazaarPage
       home
       initialService={service}
-      homeComponents={{ PremiumHome, DeliveryHub, ServiceSwitch }}
+      homeComponents={{ RefHome, DeliveryHub, ServiceSwitch }}
     />
   );
 }

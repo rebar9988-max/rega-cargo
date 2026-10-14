@@ -90,9 +90,16 @@ async function geometry(page: Page, bp: Bp, sheet = false) {
   // Scroll restoration and WebKit's grid layout may settle a frame after the header state.
   await expect
     .poll(() =>
-      page.locator('[data-layout="header"]').evaluate((el) => el.getBoundingClientRect().height),
+      page
+        .locator('[data-layout="ref-header"], [data-layout="header"]')
+        .first()
+        .evaluate((el) => el.getBoundingClientRect().height),
     )
-    .toBe(LAYOUT.headerRow[bp]);
+    .toBe(
+      (await page.locator('[data-layout="ref-header"]').count())
+        ? LAYOUT.refHeaderRow[bp]
+        : LAYOUT.headerRow[bp],
+    );
   const issues = await page.evaluate(measureLayout, { bp, layout: LAYOUT, sheet });
   expect(issues, issues.join("\n")).toEqual([]);
 }

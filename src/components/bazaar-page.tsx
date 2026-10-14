@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Heart, SlidersHorizontal, ArrowUpRight, Info } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { PremiumHome } from "./premium-home";
+import type { RefHome } from "./ref-home";
 import type { DeliveryHub, ServiceSwitch } from "./delivery-hub";
 import { Shell, PageHeader } from "./shell";
 import { Badge, BottomSheet, Button, Chip, Icon, Select, Skeleton } from "./ui";
@@ -20,7 +20,7 @@ import { readFavs, STORES, storeById, storeLogo, writeFavs } from "@/lib/stores"
 import { PUBLISHED_STORE_CATEGORIES, isPublishedCategory } from "@/lib/catalogue";
 
 type HomeComponents = {
-  PremiumHome: typeof PremiumHome;
+  RefHome: typeof RefHome;
   DeliveryHub: typeof DeliveryHub;
   ServiceSwitch: typeof ServiceSwitch;
 };
@@ -147,10 +147,8 @@ export function BazaarPage({ home, initialService = "bazaar", homeComponents }: 
     !params.country
   )
     return (
-      <Shell>
-        <homeComponents.PremiumHome service={service} onService={chooseService}>
-          {service === "delivery" ? <homeComponents.DeliveryHub embedded /> : null}
-        </homeComponents.PremiumHome>
+      <Shell reference>
+        <homeComponents.RefHome />
       </Shell>
     );
   return (

@@ -38,34 +38,84 @@ test("slow font swaps keep the mobile hero within the layout-shift budget", asyn
   }
 });
 
-test("homepage calculator keeps dimensions and quote handoff after scrolling", async ({ page }) => {
-  // Exercise the server-rendered page before a slow client bootstrap finishes.
-  await page.route("**/assets/*.js", async (route) => {
-    await new Promise<void>((resolve) => setTimeout(resolve, 500));
-    await route.continue();
-  });
-  await page.goto("/?lang=en", { waitUntil: "commit" });
-  const calculator = page.locator(".rl-deferred-calculator");
-  await expect
-    .poll(
-      async () => {
-        await calculator.scrollIntoViewIfNeeded();
-        return page.locator(".rl-quick-options").isVisible();
-      },
-      { intervals: [100, 250, 500] },
-    )
-    .toBe(true);
-  await expect(page.locator(".rl-quick-options")).toBeVisible();
-  await page.unroute("**/assets/*.js");
-  const length = page.locator(".rl-quick-fields input").nth(1);
-  await length.fill("60");
-  await expect(page.locator(".rl-quick-options .rl-price").first()).toContainText("56.16");
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await calculator.scrollIntoViewIfNeeded();
-  await expect(length).toHaveValue("60");
-  await page.locator(".rl-calc-note a").click();
-  await expect(page).toHaveURL(/\/quote\?.*l=60/);
-  await expect(page.locator('input[inputmode="decimal"]').nth(1)).toHaveValue("60");
+test("reference homepage: five header controls in the reference's physical order", async ({
+  page,
+}) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
+    const row = page.locator('[data-layout="ref-header"]');
+    await expect(row).toBeVisible();
+    // The page is rtl, but the reference fixes the physical order: logo, language, search,
+    // R&L AI, menu, left to right.
+    const xs = await Promise.all(
+      [
+        row.locator(".rl-ref-brand"),
+        row.locator('[data-layout="lang-button"]'),
+        row.locator('input[type="search"]'),
+        row.locator(".rl-ref-ai"),
+        row.locator('[data-layout="menu-button"]'),
+      ].map(async (el) => {
+        await expect(el, lang).toBeVisible();
+        return (await el.boundingBox())!.x;
+      }),
+    );
+    expect(xs, lang).toEqual([...xs].sort((a, b) => a - b));
+    // No overlap and nothing wider than the viewport.
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(overflow, lang).toBe(0);
+    await expect(row.locator(".rl-ref-ai")).toContainText("R&L AI");
+    await expect(row.locator(".rl-ref-ai")).toHaveAttribute("href", /^\/ai/);
+    // The logo is the owner's artwork, only keyed onto the red header.
+    await expect(row.locator(".rl-ref-brand img")).toHaveAttribute(
+      "src",
+      "/rl-mark-white-336.webp",
+    );
+    // No bottom navigation on the reference homepage.
+    await expect(page.locator('[data-layout="bottom-bar"]')).toHaveCount(0);
+  }
+});
+
+test("reference homepage: sections, honest content and working links", async ({ page }) => {
+  await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+  const sections = await page
+    .locator(".rl-ref > section")
+    .evaluateAll((els) => els.map((el) => el.className.split(" ")[0]));
+  expect(sections).toEqual([
+    "rl-ref-hero",
+    "rl-ref-section",
+    "rl-ref-section",
+    "rl-ref-banners",
+    "rl-ref-section",
+  ]);
+  // The example/partner note closes the page body.
+  await expect(page.locator(".rl-ref-note")).toHaveCount(1);
+  await expect(page.locator("main h1")).toHaveCount(1);
+  await expect(page.locator(".rl-ref-actions a")).toHaveCount(2);
+  await expect(page.locator(".rl-ref-actions a").first()).toHaveAttribute("href", /^\/stores/);
+  await expect(page.locator(".rl-ref-cats li")).toHaveCount(8);
+  await expect(page.locator(".rl-ref-product")).toHaveCount(4);
+  await expect(page.locator(".rl-ref-banner")).toHaveCount(2);
+  await expect(page.locator(".rl-ref-benefits li")).toHaveCount(4);
+  // No invented commerce: no currency amounts, discounts or ratings on the homepage body.
+  const body = (await page.locator(".rl-ref").innerText()).replace(/\s+/g, " ");
+  expect(body).not.toMatch(/[€$]\s?\d|\d\s?(€|IQD|%)|★/);
+  // Every example product is labelled as an example and carries no price.
+  await expect(page.locator(".rl-ref-badge")).toHaveCount(4);
+  // Category tiles open real catalogue views.
+  await page.locator(".rl-ref-cats li").first().locator("a").click();
+  await expect(page).toHaveURL(/\/stores\?.*cat=electronics/);
+  await expect(page).toHaveURL(/sub=smartphones/);
+  // Banned searches from the header search still return nothing.
+  await page.goto("/stores?lang=en&q=vodka", { waitUntil: "networkidle" });
+  await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
+});
+
+test("reference homepage: header search opens the marketplace search", async ({ page }) => {
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  const input = page.locator('[data-layout="ref-header"] input[type="search"]');
+  await input.fill("sneakers");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/stores\?.*q=sneakers/);
 });
 
 const ROUTES = [
@@ -226,54 +276,24 @@ test("catalogue: ten category rows, direct URLs, history, subcategories and hone
   await expect(page.locator("[data-good],[data-store]")).toHaveCount(0);
 });
 
-test("hero: the AI call to action opens the existing assistant in the chosen language", async ({
-  page,
-}) => {
+test("R&L AI capsule opens the existing assistant in the chosen language", async ({ page }) => {
   for (const lang of ["ckb", "ar", "en"]) {
     await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    const cta = page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-cta");
+    const cta = page.locator(".rl-ref-ai");
     await expect(cta).toBeVisible();
     await expect(cta).toHaveAttribute("href", new RegExp(`^/ai(\\?lang=${lang})?$`));
-    // Visible without scrolling on a phone, and a comfortable touch target.
     const box = await cta.boundingBox();
-    expect(box!.y + box!.height, lang).toBeLessThanOrEqual(800);
     expect(box!.height, lang).toBeGreaterThanOrEqual(44);
     await cta.click();
     await expect(page).toHaveURL(/\/ai/);
     await expect(page.locator("html")).toHaveAttribute("lang", lang);
     await expect(page.locator("main h1")).toBeVisible();
   }
-  // Keyboard: the CTA is reachable and activates with Enter.
+  // Keyboard: the capsule is reachable and activates with Enter.
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
-  await page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-cta").focus();
+  await page.locator(".rl-ref-ai").focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/ai/);
-});
-
-test("hero: the marketplace, AI and shipping buttons stay in place on every slide", async ({
-  page,
-}) => {
-  for (const lang of ["ckb", "ar", "en"]) {
-    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-    const slides = page.locator(".rl-hero-slide");
-    const count = await slides.count();
-    expect(count).toBeGreaterThan(1);
-    const shop = page.locator(".rl-hero-slide:not([aria-hidden=true]) .rl-hero-shop");
-    await expect(shop).toHaveAttribute("href", new RegExp(`^/stores(\\?lang=${lang})?$`));
-    const first = await shop.boundingBox();
-    expect(first!.y + first!.height, lang).toBeLessThanOrEqual(800);
-    for (let i = 0; i < count; i++) {
-      const slide = slides.nth(i);
-      await expect(slide.locator(".rl-hero-shop")).toHaveCount(1);
-      await expect(slide.locator(".rl-hero-secondary")).toHaveCount(1);
-      const box = await slide.locator(".rl-hero-shop").boundingBox();
-      const own = await slide.boundingBox();
-      // Same vertical position on every slide (relative to its own slide).
-      expect(Math.round(box!.y - own!.y), `${lang} slide ${i + 1}`).toBe(
-        Math.round(first!.y - (await slides.first().boundingBox())!.y),
-      );
-    }
-  }
 });
 
 test("marketplace toolbar: filter button and audience chips share one row", async ({ page }) => {
