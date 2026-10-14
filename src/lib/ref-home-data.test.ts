@@ -44,6 +44,17 @@ test("reference home: copy is complete in every language and makes no commercial
     assert.doesNotMatch(all, /[€$]|IQD|\d\s?%|★/, `${lang.id}: no prices, discounts or ratings`);
     assert.equal(isProhibitedQuery(all), false, lang.id);
   }
+  // Every non-English language has its own translation of the CARE+ banner and the other
+  // homepage strings (no silent English reuse).
+  const english = JSON.stringify(refHomeCopy("en"));
+  for (const lang of LANGS) {
+    if (lang.id === "en") continue;
+    const c = refHomeCopy(lang.id);
+    for (const key of ["careTitle", "careBody", "careSoon", "careCta", "bringCta", "shop"] as const)
+      assert.notEqual(c[key], refHomeCopy("en")[key], `${lang.id}.${key} is translated`);
+    assert.notEqual(JSON.stringify(c), english, lang.id);
+    assert.ok(c.careBody.includes("CARE+"), `${lang.id}: CARE+ stays named`);
+  }
   assert.equal(refHomeCopy("ckb").searchPlaceholder, "گەڕان بەدوای کاڵا، مارکە، یان خزمەتگوزاری…");
   assert.deepEqual(refHomeCopy("ckb").titleLines, ["جیهانەکەت", "نوێ بکەرەوە"]);
 });
