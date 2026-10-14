@@ -1,10 +1,23 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { checkProductUrl, cleanField, normalizePhone, validateStoreRequest } from "./store-request.ts";
+import { checkProductUrl, cleanField, normalizePhone, validateStoreRequest, storeSubmissionKey } from "./store-request.ts";
 import { STORES } from "../stores.ts";
 
 const amazon = STORES.find((s) => s.id === "amazon-de")!;
 const base = { intent: "buy", storeId: "amazon-de", url: "https://www.amazon.de/dp/B0TEST", qty: "2", dest: "ebl", phone: "+49 151 2345678" };
+
+it("store retries share a private payload-bound key; edits and new submissions differ", async () => {
+  const checked = validateStoreRequest(base, null);
+  assert.ok(checked.ok);
+  const id = crypto.randomUUID();
+  const key = await storeSubmissionKey(id, checked.data);
+  assert.equal(key, await storeSubmissionKey(id, checked.data));
+  assert.notEqual(key, await storeSubmissionKey(id, { ...checked.data, qty: 3 }));
+  assert.notEqual(key, await storeSubmissionKey(crypto.randomUUID(), checked.data));
+  assert.ok(!key?.includes(checked.data.phone));
+  assert.equal(await storeSubmissionKey(undefined, checked.data), null);
+  await assert.rejects(storeSubmissionKey("bad key", checked.data));
+});
 
 describe("product link", () => {
   it("accepts https links on the store's domain or subdomains", () => {

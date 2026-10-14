@@ -89,7 +89,7 @@ export const orderStore = createServerFn({ method: "POST" })
       return { error: "declare" as const };
     }
     // Reject bad input (links, quantity, destination) before touching auth or the database.
-    const { validateStoreRequest } = await import("./store-request");
+    const { validateStoreRequest, storeSubmissionKey } = await import("./store-request");
     const shape = validateStoreRequest(data, null, { requireContact: false });
     if (!shape.ok) {
       setResponseStatus(400);
@@ -114,7 +114,16 @@ export const orderStore = createServerFn({ method: "POST" })
       return { error: checked.error };
     }
     const { submitRequest } = await import("./handlers.server");
-    return submitRequest(userId, "store", { ...checked.data, declared: true }, null);
+    let idempotencyKey: string | null;
+    try {
+      idempotencyKey = await storeSubmissionKey(data.submissionId, checked.data);
+    } catch {
+      setResponseStatus(400);
+      return { error: "invalid" as const };
+    }
+    return submitRequest(userId, "store", { ...checked.data, declared: true }, null, {
+      idempotencyKey,
+    });
   });
 
 export const orderTrack = createServerFn({ method: "GET" })
