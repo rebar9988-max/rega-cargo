@@ -1,5 +1,10 @@
 # CI/CD and deployments
 
+## 2026-10-14 five-improvement beta release
+
+PR #95 normal merge 8ae779f. Existing Cloudflare main Build 85d441c9-91a3-46f3-a9cf-246a8f5dd5ee succeeded; application Worker 1a514fed-3352-450b-9597-f3cac9f70a3e at 100%, deployment 31c582de-bdd1-453c-82fe-26d8eec48d1d, 13:09:57 UTC. New deploy command includes release:check; beta exception is owner-authorized, public gate stays strict. Migration 0015 applied atomically; unchanged business counts/no grants. Four secrets, Hyperdrive, AI cap, canonical domains and closed previews preserved. 12 customer + 3 security/track cases passed across final separate runs. Rollback Worker baseline 0f6e2dd7; preserve additive schema/data. No hosted Actions/positive owner/OTP/log verification claim. Documentation-only follow-up may produce an identical-app Worker version. [Evidence](../verification/rl-five-improvements-20261013.md).
+
+
 ## 2026-10-14 owner-authorized beta rollout in progress
 
 Owner supersedes the earlier missing-legal-content hold specifically for beta. Source policy permits incomplete facts only during beta; public release must require completion. Actual Neon dev migration/reapplication passed; production migration 0015 applied transactionally with existing record counts unchanged and no roles granted. Fresh source gate: 483 local unit/script passes, 4 existing skips; typecheck/lint/build/dry-run passed. Browser/merge/build verification continues. Rollback Worker baseline 0f6e2dd7; preserve additive schema and all data. [Evidence](../verification/rl-five-improvements-20261013.md).
