@@ -9,6 +9,11 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-14**, verified five-improvement beta release: PR #95 / main `8ae779f`, Worker `1a514fed` at 100%. Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
+## Bring For Me reset repair (2026-10-14, in progress)
+
+Owner authorized a focused reset/error/auth-recovery/idempotency repair through the existing deployment workflow, preserving branding, fields, boundaries and production data. Exact production reproduction: the active buy `Link` resets scroll on the same route without POST/reload/state loss. Real submit separately returns `401/signin`; phone delivery is unavailable. SELECT-only verified cargo database has zero phone users/sessions/requests/approved admins. Do not bypass auth, fabricate a saved ID, seed an administrator or claim a verified authenticated production save. Local browser + isolated DB regression tests added; final official-image gate and rollout pending. [Evidence and limitations](docs/verification/bring-form-reset-20261014.md).
+
+
 ## R&L AI owner-only permanent baseline (2026-10-14)
 
 Owner explicitly reconfirmed: the approved R&L AI foundation must survive every unrelated R&L change; only a new explicit owner request for the affected AI change authorizes a baseline change. Broad redesign/refactor/upgrade requests are insufficient. Preserving bug/security maintenance remains allowed. Read the identical OWNER-ONLY R&L AI BASELINE rule in root AGENTS/CLAUDE and module AGENTS/README before editing. Regression checks pin the official identity, tool allowlist and approved Sorani welcome/refusal/shortcuts; CODEOWNERS also covers the governance entry points. These checks and review rules detect accidental drift, but are not technical immutability or enabled branch protection.

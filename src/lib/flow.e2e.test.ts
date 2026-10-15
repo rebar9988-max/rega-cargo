@@ -164,6 +164,41 @@ describe("phone user flow on PGLite", () => {
     const listed = await orders.adminOrders(admin);
     const row = listed.find((item) => item.trackingId === tracking);
     assert.ok(row);
+    // The form's payload-bound retry key uses the existing unique DB constraint.
+    const { validateStoreRequest, storeSubmissionKey } = await import("./orders/store-request.ts");
+    const checked = validateStoreRequest(
+      {
+        intent: "buy",
+        url: "https://www.zalando.de/shoes",
+        qty: "2",
+        dest: "sul",
+        phone: "+9647501111111",
+        size: "42",
+        color: "red",
+        notes: "Bring For Me regression",
+      },
+      null,
+    );
+    assert.ok(checked.ok);
+    const key = await storeSubmissionKey(crypto.randomUUID(), checked.data);
+    const payload = { ...checked.data, declared: true };
+    const first = await orders.submitRequest(buyer, "store", payload, null, {
+      idempotencyKey: key,
+    });
+    const retry = await orders.submitRequest(buyer, "store", payload, null, {
+      idempotencyKey: key,
+    });
+    assert.ok("id" in first && "id" in retry);
+    assert.equal(first.id, retry.id);
+    const persisted = await sql<{ tracking_id: string; payload: string }>`
+      select tracking_id, payload from shipment_requests where user_id = ${buyer} and idempotency_key = ${key}`;
+    assert.equal(persisted.length, 1);
+    assert.equal(persisted[0].tracking_id, first.id);
+    const storedPayload = JSON.parse(persisted[0].payload);
+    assert.equal(storedPayload.size, "42");
+    assert.equal(storedPayload.notes, "Bring For Me regression");
+    assert.ok((await orders.adminOrders(admin)).some((entry) => entry.trackingId === first.id));
+    await assert.rejects(orders.adminOrders(buyer));
     // Work only starts after the customer accepts a staff quote.
     await assert.rejects(
       orders.adminOrderStatus(admin, row.id, "in_transit"),

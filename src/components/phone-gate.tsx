@@ -190,7 +190,7 @@ export function PhoneButton({
   label,
   onUser: onUserChange,
 }: {
-  variant?: "pill" | "icon" | "block";
+  variant?: "pill" | "icon" | "block" | "link";
   label?: string;
   onUser?: (user: { name: string; phone: string } | null) => void;
 } = {}) {
@@ -205,7 +205,11 @@ export function PhoneButton({
 
   return (
     <>
-      {variant === "icon" ? (
+      {variant === "link" ? (
+        <button type="button" onClick={() => setOpen(true)} className="rl-text-link">
+          {label ?? t.in}
+        </button>
+      ) : variant === "icon" ? (
         <button
           type="button"
           onClick={() => setOpen(true)}

@@ -27,6 +27,24 @@ export type StoreRequest = {
 
 export type StoreRequestError = "url" | "host" | "qty" | "dest" | "contact" | "invalid";
 
+/** Scope a retry to its validated payload. Never put contact details in the key. */
+export async function storeSubmissionKey(submissionId: unknown, request: StoreRequest) {
+  if (submissionId == null) return null; // Older clients remain compatible.
+  if (
+    typeof submissionId !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(submissionId)
+  )
+    throw new Error("invalid submission id");
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(JSON.stringify(request)),
+  );
+  const hash = Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+  return `store:${submissionId.toLowerCase()}:${hash}`;
+}
+
 /** NFKC, strip control/bidi-override characters, collapse spaces, trim, cap. */
 export function cleanField(value: unknown, max: number): string {
   if (value == null) return "";

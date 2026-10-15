@@ -3,7 +3,7 @@ import { seo } from "@/lib/seo";
 import { DECLARE_COPY } from "@/lib/declare-copy";
 import { ItemsLink } from "@/components/items-link";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Field, controlClass, btnPrimary } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
 import { DESTS, getDest, placeName } from "@/lib/corridor";
@@ -34,6 +34,8 @@ import { DRAFT_COPY } from "@/lib/orders/draft-copy";
 import { OrderFallback } from "@/components/order-fallback";
 import { TrustSummary } from "@/components/trust-summary";
 import { useOrderAvailability } from "@/lib/orders/use-availability";
+import { PhoneButton } from "@/components/phone-gate";
+import { CONTACT_EMAIL } from "@/lib/contact";
 export const Route = createFileRoute("/stores/request")({
   validateSearch: (search: Record<string, unknown>) => ({
     store: typeof search.store === "string" ? search.store : undefined,
@@ -69,6 +71,7 @@ function RequestPage() {
   const [saved, setSaved] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
+  const submission = useRef<{ fingerprint: string; id: string } | null>(null);
   const [failed, setFailed] = useState(false);
   const [declared, setDeclared] = useState(false);
   const ux = UX_COPY[lang];
@@ -77,6 +80,8 @@ function RequestPage() {
   const formRef = useRef<HTMLFormElement>(null);
   const [fieldError, setFieldError] = useState("");
   const [signin, setSignin] = useState(false);
+  const resumeAfterSignin = useRef(false);
+  const errorRef = useRef<HTMLDivElement>(null);
   const dc = DRAFT_COPY[lang];
   const unavailable = useOrderAvailability();
   const draft = useOrderDraft({
@@ -106,10 +111,30 @@ function RequestPage() {
   function invalid(field: string, message: string) {
     setError(message);
     setFieldError(field);
-    formRef.current?.querySelector<HTMLElement>(`[name="${field}"]`)?.focus();
+    const control = formRef.current?.querySelector<HTMLElement>(`[name="${field}"]`);
+    control?.focus({ preventScroll: true });
+    control?.scrollIntoView({ block: "center" });
   }
+  useEffect(() => {
+    if (error && !fieldError) {
+      errorRef.current?.focus({ preventScroll: true });
+      errorRef.current?.scrollIntoView({ block: "center" });
+    }
+  }, [error, fieldError]);
+  useEffect(() => {
+    // Restore focus after the dialog's own focus-return cleanup has completed.
+    if (!signin && resumeAfterSignin.current) {
+      resumeAfterSignin.current = false;
+      const frame = requestAnimationFrame(() => {
+        formRef.current?.querySelector<HTMLButtonElement>('button[type="submit"]')?.focus();
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [signin]);
 
   async function submit(event: React.FormEvent) {
+    // A portal's sign-in form bubbles through React, but must not submit this request.
+    if (event.target !== event.currentTarget) return;
     event.preventDefault();
     if (inFlight.current) return;
     setFailed(false);
@@ -145,6 +170,22 @@ function RequestPage() {
     inFlight.current = true;
     setBusy(true);
     try {
+      // Keep the same key when retrying a lost response; edits start a new request.
+      const fingerprint = JSON.stringify([
+        intent,
+        store?.id,
+        good?.id,
+        href,
+        size,
+        color,
+        qty,
+        dest,
+        notes,
+        phone,
+        declared,
+      ]);
+      if (submission.current?.fingerprint !== fingerprint)
+        submission.current = { fingerprint, id: crypto.randomUUID() };
       const gate = await gateFields();
       const result = await orderStore({
         data: {
@@ -159,6 +200,7 @@ function RequestPage() {
           notes,
           phone: phone.trim(),
           declared: true,
+          submissionId: submission.current.id,
           ...gate,
         },
       });
@@ -176,7 +218,7 @@ function RequestPage() {
         dest: rc.badDest,
         contact: rc.badPhone,
         rate: rc.rate,
-        signin: rc.signin,
+        signin: unavailable ? dc.unavailable : rc.signin,
         prohibited: marketCopy(lang).prohibited,
         declare: DECLARE_COPY[lang].mustDeclare,
       };
@@ -207,6 +249,8 @@ function RequestPage() {
     // Inputs stay as typed; the email route is offered instead of a dead end.
     setSaved(null);
     setFailed(true);
+    setFieldError("");
+    setError(`${ux.failPre}${CONTACT_EMAIL}${ux.failPost}`);
   }
 
   return (
@@ -293,6 +337,10 @@ function RequestPage() {
                 <Link
                   to="/stores/request"
                   search={{ store: storeId, item, intent: "buy" }}
+                  resetScroll={false}
+                  onClick={(event) => {
+                    if (intent === "buy") event.preventDefault();
+                  }}
                   className="rl-chip"
                   aria-current={intent === "buy" ? "page" : undefined}
                 >
@@ -301,6 +349,10 @@ function RequestPage() {
                 <Link
                   to="/stores/request"
                   search={{ store: storeId, item, intent: "ship" }}
+                  resetScroll={false}
+                  onClick={(event) => {
+                    if (intent === "ship") event.preventDefault();
+                  }}
                   className="rl-chip"
                   aria-current={intent === "ship" ? "page" : undefined}
                 >
@@ -423,15 +475,31 @@ function RequestPage() {
               <ItemsLink />
               <div aria-live="polite">
                 {error ? (
-                  <p id="rl-request-error" role="alert" className="text-sm text-clay">
-                    {error}
-                  </p>
+                  <div
+                    ref={errorRef}
+                    tabIndex={-1}
+                    id="rl-request-error"
+                    role="alert"
+                    className="text-sm text-clay"
+                  >
+                    {failed ? (
+                      <ContactNote pre={ux.failPre} post={ux.failPost} role="status" />
+                    ) : (
+                      error
+                    )}
+                  </div>
                 ) : null}
-                {failed && !error ? <ContactNote pre={ux.failPre} post={ux.failPost} /> : null}
                 {signin ? (
-                  <Link to="/account" className="rl-text-link">
-                    {rc.signin}
-                  </Link>
+                  <PhoneButton
+                    variant="link"
+                    label={rc.signin}
+                    onUser={(user) => {
+                      if (!user) return;
+                      resumeAfterSignin.current = true;
+                      setSignin(false);
+                      setError("");
+                    }}
+                  />
                 ) : null}
               </div>
               <button
