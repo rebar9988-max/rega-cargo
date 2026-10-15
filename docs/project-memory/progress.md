@@ -1,5 +1,13 @@
 # Progress
 
+## 2026-10-15 continuation checkpoint (Actions still blocked, I-7)
+
+- **PR #87 (security port) is superseded:** every one of its five fixes is already on `main` (public `/track` 60-bit codes, one booking per signed quote via idempotency key, single-use gate tokens + challenge rate limit failing closed, `__Host-rl_phone` cookie + privacy copy in 7 languages, atomic marketplace action limit; gate key derived under `rl-ai-gate-v1`). `main`'s `RlAiUsage` Durable Object is *more* hardened (transactions, no day rollback, safe refunds), so merging #87 would regress it. Recommendation: owner closes #87 unmerged. Not closed by Claude.
+- `npm audit` (all and `--omit=dev`): 0 vulnerabilities on `main` `5d66eee`.
+- PR #99 (language selector, another session) still merges cleanly with `main` after #102.
+- Live lab performance (Chromium, read-only; mobile = Slow 4G 150 ms/1.6 Mbps + 4× CPU, 390 px; median of 3; LCP read before scrolling): LCP mobile `/` 3.16 s (hero image 29 KB, already preloaded with high priority; TTFB ≈1.06 s through the agent proxy), `/stores` 1.51 s, `/quote` 1.14 s, `/track` 1.01 s, `/ai` 1.08 s; desktop all ≤ 1.23 s. CLS ≤ 0.0264 everywhere. Lab numbers only, not Lighthouse scores or field data.
+
+
 ## 2026-10-15 UI refinement verified live
 
 PR #102 (`5d66eee`) is live at https://www.rlgo.net (identified by CSS unique to the change; version ID not queried). Owner-approved read-only verification passed: 350 page loads, 0 overflow/page/console errors, 23/23 existing specs on production. Open: Bring For Me draft checkbox (PR #97), narrow 360 px home search text area beside the AI capsule (target passes), screenshot baselines (I-7), WebKit/native iPhone unverified. [Report](../verification/ui-refinement-20261014.md).

@@ -1,5 +1,11 @@
 # Known issues, root causes and fixes
 
+## 2026-10-15 checks
+
+- Measurement pitfall: scrolling a page before reading LCP lets later below-the-fold images become LCP candidates (`/stores` read 5.6 s that way; 1.5 s when read before scrolling, LCP = h1). Read LCP before any scroll.
+- Mobile home LCP 3.16 s in lab is network-bound (hero image is 29 KB and preloaded); no markup defect found. Re-measure with real field data or Lighthouse from an unproxied network before changing anything.
+
+
 ## 2026-10-14 UI refinement findings
 
 - `tests/layout/domain.spec.ts` "complete pages hydrate…" waited for `main form button[type=submit]` on `/`, which PR #100 removed; it failed on live production too. Now waits for the hydrated footer theme button (disabled until `useHydrated`), same strength.

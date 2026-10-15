@@ -70,6 +70,8 @@ Presentation-only refinement of spacing, alignment and touch targets ([report](d
 
 ## Next safe continuation point
 
+**2026-10-15:** UI refinement (#102) live and verified. Owner actions now: merge docs PR #103 (identical-app redeploy via Cloudflare Builds); close superseded PR #87 (would regress `main`); decide on PR #99, the narrow 360 px home search beside the AI capsule, keyed logo / home tracking form / CARE+ wording. Blocked externally: hosted Actions billing (I-7) → layout screenshot re-render, WebKit; OTP provider and legal content (beta). See [progress](docs/project-memory/progress.md).
+
 The five-improvement beta release is verified. Before official/public release: supply owner-verified legal/business content and approved multilingual policies, configure a working existing OTP delivery provider and identify/verify the exact owner account. Keep stage=beta while content is pending; stage=public restores the complete legal gate. Never seed an arbitrary SUPER_ADMIN or weaken authentication. Query latest production deployments after documentation-only builds.
 
 - The critical domain/WebKit repair is released and verified (PR #89). Owner domain-exclusivity decision is now enforced in Cloudflare: only `https://www.rlgo.net` serves R&L; retired cargo DNS/domain and public staging/preview URLs are closed. Keep them closed; use isolated checks for staging. Preserve the apex/HTTP redirects and SW v12. Do not restore `content-visibility:auto` without the real viewport paint regression. Query current deployments before future releases; documentation-only builds may change the version ID. Native iPhone/direct IPv6/real OTP verification remains a clearly recorded follow-up, not a passed test.
