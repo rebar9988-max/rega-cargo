@@ -42,3 +42,7 @@ AI-scoped white/red restrained cards, existing tokens and official brand; reuse 
 ## UI refinement — 2026-10-14
 
 Home header row, section heads and (from 1200 px) hero copy share one inline edge (`--ref-pad`; hero uses container units). Both hero headline lines start at the eyebrow's edge in every script. Touch targets ≥ 44 px on phones: reference header controls 2.75rem, footer links/legal TOC/store heart/chips/market actions `--rl-control-h`. Home section heads stay baseline-aligned (centring them raised font-swap CLS). Featured products: 2 columns on tablets, 4 from 1024 px. Footer reserves bottom-bar space only on phones/tablets and not on the reference home. [Report](../verification/ui-refinement-20261014.md).
+
+## Homepage visual fidelity — 2026-10-15
+
+Owner re-asserted the original homepage design as visual authority and asked for one design across all widths. Phones: home header = logo · language · R&L AI · menu row + full-width search row (120 px; the field was 0–104 px wide in one row). Hero background reproduces the reference's red silk behind the copy (sampled colours; theme-aware tints `--ref-silk-soft/-glow`); the art fades into red, never white. Phones: the art sits on a full-width red silk field instead of a separate image block. Art column capped at `min(49.2%, 40rem)` (504 px artwork ≤ 1.27×). Hero subtitle left-aligned in every language. [Report](../verification/visual-fidelity-20261015.md).
