@@ -4,7 +4,7 @@
 
 Owner approved Option A. Verified: PR #103/#104 have no Workers Builds check (non-production builds off); agent Cloudflare credential is DNS-only (403 on Workers/Builds APIs). Exact non-deploying command tested locally on PR #104 head `8cbd4f1` from a Node 24 base: Node 22.23.3, typecheck pass, 486 tests / 4 skips / 0 fail, lint 0 errors, compliance scan 0 violations, audit 0, dry-run pass (54 s). Plain Node 24 run fails one test file (I-12). Owner steps, acceptance checks and limitations: [CI alternatives](../operations/ci-alternatives.md#option-a--existing-cloudflare-workers-builds-owner-approved-2026-10-15-not-yet-enabled). PR #103/#104 stay unmerged.
 
-After the owner enabled it: the first branch build (PR #103 `c0d7521`) reported a GitHub check `Workers Builds: rega-cargo` = success with "No Preview URL", but finished in ~30 s, too fast for the verify chain; build log and versions list unreadable by the agent (403). Owner must confirm the log and that no version was uploaded before the check is relied on.
+After the owner enabled it: the first branch build (PR #103 `c0d7521`) reported a GitHub check `Workers Builds: rega-cargo` = success with "No Preview URL", but finished in ~30 s, too fast for the verify chain; build log and versions list unreadable by the agent (403). No Version ID in the check runs, so no version was uploaded ([runbook](../operations/cicd.md)); whether the tests ran still needs the build log or a negative test before the check is relied on. 13:24 UTC: merged `main` (#106/#107) into PR #104 to resolve a `decisions.md` conflict; merged head passes typecheck, 491 tests / 4 skips, lint, build and dry run.
 
 ## 2026-10-15 homepage visual fidelity (PR #104, not merged)
 

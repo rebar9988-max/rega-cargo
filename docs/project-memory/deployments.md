@@ -4,6 +4,9 @@
 
 PR #102 merged normally as `5d66eee` (2026-10-14 23:13 UTC) on the local gate (hosted Actions failed before steps, I-7). Existing Cloudflare Builds deployed it: live HTML carries CSS unique to this change; Worker version ID not queried (no Workers API credential). Read-only checks 2026-10-15 ~03:30 UTC: 350 page loads with 0 overflow/page errors/console errors, 23/23 existing specs against production, banned searches empty. No rollback needed. [Evidence](../verification/ui-refinement-20261014.md#production-verification-read-only-2026-10-15-0330-utc-owner-approved).
 
+## 2026-10-15 CI/CD audit (no deployment)
+
+Verified state, invariants and owner actions: [runbook](../operations/cicd.md). Production `4a48cd8c` = `main` `5d66eee` (Workers Builds `b8e80818`). PR branch build `11b23adc` on `c0d7521`: success, no Version ID, no Preview URL. Hosted Actions still blocked by billing (annotation verified). Code change: migration gate (I-13). Not changed: workflow, `wrangler.jsonc`, build/deploy commands, Builds settings, secrets, domains, database.
 
 ## 2026-10-14 five-improvement beta release
 

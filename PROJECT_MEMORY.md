@@ -68,11 +68,16 @@ Owner's homepage screenshot is live on `/` ([PR #100](https://github.com/rebar99
 
 Presentation-only refinement of spacing, alignment and touch targets ([report](docs/verification/ui-refinement-20261014.md)). 15 measured issues fixed; Bring For Me draft checkbox left to draft PR #97; hero gradient contrast reported only. Screenshot baselines need the official-image re-render (I-7). **Live since 2026-10-14 23:13 UTC as main `5d66eee` (PR #102); owner-approved read-only production verification 2026-10-15 passed** (350 page loads, 0 overflow/page/console errors, 23/23 specs on production; Worker version ID not queried).
 
+## CI/CD audit (2026-10-15)
+
+Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are non-deploying (build `11b23adc`: no Version ID, no Preview URL); hosted Actions blocked by billing; `main` cannot have required checks on GitHub Free; production workers.dev still redirects (I-14). Code fix: branch/CI builds can never migrate production (I-13). Read the [CI/CD runbook](docs/operations/cicd.md) before touching CI, Builds, `wrangler.jsonc` or migrations.
+
 ## Next safe continuation point
 
-**2026-10-15 (Option A):** owner approved Workers Builds as alternative CI; the owner must set the non-production command and enable non-production builds in the dashboard (agent credential is DNS-only). Then verify a real check run on PR #104 (acceptance steps in [CI alternatives](docs/operations/ci-alternatives.md)) before relying on it. Screenshot/WebKit remain separate gates; do not merge #103/#104 until required checks are verified.
+**2026-10-15 (Option A):** the owner enabled non-deploying Workers Builds branch builds; current state and invariants live in the [CI/CD runbook](docs/operations/cicd.md), the command and acceptance steps in [CI alternatives](docs/operations/ci-alternatives.md). Still open: build log confirmation and the negative test before the check counts as a test gate. Screenshot/WebKit remain separate gates; do not merge #103/#104 until required checks are verified.
 
 **2026-10-15:** UI refinement (#102) live and verified; homepage visual-fidelity PR #104 ready (local gate passed, not merged). Owner actions now: review/merge PR #104 (deploys), merge docs PR #103 (identical-app redeploy via Cloudflare Builds); close superseded PR #87 (would regress `main`); decide on PR #99, the narrow 360 px home search beside the AI capsule, keyed logo / home tracking form / CARE+ wording. Blocked externally: hosted Actions billing (I-7) → layout screenshot re-render, WebKit; OTP provider and legal content (beta). See [progress](docs/project-memory/progress.md).
+- CI/CD (2026-10-15): owner actions in [runbook](docs/operations/cicd.md) §4 (billing, required checks, workers.dev). Confirm the PR Workers Builds check actually runs the tests (build log + a deliberately failing draft) before treating it as a test gate (build times varied 27–85 s, which proves nothing; the log is dashboard-only).
 
 The five-improvement beta release is verified. Before official/public release: supply owner-verified legal/business content and approved multilingual policies, configure a working existing OTP delivery provider and identify/verify the exact owner account. Keep stage=beta while content is pending; stage=public restores the complete legal gate. Never seed an arbitrary SUPER_ADMIN or weaken authentication. Query latest production deployments after documentation-only builds.
 
@@ -100,6 +105,7 @@ The five-improvement beta release is verified. Before official/public release: s
 | [issues.md](docs/project-memory/issues.md) | Known bugs, root causes, fixes |
 | [progress.md](docs/project-memory/progress.md) | Done / active / pending work, open PRs |
 | [deployments.md](docs/project-memory/deployments.md) | CI/CD, release log, rollback pointers |
+| Central Google Doc "R&L — Project Memory & Documentation Hub" (Drive ID `1Wt2rZdmMTviKNsz1bpDUg3as-Egy7FNB_HatI1Y7kH4`) | Cross-tool summary, decisions and change log; updated after every material change (permanent troubleshooting rule in CLAUDE.md, 2026-10-15) |
 
 Detailed canonical docs (do not duplicate them in memory): [DEPLOY.md](DEPLOY.md) ·
 [docs/integrations/](docs/integrations/inventory.md) · [docs/redesign/](docs/redesign/README.md).

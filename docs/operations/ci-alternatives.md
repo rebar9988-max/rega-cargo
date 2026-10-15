@@ -1,5 +1,7 @@
 # CI while GitHub-hosted Actions is blocked (I-7) — alternatives
 
+Current verified CI/CD state and invariants: [CI/CD runbook](cicd.md) (canonical). This page keeps the options analysis and the Option A command.
+
 Status 2026-10-15: every hosted run of the "Cargo quality gate" ends in about 3 s with `runner_id: 0` and no log. No runner is ever assigned (account billing block, owner-only to fix). `main` has no branch protection or required checks, so nothing is bypassed today; it also means nothing *enforces* the gate. This page lists the legitimate replacements, in priority order, and what each needs from the owner. None of them marks a GitHub check as passed when it did not run.
 
 ## Coverage of the hosted gate
@@ -59,8 +61,9 @@ Until steps 1–3 pass, nothing relies on Workers Builds and the merge policy st
 ### Observed so far (2026-10-15, after the owner reported "enabled")
 
 - Push `c0d7521` to PR #103 at 05:53:17 UTC produced a GitHub check run **`Workers Builds: rega-cargo`** (id 116271219939, build `11b23adc-fe47-4ae7-90d7-6744ba07fc3c`), conclusion `success`, and a Cloudflare PR comment showing "No Preview URL". So check reporting works.
-- **Not yet verified:** what the build ran. The check output has no log text, and the agent's credential gets 403 on the build log and the Worker versions list. The build finished about 28–36 s after the push, shorter than the verify chain alone takes locally (54 s, without `npm ci` and the build), so it may not have run the verification command. It may instead have run the default `wrangler versions upload`, which creates a Worker version even when no Preview URL is shown.
-- Until the owner confirms from the build log (`v22.x`, the test summary, `--dry-run: exiting now`) and the versions list (no new version at 05:53 UTC), the check proves nothing about the code, and no new commit is pushed to PR #104.
+- Second branch build `ce127a0d` (PR #103 `9daa3c3`, 05:58 UTC): success, same pattern.
+- No Version ID appears in these check runs (verified in the [runbook](cicd.md) §1), so the branch builds created no Worker version. Build times varied from ~27 to ~85 s across PR #103/#106 pushes, which proves nothing either way about the tests.
+- **Not yet verified:** that the command runs the tests. Only the dashboard build log (`v22.x`, test summary, `--dry-run: exiting now`) or a deliberately failing test turning the check red can show that. Until then the check means "builds and does not deploy", not "tests passed".
 
 ### Limitations
 
