@@ -1,5 +1,10 @@
 # Known issues, root causes and fixes
 
+## 2026-10-15 I-7 alternatives (still open)
+
+Re-verified on PR #104 (run 38681317757): jobs end in ~3 s with `runner_id: 0` and no log; no runner is assigned. Replacement options, priority order, in [CI alternatives](../operations/ci-alternatives.md): (A) existing Cloudflare Workers Builds running the `verify` commands on PR branches with a non-deploying `npm run cf:dry-run` non-production command (posts GitHub check runs; owner must authorize and configure; no Preview/Version URLs); (B) PR #85's local gate (agent runs are PARTIAL without Docker); (C) owner-run self-hosted runner (billing interaction and future per-minute charge unverified). No check marked passed, no rule changed.
+
+
 ## 2026-10-15 checks
 
 - Measurement pitfall: scrolling a page before reading LCP lets later below-the-fold images become LCP candidates (`/stores` read 5.6 s that way; 1.5 s when read before scrolling, LCP = h1). Read LCP before any scroll.
