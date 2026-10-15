@@ -64,7 +64,8 @@ Until steps 1–3 pass, nothing relies on Workers Builds and the merge policy st
 - First PR #104 branch build `e1940fad` (merge head `d23797a`, push 13:23:58 → success 13:24:36 UTC): no Version ID, "No Preview URL".
 - Second branch build `ce127a0d` (PR #103 `9daa3c3`, 05:58 UTC): success, same pattern.
 - No Version ID appears in these check runs (verified in the [runbook](cicd.md) §1), so the branch builds created no Worker version. Build times varied from ~27 to ~85 s across PR #103/#106 pushes, which proves nothing either way about the tests.
-- **Not yet verified:** that the command runs the tests. Only the dashboard build log (`v22.x`, test summary, `--dry-run: exiting now`) or a deliberately failing test turning the check red can show that. Until then the check means "builds and does not deploy", not "tests passed".
+- **Negative test, 2026-10-15 22:38 UTC (owner-approved): FAILED as a test gate.** Draft PR #108 (`c823d33`, branch from `main`) added `scripts/ci-negative-probe.test.mjs`, which fails on purpose; locally `node --test 'scripts/**/*.test.mjs'` exits 1 (`# fail 1`). The branch build `5229dc2e` still reported `Workers Builds: rega-cargo` = **success** (no Version ID, "No Preview URL", push → result ~56 s). So the configured non-production command does **not** run `npm test` (or ignores its exit code); it is not the command in "Owner steps" above. PR #108 is closed; the agent could not delete its branch (git proxy refuses remote deletes).
+- Consequence: the green branch check means only "the production build command succeeds and nothing is deployed". It is **not** a typecheck/test/lint gate. Owner action: open the build log of `5229dc2e` and Settings → Build → non-production branch deploy command, and set it exactly to the command above, then re-run the negative test.
 
 ### Limitations
 

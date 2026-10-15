@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-15 Workers Builds negative test (owner-approved) — check is not a test gate (I-16)
+
+Draft PR #108 with a deliberately failing test got a green `Workers Builds: rega-cargo` check (build `5229dc2e`), so the branch builds do not run `npm test`. PR #108 closed; its branch could not be deleted from the agent environment (owner can delete it on the PR page). Owner action: correct the non-production command, then re-run the probe. PR #103/#104 remain unmerged.
+
 ## 2026-10-15 Option A (Workers Builds as alternative CI) — prepared, owner dashboard action pending
 
 Owner approved Option A. Verified: PR #103/#104 have no Workers Builds check (non-production builds off); agent Cloudflare credential is DNS-only (403 on Workers/Builds APIs). Exact non-deploying command tested locally on PR #104 head `8cbd4f1` from a Node 24 base: Node 22.23.3, typecheck pass, 486 tests / 4 skips / 0 fail, lint 0 errors, compliance scan 0 violations, audit 0, dry-run pass (54 s). Plain Node 24 run fails one test file (I-12). Owner steps, acceptance checks and limitations: [CI alternatives](../operations/ci-alternatives.md#option-a--existing-cloudflare-workers-builds-owner-approved-2026-10-15-not-yet-enabled). PR #103/#104 stay unmerged.
