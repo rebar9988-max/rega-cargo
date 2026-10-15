@@ -7,10 +7,16 @@ import {
   readdirSync,
   writeFileSync,
 } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { isMigrationFile, migrationName, pendingMigrations } from "./migration-plan.mjs";
+import {
+  isMigrationFile,
+  migrationGate,
+  migrationName,
+  pendingMigrations,
+} from "./migration-plan.mjs";
 import { projectRoot } from "./with-app-env.mjs";
 
 const AUTH_MIGRATION = "0001_auth.sql";
@@ -95,4 +101,48 @@ test("the copy check reads both files and catches an edit", () => {
   writeFileSync(join(root, "migrations", AUTH_MIGRATION), "create table t (x int);\n");
   const drifted = authSchemaCopy(root);
   assert.notEqual(drifted.copy, drifted.source);
+});
+
+const URL_SET = { DATABASE_URL: "postgres://user@db.invalid:5432/prod" };
+
+test("migration gate: no DATABASE_URL never migrates", () => {
+  assert.equal(migrationGate({}).run, false);
+  assert.equal(
+    migrationGate({ DATABASE_URL: "", WORKERS_CI: "1", WORKERS_CI_BRANCH: "main" }).run,
+    false,
+  );
+});
+
+test("migration gate: Workers Builds migrates only the production branch", () => {
+  const ci = { ...URL_SET, CI: "true", WORKERS_CI: "1" };
+  assert.equal(migrationGate({ ...ci, WORKERS_CI_BRANCH: "main" }).run, true);
+  for (const branch of ["claude/some-pr", "Main", "main-copy", "", undefined]) {
+    assert.equal(migrationGate({ ...ci, WORKERS_CI_BRANCH: branch }).run, false, String(branch));
+  }
+});
+
+test("migration gate: other CI (GitHub Actions, self-hosted) never migrates", () => {
+  assert.equal(migrationGate({ ...URL_SET, CI: "true", GITHUB_ACTIONS: "true" }).run, false);
+  assert.equal(migrationGate({ ...URL_SET, CI: "1" }).run, false);
+});
+
+test("migration gate: a manual run outside CI is unchanged", () => {
+  assert.equal(migrationGate(URL_SET).run, true);
+  assert.equal(migrationGate({ ...URL_SET, CI: "false" }).run, true);
+});
+
+test("migrate.mjs in a branch build exits 0 without connecting", () => {
+  // db.invalid cannot resolve: an attempted connection would fail with exit 1.
+  const env = {
+    ...process.env,
+    ...URL_SET,
+    CI: "true",
+    WORKERS_CI: "1",
+    WORKERS_CI_BRANCH: "claude/pr",
+  };
+  const out = execFileSync(process.execPath, [join(projectRoot(), "scripts/migrate.mjs")], {
+    env,
+    encoding: "utf8",
+  });
+  assert.match(out, /non-production branch "claude\/pr" — skipping/);
 });

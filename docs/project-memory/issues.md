@@ -1,5 +1,17 @@
 # Known issues, root causes and fixes
 
+## I-13 · FIXED 2026-10-15 — branch builds could migrate production if DATABASE_URL became a build variable
+
+Root cause: `npm run build` ends in `db:migrate`; Workers Builds runs the same build command for PR branches as for `main`, and build variables are shared across branches. Today there are no build variables, so nothing ran, but one added `DATABASE_URL` would have let unreviewed branch code migrate production. Fix: `migrationGate()` (`scripts/migration-plan.mjs`): in CI only `WORKERS_CI=1` + `WORKERS_CI_BRANCH=main` migrates; branch builds, GitHub Actions and self-hosted runners skip. Manual runs outside CI unchanged. Tests in `scripts/migration-plan.test.mjs` (including an end-to-end `migrate.mjs` run against an unresolvable host). [Runbook](../operations/cicd.md).
+
+## I-14 · OPEN 2026-10-15 — production workers.dev host still answers (redirect only)
+
+`https://rega-cargo.rebar9988.workers.dev/` returns the legacy-host wrapper's noindex 301/308 to `https://www.rlgo.net` on every path (no app content, no API). Memory recorded it as disabled 2026-10-13. Config is `workers_dev: false` and wrangler 4.149 posts `enabled:false` on each deploy, so the cause is account/dashboard state that the agent's DNS-only token cannot read. Owner dashboard action in the [runbook](../operations/cicd.md) §4 if the host should be closed (error 1042).
+
+## I-15 · OPEN 2026-10-15 — no enforced required checks
+
+`main` cannot have branch protection, rulesets or required checks: private repository on GitHub Free (API 403 "Upgrade to GitHub Pro or make this repository public"). The quality gate is policy only. Owner decision.
+
 ## 2026-10-14 UI refinement findings
 
 - `tests/layout/domain.spec.ts` "complete pages hydrate…" waited for `main form button[type=submit]` on `/`, which PR #100 removed; it failed on live production too. Now waits for the hydrated footer theme button (disabled until `useHydrated`), same strength.

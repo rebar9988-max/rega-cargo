@@ -11,20 +11,22 @@
  *
  * No DATABASE_URL (local / preview builds) -> skip; the PGLite fallback applies
  * the same files at startup instead (see src/lib/db.ts).
+ *
+ * In CI only a Workers Builds build of `main` may migrate; branch builds and
+ * other CI skip even when DATABASE_URL is set (migrationGate).
  */
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import pg from "pg";
-import { pendingMigrations } from "./migration-plan.mjs";
+import { migrationGate, pendingMigrations } from "./migration-plan.mjs";
 
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  console.log(
-    "[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).",
-  );
+const gate = migrationGate(process.env);
+if (!gate.run) {
+  console.log(`[migrate] ${gate.reason} — skipping (the PGLite fallback migrates itself).`);
   process.exit(0);
 }
+const databaseUrl = process.env.DATABASE_URL;
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), "..", "migrations");
 
