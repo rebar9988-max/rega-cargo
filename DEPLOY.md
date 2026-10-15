@@ -264,7 +264,9 @@ Apply in filename order with `DATABASE_URL=… npm run db:migrate`:
 
 ## Branch previews (2026-10-13)
 
-Cloudflare Builds branch previews are disabled by the owner domain-exclusivity decision. Historical branch preview records are retained and have no routable URLs. Do not re-enable automatic preview builds or public preview routing.
+Cloudflare Builds branch **previews** stay disabled by the owner domain-exclusivity decision: no branch build may upload a preview or version. Historical branch preview records are retained and have no routable URLs. Do not enable public preview routing.
+
+Update 2026-10-15 (owner-approved Option A, enabled by the owner in the dashboard): non-production branch builds run as **verification only**. Their non-production command runs typecheck, tests, lint, compliance scan, `npm audit` and `wrangler deploy --dry-run` on Node 22 and uploads nothing. The production branch, build/deploy commands and variables are unchanged. Exact command, acceptance checks and limitations: [CI alternatives](docs/operations/ci-alternatives.md). If the command is ever reset to the default `npx wrangler preview`, turn non-production builds off.
 The root `previews` block contains explicit noindex vars and supplies no database/secrets/AI bindings.
 Primary journey pages render truthful unavailable states without a test backend; authenticated writes and inference are unavailable there. Production/staging bindings and secrets are unchanged.
 Preview resources do not inherit production bindings; see [Cloudflare configuration](https://developers.cloudflare.com/workers/previews/configuration/) and [isolation](https://developers.cloudflare.com/workers/previews/resources/). Existing Preview Base was verified empty. No new DB or persistent token provisioned.
