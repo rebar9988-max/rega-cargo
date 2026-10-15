@@ -66,7 +66,7 @@ Owner's homepage screenshot is live on `/` ([PR #100](https://github.com/rebar99
 
 ## UI/UX refinement (2026-10-14)
 
-Presentation-only refinement of spacing, alignment and touch targets ([report](docs/verification/ui-refinement-20261014.md)). 15 measured issues fixed; Bring For Me draft checkbox left to draft PR #97; hero gradient contrast reported only. Screenshot baselines need the official-image re-render (I-7). Release state: see deployments.md.
+Presentation-only refinement of spacing, alignment and touch targets ([report](docs/verification/ui-refinement-20261014.md)). 15 measured issues fixed; Bring For Me draft checkbox left to draft PR #97; hero gradient contrast reported only. Screenshot baselines need the official-image re-render (I-7). **Live since 2026-10-14 23:13 UTC as main `5d66eee` (PR #102); owner-approved read-only production verification 2026-10-15 passed** (350 page loads, 0 overflow/page/console errors, 23/23 specs on production; Worker version ID not queried).
 
 ## CI/CD audit (2026-10-15)
 
@@ -74,6 +74,9 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
+**2026-10-15 (Option A, I-16):** non-deploying Workers Builds branch builds are on, but the owner-approved negative test (draft PR #108, 22:38 UTC) stayed green with a failing test, so the branch check does **not** run the tests. Owner: set the non-production command exactly as in [CI alternatives](docs/operations/ci-alternatives.md), delete branch `claude/ci-negative-probe-20261016`, then the agent repeats the probe. Until then merges stay on the local gate; screenshot/WebKit remain separate gates; do not merge #103/#104 until required checks are verified. Runbook: [CI/CD](docs/operations/cicd.md).
+
+**2026-10-15:** UI refinement (#102) live and verified; homepage visual-fidelity PR #104 ready (local gate passed, not merged). Owner actions now: review/merge PR #104 (deploys), merge docs PR #103 (identical-app redeploy via Cloudflare Builds); close superseded PR #87 (would regress `main`); decide on PR #99, the narrow 360 px home search beside the AI capsule, keyed logo / home tracking form / CARE+ wording. Blocked externally: hosted Actions billing (I-7) → layout screenshot re-render, WebKit; OTP provider and legal content (beta). See [progress](docs/project-memory/progress.md).
 - CI/CD (2026-10-15): owner actions in [runbook](docs/operations/cicd.md) §4 (billing, required checks, workers.dev). Confirm the PR Workers Builds check actually runs the tests (build log + a deliberately failing draft) before treating it as a test gate (build times varied 27–85 s, which proves nothing; the log is dashboard-only).
 
 The five-improvement beta release is verified. Before official/public release: supply owner-verified legal/business content and approved multilingual policies, configure a working existing OTP delivery provider and identify/verify the exact owner account. Keep stage=beta while content is pending; stage=public restores the complete legal gate. Never seed an arbitrary SUPER_ADMIN or weaken authentication. Query latest production deployments after documentation-only builds.

@@ -1,5 +1,33 @@
 # Progress
 
+## 2026-10-15 Workers Builds negative test (owner-approved) — check is not a test gate (I-16)
+
+Draft PR #108 with a deliberately failing test got a green `Workers Builds: rega-cargo` check (build `5229dc2e`), so the branch builds do not run `npm test`. PR #108 closed; its branch could not be deleted from the agent environment (owner can delete it on the PR page). Owner action: correct the non-production command, then re-run the probe. PR #103/#104 remain unmerged.
+
+## 2026-10-15 Option A (Workers Builds as alternative CI) — prepared, owner dashboard action pending
+
+Owner approved Option A. Verified: PR #103/#104 have no Workers Builds check (non-production builds off); agent Cloudflare credential is DNS-only (403 on Workers/Builds APIs). Exact non-deploying command tested locally on PR #104 head `8cbd4f1` from a Node 24 base: Node 22.23.3, typecheck pass, 486 tests / 4 skips / 0 fail, lint 0 errors, compliance scan 0 violations, audit 0, dry-run pass (54 s). Plain Node 24 run fails one test file (I-12). Owner steps, acceptance checks and limitations: [CI alternatives](../operations/ci-alternatives.md#option-a--existing-cloudflare-workers-builds-owner-approved-2026-10-15-not-yet-enabled). PR #103/#104 stay unmerged.
+
+After the owner enabled it: the first branch build (PR #103 `c0d7521`) reported a GitHub check `Workers Builds: rega-cargo` = success with "No Preview URL", but finished in ~30 s, too fast for the verify chain; build log and versions list unreadable by the agent (403). No Version ID in the check runs, so no version was uploaded ([runbook](../operations/cicd.md)); whether the tests ran still needs the build log or a negative test before the check is relied on. 13:24 UTC: merged `main` (#106/#107) into PR #104 to resolve a `decisions.md` conflict; merged head passes typecheck, 491 tests / 4 skips, lint, build and dry run.
+
+## 2026-10-15 homepage visual fidelity (PR #104, not merged)
+
+Owner re-asserted the original homepage design as visual authority. [PR #104](https://github.com/rebar9988-max/rega-cargo/pull/104) (`claude/visual-fidelity-20261015`): phone home header gets a full-width search row (field was 0 px at 320 px), hero background rebuilt with the reference's red silk (no white seam), phone art on a continuous red field, art column capped at 40rem, LTR subtitle alignment, dark-mode tints. Local gate: typecheck, lint 0 errors, 486 unit passes, build, Chromium layout lock 394/12 skips/0 failed. Awaiting owner merge (merge = Cloudflare deploy); `/` screenshot baselines need re-render (I-7). Report: `docs/verification/visual-fidelity-20261015.md` on that branch.
+
+
+## 2026-10-15 continuation checkpoint (Actions still blocked, I-7)
+
+- **PR #87 (security port) is superseded:** every one of its five fixes is already on `main` (public `/track` 60-bit codes, one booking per signed quote via idempotency key, single-use gate tokens + challenge rate limit failing closed, `__Host-rl_phone` cookie + privacy copy in 7 languages, atomic marketplace action limit; gate key derived under `rl-ai-gate-v1`). `main`'s `RlAiUsage` Durable Object is *more* hardened (transactions, no day rollback, safe refunds), so merging #87 would regress it. Recommendation: owner closes #87 unmerged. Not closed by Claude.
+- `npm audit` (all and `--omit=dev`): 0 vulnerabilities on `main` `5d66eee`.
+- PR #99 (language selector, another session) still merges cleanly with `main` after #102.
+- Live lab performance (Chromium, read-only; mobile = Slow 4G 150 ms/1.6 Mbps + 4× CPU, 390 px; median of 3; LCP read before scrolling): LCP mobile `/` 3.16 s (hero image 29 KB, already preloaded with high priority; TTFB ≈1.06 s through the agent proxy), `/stores` 1.51 s, `/quote` 1.14 s, `/track` 1.01 s, `/ai` 1.08 s; desktop all ≤ 1.23 s. CLS ≤ 0.0264 everywhere. Lab numbers only, not Lighthouse scores or field data.
+
+
+## 2026-10-15 UI refinement verified live
+
+PR #102 (`5d66eee`) is live at https://www.rlgo.net (identified by CSS unique to the change; version ID not queried). Owner-approved read-only verification passed: 350 page loads, 0 overflow/page/console errors, 23/23 existing specs on production. Open: Bring For Me draft checkbox (PR #97), narrow 360 px home search text area beside the AI capsule (target passes), screenshot baselines (I-7), WebKit/native iPhone unverified. [Report](../verification/ui-refinement-20261014.md).
+
+
 ## 2026-10-14 UI/UX refinement (spacing, alignment, touch targets)
 
 Owner's strict refinement prompt (no redesign). Branch `claude/ui-refinement-20261014` from main `f207338`. 15 measured issues fixed in presentation only (home header/hero alignment, phone header targets, tablet product columns, footer targets/spacing, store-card/chip/legal/market/link targets, `/market` spacing, `/track` form width). 392-page Chromium audit before/after: overflow 0/0, target detections 2,489 → 91 (remaining: Bring For Me draft checkbox owned by open PR #97). Local gate: typecheck, lint 0 errors, 486 unit passes, build, dry-run; Chromium layout lock 394 passed / 12 existing skips / 0 failed (no WebKit/pixels: no Docker daemon). [PR #102](https://github.com/rebar9988-max/rega-cargo/pull/102). Five module boundaries, R&L AI baseline, copy, routes, pricing and compliance untouched. [Report](../verification/ui-refinement-20261014.md).
