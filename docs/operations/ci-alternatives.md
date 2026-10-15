@@ -56,6 +56,12 @@ Why the checks run on Node 22 through `npm exec`: Workers Builds' default image 
 
 Until steps 1–3 pass, nothing relies on Workers Builds and the merge policy stays the local gate of decision 2026-10-12.
 
+### Observed so far (2026-10-15, after the owner reported "enabled")
+
+- Push `c0d7521` to PR #103 at 05:53:17 UTC produced a GitHub check run **`Workers Builds: rega-cargo`** (id 116271219939, build `11b23adc-fe47-4ae7-90d7-6744ba07fc3c`), conclusion `success`, and a Cloudflare PR comment showing "No Preview URL". So check reporting works.
+- **Not yet verified:** what the build ran. The check output has no log text, and the agent's credential gets 403 on the build log and the Worker versions list. The build finished about 28–36 s after the push, shorter than the verify chain alone takes locally (54 s, without `npm ci` and the build), so it may not have run the verification command. It may instead have run the default `wrangler versions upload`, which creates a Worker version even when no Preview URL is shown.
+- Until the owner confirms from the build log (`v22.x`, the test summary, `--dry-run: exiting now`) and the versions list (no new version at 05:53 UTC), the check proves nothing about the code, and no new commit is pushed to PR #104.
+
 ### Limitations
 
 - Each check is a dashboard setting, not repository code: anyone with Cloudflare dashboard access can change the command. Re-check it after any account change.
