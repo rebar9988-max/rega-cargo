@@ -1,5 +1,10 @@
 # Progress
 
+## 2026-10-15 homepage visual fidelity (PR #104, not merged)
+
+Owner re-asserted the original homepage design as visual authority. [PR #104](https://github.com/rebar9988-max/rega-cargo/pull/104) (`claude/visual-fidelity-20261015`): phone home header gets a full-width search row (field was 0 px at 320 px), hero background rebuilt with the reference's red silk (no white seam), phone art on a continuous red field, art column capped at 40rem, LTR subtitle alignment, dark-mode tints. Local gate: typecheck, lint 0 errors, 486 unit passes, build, Chromium layout lock 394/12 skips/0 failed. Awaiting owner merge (merge = Cloudflare deploy); `/` screenshot baselines need re-render (I-7). Report: `docs/verification/visual-fidelity-20261015.md` on that branch.
+
+
 ## 2026-10-15 continuation checkpoint (Actions still blocked, I-7)
 
 - **PR #87 (security port) is superseded:** every one of its five fixes is already on `main` (public `/track` 60-bit codes, one booking per signed quote via idempotency key, single-use gate tokens + challenge rate limit failing closed, `__Host-rl_phone` cookie + privacy copy in 7 languages, atomic marketplace action limit; gate key derived under `rl-ai-gate-v1`). `main`'s `RlAiUsage` Durable Object is *more* hardened (transactions, no day rollback, safe refunds), so merging #87 would regress it. Recommendation: owner closes #87 unmerged. Not closed by Claude.
