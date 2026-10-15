@@ -1,5 +1,10 @@
 # Progress
 
+## 2026-10-15 UI refinement verified live
+
+PR #102 (`5d66eee`) is live at https://www.rlgo.net (identified by CSS unique to the change; version ID not queried). Owner-approved read-only verification passed: 350 page loads, 0 overflow/page/console errors, 23/23 existing specs on production. Open: Bring For Me draft checkbox (PR #97), narrow 360 px home search text area beside the AI capsule (target passes), screenshot baselines (I-7), WebKit/native iPhone unverified. [Report](../verification/ui-refinement-20261014.md).
+
+
 ## 2026-10-14 UI/UX refinement (spacing, alignment, touch targets)
 
 Owner's strict refinement prompt (no redesign). Branch `claude/ui-refinement-20261014` from main `f207338`. 15 measured issues fixed in presentation only (home header/hero alignment, phone header targets, tablet product columns, footer targets/spacing, store-card/chip/legal/market/link targets, `/market` spacing, `/track` form width). 392-page Chromium audit before/after: overflow 0/0, target detections 2,489 → 91 (remaining: Bring For Me draft checkbox owned by open PR #97). Local gate: typecheck, lint 0 errors, 486 unit passes, build, dry-run; Chromium layout lock 394 passed / 12 existing skips / 0 failed (no WebKit/pixels: no Docker daemon). [PR #102](https://github.com/rebar9988-max/rega-cargo/pull/102). Five module boundaries, R&L AI baseline, copy, routes, pricing and compliance untouched. [Report](../verification/ui-refinement-20261014.md).

@@ -66,7 +66,7 @@ Owner's homepage screenshot is live on `/` ([PR #100](https://github.com/rebar99
 
 ## UI/UX refinement (2026-10-14)
 
-Presentation-only refinement of spacing, alignment and touch targets ([report](docs/verification/ui-refinement-20261014.md)). 15 measured issues fixed; Bring For Me draft checkbox left to draft PR #97; hero gradient contrast reported only. Screenshot baselines need the official-image re-render (I-7). Release state: see deployments.md.
+Presentation-only refinement of spacing, alignment and touch targets ([report](docs/verification/ui-refinement-20261014.md)). 15 measured issues fixed; Bring For Me draft checkbox left to draft PR #97; hero gradient contrast reported only. Screenshot baselines need the official-image re-render (I-7). **Live since 2026-10-14 23:13 UTC as main `5d66eee` (PR #102); owner-approved read-only production verification 2026-10-15 passed** (350 page loads, 0 overflow/page/console errors, 23/23 specs on production; Worker version ID not queried).
 
 ## Next safe continuation point
 

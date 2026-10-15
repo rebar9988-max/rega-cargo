@@ -100,3 +100,16 @@ Before/after (Chromium, ckb, light): [header+hero 1440](ui-refinement-20261014/h
 [footer 390](ui-refinement-20261014/home-390-footer.webp) ·
 [/market 1440](ui-refinement-20261014/market-1440-actions.webp) ·
 [/track 1440](ui-refinement-20261014/track-1440-form.webp)
+
+## Production verification (read-only, 2026-10-15 ~03:30 UTC, owner-approved)
+
+Status: **PASS** (with the limitations below).
+
+- **Release identity:** PR #102 merged as `5d66eee` (2026-10-14 23:13 UTC). `main` head is still `5d66eee`; the live HTML on `/` and `/track` carries CSS that exists only in this change (`container-type:inline-size`, `padding-inline:max(clamp…`, `.rl-compare-actions`, `.rl-track-form`), absent before the merge. The Cloudflare Worker version ID was **not** queried (no Workers API credential in this session), so the deployment is identified by content, not by version ID. `sw.js` stays `rl-sw-v13` (this change did not bump it).
+- **Geometry (live, with the R&L AI capsule present):** header edges = section edges at 360/390/768/1024/1440 (16/16/26/35/160 px); hero copy 160 = sections at 1440; both headline lines start at the eyebrow in ckb/ar/en; logo/language/AI/menu controls ≥ 44 px; `scrollWidth = innerWidth` everywhere.
+- **Audit, 350 live page loads** (14 routes × 5 widths × ckb/ar/en light, ckb dark at 390/1440, ku/fa/de/tr at 360/1440): horizontal overflow 0; page errors 0; console errors 0; exactly one h1 everywhere; `<html dir="rtl">` and `lang` correct everywhere; 0 contrast failures on solid backgrounds. 4 aborted lazy-image requests (`ERR_ABORTED` when the test closed the page; no 4xx/5xx).
+- **Existing specs against production (read-only navigation):** 23/23 passed: refinement spec, reference-home controls and sections, R&L AI capsule, homepage accessibility landmarks, header category strip, font-swap CLS budget, hydration after delayed assets (iPhone + 1440), homepage paint while scrolling (iPhone + 1440), required routes at 360 px in ckb/ar/en light and dark, filters/favourites/keyboard dialog/banned searches (cigarettes, vape, vodka, pork bacon list nothing), catalogue categories.
+- **Remaining touch-target detections:** Bring For Me draft checkbox (open draft PR #97); market "in stock" checkbox (inside a 48 px label); home header search input at 360 px is 34 px wide inside an 86×44 field — tapping anywhere in the field focuses it, so the target passes, but the visible placeholder is heavily truncated (was 90 px before this change; owner may choose a shorter placeholder or compact capsule later).
+- **Not verified:** WebKit/native iPhone, Cloudflare version ID and runtime logs, authenticated or order-submitting journeys. Hosted Actions still fails before any step (billing, I-7) — external, not a code failure.
+
+Live evidence: [390 top](ui-refinement-20261014/production-390-top.webp) · [1440 full page](ui-refinement-20261014/production-1440.webp)
