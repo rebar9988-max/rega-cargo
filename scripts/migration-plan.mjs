@@ -12,6 +12,40 @@
  * out of scope for both until it is copied up.
  */
 
+/** The only branch whose builds may migrate the production database. */
+export const PRODUCTION_BRANCH = "main";
+
+/**
+ * Whether `scripts/migrate.mjs` may touch DATABASE_URL in this environment.
+ *
+ * Workers Builds runs the same build command (`npm run build`, which ends in
+ * `db:migrate`) for pull-request branches as for `main`, and its build
+ * variables are not split by branch. A `DATABASE_URL` build variable would
+ * therefore let unreviewed branch code migrate production. In any CI, only a
+ * Workers Builds build of `main` may migrate; every other CI run (branch
+ * builds, GitHub Actions, self-hosted runners) skips, even with a URL set.
+ * Outside CI an operator running `npm run db:migrate` by hand is unaffected.
+ * @param {Record<string, string | undefined>} env
+ * @returns {{ run: boolean, reason: string }}
+ */
+export function migrationGate(env) {
+  if (!env.DATABASE_URL) {
+    return { run: false, reason: "DATABASE_URL not set" };
+  }
+  if (env.WORKERS_CI === "1") {
+    return env.WORKERS_CI_BRANCH === PRODUCTION_BRANCH
+      ? { run: true, reason: `Workers Builds production branch ${PRODUCTION_BRANCH}` }
+      : {
+          run: false,
+          reason: `Workers Builds non-production branch "${env.WORKERS_CI_BRANCH ?? ""}"`,
+        };
+  }
+  if (env.CI && env.CI !== "false" && env.CI !== "0") {
+    return { run: false, reason: "CI outside Workers Builds never migrates" };
+  }
+  return { run: true, reason: "manual run outside CI" };
+}
+
 /**
  * The `_migrations` key for a migration path (or bare filename).
  * @param {string} path

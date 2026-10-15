@@ -1,13 +1,14 @@
 # Deploying Rega Cargo to Cloudflare Workers
 
-Rega Cargo runs as **its own Worker, `rega-cargo`**, on `cargo.regaplatform.com`.
+Rega Cargo runs as **its own Worker, `rega-cargo`**, on `www.rlgo.net` (the retired
+`cargo.regaplatform.com` is detached).
 It is fully separate from the live REGA site (`www.regaplatform.com`, Worker
 `rega-platform`, repo `Rega`). Nothing here touches that Worker, its DNS
 records, or its database. **Never point this app at REGA's database.**
 
 ## Existing automatic release (verified 2026-10-13)
 
-Cloudflare Builds is connected to **this** repository/`rega-cargo`, production branch `main`, with `npm run build` then `npx wrangler deploy`. It has no build environment variables. GitHub Actions is the quality gate, not the deployment job. Never merge until applicable repository safeguards and the authorized quality gate are satisfied. See [release evidence](docs/redesign/unified-journeys-20261013.md) and [CI/deployment memory](docs/project-memory/deployments.md). Do not inject production `DATABASE_URL` into a build; that would run migrations.
+Cloudflare Builds is connected to **this** repository/`rega-cargo`, production branch `main`, with `npm run build` then `npx wrangler deploy`. It has no build environment variables. GitHub Actions is the quality gate, not the deployment job. Never merge until applicable repository safeguards and the authorized quality gate are satisfied. See [release evidence](docs/redesign/unified-journeys-20261013.md) and [CI/deployment memory](docs/project-memory/deployments.md). Do not inject production `DATABASE_URL` into a build; that would run migrations. Since 2026-10-15 `scripts/migrate.mjs` also refuses to migrate in any CI except a Workers Builds build of `main` (`migrationGate`), so branch builds cannot migrate even then. Current verified CI/CD state, invariants and owner-only actions: [docs/operations/cicd.md](docs/operations/cicd.md).
 
 ## How the build works
 
@@ -262,9 +263,11 @@ Apply in filename order with `DATABASE_URL=… npm run db:migrate`:
   applies the changes to that database). CI runs the bundled-data scan in `npm test`.
 
 
-## Branch previews (2026-10-13)
+## Branch previews (2026-10-13, updated 2026-10-15)
 
-Cloudflare Builds branch previews are disabled by the owner domain-exclusivity decision. Historical branch preview records are retained and have no routable URLs. Do not re-enable automatic preview builds or public preview routing.
+2026-10-15: the owner enabled Workers Builds for non-production branches with a **non-deploying** command (verification only; no version, Preview URL or Version URL). Verified on PR #103 build `11b23adc`: success, no Version ID, "No Preview URL". Never change that command to `wrangler versions upload` or `wrangler preview`. See [docs/operations/cicd.md](docs/operations/cicd.md).
+
+Cloudflare Builds branch previews (preview *deployments*) stay disabled by the owner domain-exclusivity decision. Historical branch preview records are retained and have no routable URLs. Do not re-enable automatic preview builds or public preview routing.
 The root `previews` block contains explicit noindex vars and supplies no database/secrets/AI bindings.
 Primary journey pages render truthful unavailable states without a test backend; authenticated writes and inference are unavailable there. Production/staging bindings and secrets are unchanged.
 Preview resources do not inherit production bindings; see [Cloudflare configuration](https://developers.cloudflare.com/workers/previews/configuration/) and [isolation](https://developers.cloudflare.com/workers/previews/resources/). Existing Preview Base was verified empty. No new DB or persistent token provisioned.
