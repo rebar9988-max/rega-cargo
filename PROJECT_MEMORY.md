@@ -96,6 +96,7 @@ The five-improvement beta release is verified. Before official/public release: s
 | [issues.md](docs/project-memory/issues.md) | Known bugs, root causes, fixes |
 | [progress.md](docs/project-memory/progress.md) | Done / active / pending work, open PRs |
 | [deployments.md](docs/project-memory/deployments.md) | CI/CD, release log, rollback pointers |
+| Central Google Doc "R&L — Project Memory & Documentation Hub" (Drive ID `1Wt2rZdmMTviKNsz1bpDUg3as-Egy7FNB_HatI1Y7kH4`) | Cross-tool summary, decisions and change log; updated after every material change (permanent troubleshooting rule in CLAUDE.md, 2026-10-15) |
 
 Detailed canonical docs (do not duplicate them in memory): [DEPLOY.md](DEPLOY.md) ·
 [docs/integrations/](docs/integrations/inventory.md) · [docs/redesign/](docs/redesign/README.md).
