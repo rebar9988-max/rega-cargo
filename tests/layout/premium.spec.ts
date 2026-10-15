@@ -277,7 +277,7 @@ test("reference homepage: five header controls in the reference's physical order
     await expect(row).toBeVisible();
     // The page is rtl, but the reference fixes the physical order: logo, language, search,
     // R&L AI, menu, left to right.
-    const xs = await Promise.all(
+    const boxes = await Promise.all(
       [
         row.locator(".rl-ref-brand"),
         row.locator('[data-layout="lang-button"]'),
@@ -286,10 +286,24 @@ test("reference homepage: five header controls in the reference's physical order
         row.locator('[data-layout="menu-button"]'),
       ].map(async (el) => {
         await expect(el, lang).toBeVisible();
-        return (await el.boundingBox())!.x;
+        return (await el.boundingBox())!;
       }),
     );
-    expect(xs, lang).toEqual([...xs].sort((a, b) => a - b));
+    const [brand, language, search, ai, menu] = boxes;
+    const width = page.viewportSize()!.width;
+    if (width < 768) {
+      // Phones: logo, language, R&L AI, menu on the first row; the search field gets its own
+      // full-width row underneath so it stays usable down to 320px.
+      const first = [brand, language, ai, menu].map((b) => b.x);
+      expect(first, lang).toEqual([...first].sort((a, b) => a - b));
+      expect(search.y, lang).toBeGreaterThan(menu.y + menu.height);
+      const field = await row.locator(".rl-ref-search").boundingBox();
+      expect(field!.width, lang).toBeGreaterThan(width - 2 * 16 - 1);
+      expect(search.width, lang).toBeGreaterThan(200);
+    } else {
+      const xs = boxes.map((b) => b.x);
+      expect(xs, lang).toEqual([...xs].sort((a, b) => a - b));
+    }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     expect(overflow, lang).toBe(0);
     // The logo is the owner's artwork, only keyed onto the red header.
@@ -579,6 +593,16 @@ test("refinement: header, hero and sections share one content edge; touch target
       expect(e.lineTwo, at).toBe(e.eyebrow);
       // From laptop widths beyond the 1200px column the hero copy starts on that column.
       if (width >= 1440) expect(e.eyebrow, at).toBe(e.head);
+      // The 504px artwork is never stretched past 640px (wide screens kept it at 1.9x before).
+      const art = await page.locator(".rl-ref-hero-art").boundingBox();
+      expect(art!.width, at).toBeLessThanOrEqual(640);
+      // Phones keep a usable search field on its own row.
+      if (width < 768) {
+        const input = await page
+          .locator('[data-layout="ref-header"] input[type="search"]')
+          .boundingBox();
+        expect(input!.width, at).toBeGreaterThan(200);
+      }
     }
   }
   await page.setViewportSize({ width: 360, height: 800 });

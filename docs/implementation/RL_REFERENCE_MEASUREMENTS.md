@@ -47,7 +47,8 @@ Sorani and Arabic in the reference are a heavy Arabic-script face: the headline 
 
 * ≥ 1024 px: reference layout (8 category columns, 4 product columns, 2 banners, 4 benefit cards).
 * 768–1023 px: same, 4 product columns, benefit cards 2 × 2, categories in a scroll rail.
-* < 768 px: header 64 px, hero copy then art, categories in a scroll rail, products 2 × 2, banners stacked, benefits 2 columns (1 below 480 px).
+* < 768 px (2026-10-15): header 120 px = logo · language · R&L AI · menu row plus a full-width search row (one 64 px row left the field 0–104 px wide at 320–430 px); hero copy, then the art on a full-width red silk field that fades in from the copy (no white strip or hard edge); categories in a scroll rail, products 2 × 2, banners stacked, benefits 2 columns (1 below 480 px).
+* ≥ 1280 px (2026-10-15): the art column is capped at 40rem (≤ 1.27× the 504 px artwork; it reached 1.9× at 1920 px) and the hero background carries the reference's red silk behind the copy (top sweep, bottom band, red before the art), so the art no longer fades into white.
 * Verified with no horizontal overflow at 375, 390, 430, 768, 1024, 1440 (Playwright geometry suite and screenshots).
 
 ## Assets cut from the reference

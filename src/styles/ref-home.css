@@ -21,10 +21,15 @@
   --ref-radius: var(--rl-radius-card);
   --ref-pill: #fde6e8;
   --ref-font: "Vazirmatn", "Inter RL", var(--rl-font-body);
+  /* Hero silk tints: pale pink on white; deep red in dark mode so no light band appears. */
+  --ref-silk-soft: rgb(247 170 172 / 0.8);
+  --ref-silk-glow: rgb(240 140 142 / 0.5);
   font-family: var(--ref-font);
 }
 :root[data-theme="dark"] .rl-ref,
 :root[data-theme="dark"] .rl-ref-header {
+  --ref-silk-soft: rgb(120 6 12 / 0.8);
+  --ref-silk-glow: rgb(150 10 16 / 0.45);
   --ref-pill: #3a1417;
   --ref-card-shadow: 0 4px 22px rgb(0 0 0 / 0.4);
 }
@@ -58,6 +63,7 @@
   min-block-size: var(--ref-header-h);
   padding-inline: var(--ref-pad);
 }
+
 .rl-ref-brand {
   display: inline-flex;
   flex: none;
@@ -245,6 +251,26 @@
   }
 }
 
+/* Phones: five controls in one 64px row left the search field 0–100px wide. The field takes its
+   own full-width row (120px total, the same height as the app's other phone headers), and the
+   R&L AI capsule and menu stay at the row's end. */
+@media (max-width: 47.999rem) {
+  .rl-ref-header-row {
+    flex-wrap: wrap;
+    align-content: center;
+    row-gap: 0.625rem;
+    padding-block: 0.625rem 0.75rem;
+  }
+  .rl-ref-search {
+    order: 1;
+    flex: 1 0 100%;
+    /* Keeps the row when the open search becomes the fixed top sheet (no header jump). */
+    min-block-size: 2.75rem;
+  }
+  .rl-ref-lang {
+    margin-inline-end: auto;
+  }
+}
 /* ---------- Page ---------- */
 .rl-ref {
   /* Physical reference layout; every text node keeps its own direction (dir="auto"). */
@@ -263,12 +289,15 @@
 
 /* ---------- Hero ---------- */
 .rl-ref-hero {
+  --ref-art-w: 100%;
   position: relative;
   container-type: inline-size;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background:
+    radial-gradient(ellipse 50% 32% at 100% 0, rgb(205 12 18 / 0.55), transparent 70%),
+    radial-gradient(ellipse 34% 18% at 0 0, var(--ref-silk-glow), transparent 70%),
     radial-gradient(ellipse 28% 38% at 4% 100%, rgb(255 60 70 / 0.38), transparent 70%),
     radial-gradient(ellipse 45% 90% at 52% 40%, rgb(255 205 205 / 0.55), transparent 70%),
     var(--rl-surface);
@@ -327,6 +356,8 @@
   color: var(--rl-brand);
 }
 .rl-ref-lede {
+  /* Beats the global right alignment for Latin-script paragraphs, like the eyebrow and h1. */
+  text-align: left;
   margin: 0.75rem 0 0;
   max-inline-size: 18.5rem;
   color: var(--rl-ink);
@@ -390,10 +421,17 @@
 }
 .rl-ref-hero-art {
   position: relative;
-  margin-block-start: 1rem;
+  margin-block-start: 0.5rem;
   inline-size: 100%;
   aspect-ratio: 504 / 496;
   max-block-size: 26rem;
+  background: linear-gradient(
+    to bottom,
+    transparent 0,
+    var(--ref-silk-soft) 14%,
+    #d3161d 42%,
+    #a50207 100%
+  );
 }
 .rl-ref-hero-art img {
   position: absolute;
@@ -404,19 +442,45 @@
   max-inline-size: 100%;
   object-fit: cover;
   object-position: right center;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0, #000 22%),
+    linear-gradient(to right, transparent 0, #000 16%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 0, #000 22%),
+    linear-gradient(to right, transparent 0, #000 16%);
+  mask-composite: intersect;
 }
 @media (min-width: 48rem) {
   .rl-ref-hero-art img {
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 30%);
+    -webkit-mask-composite: source-over;
     mask-image: linear-gradient(to right, transparent 0, #000 30%);
+    mask-composite: add;
   }
   .rl-ref-hero {
+    --ref-art-w: min(49.2%, 40rem);
     display: grid;
-    grid-template-columns: 50.8% 49.2%;
+    grid-template-columns: minmax(0, 1fr) var(--ref-art-w);
     align-items: center;
     min-block-size: 0;
+    background:
+      radial-gradient(
+        ellipse 40% 36% at calc(100% - var(--ref-art-w) - 6%) 0,
+        rgb(205 12 18 / 0.7),
+        transparent 70%
+      ),
+      radial-gradient(ellipse 30% 24% at 0 0, var(--ref-silk-glow), transparent 70%),
+      linear-gradient(to top, rgb(228 24 32 / 0.8) 0, rgb(240 90 96 / 0.25) 7%, transparent 15%),
+      radial-gradient(ellipse 28% 38% at 4% 100%, rgb(255 60 70 / 0.45), transparent 70%),
+      linear-gradient(
+        to right,
+        transparent calc(100% - var(--ref-art-w) - 9rem),
+        var(--ref-silk-soft) calc(100% - var(--ref-art-w) - 3rem),
+        #d81a20 calc(100% - var(--ref-art-w) + 3rem),
+        #a40207 100%
+      ),
+      var(--rl-surface);
   }
   .rl-ref-hero-copy {
     grid-column: 1;
@@ -427,6 +491,7 @@
     grid-column: 2;
     grid-row: 1;
     margin: 0;
+    background: none;
     max-block-size: none;
     aspect-ratio: 504 / 496;
     align-self: stretch;

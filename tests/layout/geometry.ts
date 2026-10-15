@@ -3,7 +3,8 @@ export const LAYOUT = {
   headerHeight: 64,
   headerRow: { phone: 64, tablet: 64, laptop: 88 },
   /** Reference homepage header (one row, no bottom bar): 64px on phones, 98px from 768px. */
-  refHeaderRow: { phone: 64, tablet: 98, laptop: 98 },
+  // Phones: logo/language/R&L AI/menu row plus a full-width search row (2026-10-15).
+  refHeaderRow: { phone: 120, tablet: 98, laptop: 98 },
   catalogueColumns: { phone: 2, tablet: 3, laptop: 3 },
   bottomBarHeight: 64,
   maxContent: 1200,
