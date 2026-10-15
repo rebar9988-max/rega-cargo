@@ -61,6 +61,7 @@ Until steps 1–3 pass, nothing relies on Workers Builds and the merge policy st
 ### Observed so far (2026-10-15, after the owner reported "enabled")
 
 - Push `c0d7521` to PR #103 at 05:53:17 UTC produced a GitHub check run **`Workers Builds: rega-cargo`** (id 116271219939, build `11b23adc-fe47-4ae7-90d7-6744ba07fc3c`), conclusion `success`, and a Cloudflare PR comment showing "No Preview URL". So check reporting works.
+- First PR #104 branch build `e1940fad` (merge head `d23797a`, push 13:23:58 → success 13:24:36 UTC): no Version ID, "No Preview URL".
 - Second branch build `ce127a0d` (PR #103 `9daa3c3`, 05:58 UTC): success, same pattern.
 - No Version ID appears in these check runs (verified in the [runbook](cicd.md) §1), so the branch builds created no Worker version. Build times varied from ~27 to ~85 s across PR #103/#106 pushes, which proves nothing either way about the tests.
 - **Not yet verified:** that the command runs the tests. Only the dashboard build log (`v22.x`, test summary, `--dry-run: exiting now`) or a deliberately failing test turning the check red can show that. Until then the check means "builds and does not deploy", not "tests passed".
