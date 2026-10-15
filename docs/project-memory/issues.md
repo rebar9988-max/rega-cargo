@@ -1,8 +1,12 @@
 # Known issues, root causes and fixes
 
-## 2026-10-15 I-7 alternatives (still open)
+## I-12 · OPEN 2026-10-15 — `ai.test.ts` fails on Node 24 only (test-runtime artifact)
 
-Re-verified on PR #104 (run 38681317757): jobs end in ~3 s with `runner_id: 0` and no log; no runner is assigned. Replacement options, priority order, in [CI alternatives](../operations/ci-alternatives.md): (A) existing Cloudflare Workers Builds running the `verify` commands on PR branches with a non-deploying `npm run cf:dry-run` non-production command (posts GitHub check runs; owner must authorize and configure; no Preview/Version URLs); (B) PR #85's local gate (agent runs are PARTIAL without Docker); (C) owner-run self-hosted runner (billing interaction and future per-minute charge unverified). No check marked passed, no rule changed.
+On Node 24.22.0 (the Workers Builds default) `npm test` reports 255/256 in the second runner: every assertion passes, but the file `src/lib/ai/ai.test.ts` is marked failed because the test "per-IP burst limit answers 429 before the body is read; oversized upload is 413" (line 417) leaves an async `TypeError [ERR_INVALID_STATE]: Invalid state: ReadableStream is already closed`. Root cause (inferred from the trace, not proven in undici source): `readCapped()` in `identify.server.ts` correctly cancels the body reader past the cap; Node 24's built-in fetch keeps enqueueing the `FormData` multipart body after cancel and rejects unhandled. Node 22 (hosted gate pin) passes 486/486 with 4 skips. Production runs on workerd, not Node, so no production effect is known. Mitigation: Option A runs the checks on Node 22 (`npm exec --package=node@22`) without changing the production build. A test or code change in `src/lib/ai/` is R&L AI module maintenance and was not made; fix only with a change that keeps every assertion and the baseline.
+
+## 2026-10-15 I-7 alternatives (still open; Option A approved 2026-10-15)
+
+Re-verified on PR #104 (run 38681317757): jobs end in ~3 s with `runner_id: 0` and no log; no runner is assigned. Replacement options, priority order, in [CI alternatives](../operations/ci-alternatives.md): (A) existing Cloudflare Workers Builds running the `verify` commands on PR branches with a non-deploying non-production command (posts GitHub check runs; owner must authorize and configure; no Preview/Version URLs); (B) PR #85's local gate (agent runs are PARTIAL without Docker); (C) owner-run self-hosted runner (billing interaction and future per-minute charge unverified). No check marked passed, no rule changed.
 
 
 ## 2026-10-15 checks

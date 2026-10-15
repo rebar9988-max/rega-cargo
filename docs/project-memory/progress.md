@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-15 Option A (Workers Builds as alternative CI) — prepared, owner dashboard action pending
+
+Owner approved Option A. Verified: PR #103/#104 have no Workers Builds check (non-production builds off); agent Cloudflare credential is DNS-only (403 on Workers/Builds APIs). Exact non-deploying command tested locally on PR #104 head `8cbd4f1` from a Node 24 base: Node 22.23.3, typecheck pass, 486 tests / 4 skips / 0 fail, lint 0 errors, compliance scan 0 violations, audit 0, dry-run pass (54 s). Plain Node 24 run fails one test file (I-12). Owner steps, acceptance checks and limitations: [CI alternatives](../operations/ci-alternatives.md#option-a--existing-cloudflare-workers-builds-owner-approved-2026-10-15-not-yet-enabled). PR #103/#104 stay unmerged.
+
 ## 2026-10-15 homepage visual fidelity (PR #104, not merged)
 
 Owner re-asserted the original homepage design as visual authority. [PR #104](https://github.com/rebar9988-max/rega-cargo/pull/104) (`claude/visual-fidelity-20261015`): phone home header gets a full-width search row (field was 0 px at 320 px), hero background rebuilt with the reference's red silk (no white seam), phone art on a continuous red field, art column capped at 40rem, LTR subtitle alignment, dark-mode tints. Local gate: typecheck, lint 0 errors, 486 unit passes, build, Chromium layout lock 394/12 skips/0 failed. Awaiting owner merge (merge = Cloudflare deploy); `/` screenshot baselines need re-render (I-7). Report: `docs/verification/visual-fidelity-20261015.md` on that branch.

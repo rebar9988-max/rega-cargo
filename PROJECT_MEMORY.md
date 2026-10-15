@@ -70,6 +70,8 @@ Presentation-only refinement of spacing, alignment and touch targets ([report](d
 
 ## Next safe continuation point
 
+**2026-10-15 (Option A):** owner approved Workers Builds as alternative CI; the owner must set the non-production command and enable non-production builds in the dashboard (agent credential is DNS-only). Then verify a real check run on PR #104 (acceptance steps in [CI alternatives](docs/operations/ci-alternatives.md)) before relying on it. Screenshot/WebKit remain separate gates; do not merge #103/#104 until required checks are verified.
+
 **2026-10-15:** UI refinement (#102) live and verified; homepage visual-fidelity PR #104 ready (local gate passed, not merged). Owner actions now: review/merge PR #104 (deploys), merge docs PR #103 (identical-app redeploy via Cloudflare Builds); close superseded PR #87 (would regress `main`); decide on PR #99, the narrow 360 px home search beside the AI capsule, keyed logo / home tracking form / CARE+ wording. Blocked externally: hosted Actions billing (I-7) → layout screenshot re-render, WebKit; OTP provider and legal content (beta). See [progress](docs/project-memory/progress.md).
 
 The five-improvement beta release is verified. Before official/public release: supply owner-verified legal/business content and approved multilingual policies, configure a working existing OTP delivery provider and identify/verify the exact owner account. Keep stage=beta while content is pending; stage=public restores the complete legal gate. Never seed an arbitrary SUPER_ADMIN or weaken authentication. Query latest production deployments after documentation-only builds.
