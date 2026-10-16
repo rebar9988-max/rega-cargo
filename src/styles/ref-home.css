@@ -81,8 +81,8 @@
   color: #fff;
   background: transparent;
   border: 0;
-  min-inline-size: 2.5rem;
-  block-size: 2.5rem;
+  min-inline-size: 2.75rem;
+  block-size: 2.75rem;
   padding-inline: 0.25rem;
   border-radius: 999rem;
 }
@@ -182,8 +182,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: 2.25rem;
-  block-size: 2.5rem;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
   color: #fff;
   border-radius: 0.75rem;
 }
@@ -241,7 +241,7 @@
     block-size: 2.5rem;
   }
   .rl-ref-menu {
-    inline-size: 2.5rem;
+    inline-size: 2.75rem;
     block-size: 3rem;
   }
   .rl-ref-menu svg {
@@ -480,6 +480,7 @@
   align-items: center;
   gap: 0.5rem;
   flex: none;
+  min-block-size: 2.75rem;
   color: var(--ref-red-text);
   font-weight: 700;
   font-size: clamp(0.875rem, 1.9vw, 1.0625rem);

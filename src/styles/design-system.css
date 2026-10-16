@@ -7,6 +7,9 @@
     z-index: var(--rl-z-modal);
     padding-block: var(--rl-space-1);
     padding-inline: var(--rl-space-2);
+    min-block-size: var(--rl-control-h);
+    display: inline-flex;
+    align-items: center;
     background: var(--rl-action);
     color: var(--rl-on-action);
     border-radius: var(--rl-radius-sm);
@@ -291,6 +294,7 @@
   .rl-button {
     display: inline-flex;
     min-block-size: var(--rl-control-h);
+    min-inline-size: var(--rl-control-h);
     align-items: center;
     justify-content: center;
     gap: var(--rl-space-1);
@@ -980,7 +984,7 @@
   .rl-footer-grid nav a {
     display: flex;
     align-items: center;
-    min-block-size: var(--rl-space-4);
+    min-block-size: var(--rl-control-h);
     color: var(--rl-muted);
   }
   .rl-footer-grid nav a:hover {
@@ -1537,8 +1541,10 @@
 .rl-legal-toc a {
   color: var(--rl-accent);
   min-block-size: var(--rl-control-h);
+  min-inline-size: var(--rl-control-h);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   font-size: var(--text-sm);
   text-decoration: underline;
 }
