@@ -111,3 +111,14 @@ Release preflight update: existing authenticated Cloudflare connector resolves t
 2026-10-14 release gate: final official-image full run 499 passed/16 existing skips/one unchanged navigation harness cancellation; its original case passed 3 consecutive no-retry confirmations without source change. Final affected AI/readiness/visual suite 72/72. Typecheck, 460 unit/security passes + 4 existing skips, lint 0 errors/5 existing warnings, build and dry run passed on the final application tree. [PR #92](https://github.com/rebar9988-max/rega-cargo/pull/92) ready for normal authorized merge after preflight. Hosted Actions is not green (billing); standing full local gate policy applies. No release performed yet.
 
 The existing Cloudflare production trigger deploy command is now `npm run release:check && npx wrangler deploy` (build command unchanged). This closes the previously documented automatic-workflow omission: future public-stage releases cannot silently skip legal readiness. No secret/binding/branch preview/domain changed. The owner-approved beta stage satisfies this gate while retaining visible pending legal facts.
+
+## 2026-10-16 — Browser integration read-only allocation verification
+
+No deployment or allocation change by this task. Existing Cloudflare connector
+GET `/accounts/{account_id}/workers/scripts/rega-cargo/deployments` confirmed
+deployment `84af8bfb-bfd5-4563-9c78-2b810fa702ca`, version
+`0a716ab6-91f2-4786-9cbd-ecd24d4243f0` at **100%**, created 16:40:55 UTC.
+Version GET confirms version 93 / no preview. Domain GET confirms www/apex map
+to `rega-cargo`. This supersedes earlier session-specific "allocation unverified"
+notes; re-query before any release. Pages project list is empty (Worker hosting).
+[Evidence](../verification/browser-automation-20261016.md).

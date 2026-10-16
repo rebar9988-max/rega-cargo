@@ -28,7 +28,9 @@
     "test:layout:update": "docker run --rm --ipc=host -v \"$PWD\":/work -w /work mcr.microsoft.com/playwright:v1.63.0-noble sh -c \"npm ci && npm run build && npx playwright test --update-snapshots=all\"",
     "format": "prettier --write .",
     "rate-sheet": "node --experimental-strip-types scripts/build-rate-sheet.mjs",
-    "release:check": "node --experimental-strip-types scripts/check-release-readiness.mjs"
+    "release:check": "node --experimental-strip-types scripts/check-release-readiness.mjs",
+    "test:browser": "playwright test --config=playwright.browser.config.ts",
+    "test:firefox": "playwright test --project=\"firefox-*\""
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
@@ -90,6 +92,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@eslint/js": "^9.20.0",
     "@playwright/test": "1.63.0",
     "@types/node": "^22.16.5",

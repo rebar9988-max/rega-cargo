@@ -6,8 +6,28 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
 - Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-14**, verified five-improvement beta release: PR #95 / main `8ae779f`, Worker `1a514fed` at 100%. Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
+- Historical beta checkpoint (**2026-10-14**), verified five-improvement beta release: PR #95 / main `8ae779f`, Worker `1a514fed` at 100%. Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
+
+## Current browser integration checkpoint (2026-10-16)
+
+Owner requested Skyvern + Playwright + Codex. Branch `codex/skyvern-playwright-20261016`
+is based on `61f8d7e`; [draft PR #114](https://github.com/rebar9988-max/rega-cargo/pull/114), [runbook](docs/integrations/browser-automation.md) and
+[evidence](docs/verification/browser-automation-20261016.md). Official secret-free
+MCP config added; CLI OAuth remains pending, working chat connector verified.
+Firefox responsive coverage added; existing Chromium/WebKit setup and all 366
+screenshot bytes preserved. Full Node 22 unit gate: 491 passed / 4 skipped / 0 failed;
+typecheck, lint (0 errors), production build and bundle dry-run passed. New browser matrix: 102 pass / 108 fail / 0 skip (96 axe label/name, 12 Firefox
+font console cases). Existing suite: 577 pass / 5 fail / 16 skips. Focused unchanged
+reruns retain 3 WebKit search failures and the CLS failure; fallback rerun passed.
+Pixel lock 2/2 failed on stale baselines. These are unmet gates, not green results.
+No application, branding, routes, architecture, data, live settings, merge or deploy.
+
+Live Cloudflare read now confirms version `0a716ab6-91f2-4786-9cbd-ecd24d4243f0`
+at **100%** (16:40:55 UTC deployment); this supersedes prior "allocation unverified"
+notes below. Actions run `38933583488` remains billing-blocked before steps;
+layout job skipped. Dashboard browser sessions have no login. Re-query live state
+before future release. Last memory update: **2026-10-16**.
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
 
@@ -73,6 +93,13 @@ Presentation-only refinement of spacing, alignment and touch targets ([report](d
 Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are non-deploying (build `11b23adc`: no Version ID, no Preview URL); hosted Actions blocked by billing; `main` cannot have required checks on GitHub Free; production workers.dev still redirects (I-14). Code fix: branch/CI builds can never migrate production (I-13). Read the [CI/CD runbook](docs/operations/cicd.md) before touching CI, Builds, `wrangler.jsonc` or migrations.
 
 ## Next safe continuation point
+
+- Browser integration: keep its PR draft until Codex OAuth, reviewed accessibility
+  findings, existing pixel drift and required checks are resolved. Complete
+  `codex mcp login skyvern` in the owner's environment. Existing local-gate policy
+  does not make this task's incomplete gates pass. See the
+  [current evidence](docs/verification/browser-automation-20261016.md). Cloudflare
+  allocation was verified above; older access limitations are historical.
 
 - Final verification (2026-10-16, read-only): [report](docs/verification/final-verification-20261016.md). Open blockers: Cloudflare active version/traffic (needs Workers-scoped access; check `wrangler deployments list --name rega-cargo` for `3ca8f27e-...` or a later docs-only build), GitHub Actions billing (owner), Firefox/WebKit/official-image layout lock.
 - Final hardening release (2026-10-16): [PR #111](https://github.com/rebar9988-max/rega-cargo/pull/111) merged `d96c4a8`, Workers Builds `f276441a`, Version `63811e37-a1b7-4f30-8fc9-600331d5bc1b`; live ckb/ar/en mobile+desktop, light/dark checks passed. Still owed: Firefox/WebKit, official-image layout lock and stale baseline re-render once Docker/Actions exist; verify the active Worker version and traffic in Cloudflare (agent has no Workers API access). [Report](docs/verification/final-hardening-20261016.md)

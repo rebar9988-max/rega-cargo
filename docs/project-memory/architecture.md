@@ -64,3 +64,18 @@ R&L AI conversation policy/UI is owned by `src/modules/rl-ai/`; existing `src/li
 ## 2026-10-14 candidate administration ownership (not deployed)
 
 `src/lib/admin/` is an authenticated shared control plane with a closed resource registry, database-role authority and atomic immutable audit. Business rules remain in explicit domain adapters under existing Marketplace, orders/Bring For Me, Delivery and Tracking libraries; AI policy is exposed through its existing service contract and cannot grant access to private records or increase deployment budgets. Identity verification/roles and shared settings have explicit control-plane ownership. Existing `/admin`, unified cargo database, public routes and isolated `src/modules/rl-ai` remain intact. Additive migration 0015 is isolated-tested only; no role grant, new database or production schema change. [Candidate evidence](../verification/rl-five-improvements-20261013.md).
+
+## Browser regression tooling — 2026-10-16
+
+[Codex browser runbook](../integrations/browser-automation.md). Existing Playwright
+1.63.0 and official-image baseline convention retained. `test:browser` exercises
+read-only customer journeys in ckb/ar/en and light/dark with the shared geometry
+lock, console/pageerror listeners and `@axe-core/playwright` WCAG automation.
+`test:firefox` selects three additive Firefox viewport projects (390/820/1280),
+with `isMobile=false` and touch independent of viewport. Firefox does not compare
+or generate pixel baselines. `playwright.browser.config.ts` selects seven representative
+engine/viewports (210 cases); default config adds only Firefox to the existing 598
+cases. Actions runs the focused matrix separately from the original pixel job
+under the same scope/draft rules. Existing full suite is local-only because it contains
+submission tests; only the new read-only spec may target an explicitly authorized
+production URL. OAuth tokens and browser authentication state stay out of Git.

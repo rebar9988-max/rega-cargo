@@ -1,5 +1,19 @@
 # Progress
 
+## 2026-10-16 — Skyvern + Playwright + Codex integration
+
+[Draft PR #114](https://github.com/rebar9988-max/rega-cargo/pull/114), branch
+`codex/skyvern-playwright-20261016`, base `61f8d7e`; final browser evidence recorded. Official hosted MCP URL and owner OAuth, no source-control secrets;
+Firefox responsive coverage, WCAG/console regression spec, preserved Chromium/WebKit
+and 366 unchanged baselines. Typecheck, lint (0 errors), build/dry-run and isolated
+Node 22 tests (491 pass / 4 skip / 0 fail) passed. Dashboard sign-in and CLI OAuth
+remain unavailable; Actions billing confirmed; pixel drift and browser findings are not green. New matrix 102 pass / 108 fail /
+0 skip; original suite 577 pass / 5 fail / 16 skip; focused unchanged runs reproduce
+WebKit search and CLS failures while fallback passes. No original tests altered. No source application or production changes. The new CI browser budget is 40/45 minutes,
+measured from the instrumented local run; original pixel budget unchanged. Current
+Cloudflare allocation verified at 100% for `0a716ab6-91f2-4786-9cbd-ecd24d4243f0`.
+[Runbook](../integrations/browser-automation.md), [evidence](../verification/browser-automation-20261016.md).
+
 ## 2026-10-16 final production verification (read-only, no code change)
 
 `main` @ `d29240d`. Production client assets are byte-identical (16/16 sha256) to a local build of `main`; latest Workers Builds check run: Build `9cbb8f8c`, Version `3ca8f27e-0937-4a72-b9f7-4b9451dd02b7` - active-at-100% / traffic **not verified** (DNS-scoped token only). GitHub Actions still billing-blocked (run 38907381184: 2-3 s, runner 0, 0 steps) - owner action in I-7; CI is not green. Chromium suite on the built Worker 394 pass / 12 by-design skips / 0 fail; Firefox and WebKit not run (not installed; `playwright install` forbidden here). 480-state width matrix overflow 0, axe 0 violations, 2,727 focus stops ok, live 96 loads 0 console/page/HTTP errors. [Report](../verification/final-verification-20261016.md).

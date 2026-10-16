@@ -1,0 +1,4 @@
+# Official hosted Skyvern MCP. OAuth credentials belong to the user's Codex
+# credential store, outside this repository. Never add static API-key headers.
+[mcp_servers.skyvern]
+url = "https://api.skyvern.com/mcp/"

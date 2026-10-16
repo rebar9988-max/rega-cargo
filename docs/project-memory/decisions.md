@@ -70,3 +70,14 @@ Owner chat (Sorani, "دیپلۆی بكە") after the PARTIAL report: merge PR #1
 
 Owner chat (Sorani) after the PARTIAL report: merge PR #111 and deploy through the existing Cloudflare Workers Builds path. Basis: local gate on the identical tree (typecheck, lint 0 errors, 236 + 255 tests, build, cf dry-run, Chromium layout suite on the built Worker 394 pass / 12 skipped / 0 fail, 480-state width matrix overflow 0, production-vs-branch pixels 97/108 identical with only the intended areas differing). **Not run:** Firefox and WebKit (not installed), official-image layout lock and pixel baselines (no Docker; baselines stale), hosted Actions (billing-blocked, I-7). Source change is CSS only (`ref-home.css`); `main` has no required checks, so nothing was bypassed. [Report](../verification/final-hardening-20261016.md).
 
+
+## 2026-10-16 — Browser automation integration
+
+Owner requested Skyvern + Playwright + Codex, with Firefox and preserved baselines.
+Use the official hosted MCP with user OAuth (no checked-in keys or new service).
+Use Skyvern for authorized read-only investigations; reproduce browser regressions
+in Playwright. Preserve existing Chromium/WebKit pixels and project options; add
+Firefox responsive coverage without unsupported mobile emulation. Retain the
+existing single memory/central Doc workflow. This task does not authorize merging
+or deploying with unmet gates; draft PR records findings and external blockers.
+[Runbook](../integrations/browser-automation.md), [evidence](../verification/browser-automation-20261016.md).

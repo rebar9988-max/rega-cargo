@@ -32,3 +32,16 @@ Release preflight update: existing authenticated Cloudflare connector resolves t
 
 
 2026-10-14 verified production checkpoint: PR #92 merged normally as `481bfeb`; existing Cloudflare Builds `7387019a` succeeded, Worker `c87c162d-11e9-4ca7-86e4-f6eca4a600a6`, 100%, 06:57 UTC. Genuine live planner and image inference, strict refusals, five shortcuts, authorized workflow links and eight read-only existing routes passed. Privacy-safe telemetry showed no exceptions/5xx; bindings and secrets preserved. No rollout blocker remains. Hosted Actions billing, native camera/OTP/private-order verification and field performance remain limitations; no billing or unrelated business change. Documentation-only follow-up may deploy an identical app; query current Worker state. [Evidence](../ai/rl-ai-verification-20261013.md).
+
+## Codex + Skyvern + Playwright — 2026-10-16
+
+Owner-requested browser workflow: [runbook](../integrations/browser-automation.md),
+[measured evidence](../verification/browser-automation-20261016.md). Official hosted
+Skyvern MCP is configured with no static keys; user OAuth is pending, separate
+from the working authenticated chat connector. Cloudflare and GitHub dashboard
+browsers stopped at login; API reads succeeded for Worker allocation and Actions
+annotations. Firefox responsive projects supplement preserved Chromium/WebKit
+projects and 366 unchanged pixel baselines. Automated axe checks use the pinned
+test-only dependency and retain findings. No app/identity/architecture/data change,
+merge, deployment or paid configuration change. Existing memory/central Doc remain
+the single documentation layer; this is not another memory system.

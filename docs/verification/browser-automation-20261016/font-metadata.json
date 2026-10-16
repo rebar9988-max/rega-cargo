@@ -1,0 +1,89 @@
+{
+  "file": "public/fonts/vazirmatn-nl-v33.003.woff2",
+  "sha256": "cdef5578ea583313cbea060a14aa107955a99717a861971b860cb564dfe1bbf5",
+  "STAT_axes": [
+    {
+      "tag": "wght",
+      "nameID": 257
+    }
+  ],
+  "STAT_values": [
+    {
+      "nameID": 258,
+      "format": 1,
+      "value": 100.0
+    },
+    {
+      "nameID": 259,
+      "format": 1,
+      "value": 200.0
+    },
+    {
+      "nameID": 260,
+      "format": 1,
+      "value": 300.0
+    },
+    {
+      "nameID": 261,
+      "format": 1,
+      "value": 400.0
+    },
+    {
+      "nameID": 262,
+      "format": 1,
+      "value": 500.0
+    },
+    {
+      "nameID": 263,
+      "format": 1,
+      "value": 600.0
+    },
+    {
+      "nameID": 264,
+      "format": 1,
+      "value": 700.0
+    },
+    {
+      "nameID": 265,
+      "format": 1,
+      "value": 800.0
+    },
+    {
+      "nameID": 266,
+      "format": 1,
+      "value": 900.0
+    }
+  ],
+  "nameIDs": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    9,
+    10,
+    13,
+    14,
+    16,
+    17
+  ],
+  "missing_STAT_nameIDs": [
+    257,
+    258,
+    259,
+    260,
+    261,
+    262,
+    263,
+    264,
+    265,
+    266
+  ],
+  "name257_records": [],
+  "production_url": "https://www.rlgo.net/fonts/vazirmatn-nl-v33.003.woff2",
+  "production_sha256": "cdef5578ea583313cbea060a14aa107955a99717a861971b860cb564dfe1bbf5",
+  "source_equals_production": true
+}

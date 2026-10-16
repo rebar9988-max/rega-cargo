@@ -102,7 +102,7 @@ jobs:
         env:
           DATABASE_URL: ''
       - name: Layout lock (Chromium + WebKit)
-        run: npx playwright test ${{ inputs.update_baselines && '--update-snapshots=all' || '' }}
+        run: npx playwright test --project='chromium-*' --project='webkit-*' --project=premium-360 ${{ inputs.update_baselines && '--update-snapshots=all' || '' }}
       - name: Upload report, diffs and rendered baselines
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -112,4 +112,41 @@ jobs:
             playwright-report/
             test-results/
             tests/layout/__screenshots__/
+          retention-days: 7
+
+  # Keep the original pixel-lock job's time budget and baseline-update path.
+  # This focused matrix covers read-only accessibility/console checks in all engines.
+  browser:
+    name: browser regressions
+    needs: scope
+    if: needs.scope.outputs.layout == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: "1"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build without production DB migrations
+        run: npm run build
+        env:
+          DATABASE_URL: ''
+      - name: Browser regressions (Chromium + WebKit + Firefox)
+        run: npm run test:browser
+      - name: Upload browser evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-report
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 7

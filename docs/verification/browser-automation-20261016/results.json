@@ -1,0 +1,1631 @@
+{
+  "date": "2026-10-16",
+  "repository": "rebar9988-max/rega-cargo",
+  "pull_request": 114,
+  "base_commit": "61f8d7ee1354065535107449e3f778b643793c71",
+  "tested_implementation_commits": [
+    "0848079",
+    "46f220b"
+  ],
+  "post_run_ci_budget_only_commit": "680a722",
+  "image": {
+    "tag": "mcr.microsoft.com/playwright:v1.63.0-noble",
+    "digest": "sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27",
+    "chromium": "153.0.8010.12",
+    "firefox": "155.0",
+    "webkit": "26.6"
+  },
+  "unit": {
+    "node": "22.23.3",
+    "passed": 491,
+    "skipped": 4,
+    "failed": 0,
+    "skip_reason": "app-builder OG documentation is not shipped in this repository"
+  },
+  "baselines": {
+    "count": 366,
+    "changed": [],
+    "base_tree": "aeff66f52ae6637e27aad629b67bcd0decbfa817"
+  },
+  "font_metadata": {
+    "file": "public/fonts/vazirmatn-nl-v33.003.woff2",
+    "sha256": "cdef5578ea583313cbea060a14aa107955a99717a861971b860cb564dfe1bbf5",
+    "STAT_axes": [
+      {
+        "tag": "wght",
+        "nameID": 257
+      }
+    ],
+    "STAT_values": [
+      {
+        "nameID": 258,
+        "format": 1,
+        "value": 100.0
+      },
+      {
+        "nameID": 259,
+        "format": 1,
+        "value": 200.0
+      },
+      {
+        "nameID": 260,
+        "format": 1,
+        "value": 300.0
+      },
+      {
+        "nameID": 261,
+        "format": 1,
+        "value": 400.0
+      },
+      {
+        "nameID": 262,
+        "format": 1,
+        "value": 500.0
+      },
+      {
+        "nameID": 263,
+        "format": 1,
+        "value": 600.0
+      },
+      {
+        "nameID": 264,
+        "format": 1,
+        "value": 700.0
+      },
+      {
+        "nameID": 265,
+        "format": 1,
+        "value": 800.0
+      },
+      {
+        "nameID": 266,
+        "format": 1,
+        "value": 900.0
+      }
+    ],
+    "nameIDs": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      13,
+      14,
+      16,
+      17
+    ],
+    "missing_STAT_nameIDs": [
+      257,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266
+    ],
+    "name257_records": [],
+    "production_url": "https://www.rlgo.net/fonts/vazirmatn-nl-v33.003.woff2",
+    "production_sha256": "cdef5578ea583313cbea060a14aa107955a99717a861971b860cb564dfe1bbf5",
+    "source_equals_production": true
+  },
+  "cloudflare": {
+    "active_version": "0a716ab6-91f2-4786-9cbd-ecd24d4243f0",
+    "percentage": 100,
+    "branch_build": "37c463ef-ff44-4458-9d06-d87879deb26f",
+    "branch_commands": [
+      "npm run build",
+      "npm run cf:dry-run"
+    ],
+    "production_changes": false
+  },
+  "github": {
+    "main_run": 38933583488,
+    "main_actions": "blocked by payment/spending-limit restriction before steps",
+    "billing_usage_api_status": 403,
+    "pull_request_draft": true,
+    "pull_request_actions": "skipped, not passed"
+  },
+  "limitations": [
+    "CLI Skyvern OAuth pending owner login",
+    "Dashboard browsers unauthenticated",
+    "Full official pixel matrix not run; focused comparisons failed",
+    "Native hardware, OTP and private customer flows not verified"
+  ],
+  "matrix": {
+    "stats": {
+      "startTime": "2026-10-16T19:00:06.202Z",
+      "duration": 2154904.31,
+      "expected": 102,
+      "skipped": 0,
+      "unexpected": 108,
+      "flaky": 0
+    },
+    "by_project": {
+      "chromium-iphone": {
+        "passed": 30
+      },
+      "chromium-laptop": {
+        "passed": 6,
+        "failed": 24
+      },
+      "webkit-iphone": {
+        "passed": 30
+      },
+      "webkit-ipad-landscape": {
+        "passed": 6,
+        "failed": 24
+      },
+      "firefox-iphone": {
+        "failed": 4,
+        "passed": 26
+      },
+      "firefox-ipad-portrait": {
+        "failed": 28,
+        "passed": 2
+      },
+      "firefox-laptop": {
+        "failed": 28,
+        "passed": 2
+      }
+    },
+    "failures": [
+      {
+        "project": "chromium-laptop",
+        "test": "/market ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores/request?intent=buy ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/track ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/market ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores/request?intent=buy ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/track ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/market ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores/request?intent=buy ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/track ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/market ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores/request?intent=buy ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/track ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/market en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores/request?intent=buy en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/track en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/market en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/stores/request?intent=buy en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "chromium-laptop",
+        "test": "/track en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/market ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores/request?intent=buy ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/track ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/market ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores/request?intent=buy ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/track ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/market ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores/request?intent=buy ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/track ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/market ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores/request?intent=buy ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/track ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/market en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores/request?intent=buy en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/track en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/market en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/stores/request?intent=buy en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "/track en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-iphone",
+        "test": "/ ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-iphone",
+        "test": "/ ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-iphone",
+        "test": "/ ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-iphone",
+        "test": "/ ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/ ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/market ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores/request?intent=buy ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/track ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/ ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/market ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores/request?intent=buy ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/track ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/ ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/market ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores/request?intent=buy ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/track ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/ ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/market ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores/request?intent=buy ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/track ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/market en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores/request?intent=buy en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/track en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/market en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/stores/request?intent=buy en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-ipad-portrait",
+        "test": "/track en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/ ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/market ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores/request?intent=buy ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/track ckb light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/ ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/market ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores/request?intent=buy ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/track ckb dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/ ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/market ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores/request?intent=buy ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/track ar light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/ ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "console"
+        ],
+        "messages": [
+          "Error: console errors and uncaught exceptions\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 4\n\n- Array []\n+ Array [\n+   \"console: [JavaScript Error: \\\"downloadable font: STAT: Invalid nameID: 257 (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+   \"console: [JavaScript Error: \\\"downloadable font: Table discarded (font-family: \\\"Vazirmatn\\\" style:normal weight:100..900 width:100 src index:0) source: http://localhost:8788/fonts/vazirmatn-nl-v33.003.woff2\\\"]\",\n+ ]\n\n  89 |           contentType: \"application/js"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/market ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores/request?intent=buy ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/track ar dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/market en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores/request?intent=buy en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/track en light: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/market en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/stores/request?intent=buy en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      },
+      {
+        "project": "firefox-laptop",
+        "test": "/track en dark: layout, accessibility and console",
+        "status": "failed",
+        "categories": [
+          "accessibility"
+        ],
+        "messages": [
+          "Error: WCAG A/AA violations\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  -  1\n+ Received  + 40\n\n- Array []\n+ Array [\n+   Object {\n+     \"description\": \"Ensure that elements labelled through their content must have their visible text as part of their accessible name\",\n+     \"help\": \"Elements must have their visible text as part of their accessible name\",\n+     \"helpUrl\": \"https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright\",\n+     \"id\": \"label-content-name-mismatch\",\n+     \"impact\": \"serious\",\n+     \"nodes\": Array [\n+       Object {\n+         \"all\": Array [],\n+         \"any\": Array"
+        ]
+      }
+    ]
+  },
+  "geometry": {
+    "stats": {
+      "startTime": "2026-10-16T18:54:36.144Z",
+      "duration": 2626372.566,
+      "expected": 577,
+      "skipped": 16,
+      "unexpected": 5,
+      "flaky": 0
+    },
+    "by_project": {
+      "chromium-iphone": {
+        "passed": 64
+      },
+      "chromium-iphone-se": {
+        "passed": 64
+      },
+      "chromium-ipad-portrait": {
+        "passed": 64
+      },
+      "chromium-ipad-landscape": {
+        "passed": 60,
+        "skipped": 4
+      },
+      "chromium-laptop": {
+        "passed": 60,
+        "skipped": 4
+      },
+      "chromium-laptop-1440": {
+        "passed": 60,
+        "skipped": 4
+      },
+      "webkit-iphone": {
+        "passed": 63,
+        "failed": 1
+      },
+      "webkit-ipad-portrait": {
+        "passed": 63,
+        "failed": 1
+      },
+      "webkit-ipad-landscape": {
+        "passed": 58,
+        "failed": 2,
+        "skipped": 4
+      },
+      "premium-360": {
+        "failed": 1,
+        "passed": 21
+      }
+    },
+    "failures": [
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "expired drafts are never restored and fallback is not a confirmed order",
+        "status": "failed",
+        "categories": [
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(locator).toBeVisible() failed\n\nLocator:  locator('[data-order-fallback]').getByText('You send the email yourself. No purchase, booking or request is confirmed until R&L replies.')\nExpected: visible\nReceived: hidden\nTimeout:  20000ms\n\nCall log:\n  - Expect \"toBeVisible\" locator('[data-order-fallback]').getByText('You send the email yourself. No purchase, booking or request is confirmed until R&L replies.') with timeout 20000ms\n  - waiting for locator('[data-order-fallback]').getByText('You send the email yourself. No purchase, booking or request is confirmed until R&L replies.')\n    37 × locator resolved to <p class=\"text-sm text-"
+        ]
+      },
+      {
+        "project": "webkit-iphone",
+        "test": "homepage search uses internal marketplace and displays honest data states",
+        "status": "failed",
+        "categories": [
+          "navigation",
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(page).toHaveURL(expected) failed\n\nExpected pattern: /\\/stores\\?.*q=kettle/\nReceived string:  \"http://localhost:8790/?\"\nTimeout: 20000ms\n\nCall log:\n  - Expect \"toHaveURL\" with timeout 20000ms\n    30 × locator resolved to <html dir=\"rtl\" lang=\"ckb\" data-rl-ai=\"1\" data-rl-plink=\"1\" data-textdir=\"rtl\" data-theme=\"light\">…</html>\n       - unexpected value \"http://localhost:8790/?\"\n\n\n  69 |   await search.fill(\"kettle\");\n  70 |   await search.press(\"Enter\");\n> 71 |   await expect(page).toHaveURL(/\\/stores\\?.*q=kettle/);\n     |                      ^\n  72 |   await expect(page.locator(\"main\")).not.toContainText(/Guaranteed delivery|Off"
+        ]
+      },
+      {
+        "project": "webkit-ipad-portrait",
+        "test": "homepage search uses internal marketplace and displays honest data states",
+        "status": "failed",
+        "categories": [
+          "navigation",
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(page).toHaveURL(expected) failed\n\nExpected pattern: /\\/stores\\?.*q=kettle/\nReceived string:  \"http://localhost:8790/?\"\nTimeout: 20000ms\n\nCall log:\n  - Expect \"toHaveURL\" with timeout 20000ms\n    33 × locator resolved to <html dir=\"rtl\" lang=\"ckb\" data-rl-ai=\"1\" data-rl-plink=\"1\" data-textdir=\"rtl\" data-theme=\"light\">…</html>\n       - unexpected value \"http://localhost:8790/?\"\n\n\n  69 |   await search.fill(\"kettle\");\n  70 |   await search.press(\"Enter\");\n> 71 |   await expect(page).toHaveURL(/\\/stores\\?.*q=kettle/);\n     |                      ^\n  72 |   await expect(page.locator(\"main\")).not.toContainText(/Guaranteed delivery|Off"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "homepage search uses internal marketplace and displays honest data states",
+        "status": "failed",
+        "categories": [
+          "navigation",
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(page).toHaveURL(expected) failed\n\nExpected pattern: /\\/stores\\?.*q=kettle/\nReceived string:  \"http://localhost:8790/?\"\nTimeout: 20000ms\n\nCall log:\n  - Expect \"toHaveURL\" with timeout 20000ms\n    35 × locator resolved to <html dir=\"rtl\" lang=\"ckb\" data-rl-ai=\"1\" data-rl-plink=\"1\" data-textdir=\"rtl\" data-theme=\"light\">…</html>\n       - unexpected value \"http://localhost:8790/?\"\n\n\n  69 |   await search.fill(\"kettle\");\n  70 |   await search.press(\"Enter\");\n> 71 |   await expect(page).toHaveURL(/\\/stores\\?.*q=kettle/);\n     |                      ^\n  72 |   await expect(page.locator(\"main\")).not.toContainText(/Guaranteed delivery|Off"
+        ]
+      },
+      {
+        "project": "premium-360",
+        "test": "slow font swaps keep the mobile hero within the layout-shift budget",
+        "status": "failed",
+        "categories": [
+          "layout_shift"
+        ],
+        "messages": [
+          "Error: en\n\nexpect(received).toBeLessThan(expected)\n\nExpected: < 0.05\nReceived:   0.06628502197265625\n\n  34 |       await page.evaluate(() => (window as typeof window & { fontShift: number }).fontShift),\n  35 |       lang,\n> 36 |     ).toBeLessThan(0.05);\n     |       ^\n  37 |     await page.unroute(\"**/fonts/**\");\n  38 |   }\n  39 | });\n    at /work/tests/layout/premium.spec.ts:36:7"
+        ]
+      }
+    ]
+  },
+  "pixel": {
+    "stats": {
+      "startTime": "2026-10-16T18:54:12.769Z",
+      "duration": 74251.799,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 2,
+      "flaky": 0
+    },
+    "by_project": {
+      "chromium-laptop": {
+        "failed": 1
+      },
+      "webkit-iphone": {
+        "failed": 1
+      }
+    },
+    "failures": [
+      {
+        "project": "chromium-laptop",
+        "test": "home en",
+        "status": "failed",
+        "categories": [
+          "pixel",
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(page).toHaveScreenshot(expected) failed\n\n  Expected an image 1280px by 3639px, received 1280px by 2220px. 929568 pixels (ratio 0.20 of all image pixels) are different.\n\n  Snapshot: home-en.png\n\nCall log:\n  - Expect \"toHaveScreenshot(home-en.png)\" with timeout 20000ms\n    - verifying given screenshot expectation\n  - taking page screenshot\n    - disabled all CSS animations\n  - waiting for fonts to load...\n  - fonts loaded\n  - Expected an image 1280px by 3639px, received 1280px by 2220px. 929568 pixels (ratio 0.20 of all image pixels) are different.\n  - waiting 100ms before taking screenshot\n  - taking page screenshot\n    - disable"
+        ]
+      },
+      {
+        "project": "webkit-iphone",
+        "test": "home en",
+        "status": "failed",
+        "categories": [
+          "pixel",
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(page).toHaveScreenshot(expected) failed\n\nTimeout: 20000ms\n  Timeout 20000ms exceeded.\n\n  Snapshot: home-en.png\n\nCall log:\n  - Expect \"toHaveScreenshot(home-en.png)\" with timeout 20000ms\n    - verifying given screenshot expectation\n  - taking page screenshot\n    - disabled all CSS animations\n  - waiting for fonts to load...\n  - fonts loaded\n  - Expected an image 390px by 5745px, received 390px by 3505px. 273621 pixels (ratio 0.13 of all image pixels) are different.\n  - waiting 100ms before taking screenshot\n  - Timeout 20000ms exceeded.\n\n\n  125 |         `capture preserves main ${key}`,\n  126 |       ).toBeLessThanOrEqual(1);\n> 1"
+        ]
+      }
+    ]
+  },
+  "focused-repeat": {
+    "stats": {
+      "startTime": "2026-10-16T19:36:31.692Z",
+      "duration": 124617.635,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 3,
+      "flaky": 0
+    },
+    "by_project": {
+      "webkit-iphone": {
+        "passed": 1,
+        "failed": 1
+      },
+      "webkit-ipad-portrait": {
+        "passed": 1,
+        "failed": 1
+      },
+      "webkit-ipad-landscape": {
+        "passed": 1,
+        "failed": 1
+      }
+    },
+    "failures": [
+      {
+        "project": "webkit-iphone",
+        "test": "homepage search uses internal marketplace and displays honest data states",
+        "status": "failed",
+        "categories": [
+          "navigation",
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(page).toHaveURL(expected) failed\n\nExpected pattern: /\\/stores\\?.*q=kettle/\nReceived string:  \"http://localhost:8791/?lang=en\"\nTimeout: 20000ms\n\nCall log:\n  - Expect \"toHaveURL\" with timeout 20000ms\n    - waiting for navigation to finish...\n    - navigated to \"http://localhost:8791/?\"\n    5 × locator resolved to <html dir=\"rtl\" lang=\"ckb\" data-rl-ai=\"1\" data-rl-plink=\"1\" data-textdir=\"rtl\" data-theme=\"light\">…</html>\n      - unexpected value \"http://localhost:8791/?\"\n    28 × locator resolved to <html lang=\"en\" dir=\"rtl\" data-rl-ai=\"1\" data-rl-plink=\"1\" data-textdir=\"ltr\" data-theme=\"light\">…</html>\n       - unexpected value \"htt"
+        ]
+      },
+      {
+        "project": "webkit-ipad-portrait",
+        "test": "homepage search uses internal marketplace and displays honest data states",
+        "status": "failed",
+        "categories": [
+          "navigation",
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(page).toHaveURL(expected) failed\n\nExpected pattern: /\\/stores\\?.*q=kettle/\nReceived string:  \"http://localhost:8791/?\"\nTimeout: 20000ms\n\nCall log:\n  - Expect \"toHaveURL\" with timeout 20000ms\n    40 × locator resolved to <html dir=\"rtl\" lang=\"ckb\" data-rl-ai=\"1\" data-rl-plink=\"1\" data-textdir=\"rtl\" data-theme=\"light\">…</html>\n       - unexpected value \"http://localhost:8791/?\"\n\n\n  69 |   await search.fill(\"kettle\");\n  70 |   await search.press(\"Enter\");\n> 71 |   await expect(page).toHaveURL(/\\/stores\\?.*q=kettle/);\n     |                      ^\n  72 |   await expect(page.locator(\"main\")).not.toContainText(/Guaranteed delivery|Off"
+        ]
+      },
+      {
+        "project": "webkit-ipad-landscape",
+        "test": "homepage search uses internal marketplace and displays honest data states",
+        "status": "failed",
+        "categories": [
+          "navigation",
+          "timeout"
+        ],
+        "messages": [
+          "Error: expect(page).toHaveURL(expected) failed\n\nExpected pattern: /\\/stores\\?.*q=kettle/\nReceived string:  \"http://localhost:8791/?\"\nTimeout: 20000ms\n\nCall log:\n  - Expect \"toHaveURL\" with timeout 20000ms\n    38 × locator resolved to <html dir=\"rtl\" lang=\"ckb\" data-rl-ai=\"1\" data-rl-plink=\"1\" data-textdir=\"rtl\" data-theme=\"light\">…</html>\n       - unexpected value \"http://localhost:8791/?\"\n\n\n  69 |   await search.fill(\"kettle\");\n  70 |   await search.press(\"Enter\");\n> 71 |   await expect(page).toHaveURL(/\\/stores\\?.*q=kettle/);\n     |                      ^\n  72 |   await expect(page.locator(\"main\")).not.toContainText(/Guaranteed delivery|Off"
+        ]
+      }
+    ]
+  },
+  "cls-repeat": {
+    "stats": {
+      "startTime": "2026-10-16T19:38:26.452Z",
+      "duration": 14485.505,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "by_project": {
+      "premium-360": {
+        "failed": 1
+      }
+    },
+    "failures": [
+      {
+        "project": "premium-360",
+        "test": "slow font swaps keep the mobile hero within the layout-shift budget",
+        "status": "failed",
+        "categories": [
+          "layout_shift"
+        ],
+        "messages": [
+          "Error: en\n\nexpect(received).toBeLessThan(expected)\n\nExpected: < 0.05\nReceived:   0.06628502197265625\n\n  34 |       await page.evaluate(() => (window as typeof window & { fontShift: number }).fontShift),\n  35 |       lang,\n> 36 |     ).toBeLessThan(0.05);\n     |       ^\n  37 |     await page.unroute(\"**/fonts/**\");\n  38 |   }\n  39 | });\n    at /work/tests/layout/premium.spec.ts:36:7"
+        ]
+      }
+    ]
+  },
+  "detailed_checks": {
+    "checked_attachments": {
+      "accessibility": 210,
+      "console-errors": 210
+    },
+    "console_messages": {
+      "font_STAT_invalid_nameID": 12,
+      "font_table_discarded": 12
+    },
+    "axe_violation_rule_occurrences": {
+      "label-content-name-mismatch": 96
+    },
+    "axe_incomplete_rule_occurrences": {
+      "color-contrast": 74,
+      "aria-prohibited-attr": 42
+    }
+  }
+}

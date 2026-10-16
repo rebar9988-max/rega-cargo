@@ -12,3 +12,9 @@ dist
 .dev.vars
 playwright-report
 test-results
+# Codex credentials and Playwright authentication state are always local.
+/.codex/auth.json
+/.codex/.credentials.json
+/.codex/*.local.toml
+/playwright/.auth/
+/tests/.auth/
