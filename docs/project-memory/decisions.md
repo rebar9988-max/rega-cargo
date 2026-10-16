@@ -65,3 +65,8 @@ Owner chat: asked to implement the attached R&L homepage screenshot exactly, the
 ## 2026-10-16 PR #109 merged on the local gate (owner chat instruction "deploy")
 
 Owner chat (Sorani, "دیپلۆی بكە") after the PARTIAL report: merge PR #109 and deploy through the existing Cloudflare Workers Builds path. Basis: local gate on the identical tree (typecheck, lint 0 errors, 236 + 255 tests, build, cf dry-run, Chromium layout suite on the built Worker 394 pass / 12 skipped / 0 fail, axe 0 violations, production-vs-branch pixel diff max 0.051 %, page heights identical). **Not run:** official-image layout lock, pixel baselines (stale on `main` already), WebKit - Docker daemon unavailable and hosted Actions billing-blocked (I-7). Source change is one class on the Bring For Me draft label; `main` has no required checks, so nothing was bypassed. [Report](../verification/ui-touch-targets-20261016.md).
+
+## 2026-10-16 PR #111 merged on the local gate (owner chat instruction "Merge و Deploy")
+
+Owner chat (Sorani) after the PARTIAL report: merge PR #111 and deploy through the existing Cloudflare Workers Builds path. Basis: local gate on the identical tree (typecheck, lint 0 errors, 236 + 255 tests, build, cf dry-run, Chromium layout suite on the built Worker 394 pass / 12 skipped / 0 fail, 480-state width matrix overflow 0, production-vs-branch pixels 97/108 identical with only the intended areas differing). **Not run:** Firefox and WebKit (not installed), official-image layout lock and pixel baselines (no Docker; baselines stale), hosted Actions (billing-blocked, I-7). Source change is CSS only (`ref-home.css`); `main` has no required checks, so nothing was bypassed. [Report](../verification/final-hardening-20261016.md).
+

@@ -74,6 +74,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
+- Final hardening (2026-10-16): PR pending, draft, not merged: [report](docs/verification/final-hardening-20261016.md). Needs the owner's merge/deploy decision on the local gate (official-image layout lock and WebKit/Firefox unavailable here), then a post-deploy check of the home search pill at 360 px and the dark hero.
 - UI touch-target release (2026-10-16): [PR #109](https://github.com/rebar9988-max/rega-cargo/pull/109) merged `a406006`, Workers Builds `06a5f699`, Version `dd667bef-0fcf-4210-b8a3-0da8779a9976`; live ckb/ar/en mobile+desktop checks passed. Still owed: official-image layout lock and stale baseline re-render once Actions/Docker exist; verify the active Worker version in Cloudflare (agent has no API access). [Report](docs/verification/ui-touch-targets-20261016.md).
 - CI/CD (2026-10-15): owner actions in [runbook](docs/operations/cicd.md) §4 (billing, required checks, workers.dev). Confirm the PR Workers Builds check actually runs the tests (build log + a deliberately failing draft) before treating it as a test gate (build times varied 27–85 s, which proves nothing; the log is dashboard-only).
 
