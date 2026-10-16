@@ -13,7 +13,7 @@ Read-only audit; no application change was needed (no verified defect).
 | **Version ID active at 100 %, traffic allocation** | needs the Workers API / dashboard (`wrangler deployments list --name rega-cargo`) | **NOT verified**: the agent's only Cloudflare credential is DNS-scoped; a Workers API read with it was refused by the session's permission classifier, and the repo docs record that endpoint class returns code 10000 |
 
 Do not read the check-run version as proof of active traffic. Owner/other tool with Workers access: run
-`npx wrangler deployments list --name rega-cargo` and confirm the top entry is `3ca8f27e-...` at 100 %.
+`npx wrangler deployments list --name rega-cargo` and confirm the top entry is at 100 % and that it is `3ca8f27e-...` or a later docs-only build (merging this report itself creates one; the application is identical).
 
 ## 2. GitHub Actions billing blocker
 
