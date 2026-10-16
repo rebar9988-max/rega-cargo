@@ -134,3 +134,23 @@ Release preflight update: existing authenticated Cloudflare connector resolves t
 
 
 2026-10-14 verified production checkpoint: PR #92 merged normally as `481bfeb`; existing Cloudflare Builds `7387019a` succeeded, Worker `c87c162d-11e9-4ca7-86e4-f6eca4a600a6`, 100%, 06:57 UTC. Genuine live planner and image inference, strict refusals, five shortcuts, authorized workflow links and eight read-only existing routes passed. Privacy-safe telemetry showed no exceptions/5xx; bindings and secrets preserved. No rollout blocker remains. Hosted Actions billing, native camera/OTP/private-order verification and field performance remain limitations; no billing or unrelated business change. Documentation-only follow-up may deploy an identical app; query current Worker state. [Evidence](../ai/rl-ai-verification-20261013.md).
+
+## 2026-10-16 — Browser integration verification blockers
+
+[Full evidence](../verification/browser-automation-20261016.md). Actions I-7
+reconfirmed via run `38933583488`: verify/scope have zero steps and the explicit
+failed-payment/spending-limit annotation; layout skipped. Usage API returned 403
+`Resource not accessible by integration`; dashboard browser redirected to login.
+No billing changes.
+Cloudflare active-version uncertainty is resolved for this session: version
+`0a716ab6-91f2-4786-9cbd-ecd24d4243f0` at 100%, not a general grant of future access.
+Skyvern dashboard browser has no Cloudflare/GitHub login; Codex CLI OAuth is pending.
+
+Existing pixel drift reproduced in official Playwright image: homepage expected
+1280×3639 vs current 1280×2220 (Chromium), 390×5745 vs 390×3505 (WebKit).
+Baselines preserved. New axe 4.14 label/name finding on existing desktop language
+button requires review: visible `EN`, accessible `Language: English (EN)`;
+axe strips parentheticals before comparison. No rule disabled or UI changed.
+Initial shared-mount smoke also had timeout/Firefox trace archive errors; final
+runs use container-local artifacts. Required checks with findings/unavailable
+access remain unmet; draft PR, no merge/deploy.
