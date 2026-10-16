@@ -241,7 +241,7 @@ function RequestPage() {
                 {dc.unavailable}
               </p>
               <div className="rl-stack">
-                <label className="flex items-start gap-3 text-sm">
+                <label className="-my-3 flex items-center gap-3 py-3 text-sm">
                   <input
                     type="checkbox"
                     checked={draft.enabled}
