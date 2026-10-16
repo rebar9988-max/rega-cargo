@@ -2,13 +2,15 @@
 
 ## 2026-10-16 — Skyvern + Playwright + Codex integration
 
-Branch `codex/skyvern-playwright-20261016`, base `61f8d7e`; focused draft PR pending
-final evidence. Official hosted MCP URL and owner OAuth, no source-control secrets;
+[Draft PR #114](https://github.com/rebar9988-max/rega-cargo/pull/114), branch
+`codex/skyvern-playwright-20261016`, base `61f8d7e`; final browser evidence recorded. Official hosted MCP URL and owner OAuth, no source-control secrets;
 Firefox responsive coverage, WCAG/console regression spec, preserved Chromium/WebKit
 and 366 unchanged baselines. Typecheck, lint (0 errors), build/dry-run and isolated
 Node 22 tests (491 pass / 4 skip / 0 fail) passed. Dashboard sign-in and CLI OAuth
-remain unavailable; Actions billing confirmed; pixel drift and accessibility
-findings are not green. No source application or production changes. Current
+remain unavailable; Actions billing confirmed; pixel drift and browser findings are not green. New matrix 102 pass / 108 fail /
+0 skip; original suite 577 pass / 5 fail / 16 skip; focused unchanged runs reproduce
+WebKit search and CLS failures while fallback passes. No original tests altered. No source application or production changes. The new CI browser budget is 40/45 minutes,
+measured from the instrumented local run; original pixel budget unchanged. Current
 Cloudflare allocation verified at 100% for `0a716ab6-91f2-4786-9cbd-ecd24d4243f0`.
 [Runbook](../integrations/browser-automation.md), [evidence](../verification/browser-automation-20261016.md).
 

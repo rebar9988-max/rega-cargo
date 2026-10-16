@@ -154,3 +154,28 @@ axe strips parentheticals before comparison. No rule disabled or UI changed.
 Initial shared-mount smoke also had timeout/Firefox trace archive errors; final
 runs use container-local artifacts. Required checks with findings/unavailable
 access remain unmet; draft PR, no merge/deploy.
+
+PR #114 Workers Builds check `37c463ef` succeeded, but read-only build logs now
+confirm the non-production commands are `npm run build` and `npm run cf:dry-run`;
+no lint/typecheck/unit/browser tests run there. This confirms the central Doc's
+earlier branch-test-gate concern with direct logs. Do not use this green check
+as a substitute for Actions or the full local gate. Remote trigger unchanged.
+
+Firefox now exposes `STAT: Invalid nameID: 257` / `Table discarded` console
+errors from the existing `vazirmatn-nl-v33.003.woff2` font. New listeners fail
+these cases; do not filter away the errors or change approved typography silently.
+Font/application bytes are unchanged in this integration. See the browser report
+for exact cases and follow-up metadata diagnosis.
+
+Read-only fontTools diagnosis confirms the STAT axis references name ID 257 and
+values reference 258–266; all ten name records are absent. Font bytes hash-identical
+to base. This is a font metadata defect, not a Firefox project/mobile-emulation
+configuration failure. No font, glyph, style or baseline changed.
+
+Final local evidence: new 210-case matrix 102 passed / 108 failed (96 axe label/name,
+12 Firefox font console) / 0 skipped; existing 598-case suite 577 passed / 5 failed /
+16 skipped. Unchanged focused WebKit tests: fallback passes 3/3, search still fails
+3/3 (expected stores query, got native `/?`/default locale). Root readiness repair
+remains open; no proven production outage claim. Unchanged CLS rerun repeats
+0.066285 versus <0.05. Original full-run failures retained. No suppressions,
+tolerances, fonts, original test files or baseline bytes changed. [Machine evidence](../verification/browser-automation-20261016/results.json).

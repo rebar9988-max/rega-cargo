@@ -12,13 +12,15 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 ## Current browser integration checkpoint (2026-10-16)
 
 Owner requested Skyvern + Playwright + Codex. Branch `codex/skyvern-playwright-20261016`
-is based on `61f8d7e`; [runbook](docs/integrations/browser-automation.md) and
+is based on `61f8d7e`; [draft PR #114](https://github.com/rebar9988-max/rega-cargo/pull/114), [runbook](docs/integrations/browser-automation.md) and
 [evidence](docs/verification/browser-automation-20261016.md). Official secret-free
 MCP config added; CLI OAuth remains pending, working chat connector verified.
 Firefox responsive coverage added; existing Chromium/WebKit setup and all 366
 screenshot bytes preserved. Full Node 22 unit gate: 491 passed / 4 skipped / 0 failed;
-typecheck, lint (0 errors), production build and bundle dry-run passed. Browser
-findings and pixel drift remain release blockers; see the report for measured counts.
+typecheck, lint (0 errors), production build and bundle dry-run passed. New browser matrix: 102 pass / 108 fail / 0 skip (96 axe label/name, 12 Firefox
+font console cases). Existing suite: 577 pass / 5 fail / 16 skips. Focused unchanged
+reruns retain 3 WebKit search failures and the CLS failure; fallback rerun passed.
+Pixel lock 2/2 failed on stale baselines. These are unmet gates, not green results.
 No application, branding, routes, architecture, data, live settings, merge or deploy.
 
 Live Cloudflare read now confirms version `0a716ab6-91f2-4786-9cbd-ecd24d4243f0`
