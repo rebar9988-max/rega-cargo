@@ -85,11 +85,8 @@ Remaining touch-target detections are not defects to fix here: native 24 px chec
 
 ## Release status
 
-**PARTIAL, not released.** Everything that can be verified here passed, but `docs/operations/cicd.md`
-§3 requires the hosted layout lock or the official Playwright image for a source change, and neither
-exists in this environment. PR #109 therefore stays a draft: merging it on `main` deploys through
-Cloudflare Workers Builds. Required to finish: (1) re-render baselines via the
-"Cargo quality gate" `update_baselines` run (or the official image) and review the diffs;
-(2) owner decision to merge on the local gate recorded here, as in decisions of 2026-10-12;
-(3) after the build, confirm the Worker version and repeat the live checks above plus the Bring For
-Me label (`label` ≥ 44 px, page height unchanged).
+Merged on the local gate by the owner's chat instruction of 2026-10-16 ("deploy"), recorded in
+`decisions.md`. Still **not run**: official-image layout lock, pixel baselines (stale on `main`) and
+WebKit, because there is no Docker daemon and hosted Actions is billing-blocked (I-7). Deployment
+is the existing Cloudflare Workers Builds path on `main`; the Worker version and the post-deploy
+live checks are recorded in `deployments.md` after the build.
