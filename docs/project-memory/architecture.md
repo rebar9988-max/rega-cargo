@@ -55,6 +55,8 @@ npm run cf:dry-run
 npm run test:layout:geometry       # layout geometry without pixel baselines
 ```
 
+Without Docker (verified 2026-10-16, [report](../verification/ui-touch-targets-20261016.md)): build, then `wrangler dev --config .output/server/wrangler.layout.json --port 8788 --local --host localhost` (`--host localhost` avoids the www canonical 301) and run `npx playwright test --ignore-snapshots`; use a temporary config that sets `launchOptions.executablePath` if Playwright's pinned Chromium is missing. Never run the layout suite against `npm run dev` (hydration timing fails the same tests on unmodified `main`). Local screenshots are not comparable with the committed baselines: compare origins with `docs/verification/ui-touch-targets-20261016/ab-diff.mjs`, and never update baselines locally.
+
 ## R&L AI ownership and verification — 2026-10-13
 
 R&L AI conversation policy/UI is owned by `src/modules/rl-ai/`; existing `src/lib/ai/` retains approved provider/vision/budget ownership. `/api/ai/chat` uses a typed planner, never provider prose. Marketplace integration is only exported `assistantProductSearch` in `src/lib/market/assistant-contract.server.ts`, with existing public filtering and no private data. AST import tests prohibit domain internals, SQL and reverse business dependencies. Existing auth/database and private workflows remain authoritative. See [verification report](../ai/rl-ai-verification-20261013.md).
