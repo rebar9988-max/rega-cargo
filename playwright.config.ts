@@ -109,6 +109,24 @@ export default defineConfig<LayoutProjectUse>({
         breakpoint: "phone",
       },
     },
+    // Firefox cannot emulate isMobile. Narrow viewports exercise responsive CSS
+    // with touch independently; they are not native Android/iOS device coverage.
+    // Keep Firefox off the existing pixel suite until separately reviewed
+    // Firefox baselines exist. Chromium/WebKit snapshot paths stay unchanged.
+    ...VIEWPORTS.filter((vp) => ["iphone", "ipad-portrait", "laptop"].includes(vp.name)).map(
+      (vp) => ({
+        name: `firefox-${vp.name}`,
+        testMatch: "**/browser-regression.spec.ts",
+        use: {
+          ...devices["Desktop Firefox"],
+          viewport: { width: vp.width, height: vp.height },
+          deviceScaleFactor: 1,
+          isMobile: false,
+          hasTouch: vp.mobile,
+          breakpoint: vp.breakpoint,
+        },
+      }),
+    ),
   ],
   webServer: BASE_URL
     ? undefined

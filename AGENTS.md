@@ -91,3 +91,16 @@ Owner instruction (2026-10-13): **R&L AI — یاریدەدەری زیرەکی �
 ## OWNER-ONLY R&L AI BASELINE — 2026-10-14
 
 Explicit owner instruction: R&L AI is part of the permanent R&L foundation. Preserve its approved identity, customer-only domain, isolated module/contracts, privacy/security, verified-data responses, official red/white design, Sorani Vazirmatn/RTL, five shortcuts and existing image workflow across every unrelated change. A general request to redesign, modernize, refactor or upgrade R&L does not authorize changing this R&L AI baseline. Only a new explicit owner instruction specifically requesting the affected R&L AI change authorizes it; record that instruction and its scope in project memory. Bug fixes, security updates and internal maintenance may proceed only when they preserve the baseline. Never remove or weaken these rules, their tests or owner-review coverage to make another task pass.
+
+## BROWSER AUTOMATION WORKFLOW — 2026-10-16
+
+Use [the Codex/Skyvern/Playwright runbook](docs/integrations/browser-automation.md):
+**AUDIT → INTEGRATE → TEST → REVIEW → VERIFY → DOCUMENT**.
+Skyvern is for authorized read-only browser/dashboard investigations; Playwright
+is the reproducible regression gate. Keep credentials in the user's credential
+store outside source control. Preserve Chromium/WebKit projects and screenshot
+baselines; Firefox uses its dedicated responsive regression projects. Production
+checks may run only the explicitly read-only `test:browser` spec, never the full
+submission suite. Keep RTL layout locked in every locale and verify LTR text via
+`data-textdir`. Record failures, skips, unavailable permissions and billing blocks
+honestly in the existing memory/central Doc. Do not merge or deploy with unmet gates.
