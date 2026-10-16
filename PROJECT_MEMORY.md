@@ -74,7 +74,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
-- UI touch-target verification (2026-10-16): [PR #109](https://github.com/rebar9988-max/rega-cargo/pull/109) draft, PARTIAL: one Bring For Me label class change verified on the built Worker without Docker; needs the official-image/hosted layout lock (re-render stale baselines) and an owner merge decision. [Report](docs/verification/ui-touch-targets-20261016.md).
+- UI touch-target release (2026-10-16): [PR #109](https://github.com/rebar9988-max/rega-cargo/pull/109) merged `a406006`, Workers Builds `06a5f699`, Version `dd667bef-0fcf-4210-b8a3-0da8779a9976`; live ckb/ar/en mobile+desktop checks passed. Still owed: official-image layout lock and stale baseline re-render once Actions/Docker exist; verify the active Worker version in Cloudflare (agent has no API access). [Report](docs/verification/ui-touch-targets-20261016.md).
 - CI/CD (2026-10-15): owner actions in [runbook](docs/operations/cicd.md) §4 (billing, required checks, workers.dev). Confirm the PR Workers Builds check actually runs the tests (build log + a deliberately failing draft) before treating it as a test gate (build times varied 27–85 s, which proves nothing; the log is dashboard-only).
 
 The five-improvement beta release is verified. Before official/public release: supply owner-verified legal/business content and approved multilingual policies, configure a working existing OTP delivery provider and identify/verify the exact owner account. Keep stage=beta while content is pending; stage=public restores the complete legal gate. Never seed an arbitrary SUPER_ADMIN or weaken authentication. Query latest production deployments after documentation-only builds.
