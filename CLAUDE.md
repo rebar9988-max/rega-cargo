@@ -25,6 +25,33 @@ Never modify the separate REGA Platform domains or Worker.
 
 Project rules live in AGENTS.md; follow them as well.
 
+## PERMANENT R&L TROUBLESHOOTING & PROJECT CONTEXT RULE
+
+Owner instruction (2026-10-15). Applies to every Codex / Claude Code session and every substantial R&L task. Keep this section identical in the repository-root `AGENTS.md` and `CLAUDE.md`.
+
+- Project: R&L — Marketplace & Delivery · repository `rebar9988-max/rega-cargo` · production `https://www.rlgo.net` · Worker `rega-cargo` · production branch `main` only (unless the owner explicitly changes this rule).
+- Central cross-tool memory: Google Doc **R&L — Project Memory & Documentation Hub** (Drive file ID `1Wt2rZdmMTviKNsz1bpDUg3as-Egy7FNB_HatI1Y7kH4`). Google Drive / Docs is a normal part of the workflow, not optional.
+
+Three systems; the central Doc and the repository memory together form the single documentation layer (do not create a new or parallel memory system):
+
+| System | Authoritative for |
+|---|---|
+| Google Drive / Docs (central Doc) | Durable cross-tool context: decisions, runbooks, incident notes, previous fixes, known blockers, deployment history, continuation point |
+| Repository memory (`PROJECT_MEMORY.md`, `docs/project-memory/`) | Detailed in-repo memory; the central Doc summarises and links to it instead of duplicating it |
+| GitHub | Code, branches, commits, PRs, workflows, CI, repository configuration |
+| Cloudflare | Live Worker state: builds, deployments, versions, domains, routes, bindings, runtime configuration, production |
+
+Precedence: verified live GitHub / Cloudflare state > repository memory and the central Doc. When documentation disagrees with live state, verify live state first, then correct the documentation (both the repo memory and the central Doc).
+
+Mandatory flow: **READ DOCS / MEMORY → VERIFY GITHUB → VERIFY CLOUDFLARE → IDENTIFY ROOT CAUSE → FIX ONLY THE RESPONSIBLE LAYER → TEST → VERIFY LIVE STATE → UPDATE PROJECT MEMORY**.
+
+1. Start: read `CLAUDE.md`, `AGENTS.md`, `PROJECT_MEMORY.md`, relevant `docs/project-memory/` files, `DEPLOY.md` when deployment is involved, and the central Doc.
+2. Troubleshooting: check earlier notes/fixes in the Doc and repo memory → inspect current repo/PR/CI state in GitHub → inspect current build/deployment/runtime state in Cloudflare → reproduce where possible → find the real root cause → fix only that layer → run the appropriate tests → verify the real result → record it.
+3. If a source cannot be reached from the current session (for example no Cloudflare connector or network access), say so and record it as an environment limitation, never as a code failure. Read-only fallbacks: the `Workers Builds: rega-cargo` check run on a GitHub commit shows the Cloudflare build result and version ID; a public fetch of `https://www.rlgo.net` shows the page is served. Neither proves which version is active at 100%; do not claim that without Cloudflare access.
+4. After every material change, append to the central Doc's change log (and the repo memory per the memory lifecycle): date · problem/task · root cause · change made · files changed · GitHub PR/commit · tests run · Cloudflare verification · production impact · remaining blockers · next safe continuation point.
+
+Rules: do not ask the owner to repeat information already in the Doc, GitHub or Cloudflare. No speculative fixes. Do not touch unrelated files, services, modules, secrets, domains, database configuration or production behaviour. Never expose API keys, passwords, tokens, credentials or secret values (names only). Never claim a fix succeeded until it is tested and independently verified. Never bypass GitHub protection, required checks or production safeguards; never merge or deploy unverified changes. Proceed autonomously with safe read, diagnosis, documentation and verified repair work; ask the owner only for unavoidable billing, permission, authentication, destructive or security approvals.
+
 ## PERMANENT USER LANGUAGE PREFERENCE
 Always respond to the R&L Cargo project owner in Kurdish Sorani (ckb), regardless of the language of the incoming prompt. All status updates, explanations, questions, and final reports must be in Sorani. Keep code and technical identifiers in their original language. Override this preference only when the owner explicitly requests another language.
 

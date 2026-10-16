@@ -38,3 +38,7 @@ AI-scoped white/red restrained cards, existing tokens and official brand; reuse 
 ## Reference homepage — 2026-10-14
 
 `components/ref-home.tsx` + `styles/ref-home.css` (unlayered, scoped to `.rl-ref*`) own the home; `SiteHeader reference` renders the five-control header (physical order logo · language · search · R&L AI · menu, row isolated `dir="ltr"` while `<html dir>` stays rtl). Homepage-scoped font: Vazirmatn v33.003 (other routes keep Noto Sans Arabic). Measurements and evidence: [RL_REFERENCE_MEASUREMENTS.md](../implementation/RL_REFERENCE_MEASUREMENTS.md). The layout lock measures the reference header (`data-layout="ref-header"`, 64/98/98px) and exempts `.rl-ref` from the type-scale and image-ratio checks (`data-layout-exempt`); screenshot baselines for `/` must be re-rendered in the official image.
+
+## UI refinement — 2026-10-14
+
+Home header row, section heads and (from 1200 px) hero copy share one inline edge (`--ref-pad`; hero uses container units). Both hero headline lines start at the eyebrow's edge in every script. Touch targets ≥ 44 px on phones: reference header controls 2.75rem, footer links/legal TOC/store heart/chips/market actions `--rl-control-h`. Home section heads stay baseline-aligned (centring them raised font-swap CLS). Featured products: 2 columns on tablets, 4 from 1024 px. Footer reserves bottom-bar space only on phones/tablets and not on the reference home. [Report](../verification/ui-refinement-20261014.md).

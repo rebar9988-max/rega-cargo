@@ -5,7 +5,9 @@
     inset-block-start: var(--rl-space-2);
     transform: translateY(var(--rl-skip-offset));
     z-index: var(--rl-z-modal);
-    padding-block: var(--rl-space-1);
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--rl-control-h);
     padding-inline: var(--rl-space-2);
     min-block-size: var(--rl-control-h);
     display: inline-flex;
@@ -977,6 +979,12 @@
     font-size: var(--text-base);
     font-weight: var(--rl-weight-semibold);
   }
+  .rl-footer-grid nav.rl-stack {
+    gap: var(--rl-space-0);
+  }
+  .rl-footer-grid nav h2 {
+    margin-block-end: var(--rl-space-1);
+  }
   .rl-footer-grid p,
   .rl-footer-grid nav a {
     font-size: var(--text-sm);
@@ -986,6 +994,10 @@
     align-items: center;
     min-block-size: var(--rl-control-h);
     color: var(--rl-muted);
+  }
+  .rl-footer-grid .rl-button {
+    align-self: flex-start;
+    min-inline-size: var(--rl-control-h);
   }
   .rl-footer-grid nav a:hover {
     color: var(--rl-accent);
@@ -1131,6 +1143,7 @@
 }
 .rl-audience-chips .rl-chip {
   flex: none;
+  min-inline-size: var(--rl-control-h);
 }
 .rl-partner-note {
   display: flex;
@@ -1282,6 +1295,7 @@
   object-fit: contain;
 }
 .rl-store-top .rl-button {
+  min-inline-size: var(--rl-control-h);
   padding-inline: var(--rl-space-1);
 }
 .rl-store-card h3 {
@@ -1568,7 +1582,23 @@
   display: flex;
   flex-direction: column;
   gap: var(--rl-space-3);
-  padding-block-end: var(--rl-space-8);
+  padding-block: var(--rl-space-3) var(--rl-space-8);
+}
+.rl-compare-actions {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--rl-space-3);
+  font-size: var(--text-sm);
+}
+.rl-compare-actions > * {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--rl-control-h);
+  min-inline-size: var(--rl-control-h);
+}
+/* Delivery tracking: the lookup keeps a reading width instead of stretching the field. */
+.rl-track-form {
+  max-inline-size: var(--rl-reading);
 }
 .rl-compare-filters {
   display: grid;

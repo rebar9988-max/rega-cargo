@@ -83,16 +83,16 @@ function MarketHome() {
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
       <div className="page rl-compare-page">
-        <div className="flex flex-wrap gap-x-3 text-sm">
-          <Link to="/market/sell" className="inline-flex min-h-12 min-w-12 items-center justify-center text-pine">
+        <div className="rl-compare-actions">
+          <Link to="/market/sell" className="text-pine">
             {t.sell}
           </Link>
-          <Link to="/admin" className="inline-flex min-h-12 min-w-12 items-center justify-center text-pine">
+          <Link to="/admin" className="text-pine">
             {t.admin}
           </Link>
           <button
             type="button"
-            className="inline-flex min-h-12 min-w-12 items-center justify-center text-pine"
+            className="text-pine"
             onClick={() => set({ saved: search.saved === "1" ? "" : "1" })}
           >
             {t.favorite}
@@ -237,13 +237,13 @@ function MarketHome() {
             <button
               type="button"
               aria-label={PAGES_COPY[lang].prev}
-              className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine"
+              className="inline-flex size-12 items-center justify-center rounded-full text-sm text-pine"
               onClick={() => set({ page: search.page - 1 })}
             >
               ←
             </button>
           ) : null}
-          <span className="text-sm text-muted">
+          <span className="inline-flex items-center text-sm text-muted">
             <bdi dir="ltr">
               {search.page} / {data.pages}
             </bdi>
@@ -252,7 +252,7 @@ function MarketHome() {
             <button
               type="button"
               aria-label={PAGES_COPY[lang].next}
-              className="inline-flex size-10 items-center justify-center rounded-full text-sm text-pine"
+              className="inline-flex size-12 items-center justify-center rounded-full text-sm text-pine"
               onClick={() => navigate({ search: { ...search, page: search.page + 1 } })}
             >
               →

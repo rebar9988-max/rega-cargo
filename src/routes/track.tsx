@@ -94,7 +94,7 @@ function TrackPage() {
       />
       <div className="page flex flex-col gap-10 py-12 md:py-16">
         <form
-          className="flex flex-col gap-3 md:flex-row"
+          className="rl-track-form flex flex-col gap-3 md:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
             void navigate({ to: "/track", search: { id: draft.trim().toUpperCase() } });

@@ -275,6 +275,10 @@
 }
 @utility clear-bottom-bar {
   padding-block-end: calc(var(--bottom-bar-h) + var(--safe-bottom) + var(--rl-space-2));
+  /* The bottom bar exists on phones and tablets only. */
+  @media (width >= 64rem) {
+    padding-block-end: var(--safe-bottom);
+  }
 }
 @utility search-bar {
   block-size: calc(var(--search-h) + var(--rl-border));

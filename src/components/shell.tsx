@@ -78,7 +78,7 @@ export function Shell({
       <main id="content" className="flex-1">
         {children}
       </main>
-      <SiteFooter />
+      <SiteFooter bottomBar={!reference} />
     </div>
   );
 }

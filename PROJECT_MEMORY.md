@@ -64,7 +64,17 @@ Production migration 0015 applied transactionally after existing Neon dev-branch
 
 Owner's homepage screenshot is live on `/` ([PR #100](https://github.com/rebar9988-max/rega-cargo/pull/100), main `fb1bf7b`, sw v13). Local gate only (Actions blocked, I-7); `/` screenshot baselines are stale until re-rendered in the official image. Owner to decide: keyed white logo, tracking form removed from the home, CARE+ wording. [Details and live evidence](docs/implementation/RL_DESIGN_PROGRESS.md).
 
+## UI/UX refinement (2026-10-14)
+
+Presentation-only refinement of spacing, alignment and touch targets ([report](docs/verification/ui-refinement-20261014.md)). 15 measured issues fixed; Bring For Me draft checkbox left to draft PR #97; hero gradient contrast reported only. Screenshot baselines need the official-image re-render (I-7). Release state: see deployments.md.
+
+## CI/CD audit (2026-10-15)
+
+Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are non-deploying (build `11b23adc`: no Version ID, no Preview URL); hosted Actions blocked by billing; `main` cannot have required checks on GitHub Free; production workers.dev still redirects (I-14). Code fix: branch/CI builds can never migrate production (I-13). Read the [CI/CD runbook](docs/operations/cicd.md) before touching CI, Builds, `wrangler.jsonc` or migrations.
+
 ## Next safe continuation point
+
+- CI/CD (2026-10-15): owner actions in [runbook](docs/operations/cicd.md) §4 (billing, required checks, workers.dev). Confirm the PR Workers Builds check actually runs the tests (build log + a deliberately failing draft) before treating it as a test gate (build times varied 27–85 s, which proves nothing; the log is dashboard-only).
 
 The five-improvement beta release is verified. Before official/public release: supply owner-verified legal/business content and approved multilingual policies, configure a working existing OTP delivery provider and identify/verify the exact owner account. Keep stage=beta while content is pending; stage=public restores the complete legal gate. Never seed an arbitrary SUPER_ADMIN or weaken authentication. Query latest production deployments after documentation-only builds.
 
@@ -92,6 +102,7 @@ The five-improvement beta release is verified. Before official/public release: s
 | [issues.md](docs/project-memory/issues.md) | Known bugs, root causes, fixes |
 | [progress.md](docs/project-memory/progress.md) | Done / active / pending work, open PRs |
 | [deployments.md](docs/project-memory/deployments.md) | CI/CD, release log, rollback pointers |
+| Central Google Doc "R&L — Project Memory & Documentation Hub" (Drive ID `1Wt2rZdmMTviKNsz1bpDUg3as-Egy7FNB_HatI1Y7kH4`) | Cross-tool summary, decisions and change log; updated after every material change (permanent troubleshooting rule in CLAUDE.md, 2026-10-15) |
 
 Detailed canonical docs (do not duplicate them in memory): [DEPLOY.md](DEPLOY.md) ·
 [docs/integrations/](docs/integrations/inventory.md) · [docs/redesign/](docs/redesign/README.md).
