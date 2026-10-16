@@ -1,6 +1,6 @@
 # Progress
 
-## 2026-10-16 final hardening and responsive parity (PR pending, not merged or deployed)
+## 2026-10-16 final hardening and responsive parity (PR #111, merging on owner instruction)
 
 Audit of `main` @ `d1e0229`; two root-cause CSS fixes in `ref-home.css` (15 lines): the home search placeholder no longer shows as a clipped fragment below 418 px (pill stays a 44 px tap target; verified by touch at 320/360/390), and the dark-mode hero glow is `/ .4` instead of `/ .55` so the eyebrow reaches 5.1:1 at 360 px (was 4.17:1) without losing the dark secondary button's separation. Verified on the built Worker without Docker: typecheck, lint (0 errors), 236 + 255 tests, build, dry-run; Chromium layout suite 394 pass / 12 skipped / 0 fail; 480-state matrix at 320-1920 px x ckb/ar/en x light/dark: overflow 0; live production 96 loads with 0 console/page errors and 0 HTTP >= 400; production-vs-branch pixels 97 of 108 identical. Mobile/desktop parity against the approved desktop design confirmed (same shared components, stacked). `/ai` consent checkbox: labelled, 24 px (WCAG 2.2 AA ok), owner-baseline module untouched. **Not run / blocked:** Firefox and WebKit (not installed), official-image layout lock and baselines (no Docker; hosted Actions billing-blocked; baselines stale), Cloudflare active version/traffic (agent token is DNS-scoped, Workers API read refused). [Report](../verification/final-hardening-20261016.md).
 

@@ -63,3 +63,9 @@ so they were not used and nothing was regenerated.
   and a Workers API read with it was refused, so the **active version and traffic allocation are not
   verified** (environment limitation). Live behaviour matches the code of `a406006`.
 * Domains: `https://rlgo.net` and `http://www.rlgo.net` return 301 to `https://www.rlgo.net`; the legacy workers.dev host returns 404.
+
+## Release status
+
+Merged on the local gate by the owner's chat instruction of 2026-10-16 ("Merge و Deploy"), recorded in
+`decisions.md`. Deployment is the existing Cloudflare Workers Builds path on `main`; the Worker
+version and post-deploy live checks are recorded in `deployments.md` after the build.
