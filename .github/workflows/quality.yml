@@ -121,7 +121,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.layout == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-noble
       options: --ipc=host

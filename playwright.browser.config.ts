@@ -15,6 +15,10 @@ const projects = new Set([
 
 export default defineConfig<LayoutProjectUse>({
   ...layout,
+  // The full instrumented matrix took 36 minutes on a shared two-core environment.
+  // Leave report-upload time inside the separate 45-minute browser job; the
+  // existing pixel job retains its own 19/25-minute guards.
+  globalTimeout: process.env.CI ? 40 * 60_000 : 0,
   projects: layout
     .projects!.filter((project) => projects.has(project.name!))
     .map((project) => ({

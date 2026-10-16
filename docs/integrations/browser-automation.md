@@ -90,6 +90,10 @@ new accessibility cases out of the existing Chromium/WebKit pixel projects.
 Actions keeps the original pixel-lock job and runs the focused matrix in a separate
 `browser regressions` job under the same scope/draft rules and official image.
 This avoids putting duplicate accessibility checks inside the pixel job's time budget.
+The instrumented local matrix took about 36 minutes while sharing two CPU cores
+with the existing suite. The new browser job therefore has a 40-minute Playwright
+guard inside a 45-minute job; the original pixel job keeps its 19/25-minute guards.
+Hosted timing is unverified while billing/draft restrictions prevent execution.
 Its normal test runs consume Actions minutes after billing is restored; no account
 plan, payment, spending limit or runner setting is changed. Do not mark skipped jobs passed.
 
