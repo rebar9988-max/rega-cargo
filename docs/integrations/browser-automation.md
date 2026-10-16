@@ -83,9 +83,15 @@ Firefox mobile emulation). This is not native phone coverage.
 
 Firefox runs the new regression spec only; it does not borrow Chromium/WebKit
 screenshots or create baselines implicitly. Existing projects keep their existing
-tests and gain the focused regression spec. The existing Actions layout job runs
-all configured projects and uploads evidence; draft/docs-only/billing behavior
-is preserved. Do not mark its skipped jobs passed.
+tests. `playwright.browser.config.ts` reuses their options for a focused seven-project
+matrix (Chromium phone/laptop, WebKit phone/landscape tablet, Firefox phone/tablet/laptop).
+The default layout config adds only the three Firefox regression projects, keeping
+new accessibility cases out of the existing Chromium/WebKit pixel projects.
+Actions keeps the original pixel-lock job and runs the focused matrix in a separate
+`browser regressions` job under the same scope/draft rules and official image.
+This avoids putting duplicate accessibility checks inside the pixel job's time budget.
+Its normal test runs consume Actions minutes after billing is restored; no account
+plan, payment, spending limit or runner setting is changed. Do not mark skipped jobs passed.
 
 By default Playwright starts the **built local Worker** without production
 Hyperdrive. Do not use Vite dev for release evidence. The existing full suite

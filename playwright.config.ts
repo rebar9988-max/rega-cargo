@@ -44,7 +44,8 @@ const WEBKIT = new Set(["iphone", "ipad-portrait", "ipad-landscape"]);
 function project(browser: "chromium" | "webkit", vp: (typeof VIEWPORTS)[number]) {
   return {
     name: `${browser}-${vp.name}`,
-    testIgnore: "**/premium.spec.ts",
+    // Read-only cross-engine accessibility checks have their own focused config.
+    testIgnore: ["**/premium.spec.ts", "**/browser-regression.spec.ts"],
     use: {
       ...(browser === "chromium" ? chromium : safari),
       viewport: { width: vp.width, height: vp.height },

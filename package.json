@@ -29,7 +29,7 @@
     "format": "prettier --write .",
     "rate-sheet": "node --experimental-strip-types scripts/build-rate-sheet.mjs",
     "release:check": "node --experimental-strip-types scripts/check-release-readiness.mjs",
-    "test:browser": "playwright test browser-regression.spec.ts",
+    "test:browser": "playwright test --config=playwright.browser.config.ts",
     "test:firefox": "playwright test --project=\"firefox-*\""
   },
   "dependencies": {
