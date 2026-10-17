@@ -110,6 +110,9 @@ export async function verifyQuote(
   if (!body || !sig || extra !== undefined) return null;
   const given = unb64url(sig);
   if (!given) return null;
+  // atob() drops the unused trailing bits, so up to four spellings decode to the same signature.
+  // Accept only the canonical one, or one signed quote could be booked once per spelling.
+  if (b64url(given) !== sig) return null;
   const expected = await hmac(secret, body);
   if (!timingSafeEqual(given, expected)) return null;
   const bytes = unb64url(body);

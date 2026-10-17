@@ -115,6 +115,28 @@ test("ambiguous wording goes to review, not reject", () => {
   assert.equal(d("alkoholfrei Bier"), "review");
 });
 
+test("alcohol-free wording only softens the alcohol word in its own clause", () => {
+  // Far away or in another clause: the banned word still blocks.
+  assert.equal(d("Absolut Vodka 40cl. Notes: also one alcohol free beer"), "block");
+  assert.equal(d("Absolut Vodka 40cl, Kind regards, 0.0% fees"), "block");
+  assert.equal(d("non alcoholic beer, and whisky gift set"), "block");
+  assert.equal(d("alkoholfreies Bier und Whisky Geschenkset"), "block");
+  assert.equal(d("ئاوجۆی بێ ئەلکهول و ویسکی"), "block");
+  assert.equal(d("Whisky gift. Also sells alcohol free beer"), "block");
+  // The marker must also stay local when the text gets an undisguised copy appended.
+  assert.equal(
+    d("v0dka gift set with a very long description of the box\u200b alcohol free"),
+    "block",
+  );
+  // Genuine alcohol-free wording next to the word it describes stays a review, in every language.
+  assert.equal(d("Alcohol-free wheat beer"), "review");
+  assert.equal(d("0.0% alcohol free premium craft beer"), "review");
+  assert.equal(d("Beer 0,0 %"), "review");
+  assert.equal(d("Bier alkoholfrei"), "review");
+  assert.equal(d("بيرة بدون كحول"), "review");
+  assert.equal(d("بیرە بێ ئەلکهول"), "review");
+});
+
 test("products: every field is checked, category mapping applies", () => {
   assert.equal(
     checkProduct({ title: "Gift box", description: "with a bottle of whisky" }).decision,

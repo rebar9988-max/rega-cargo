@@ -158,6 +158,68 @@ describe("request validation", () => {
 });
 
 describe("customer requests on PGLite", () => {
+  it("a quote cannot overwrite an accepted request and changes nothing when refused", async () => {
+    const customer = await user("7501110092", "Quoter");
+    const staff = await user("7501110093", "QStaff");
+    const sql = await getSql();
+    await sql`insert into user_roles (user_id, role, status, display_name) values (${staff}, 'admin', 'approved', 'QStaff')`;
+    const made = await requests.createRequest(customer, {
+      ...buy,
+      key: "atomic-quote-key-0000001",
+    });
+    assert.ok("id" in made && made.id, JSON.stringify(made));
+    const ref = made.id as string;
+    const first = await requests.staffQuote(staff, {
+      ref,
+      amountIqd: 50000,
+      customsIncluded: false,
+    });
+    await requests.acceptQuote(customer, ref, first.id);
+    const snapshot = async () =>
+      JSON.stringify([
+        await sql`select status from shipment_requests where tracking_id = ${ref}`,
+        await sql`select id, status from request_quotes where request_id = (select id from shipment_requests where tracking_id = ${ref}) order by id`,
+      ]);
+    const before = await snapshot();
+    await assert.rejects(
+      requests.staffQuote(staff, { ref, amountIqd: 45000, customsIncluded: false }),
+      (err) => code(err) === "invalid",
+    );
+    assert.equal(await snapshot(), before, "a refused quote leaves request and quotes untouched");
+  });
+
+  it("hides archived tracking events from the owner, as the public tracking page does", async () => {
+    const uid = await user("7501110091", "Archive");
+    const made = await requests.createRequest(uid, { ...buy, key: "archived-events-key-00001" });
+    assert.ok("id" in made && made.id, JSON.stringify(made));
+    const sql = await getSql();
+    const before = await requests.requestDetail(uid, made.id);
+    assert.ok(before.events.length >= 1);
+    await sql`update tracking_events set archived_at = now() where shipment_id = (select id from shipment_requests where tracking_id = ${made.id as string})`;
+    const after = await requests.requestDetail(uid, made.id);
+    assert.equal(after.events.length, 0, "archived events are not shown to the owner");
+    assert.equal((await orders.lookupTracking(made.id as string)).events?.length, 0);
+  });
+
+  it("keeps every validated field of a request that fills the link limits (no truncated payload)", async () => {
+    const uid = await user("7501110090", "Long");
+    const long = (tag: string) => `https://www.example-shop.de/p/${tag}${"a".repeat(1900)}`;
+    const raw = {
+      ...buy,
+      link: long("main"),
+      attachments: [long("one"), long("two"), long("three")],
+      description: "d".repeat(500),
+      notes: "n".repeat(500),
+      key: "long-payload-key-000000001",
+    };
+    assert.equal(validateRequest(raw).ok, true, "the input is within every documented limit");
+    const made = await requests.createRequest(uid, raw);
+    assert.ok("id" in made && made.id, JSON.stringify(made));
+    const detail = await requests.requestDetail(uid, made.id);
+    assert.equal(detail.item.link, long("main"), "the product link survives storage");
+    assert.equal(detail.item.description, "d".repeat(500));
+  });
+
   it("runs buy-for-me end to end with ownership, idempotency, quote acceptance and tracking", async () => {
     const aza = await user("7501110001", "Aza");
     const other = await user("7501110002", "Other");

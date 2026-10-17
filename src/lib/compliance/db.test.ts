@@ -176,3 +176,35 @@ test("the guard functions cannot be replaced with a no-op", async () => {
     /compliance:/,
   );
 });
+
+test("a failed rules refresh keeps the admin-added keywords that were already loaded", async () => {
+  const { complianceRules, resetComplianceCache } = await import("./service.server.ts");
+  const { findMatches } = await import("./check.ts");
+  const realNow = Date.now;
+  const realError = console.error;
+  console.error = () => {};
+  try {
+    resetComplianceCache();
+    let fail = false;
+    // A fake tagged-template client: first load returns an extra admin keyword, then the DB drops.
+    const sql = (async () => {
+      if (fail) throw new Error("connection reset");
+      return [{ category: "alcohol", keyword: "zzqx-extra-keyword", level: "block" }];
+    }) as unknown as Parameters<typeof complianceRules>[0];
+    const hit = (rules: Awaited<ReturnType<typeof complianceRules>>) =>
+      findMatches("buy zzqx-extra-keyword now", rules).length > 0;
+    const loaded = await complianceRules(sql);
+    assert.equal(hit(loaded), true, "the DB keyword is enforced after the first load");
+    fail = true;
+    const start = realNow();
+    Date.now = () => start + 6 * 60 * 1000; // TTL expired, refresh fails
+    const afterFailure = await complianceRules(sql);
+    assert.equal(hit(afterFailure), true, "the last loaded rules stay in force during the outage");
+    Date.now = () => start + 6 * 60 * 1000 + 5_000; // inside the retry window: no new query
+    assert.equal(hit(await complianceRules(sql)), true);
+  } finally {
+    Date.now = realNow;
+    console.error = realError;
+    resetComplianceCache();
+  }
+});

@@ -91,6 +91,7 @@ const ALCOHOL_FREE = ALCOHOL_FREE_PHRASES.map((p) => normalizeText(p)).filter(
   (p) => !/^0 0$/.test(p),
 );
 const ZERO_PERCENT = /(^|[^\d])0[.,]0\s*%/;
+const ALCOHOL_FREE_TOKENS = ALCOHOL_FREE.map((phrase) => phrase.split(" "));
 
 function tokenMatches(token: string, want: string, last: boolean): boolean {
   if (token === want) return true;
@@ -192,7 +193,57 @@ export function withUndisguisedText(text: string): string {
   return out === lower ? text : `${text} \n ${out}`;
 }
 
-/** Every rule matched in `text` (alcohol rules downgraded to review in alcohol-free wording). */
+/** Alcohol-free wording softens an alcohol word only within this many words, in the same clause. */
+const ALCOHOL_FREE_REACH = 2;
+/**
+ * Clause borders: newlines (original text, undisguised copy and decoded copy are joined by them),
+ * sentence punctuation (not a decimal point or comma between digits) and "and" in the supported
+ * languages. The conjunction starts the next clause so token counts stay aligned.
+ */
+const CLAUSE_BREAK =
+  /\n|[;:!?|/&()+\u060c\u061b]|(?<!\d)[,.]|[,.](?!\d)|(?=\s(?:and|und|ve|et|y|\u0648)\s)/giu;
+type Markers = { spans: { from: number; to: number }[]; clause: number[] };
+
+/**
+ * Where alcohol-free wording ("alcohol free", "0.0%", "alkoholfrei", ...) sits in the token list,
+ * and which clause every token belongs to.
+ */
+function alcoholFreeMarkers(raw: string, tokens: string[]): Markers {
+  const clause = new Array<number>(tokens.length).fill(0);
+  let k = 0;
+  raw.split(CLAUSE_BREAK).forEach((piece, index) => {
+    const folded = normalizeText(piece);
+    if (!folded) return;
+    for (let count = folded.split(" ").length; count > 0 && k < tokens.length; count -= 1)
+      clause[k++] = index;
+  });
+  // Misaligned counts must never create clause borders that hide a marker: one clause is the safe default.
+  if (k !== tokens.length) clause.fill(0);
+  const spans: Markers["spans"] = [];
+  for (const phrase of ALCOHOL_FREE_TOKENS) {
+    for (let i = 0; i + phrase.length <= tokens.length; i += 1) {
+      if (phrase.every((word, j) => tokens[i + j] === word))
+        spans.push({ from: i, to: i + phrase.length - 1 });
+    }
+  }
+  if (ZERO_PERCENT.test(raw)) {
+    // "0.0%" is normalised to the two tokens "0 0".
+    for (let i = 0; i + 1 < tokens.length; i += 1) {
+      if (tokens[i] === "0" && tokens[i + 1] === "0") spans.push({ from: i, to: i + 1 });
+    }
+  }
+  return { spans, clause };
+}
+
+function nearMarker({ spans, clause }: Markers, from: number, to: number): boolean {
+  return spans.some((span) => {
+    if (clause[span.from] !== clause[from] || clause[span.to] !== clause[from]) return false;
+    const gap = span.from > to ? span.from - to - 1 : from > span.to ? from - span.to - 1 : 0;
+    return gap <= ALCOHOL_FREE_REACH;
+  });
+}
+
+/** Every rule matched in `text` (an alcohol word right next to alcohol-free wording is only reviewed). */
 export function findMatches(text: string, rules: CompiledRules = BUNDLED_RULES): Match[] {
   const raw = withUndisguisedText(withDecodedUrlText(String(text ?? "")))
     .normalize("NFKC")
@@ -207,8 +258,7 @@ export function findMatches(text: string, rules: CompiledRules = BUNDLED_RULES):
         for (let j = 0; j < phrase.length; j += 1) skip[i + j] = true;
     }
   }
-  const padded = ` ${norm} `;
-  const alcoholFree = ZERO_PERCENT.test(raw) || ALCOHOL_FREE.some((p) => padded.includes(` ${p} `));
+  const markers = alcoholFreeMarkers(raw, tokens);
   const found = new Map<string, Match>();
   for (let i = 0; i < tokens.length; i += 1) {
     if (skip[i]) continue;
@@ -221,8 +271,11 @@ export function findMatches(text: string, rules: CompiledRules = BUNDLED_RULES):
           ok = !skip[i + j] && tokenMatches(tokens[i + j]!, entry.tokens[j]!, j === n - 1);
         }
         if (!ok) continue;
+        // Alcohol-free wording only softens the alcohol word it sits next to, never the whole text.
         const level: KeywordLevel =
-          alcoholFree && entry.rule.category === "alcohol" ? "review" : entry.rule.level;
+          entry.rule.category === "alcohol" && nearMarker(markers, i, i + n - 1)
+            ? "review"
+            : entry.rule.level;
         const key = `${entry.rule.category}|${entry.tokens.join(" ")}`;
         const prev = found.get(key);
         if (!prev || (prev.level === "review" && level === "block"))
