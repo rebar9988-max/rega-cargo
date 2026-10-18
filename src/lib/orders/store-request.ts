@@ -4,6 +4,7 @@
  * minimal fields below are ever stored; nothing else from the client is kept.
  */
 import { DESTS } from "../corridor.ts";
+import { westernDigits } from "../numbers.ts";
 import { GOODS, STORES, type StoreEntry } from "../stores.ts";
 
 export const URL_MAX = 2000;
@@ -98,7 +99,7 @@ export function validateStoreRequest(
     return { ok: false, error: "url" };
   }
 
-  const qtyText = typeof raw.qty === "number" ? String(raw.qty) : typeof raw.qty === "string" ? raw.qty.trim() : "";
+  const qtyText = typeof raw.qty === "number" ? String(raw.qty) : typeof raw.qty === "string" ? westernDigits(raw.qty.trim()) : "";
   if (!/^\d{1,2}$/.test(qtyText)) return { ok: false, error: "qty" };
   const qty = Number(qtyText);
   if (!Number.isInteger(qty) || qty < QTY_MIN || qty > QTY_MAX) return { ok: false, error: "qty" };

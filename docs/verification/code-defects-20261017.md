@@ -51,3 +51,7 @@ Merged on the local gate by the owner's chat instruction of 2026-10-18 ("دیپ�
 Deployment is the existing Cloudflare Workers Builds path on `main`; the Worker version and the post-deploy checks are
 recorded in `deployments.md` after the build. The fixes are server-side logic, so live checks are smoke checks (routes,
 console, network); behaviour is proven by the regression tests and the identical built bundle.
+
+## Update 2026-10-18
+
+The OTP resend lockout, rate-limit fail-open and review-level notification items above, and the shipping-weight input (not the rounding), were fixed afterwards: see `open-defects-20261018.md`. The 0.1 kg rounding itself stays as approved.

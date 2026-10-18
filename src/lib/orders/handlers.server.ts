@@ -103,6 +103,12 @@ export async function submitRequest(
     // Cut JSON is unreadable (shown as an empty request), so refuse an oversize payload instead.
     const storedJson = JSON.stringify(stored);
     if (storedJson.length > PAYLOAD_MAX) throw new MarketError("invalid");
+    // Review-level matches are accepted but must reach staff: noted on the request's first status
+    // line and as one notification per approved administrator, written in the same statement.
+    // TODO(translate-review): the Sorani wording of the staff alert below.
+    const isReview = verdict.decision === "review";
+    const reviewCategories = [...new Set(verdict.matches.map((match) => match.category))].join(", ");
+    const reviewNote = isReview ? `compliance review: ${reviewCategories}`.slice(0, 200) : "";
     const id = crypto.randomUUID();
     const tracking = newTrackingId();
     const inserted = await sql<{ id: string }>`
@@ -115,8 +121,15 @@ export async function submitRequest(
         insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase, occurred_at)
       select ${crypto.randomUUID()}, req.id, 'Request received', 'داواکاری گەیشت', '', '', 'now', now() from req
       ), log as (
-        insert into request_status_log (id, request_id, status, actor)
-        select ${crypto.randomUUID()}, req.id, 'received', 'system' from req
+        insert into request_status_log (id, request_id, status, actor, note)
+        select ${crypto.randomUUID()}, req.id, 'received', 'system', ${reviewNote} from req
+      ), review_alert as (
+        insert into notifications (id, user_id, body_ku, body_en)
+        select distinct md5(roles.user_id || ${tracking} || ':review'), roles.user_id,
+          ${`داواکاری ${tracking} پێویستی بە پێداچوونەوەی ڕێساکان هەیە`}, ${`Request ${tracking} needs a compliance review (${reviewCategories})`}
+        from user_roles roles, req
+        where ${isReview}::boolean and roles.role in ('admin', 'super_admin') and roles.status = 'approved'
+        on conflict (id) do nothing
       )
       select id from req`;
     if (!inserted[0]) {

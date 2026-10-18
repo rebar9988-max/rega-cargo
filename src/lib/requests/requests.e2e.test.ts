@@ -134,6 +134,22 @@ describe("request validation", () => {
     });
   });
 
+  it("reads weight, size and quantity typed with Arabic-Indic digits or a decimal comma", () => {
+    const typed = validateRequest({
+      ...buy,
+      weightKg: "\u0661\u066B\u0665",
+      l: "\u0663\u0660",
+      w: "20,5",
+      h: "\u06F1\u06F2",
+      qty: "\u0662",
+    });
+    assert.ok(typed.ok, JSON.stringify(typed));
+    assert.equal(typed.data.weightKg, 1.5);
+    assert.deepEqual(typed.data.dims, { l: 30, w: 20.5, h: 12 });
+    assert.equal(typed.data.qty, 2);
+    assert.deepEqual(validateRequest({ ...buy, weightKg: "1e1" }), { ok: false, error: "weight" });
+  });
+
   it("estimates shipping with the unchanged economy formula (4.60/kg, min 22, /5000)", () => {
     const checked = validateRequest({ ...buy, weightKg: "10", l: "", w: "", h: "" });
     assert.ok(checked.ok);
@@ -199,6 +215,74 @@ describe("customer requests on PGLite", () => {
     const after = await requests.requestDetail(uid, made.id);
     assert.equal(after.events.length, 0, "archived events are not shown to the owner");
     assert.equal((await orders.lookupTracking(made.id as string)).events?.length, 0);
+  });
+
+  it("flags a review-level request to staff once, and leaves ordinary requests unflagged", async () => {
+    const customer = await user("7501110094", "Reviewer");
+    const staffA = await user("7501110095", "StaffA");
+    const staffB = await user("7501110096", "StaffB");
+    const sql = await getSql();
+    for (const [uid, name] of [
+      [staffA, "StaffA"],
+      [staffB, "StaffB"],
+    ])
+      await sql`insert into user_roles (user_id, role, status, display_name) values (${uid}, 'admin', 'approved', ${name}) on conflict do nothing`;
+    const reviewKey = "review-flag-key-00000001";
+    const flagged = await requests.createRequest(customer, {
+      ...buy,
+      link: "",
+      description: "Alcohol free wheat beer 0.0%",
+      key: reviewKey,
+    });
+    assert.ok("id" in flagged && flagged.id, JSON.stringify(flagged));
+    const ref = flagged.id as string;
+    const alerts = async (tracking: string) =>
+      sql<{
+        user_id: string;
+        body_en: string;
+      }>`select user_id, body_en from notifications where body_en like ${"%" + tracking + " needs a compliance review%"}`;
+    const first = await alerts(ref);
+    const admins = (
+      await sql<{
+        user_id: string;
+      }>`select distinct user_id from user_roles where role in ('admin', 'super_admin') and status = 'approved'`
+    ).map((row) => row.user_id);
+    assert.ok(admins.includes(staffA) && admins.includes(staffB));
+    assert.deepEqual(
+      first.map((row) => row.user_id).sort(),
+      [...admins].sort(),
+      "every approved admin is told exactly once",
+    );
+    assert.match(first[0].body_en, /alcohol/);
+    const log = await sql<{ note: string }>`
+      select note from request_status_log where request_id = (select id from shipment_requests where tracking_id = ${ref}) and status = 'received'`;
+    assert.match(log[0].note, /^compliance review: .*alcohol/);
+    // The same form submitted again (lost response) returns the first request and adds nothing.
+    const again = await requests.createRequest(customer, {
+      ...buy,
+      link: "",
+      description: "Alcohol free wheat beer 0.0%",
+      key: reviewKey,
+    });
+    assert.ok("id" in again && again.id === ref);
+    assert.equal((await alerts(ref)).length, admins.length, "no duplicate alerts on a retry");
+    // An ordinary request is stored without a flag.
+    const plain = await requests.createRequest(customer, {
+      ...buy,
+      key: "review-plain-key-0000001",
+    });
+    assert.ok("id" in plain && plain.id);
+    assert.equal((await alerts(plain.id as string)).length, 0);
+    const plainLog = await sql<{ note: string }>`
+      select note from request_status_log where request_id = (select id from shipment_requests where tracking_id = ${plain.id as string}) and status = 'received'`;
+    assert.equal(plainLog[0].note, "");
+    // Definitely banned wording is still refused outright.
+    const banned = await requests.createRequest(customer, {
+      ...buy,
+      description: "Absolut vodka 40cl",
+      key: "review-banned-key-000001",
+    });
+    assert.equal((banned as { error?: string }).error, "prohibited");
   });
 
   it("keeps every validated field of a request that fills the link limits (no truncated payload)", async () => {

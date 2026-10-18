@@ -149,6 +149,9 @@ export function phoneDeliveryConfigured() {
   return lines.whatsapp || lines.sms || phoneTestSinkEnabled();
 }
 
+/** Wrong guesses allowed per delivered code. A resend never resets this count. */
+const MAX_CODE_ATTEMPTS = 5;
+
 async function sendAndStore(phone: string, code: string) {
   const sent = phoneTestSinkEnabled()
     ? (((globalThis as { __rlLastCode?: string }).__rlLastCode = code),
@@ -157,13 +160,18 @@ async function sendAndStore(phone: string, code: string) {
   if (!sent.whatsapp && !sent.sms) return null;
   const sql = await getSql();
   const hash = await hashCode(codeSecret(), phone, code);
+  // A locked code keeps its original expiry (the expires_at case below): a resend must not extend the lock.
   await sql`
     insert into phone_codes (phone, code_hash, code_salt, expires_at, attempts, sent_at)
     values (${phone}, ${hash}, 'hmac', now() + interval '10 minutes', 0, now())
     on conflict (phone) do update set
       code_hash = excluded.code_hash,
       code_salt = 'hmac',
-      expires_at = excluded.expires_at,
+      expires_at = case
+        when phone_codes.expires_at > now() and phone_codes.attempts >= ${MAX_CODE_ATTEMPTS}
+          then phone_codes.expires_at
+        else excluded.expires_at
+      end,
       sent_at = excluded.sent_at,
       attempts = case
         when phone_codes.expires_at > now() then phone_codes.attempts
@@ -177,7 +185,7 @@ async function consumeDeliveredCode(phone: string, pin: string) {
   const rows = await sql<{ code_hash: string; code_salt: string; attempts: number }>`
     update phone_codes
     set attempts = attempts + 1
-    where phone = ${phone} and expires_at > now() and attempts < 5
+    where phone = ${phone} and expires_at > now() and attempts < ${MAX_CODE_ATTEMPTS}
     returning code_hash, code_salt, attempts`;
   const row = rows[0];
   if (!row || row.code_salt !== "hmac") return false;
@@ -199,9 +207,12 @@ export async function phoneStart(dial: unknown, national: unknown, turnstileToke
   }
   await sweep();
   const sql = await getSql();
-  const cool = await sql<{ ok: boolean }>`
-    select sent_at > now() - interval '60 seconds' as ok from phone_codes where phone = ${phone} and expires_at > now()`;
-  if (cool[0]?.ok === true) return { error: "rate" as const };
+  const cool = await sql<{ ok: boolean; locked: boolean }>`
+    select sent_at > now() - interval '60 seconds' as ok, attempts >= ${MAX_CODE_ATTEMPTS} as locked
+    from phone_codes where phone = ${phone} and expires_at > now()`;
+  // Cooldown after a send, and no new code while the current one is locked by wrong guesses:
+  // the attempt count survives a resend, so a new code could never be used anyway.
+  if (cool[0]?.ok === true || cool[0]?.locked === true) return { error: "rate" as const };
   if (await limited(phone, clientIp(), "send")) return { error: "rate" as const };
   const code = await randomCode();
   const sent = await sendAndStore(phone, code);

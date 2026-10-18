@@ -66,8 +66,6 @@ function clearDeliveryEnv() {
   delete process.env.TWILIO_FROM;
 }
 
-
-
 async function counts() {
   const sql = await getSql();
   const users = await sql<{ n: number }>`select count(*) as n from phone_users`;
@@ -171,5 +169,99 @@ describe("phone sign-in when a delivery channel is configured", () => {
       assert.match(String(error), /StartEvent/);
     }
     assert.equal((await counts()).sessions, 2);
+  });
+});
+
+describe("resending a code never resets or extends the wrong-guess lock", () => {
+  const NATIONAL_LOCK = "7509990001";
+  const phone = `+${DIAL}${NATIONAL_LOCK}`;
+  const row = async () =>
+    (
+      await pg.query<{ attempts: number; expires_at: string }>(
+        "select attempts, expires_at::text from phone_codes where phone = $1",
+        [phone],
+      )
+    ).rows[0];
+  const lastCode = () => (globalThis as { __rlLastCode?: string }).__rlLastCode;
+
+  it("refuses a resend while locked, sends nothing and keeps the lock", async () => {
+    process.env.RL_PHONE_TEST_SINK = "1";
+    assert.equal((await phoneStart(DIAL, NATIONAL_LOCK)).sent, true);
+    const delivered = lastCode();
+    assert.ok(delivered);
+    const wrong = delivered === "000000" ? "111111" : "000000";
+    for (let i = 0; i < 5; i += 1) {
+      assert.deepEqual(
+        await phoneConfirm({ dial: DIAL, national: NATIONAL_LOCK, pin: wrong, name: "Lock User" }),
+        {
+          error: "wrong",
+        },
+      );
+    }
+    const locked = await row();
+    assert.equal(locked.attempts, 5);
+    // Past the 60 s cooldown, so only the lock can refuse the resend.
+    await pg.query(
+      "update phone_codes set sent_at = now() - interval '2 minutes' where phone = $1",
+      [phone],
+    );
+    assert.deepEqual(await phoneStart(DIAL, NATIONAL_LOCK), { error: "rate" });
+    assert.equal(lastCode(), delivered, "no new code was delivered while locked");
+    const after = await row();
+    assert.equal(after.attempts, 5, "a resend does not reset the attempt count");
+    assert.equal(after.expires_at, locked.expires_at, "a resend does not extend the lock");
+    // The delivered code is unusable too: the guess budget is spent.
+    assert.deepEqual(
+      await phoneConfirm({
+        dial: DIAL,
+        national: NATIONAL_LOCK,
+        pin: delivered,
+        name: "Lock User",
+      }),
+      { error: "wrong" },
+    );
+  });
+
+  it("starts fresh once the locked code has expired", async () => {
+    await pg.query(
+      "update phone_codes set expires_at = now() - interval '1 second' where phone = $1",
+      [phone],
+    );
+    const started = await phoneStart(DIAL, NATIONAL_LOCK);
+    assert.equal(started.sent, true);
+    const fresh = await row();
+    assert.equal(fresh.attempts, 0);
+    try {
+      const done = await phoneConfirm({
+        dial: DIAL,
+        national: NATIONAL_LOCK,
+        pin: lastCode(),
+        name: "Lock User",
+      });
+      assert.equal("name" in done, true);
+    } catch (error) {
+      // The code is valid; the cookie write needs a request context this unit test lacks.
+      assert.match(String(error), /StartEvent/);
+    }
+  });
+
+  it("keeps the attempt count when an unlocked code is resent", async () => {
+    const other = "7509990002";
+    const otherPhone = `+${DIAL}${other}`;
+    assert.equal((await phoneStart(DIAL, other)).sent, true);
+    const wrong = lastCode() === "000000" ? "111111" : "000000";
+    for (let i = 0; i < 2; i += 1)
+      await phoneConfirm({ dial: DIAL, national: other, pin: wrong, name: "Other" });
+    await pg.query(
+      "update phone_codes set sent_at = now() - interval '2 minutes' where phone = $1",
+      [otherPhone],
+    );
+    assert.equal((await phoneStart(DIAL, other)).sent, true);
+    const attempts = (
+      await pg.query<{ attempts: number }>("select attempts from phone_codes where phone = $1", [
+        otherPhone,
+      ])
+    ).rows[0].attempts;
+    assert.equal(attempts, 2, "wrong guesses survive a resend (no brute force through resends)");
   });
 });

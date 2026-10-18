@@ -6,6 +6,7 @@
  * Pricing itself is `priceShipment` from corridor.ts, unchanged.
  */
 import { DESTS, MODES, ORIGINS, priceShipment, type ModeId } from "./corridor.ts";
+import { parseDecimal } from "./numbers.ts";
 import { dimInRange, kgInRange } from "./quote-search.ts";
 
 export const QUOTE_TTL_MS = 30 * 60 * 1000;
@@ -61,7 +62,7 @@ async function hmac(secret: string, data: string): Promise<Uint8Array> {
 }
 
 function num(value: unknown): number {
-  const n = typeof value === "number" ? value : typeof value === "string" ? Number(value) : NaN;
+  const n = parseDecimal(value);
   return Number.isFinite(n) ? n : NaN;
 }
 
