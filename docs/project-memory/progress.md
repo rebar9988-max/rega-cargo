@@ -1,8 +1,8 @@
 # Progress
 
-## 2026-10-18 homepage hero: animated red silk (code `49938d4`; release state in the report)
+## 2026-10-18 homepage hero: original silk deformation (PR #122, not deployed)
 
-Owner brief: animate only the hero's red silk like satin in a breeze, identical on desktop and mobile. The flattened hero art was split into the unchanged poster, a WebGL silk canvas and a headphones+podium cutout (`hero-fg.webp`). Geometry identical to `main` at 320–1440 px in ckb/ar/en; reduced-motion render pixel-identical; foreground static between frames. Chromium on the built Worker 394 passed / 12 skipped / 3 failed (pre-existing header-search race, also fails on `main`). [Report](../verification/hero-silk-20261018.md).
+Continuation preserves the original silk photograph instead of replacing its folds. A transparent, guarded WebGL overlay moves only silk (18/26-second waves); the original poster supplies the stationary headphones and podium. Reduced motion/static fallback, offscreen/tab pause, decoded-mask startup, context-loss cleanup and a 300k-pixel/30fps cap are covered by focused tests. Original hero pixels and geometry are identical in 21 reduced-motion comparisons (320–1440 px × ckb/ar/en). Official-image focused checks: 46 passed, 4 Firefox WebGL-unavailable skips; Firefox fallback passed. Broader official-image geometry: 537 pass / 16 skips / 1 existing WebKit iPad search hydration failure; no full-green gate claim. See the [report](../verification/hero-silk-20261018.md) for remaining gates and production status. The earlier procedural screenshots/results describe a superseded candidate, not production.
 
 ## 2026-10-18 weight/size digit input (PR #118 merged `675c644`; deployed by Build `74e026c6`, Version `e3ab56d5-c74b-4317-9c63-c254af2a39cd`)
 
