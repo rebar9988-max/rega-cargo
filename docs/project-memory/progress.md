@@ -1,6 +1,8 @@
 # Progress
 
-## 2026-10-18 homepage hero: original silk deformation (PR #122, not deployed)
+## 2026-10-18 homepage hero: original silk released (PR #122 / `f430d75`)
+
+**Final:** owner requested publication; #121 prerequisite merged; complete hosted gate passed (507 unit/script + 651 browser/layout/pixel, 4/16 existing skips, zero failures). Main-only Cloudflare Build `5fb9e9c5` succeeded; version `b1ac11a9` verified at 100%. Live motion, stable foreground, reduced motion and required routes verified; detailed production rerun/environment limits are in the report below. Earlier diagnostic counts in this entry are superseded by that final gate.
 
 Continuation preserves the original silk photograph instead of replacing its folds. A transparent, guarded WebGL overlay moves only silk (18/26-second waves); the original poster supplies the stationary headphones and podium. Reduced motion/static fallback, offscreen/tab pause, decoded-mask startup, context-loss cleanup and a 300k-pixel/30fps cap are covered by focused tests. Original hero pixels and geometry are identical in 21 reduced-motion comparisons (320–1440 px × ckb/ar/en). Official-image focused checks: 46 passed, 4 Firefox WebGL-unavailable skips; Firefox fallback passed. Broader official-image geometry: 537 pass / 16 skips / 1 existing WebKit iPad search hydration failure; no full-green gate claim. See the [report](../verification/hero-silk-20261018.md) for remaining gates and production status. The earlier procedural screenshots/results describe a superseded candidate, not production.
 
