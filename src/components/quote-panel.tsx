@@ -2,7 +2,7 @@ import { Price, Icon } from "./ui";
 import { MapPin, Scale, Package, Truck } from "lucide-react";
 import { shippingCopy } from "@/lib/shipping-copy";
 import { redesignCopy } from "@/lib/redesign-copy";
-import { NUM_LOCALE } from "@/lib/numbers";
+import { NUM_LOCALE, parseDecimal } from "@/lib/numbers";
 import { QUOTE_LIMITS, dimInRange, kgInRange, parseKg } from "@/lib/quote-search";
 import { useEffect, useMemo, useState, useRef, type CSSProperties } from "react";
 import { Link } from "@tanstack/react-router";
@@ -101,17 +101,19 @@ export function QuotePanel({
 
   const origin = getOrigin(fromId);
   const dest = getDest(toId);
-  const weight = Number(kg.trim().replace(",", "."));
+  const weight = parseDecimal(kg);
   const dims =
-    variant === "compact" ? SAMPLE_BOX : { l: Number(length), w: Number(width), h: Number(height) };
+    variant === "compact"
+      ? SAMPLE_BOX
+      : { l: parseDecimal(length), w: parseDecimal(width), h: parseDecimal(height) };
   const weightOk = kgInRange(weight);
   const dimsOk = variant === "compact" || [dims.l, dims.w, dims.h].every(dimInRange);
   const valid = weightOk && dimsOk;
   const pieceCount = Math.min(
     QUOTE_LIMITS.pieces.max,
-    Math.max(QUOTE_LIMITS.pieces.min, Math.round(Number(pieces) || 1)),
+    Math.max(QUOTE_LIMITS.pieces.min, Math.round(parseDecimal(pieces) || 1)),
   );
-  const declared = Number(value);
+  const declared = parseDecimal(value, { groupedThousands: true });
   const safeValue = Number.isFinite(declared) && declared > 0 ? declared : 0;
 
   const rows = useMemo(() => {
@@ -254,7 +256,7 @@ export function QuotePanel({
                 className={controlClass}
                 dir="ltr"
                 inputMode="decimal"
-                aria-invalid={!dimInRange(Number(f.value))}
+                aria-invalid={!dimInRange(parseDecimal(f.value))}
                 value={f.value}
                 onChange={(e) => f.set(e.target.value)}
               />
@@ -408,7 +410,7 @@ export function QuotePanel({
                     className={controlClass}
                     dir="ltr"
                     inputMode="decimal"
-                    aria-invalid={!dimInRange(Number(length))}
+                    aria-invalid={!dimInRange(parseDecimal(length))}
                     value={length}
                     onChange={(e) => setLength(e.target.value)}
                   />
@@ -418,7 +420,7 @@ export function QuotePanel({
                     className={controlClass}
                     dir="ltr"
                     inputMode="decimal"
-                    aria-invalid={!dimInRange(Number(width))}
+                    aria-invalid={!dimInRange(parseDecimal(width))}
                     value={width}
                     onChange={(e) => setWidth(e.target.value)}
                   />
@@ -428,7 +430,7 @@ export function QuotePanel({
                     className={controlClass}
                     dir="ltr"
                     inputMode="decimal"
-                    aria-invalid={!dimInRange(Number(height))}
+                    aria-invalid={!dimInRange(parseDecimal(height))}
                     value={height}
                     onChange={(e) => setHeight(e.target.value)}
                   />
@@ -758,4 +760,3 @@ function Meter({ k, v, hot }: { k: string; v: string; hot?: boolean }) {
     </div>
   );
 }
-

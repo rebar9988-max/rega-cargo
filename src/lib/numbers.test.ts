@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { NUM_LOCALE, formatNumber, hasEasternDigits } from "./numbers.ts";
+import { NUM_LOCALE, formatNumber, hasEasternDigits, parseDecimal, westernDigits } from "./numbers.ts";
 import { formatEur, formatIqdFromEur } from "./corridor.ts";
 import { QUOTE_LIMITS } from "./quote-search.ts";
 
@@ -80,4 +80,28 @@ test("weight and dimension errors state the server limits in all 7 languages", a
     );
     assert.ok(!/300/.test(line), line);
   }
+});
+
+test("parseDecimal reads what ckb, ar and fa keyboards produce, and nothing it would have to guess", () => {
+  const e = (text: string) => text; // keep the literals below as escapes: sources must not hold Eastern digits
+  const arabicIndic = e("٣٫٢"); // 3.2 with the Arabic decimal separator
+  const arabicDot = e("٣.٢");
+  const persian = e("۳٫۲");
+  assert.equal(parseDecimal("3.2"), 3.2);
+  assert.equal(parseDecimal("3,2"), 3.2);
+  assert.equal(parseDecimal(arabicIndic), 3.2);
+  assert.equal(parseDecimal(arabicDot), 3.2);
+  assert.equal(parseDecimal(persian), 3.2);
+  assert.equal(parseDecimal(" 0,1 "), 0.1);
+  assert.equal(parseDecimal(".5"), 0.5);
+  assert.equal(parseDecimal(70), 70);
+  for (const bad of ["", " ", "abc", "1e2", "-3", "+3", "3.2.1", "3,2,1", "1 000", "0x10", "3 kg", null, undefined, {}, "9".repeat(21)])
+    assert.ok(Number.isNaN(parseDecimal(bad)), JSON.stringify(bad));
+  // Money-like fields may group thousands; a bare comma stays a decimal mark elsewhere.
+  assert.equal(parseDecimal("1,500", { groupedThousands: true }), 1500);
+  assert.equal(parseDecimal("1,500.5", { groupedThousands: true }), 1500.5);
+  assert.equal(parseDecimal("1٬500", { groupedThousands: true }), 1500);
+  assert.equal(parseDecimal("1,5", { groupedThousands: true }), 1.5);
+  assert.equal(parseDecimal("1,500"), 1.5, "without the option a comma is a decimal mark");
+  assert.equal(westernDigits("١۲x"), "12x");
 });

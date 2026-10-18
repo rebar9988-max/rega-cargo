@@ -1,4 +1,5 @@
 import { DESTS, ORIGINS } from "./corridor.ts";
+import { parseDecimal } from "./numbers.ts";
 
 /** Accepted input ranges for the calculator, its URL parameters and the signed-quote server. */
 export const QUOTE_LIMITS = {
@@ -8,9 +9,7 @@ export const QUOTE_LIMITS = {
 } as const;
 
 function toNumber(value: unknown): number {
-  if (typeof value === "number") return value;
-  if (typeof value !== "string" || value.length > 20) return NaN;
-  return Number(value.trim().replace(",", "."));
+  return parseDecimal(value);
 }
 
 /**

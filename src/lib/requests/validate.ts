@@ -7,6 +7,7 @@
  */
 import { DESTS, MODES, ORIGINS, priceShipment } from "../corridor.ts";
 import { cleanField } from "../orders/store-request.ts";
+import { westernDigits } from "../numbers.ts";
 
 export type Flow = "buy" | "forward";
 export const FLOWS: readonly Flow[] = ["buy", "forward"];
@@ -69,7 +70,7 @@ function num(raw: unknown): number | null {
     typeof raw === "number"
       ? String(raw)
       : typeof raw === "string"
-        ? raw.trim().replace(",", ".")
+        ? westernDigits(raw.trim()).replace(/[,\u066B]/, ".")
         : "";
   if (!/^\d{1,4}(\.\d{1,2})?$/.test(text)) return Number.NaN;
   return Number(text);

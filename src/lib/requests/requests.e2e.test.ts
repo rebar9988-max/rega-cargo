@@ -134,6 +134,22 @@ describe("request validation", () => {
     });
   });
 
+  it("reads weight, size and quantity typed with Arabic-Indic digits or a decimal comma", () => {
+    const typed = validateRequest({
+      ...buy,
+      weightKg: "\u0661\u066B\u0665",
+      l: "\u0663\u0660",
+      w: "20,5",
+      h: "\u06F1\u06F2",
+      qty: "\u0662",
+    });
+    assert.ok(typed.ok, JSON.stringify(typed));
+    assert.equal(typed.data.weightKg, 1.5);
+    assert.deepEqual(typed.data.dims, { l: 30, w: 20.5, h: 12 });
+    assert.equal(typed.data.qty, 2);
+    assert.deepEqual(validateRequest({ ...buy, weightKg: "1e1" }), { ok: false, error: "weight" });
+  });
+
   it("estimates shipping with the unchanged economy formula (4.60/kg, min 22, /5000)", () => {
     const checked = validateRequest({ ...buy, weightKg: "10", l: "", w: "", h: "" });
     assert.ok(checked.ok);
