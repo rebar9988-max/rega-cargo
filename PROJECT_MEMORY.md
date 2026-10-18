@@ -9,9 +9,9 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-18**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
-## Current state — silk continuation, 2026-10-18
+## Current state — original silk released, 2026-10-18
 
-Owner requested publication of the previewed silk animation. Prerequisite PR #121 merged as `96d9f15` after successful hosted checks; PR #122 is being reconciled and must pass its final hosted gate before release. Direct Cloudflare reads confirm production `0ca75d5a-1c08-4dc5-bbbb-12ef4bf545b0` at 100%. Hosted Actions now execute (verified from PR #121), superseding the historical billing-only limitation below. The separate baseline prerequisite is resolved; require the final hosted layout gate before animation release. [Evidence and continuation](docs/verification/hero-silk-20261018.md).
+Owner requested publication after the moving preview. Prerequisite #121 merged as `96d9f15`; #122 passed the complete hosted gate (507 unit/script passes + 4 skips; 651 browser/pixel/layout passes + 16 skips; zero failures) and merged as `f430d75`. Existing Cloudflare main Build `5fb9e9c5` succeeded; direct readback confirms version `b1ac11a9-fdc5-4a02-b123-ab3e723c0e9a` at 100%. Live silk movement, stationary product/copy, reduced motion and fallbacks verified; 13 public routes finish at 200. The original design and business behaviour are preserved. [Full evidence and limitations](docs/verification/hero-silk-20261018.md). Documentation-only builds can change the version without changing this app.
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
 
@@ -78,7 +78,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
-- Hero silk continuation (2026-10-18, PR #122 **open, not deployed**): the original photograph supplies the folds and stationary foreground. A transparent WebGL overlay deforms only guarded silk pixels, with 18/26-second waves, offscreen/tab pause and matching reduced-motion fallback. Original hero pixels/geometry identical in 21 comparisons; focused official-image tests 46 pass / 4 Firefox WebGL-unavailable skips. [Current checks and release state](docs/verification/hero-silk-20261018.md). Owner subsequently requested publication; prerequisite #121 merged as `96d9f15`. Final reconciled layout gate remains mandatory.
+- Hero original silk (2026-10-18): **released** in #122 / `f430d75`, after prerequisite #121 and the passing hosted gate. The original photograph supplies folds and stationary foreground; guarded 18/26-second motion, offscreen/tab pause and reduced-motion/static fallback verified on production. No native-device/field-performance claim. [Release and continuation](docs/verification/hero-silk-20261018.md).
 
 - Weight/size digit input (2026-10-18): deployed by Build `74e026c6`, Version `e3ab56d5-c74b-4317-9c63-c254af2a39cd` after the first build `be61d4c3` failed transiently (cause unknown, log unreadable by the agent; see deployments.md). Verify the active Worker version in Cloudflare (agent has no Workers API access). Details: [report](docs/verification/digit-input-20261018.md). The OTP, rate-limit, review-notice and tenth-kilogram work is in `release-hardening-20261018.md` (another session). Drafts #87 and #98 touch the same files and need a rebase.
 - 2026-10-18 owner-authorized continuation after #115/#116: OTP fixed-window resends, decimal-weight regressions, fail-closed limits and transactional review inbox implemented. [Verification and release state](docs/verification/release-hardening-20261018.md). Live Workers API access is now available; initial version `db58bc44-faef-4a0d-bbaf-5c4b16dca311` verified at 100%. This supersedes older session-specific statements that allocation cannot be checked. Real OTP provider and approved staff accounts are still absent.
