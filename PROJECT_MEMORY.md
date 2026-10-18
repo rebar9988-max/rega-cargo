@@ -74,6 +74,8 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
+- Hero silk animation (2026-10-18): homepage hero silk is a WebGL layer between the unchanged poster and a headphones/podium cutout (`src/components/hero-silk.tsx`, `public/home/hero-fg.webp`). Do not re-flatten the art or move the foreground; reduced motion must keep the poster. [Report and release state](docs/verification/hero-silk-20261018.md). Open: `unified.spec.ts` "homepage search" fails before hydration on 820+ widths in the agent container, on `main` too (not caused by this change).
+
 - Weight/size digit input (2026-10-18): deployed by Build `74e026c6`, Version `e3ab56d5-c74b-4317-9c63-c254af2a39cd` after the first build `be61d4c3` failed transiently (cause unknown, log unreadable by the agent; see deployments.md). Verify the active Worker version in Cloudflare (agent has no Workers API access). Details: [report](docs/verification/digit-input-20261018.md). The OTP, rate-limit, review-notice and tenth-kilogram work is in `release-hardening-20261018.md` (another session). Drafts #87 and #98 touch the same files and need a rebase.
 - 2026-10-18 owner-authorized continuation after #115/#116: OTP fixed-window resends, decimal-weight regressions, fail-closed limits and transactional review inbox implemented. [Verification and release state](docs/verification/release-hardening-20261018.md). Live Workers API access is now available; initial version `db58bc44-faef-4a0d-bbaf-5c4b16dca311` verified at 100%. This supersedes older session-specific statements that allocation cannot be checked. Real OTP provider and approved staff accounts are still absent.
 

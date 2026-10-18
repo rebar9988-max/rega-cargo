@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-18 homepage hero: animated red silk (code `49938d4`; release state in the report)
+
+Owner brief: animate only the hero's red silk like satin in a breeze, identical on desktop and mobile. The flattened hero art was split into the unchanged poster, a WebGL silk canvas and a headphones+podium cutout (`hero-fg.webp`). Geometry identical to `main` at 320–1440 px in ckb/ar/en; reduced-motion render pixel-identical; foreground static between frames. Chromium on the built Worker 394 passed / 12 skipped / 3 failed (pre-existing header-search race, also fails on `main`). [Report](../verification/hero-silk-20261018.md).
+
 ## 2026-10-18 weight/size digit input (PR #118 merged `675c644`; deployed by Build `74e026c6`, Version `e3ab56d5-c74b-4317-9c63-c254af2a39cd`)
 
 Production inspection (78 read-only flows, 320/390/1440 px, ckb/en: 0 failures). The only remaining browser defect after the concurrent release `dc5bec0`: Arabic-Indic/Persian digits (and `1e1` on the server) in weight/size inputs. Fixed with one shared `parseDecimal`; pricing unchanged. Chromium 395/12 skipped/0 failed, 236 + 271 unit tests. [Report](../verification/digit-input-20261018.md).

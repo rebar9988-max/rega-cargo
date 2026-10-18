@@ -51,7 +51,7 @@ Grayscale 8×8-block SSIM / mean absolute error against the reference, per strip
 | Banners 1120–1360 | 0.39 | 47.3 |
 | Benefits 1360–1456 | 0.57 | 23.3 |
 
-Remaining mismatches: hero silk is a crop that starts at x≈520 and fades in (the reference's silk continues behind the text), logo is a square mark rather than the wider reference crop, banner art is cropped from flattened pixels, product photos differ, headline glyphs differ slightly in width (Vazirmatn vs the reference face).
+Remaining mismatches (2026-10-18: the silk inside the art is now animated, see `docs/verification/hero-silk-20261018.md`; its footprint is unchanged): hero silk is a crop that starts at x≈520 and fades in (the reference's silk continues behind the text), logo is a square mark rather than the wider reference crop, banner art is cropped from flattened pixels, product photos differ, headline glyphs differ slightly in width (Vazirmatn vs the reference face).
 
 ## Checks run locally (on `main` @ `ddc275f` + this change)
 
