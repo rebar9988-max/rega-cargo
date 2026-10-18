@@ -97,3 +97,26 @@ test("a signed quote has exactly one accepted spelling, so it books only once", 
   assert.deepEqual(accepted, [token]);
   assert.equal(quoteBookingKey(accepted[0]), quoteBookingKey(token));
 });
+
+
+test("every 0.1 kg step survives server pricing and signed quotes at the boundaries", async () => {
+  for (let tenths = 1; tenths <= 700; tenths += 1) {
+    const kg = tenths / 10;
+    const priced = priceQuote({ ...input, kg, l: 1, w: 1, h: 1 });
+    assert.ok(priced);
+    assert.equal(priced.kg, kg);
+    assert.equal(priced.chargeable, kg);
+    assert.equal(priced.total, Math.max(2200, Math.round(kg * 4.6 * 100)) / 100);
+  }
+  assert.equal(priceQuote({ ...input, kg: "10,1", l: 1, w: 1, h: 1 })?.kg, 10.1);
+  for (const kg of [0.1, 4.8, 4.9, 69.9, 70]) {
+    const priced = priceQuote({ ...input, kg, l: 1, w: 1, h: 1 })!;
+    const { token } = await signQuote(priced, SECRET);
+    assert.equal((await verifyQuote(token, SECRET))?.kg, kg);
+  }
+  for (const kg of [0, 0.09, 70.1, NaN, Infinity])
+    assert.equal(priceQuote({ ...input, kg }), null);
+  // Preserve the approved nearest-tenth policy; this task does not raise prices.
+  assert.equal(priceQuote({ ...input, kg: 4.84, l: 1, w: 1, h: 1 })?.chargeable, 4.8);
+  assert.equal(priceQuote({ ...input, kg: 4.85, l: 1, w: 1, h: 1 })?.chargeable, 4.9);
+});

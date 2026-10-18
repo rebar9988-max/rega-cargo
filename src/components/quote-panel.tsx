@@ -101,7 +101,7 @@ export function QuotePanel({
 
   const origin = getOrigin(fromId);
   const dest = getDest(toId);
-  const weight = Number(kg);
+  const weight = Number(kg.trim().replace(",", "."));
   const dims =
     variant === "compact" ? SAMPLE_BOX : { l: Number(length), w: Number(width), h: Number(height) };
   const weightOk = kgInRange(weight);
@@ -758,3 +758,4 @@ function Meter({ k, v, hot }: { k: string; v: string; hot?: boolean }) {
     </div>
   );
 }
+

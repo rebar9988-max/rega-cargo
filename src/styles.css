@@ -3,6 +3,30 @@
 @import "./styles/design-system.css";
 @import "./styles/shipping.css";
 @import "./styles/ref-home.css";
+/* Match the Latin fallback to the existing Inter metrics while its file loads.
+   Primary font files, final typography and line-height tokens are unchanged. */
+@font-face {
+  font-family: "Inter RL Fallback";
+  unicode-range: U+0000-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F, U+2212;
+  src: local("Arial"), local("Liberation Sans");
+  font-style: normal;
+  font-weight: 400;
+  size-adjust: 107.3847%;
+  ascent-override: 90.2131%;
+  descent-override: 22.4623%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Inter RL Fallback";
+  unicode-range: U+0000-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F, U+2212;
+  src: local("Arial Bold"), local("Liberation Sans Bold");
+  font-style: normal;
+  font-weight: 700;
+  size-adjust: 102.8046%;
+  ascent-override: 94.2322%;
+  descent-override: 23.4630%;
+  line-gap-override: 0%;
+}
 @font-face {
   font-family: "Inter RL";
   font-style: normal;

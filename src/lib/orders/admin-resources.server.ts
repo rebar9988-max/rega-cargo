@@ -62,7 +62,8 @@ export const orderAdminResources: Record<string, ResourceSpec> = {
       if (operation === "create") {
         const checked = validateRequest(data);
         if (!checked.ok) throw new MarketError("invalid");
-        if ((await checkTextServer(sql, JSON.stringify(checked.data))).decision === "block")
+        const verdict = await checkTextServer(sql, JSON.stringify(checked.data));
+        if (verdict.decision === "block")
           throw new MarketError("prohibited");
         const contact = (
           await sql`select name, phone from phone_users where id = ${actor} and disabled_at is null and requires_verification = false`
@@ -76,7 +77,7 @@ export const orderAdminResources: Record<string, ResourceSpec> = {
           phone: contact.phone,
           payload: JSON.stringify(checked.data),
           estimate_eur: shippingEstimateEur(checked.data),
-          status: "received",
+          status: verdict.decision === "review" ? "reviewing" : "received",
           tracking_id: newTrackingId(),
         };
       }
@@ -96,3 +97,4 @@ export const orderAdminResources: Record<string, ResourceSpec> = {
     },
   },
 };
+

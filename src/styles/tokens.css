@@ -87,7 +87,7 @@
   --rl-motion-reduced: 0.01ms;
   --rl-animation-reduced: none;
   --rl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --rl-font-latin: "Inter RL";
+  --rl-font-latin: "Inter RL", "Inter RL Fallback";
   --rl-font-arabic: "Noto Sans Arabic RL", "Vazirmatn";
   --rl-font-body:
     var(--rl-font-latin), var(--rl-font-arabic), Arial, "Liberation Sans", system-ui, sans-serif;

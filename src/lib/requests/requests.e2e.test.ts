@@ -464,3 +464,65 @@ describe("customer requests on PGLite", () => {
     assert.equal(rows[0]?.kind, "store");
   });
 });
+
+
+describe("transactional review inbox", () => {
+  it("flags compliance reviews, notifies each approved staff member once and rolls back on notification failure", async () => {
+    const sql = await getSql();
+    const staff = "review-notice-staff";
+    await sql`insert into user_roles (user_id, role, status, display_name) values (${staff}, 'admin', 'approved', 'Review Staff'), (${staff}, 'super_admin', 'approved', 'Review Staff'), ('review-not-approved', 'admin', 'pending', 'Pending')`;
+    // Idempotent reapplication must not double-install the trigger.
+    await pg.exec(readFileSync(new URL("migrations/0016_request_review_notifications.sql", root), "utf8"));
+    const key = "review-notification-key-0001";
+    const payload = { ...buy, description: "Alcohol free beer", key };
+    const first = await requests.createRequest("review-customer", payload);
+    assert.ok("id" in first && first.id, JSON.stringify(first));
+    const again = await requests.createRequest("review-customer", payload);
+    assert.ok("id" in again);
+    assert.equal(again.id, first.id);
+    const request = (await sql<{ id: string; status: string }>`select id, status from shipment_requests where tracking_id = ${first.id}`)[0];
+    assert.equal(request.status, "reviewing");
+    const notices = () => sql`select id from notifications where user_id = ${staff} and body_en = ${`Under review: ${first.id}`}`;
+    assert.equal((await notices()).length, 1);
+    assert.equal((await sql`select id from notifications where user_id = 'review-not-approved'`).length, 0);
+    await sql`update shipment_requests set status = 'reviewing' where id = ${request.id}`;
+    assert.equal((await notices()).length, 1, "same-state retries are not new review entries");
+    await sql`update shipment_requests set status = 'quoted' where id = ${request.id}`;
+    await sql`update shipment_requests set status = 'reviewing' where id = ${request.id}`;
+    assert.equal((await notices()).length, 2, "a later review cycle gets its own notice");
+    await sql`update shipment_requests set status = 'quoted' where id = ${request.id}`;
+    const quoteId = "review-decline-quote";
+    await sql`insert into request_quotes(id, request_id, amount_iqd, customs_included, valid_until, created_by)
+      values (${quoteId}, ${request.id}, 1000, false, now() + interval '1 day', ${staff})`;
+    await pg.exec("alter table notifications add constraint test_notice_failure check (body_en not like 'Under review:%') not valid");
+    try {
+      await assert.rejects(() => requests.declineQuote("review-customer", first.id, quoteId));
+      assert.equal((await sql`select status from request_quotes where id = ${quoteId}`)[0].status, "sent");
+      assert.equal((await sql`select status from shipment_requests where id = ${request.id}`)[0].status, "quoted");
+      const failed = await requests.createRequest("review-customer", { ...payload, key: "review-notification-key-fail" });
+      assert.equal(failed.error, "unavailable");
+      assert.equal((await sql`select id from shipment_requests where idempotency_key = 'review-notification-key-fail'`).length, 0);
+    } finally {
+      await pg.exec("alter table notifications drop constraint test_notice_failure");
+    }
+    await requests.declineQuote("review-customer", first.id, quoteId);
+    assert.equal((await notices()).length, 3);
+    await assert.rejects(() => requests.declineQuote("review-customer", first.id, quoteId));
+    assert.equal((await notices()).length, 3);
+  });
+
+  it("preserves decimal weights through validation, persistence and unchanged estimates", async () => {
+    const data = { ...buy, weightKg: "10,1", l: "", w: "", h: "", key: "weight-regression-key-0001" };
+    const checked = validateRequest(data);
+    assert.ok(checked.ok);
+    assert.equal(checked.data.weightKg, 10.1);
+    assert.equal(shippingEstimateEur(checked.data), 46, "existing whole-euro estimate remains unchanged");
+    const made = await requests.createRequest("weight-customer", data);
+    assert.ok("id" in made && made.id, JSON.stringify(made));
+    assert.equal((await requests.requestDetail("weight-customer", made.id)).item.weightKg, 10.1);
+    for (const weightKg of ["0.1", "299.9", "300"])
+      assert.equal(validateRequest({ ...data, weightKg }).ok, true);
+    for (const weightKg of ["0", "300.1", "NaN", "Infinity"])
+      assert.deepEqual(validateRequest({ ...data, weightKg }), { ok: false, error: "weight" });
+  });
+});

@@ -107,16 +107,22 @@ export async function submitRequest(
     const tracking = newTrackingId();
     const inserted = await sql<{ id: string }>`
       with req as (
-        insert into shipment_requests (id, user_id, kind, name, phone, payload, estimate_eur, tracking_id, idempotency_key)
-        values (${id}, ${userId}, ${kind}, ${name}, ${phone}, ${storedJson}, ${estimateEur}, ${tracking}, ${key})
+        insert into shipment_requests (id, user_id, kind, name, phone, payload, estimate_eur, tracking_id, idempotency_key, status)
+        values (${id}, ${userId}, ${kind}, ${name}, ${phone}, ${storedJson}, ${estimateEur}, ${tracking}, ${key}, ${verdict.decision === "review" ? "reviewing" : "received"})
         on conflict do nothing
-        returning id
+        returning id, status
       ), ev as (
         insert into tracking_events (id, shipment_id, title, title_ku, place, place_ku, phase, occurred_at)
       select ${crypto.randomUUID()}, req.id, 'Request received', 'داواکاری گەیشت', '', '', 'now', now() from req
       ), log as (
         insert into request_status_log (id, request_id, status, actor)
-        select ${crypto.randomUUID()}, req.id, 'received', 'system' from req
+        select ${crypto.randomUUID()}, req.id, req.status, 'system' from req
+      ), notice as (
+        insert into notifications (id, user_id, body_ku, body_en)
+        select distinct md5(user_id || ${tracking}), user_id, ${`داواکاری ${tracking}`}, ${`Request ${tracking}`}
+        from user_roles, req where role in ('admin', 'super_admin') and user_roles.status = 'approved'
+          and req.status <> 'reviewing'
+        on conflict (id) do nothing
       )
       select id from req`;
     if (!inserted[0]) {
@@ -135,10 +141,6 @@ export async function submitRequest(
         insert into declarations (id, user_id, kind, ref_id, version)
         values (${crypto.randomUUID()}, ${userId}, ${kind}, ${id}, ${DECLARATION_VERSION})`;
     }
-    await sql`
-      insert into notifications (id, user_id, body_ku, body_en)
-      select distinct md5(user_id || ${tracking}), user_id, ${`داواکاری ${tracking}`}, ${`Request ${tracking}`}
-      from user_roles where role in ('admin', 'super_admin') and status = 'approved'`;
     return { id: tracking, estimate: true as const };
   } catch (err) {
     if (err instanceof MarketError) return { error: err.code };
@@ -223,3 +225,4 @@ export function readEstimateEur() {
   const raw = Number(process.env.IQD_PER_EUR ?? "");
   return Number.isFinite(raw) && raw > 0 ? raw : null;
 }
+

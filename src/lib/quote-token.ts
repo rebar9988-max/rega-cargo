@@ -61,7 +61,7 @@ async function hmac(secret: string, data: string): Promise<Uint8Array> {
 }
 
 function num(value: unknown): number {
-  const n = typeof value === "number" ? value : typeof value === "string" ? Number(value) : NaN;
+  const n = typeof value === "number" ? value : typeof value === "string" ? Number(value.trim().replace(",", ".")) : NaN;
   return Number.isFinite(n) ? n : NaN;
 }
 
@@ -130,3 +130,4 @@ export async function verifyQuote(
 export function quoteBookingKey(token: string): string {
   return `quote:${token.split(".")[1] ?? ""}`;
 }
+

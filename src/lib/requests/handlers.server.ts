@@ -261,11 +261,19 @@ export async function declineQuote(userId: string, value: unknown, quoteId: unkn
   const sql = await getSql();
   const request = await ownRequest(sql, userId, value);
   const id = cleanText(quoteId, 80);
+  // The review transition (including its inbox trigger) and quote decision commit together.
   const updated = await sql<{ id: string }>`
-    update request_quotes set status = 'declined', decided_at = now()
-    where id = ${id} and request_id = ${request.id} and status = 'sent' returning id`;
+    with locked as (
+      select id from shipment_requests where id = ${request.id} and status = 'quoted' for update
+    ), q as (
+      update request_quotes set status = 'declined', decided_at = now()
+      where id = ${id} and request_id in (select id from locked) and status = 'sent'
+      returning request_id
+    )
+    update shipment_requests set status = 'reviewing', updated_at = now()
+    where id in (select request_id from q) and status = 'quoted'
+    returning id`;
   if (!updated[0]) throw new MarketError("invalid");
-  await sql`update shipment_requests set status = 'reviewing', updated_at = now() where id = ${request.id} and status = 'quoted'`;
   await logStatus(sql, request.id, "reviewing", "customer", "quote declined");
   return { ok: true as const };
 }
@@ -419,3 +427,4 @@ export async function staffAddEvent(userId: string, input: Record<string, unknow
     update tracking_events set phase = 'done' where shipment_id = ${rows[0].id} and phase = 'now' and id not in (select id from recorded) and exists(select 1 from logged)`;
   return { ok: true as const };
 }
+

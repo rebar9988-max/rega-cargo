@@ -64,3 +64,10 @@ R&L AI conversation policy/UI is owned by `src/modules/rl-ai/`; existing `src/li
 ## 2026-10-14 candidate administration ownership (not deployed)
 
 `src/lib/admin/` is an authenticated shared control plane with a closed resource registry, database-role authority and atomic immutable audit. Business rules remain in explicit domain adapters under existing Marketplace, orders/Bring For Me, Delivery and Tracking libraries; AI policy is exposed through its existing service contract and cannot grant access to private records or increase deployment budgets. Identity verification/roles and shared settings have explicit control-plane ownership. Existing `/admin`, unified cargo database, public routes and isolated `src/modules/rl-ai` remain intact. Additive migration 0015 is isolated-tested only; no role grant, new database or production schema change. [Candidate evidence](../verification/rl-five-improvements-20261013.md).
+
+
+## 2026-10-18 release continuation after #115/#116
+
+Owner authorized implementation and release of the four previously deferred policy items: fixed five-minute/five-attempt OTP window with atomic 60-second resends and single consumption; decimal-comma weight inputs with all tenth-kilogram boundaries covered and pricing unchanged; fail-closed missing/error rate limits; transactional in-app staff review notices via additive migration 0016. No UI redesign, module boundary change, account grant or paid service. Details, measured checks, deployment state and remaining limitations: [release evidence](../verification/release-hardening-20261018.md).
+
+Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.0589166 (>0.05). Local Latin fallback metrics repair in `src/styles.css`/`tokens.css` makes that existing test pass while primary fonts and final loaded-font design remain unchanged. Final full browser counts are in the same release report.

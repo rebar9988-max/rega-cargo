@@ -101,6 +101,9 @@ async function bump(key: string, limit: number, window: "hour" | "day") {
  * twice, and code guessing cannot starve code sending.
  */
 async function limited(phone: string, ip: string, scope: "send" | "pin") {
+  // The atomic five-attempt code window bounds guesses per phone. Do not also
+  // spend its daily send budget on mistyped PINs; the independent IP budget remains.
+  if (scope === "pin") return bump(`ip:pin:hour:${ip}`, IP_HOUR_LIMIT, "hour");
   const day = new Date().toISOString().slice(0, 10);
   const phoneHour = await bump(`phone:hour:${phone}`, HOUR_LIMIT, "hour");
   const ipHour = await bump(`ip:${scope}:hour:${ip}`, IP_HOUR_LIMIT, "hour");
@@ -150,26 +153,33 @@ export function phoneDeliveryConfigured() {
 }
 
 async function sendAndStore(phone: string, code: string) {
+  const sql = await getSql();
+  const hash = await hashCode(codeSecret(), phone, code);
+  // Reserve atomically BEFORE delivery: concurrent resends cannot evade cooldown.
+  // An active window keeps its original deadline and guess budget, even on resend.
+  const reserved = await sql`
+    insert into phone_codes (phone, code_hash, code_salt, expires_at, attempts, sent_at)
+    values (${phone}, ${hash}, 'pending', now() + interval '5 minutes', 0, now())
+    on conflict (phone) do update set
+      code_hash = excluded.code_hash,
+      code_salt = 'pending',
+      expires_at = case when phone_codes.expires_at > now() then phone_codes.expires_at else excluded.expires_at end,
+      sent_at = excluded.sent_at,
+      attempts = case when phone_codes.expires_at > now() then phone_codes.attempts else 0 end
+    where phone_codes.expires_at <= now()
+       or (phone_codes.sent_at <= now() - interval '60 seconds' and phone_codes.attempts < 5)
+    returning phone`;
+  if (!reserved[0]) return { error: "rate" as const };
   const sent = phoneTestSinkEnabled()
     ? (((globalThis as { __rlLastCode?: string }).__rlLastCode = code),
       { whatsapp: true, sms: false })
     : await deliverCode(phone, code);
-  if (!sent.whatsapp && !sent.sms) return null;
-  const sql = await getSql();
-  const hash = await hashCode(codeSecret(), phone, code);
-  await sql`
-    insert into phone_codes (phone, code_hash, code_salt, expires_at, attempts, sent_at)
-    values (${phone}, ${hash}, 'hmac', now() + interval '10 minutes', 0, now())
-    on conflict (phone) do update set
-      code_hash = excluded.code_hash,
-      code_salt = 'hmac',
-      expires_at = excluded.expires_at,
-      sent_at = excluded.sent_at,
-      attempts = case
-        when phone_codes.expires_at > now() then phone_codes.attempts
-        else 0
-      end`;
-  return sent;
+  if (!sent.whatsapp && !sent.sms) return { error: "unavailable" as const };
+  // A failed delivery never creates a usable PIN. Never activate a newer reservation.
+  const activated = await sql`update phone_codes set code_salt = 'hmac'
+    where phone = ${phone} and code_hash = ${hash} and code_salt = 'pending' and expires_at > now()
+    returning phone`;
+  return activated[0] ? { sent } : { error: "unavailable" as const };
 }
 
 async function consumeDeliveredCode(phone: string, pin: string) {
@@ -177,14 +187,17 @@ async function consumeDeliveredCode(phone: string, pin: string) {
   const rows = await sql<{ code_hash: string; code_salt: string; attempts: number }>`
     update phone_codes
     set attempts = attempts + 1
-    where phone = ${phone} and expires_at > now() and attempts < 5
+    where phone = ${phone} and expires_at > now() and attempts < 5 and code_salt = 'hmac'
     returning code_hash, code_salt, attempts`;
   const row = rows[0];
   if (!row || row.code_salt !== "hmac") return false;
   const actual = await hashCode(codeSecret(), phone, pin);
   if (!codesMatch(actual, row.code_hash)) return false;
-  await sql`delete from phone_codes where phone = ${phone}`;
-  return true;
+  // Single winner, and an old verification cannot consume a concurrently resent code.
+  const consumed = await sql`delete from phone_codes
+    where phone = ${phone} and code_hash = ${row.code_hash} and code_salt = 'hmac' and expires_at > now()
+    returning phone`;
+  return consumed.length === 1;
 }
 
 export async function phoneStart(dial: unknown, national: unknown, turnstileToken?: unknown) {
@@ -200,13 +213,13 @@ export async function phoneStart(dial: unknown, national: unknown, turnstileToke
   await sweep();
   const sql = await getSql();
   const cool = await sql<{ ok: boolean }>`
-    select sent_at > now() - interval '60 seconds' as ok from phone_codes where phone = ${phone} and expires_at > now()`;
+    select (sent_at > now() - interval '60 seconds' or attempts >= 5) as ok from phone_codes where phone = ${phone} and expires_at > now()`;
   if (cool[0]?.ok === true) return { error: "rate" as const };
   if (await limited(phone, clientIp(), "send")) return { error: "rate" as const };
   const code = await randomCode();
   const sent = await sendAndStore(phone, code);
-  if (!sent) return { error: "unavailable" as const };
-  return { phone, sent: true as const, whatsapp: sent.whatsapp, sms: sent.sms };
+  if ("error" in sent) return { error: sent.error };
+  return { phone, sent: true as const, whatsapp: sent.sent.whatsapp, sms: sent.sent.sms };
 }
 
 async function openSession(userId: string) {
@@ -291,3 +304,4 @@ export async function phoneLogout() {
   writeCookie(null);
   return { ok: true };
 }
+

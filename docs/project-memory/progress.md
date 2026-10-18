@@ -114,3 +114,10 @@ Owner-only protection review: [PR #94](https://github.com/rebar9988-max/rega-car
 ## 2026-10-14 reference homepage
 
 [PR #100](https://github.com/rebar9988-max/rega-cargo/pull/100) merged as `fb1bf7b` and live at https://www.rlgo.net (verified read-only, see [RL_DESIGN_PROGRESS.md](../implementation/RL_DESIGN_PROGRESS.md)). Pending: re-render `/` layout baselines, Lighthouse, three owner decisions (keyed logo, home tracking form, CARE+ wording).
+
+
+## 2026-10-18 release continuation after #115/#116
+
+Owner authorized implementation and release of the four previously deferred policy items: fixed five-minute/five-attempt OTP window with atomic 60-second resends and single consumption; decimal-comma weight inputs with all tenth-kilogram boundaries covered and pricing unchanged; fail-closed missing/error rate limits; transactional in-app staff review notices via additive migration 0016. No UI redesign, module boundary change, account grant or paid service. Details, measured checks, deployment state and remaining limitations: [release evidence](../verification/release-hardening-20261018.md).
+
+Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.0589166 (>0.05). Local Latin fallback metrics repair in `src/styles.css`/`tokens.css` makes that existing test pass while primary fonts and final loaded-font design remain unchanged. Final full browser counts are in the same release report.

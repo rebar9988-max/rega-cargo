@@ -74,3 +74,10 @@ Owner chat (Sorani) after the PARTIAL report: merge PR #111 and deploy through t
 
 Owner chat (Sorani) after the code-defect report: merge PR #115 and deploy through the existing Cloudflare Workers Builds path. The four policy items in the report (phone resend lockout, 0.1 kg chargeable rounding, rate-limit fail-open, review-level matches on requests) were NOT changed and remain owner decisions. Basis: local gate on the identical tree (tsc 0 errors, ESLint 0 errors, `npm audit` 0, 236 + 261 tests incl. 6 regression tests that fail on the old code, build, cf dry-run, Chromium layout suite on the built Worker 394 pass / 12 by-design skips / 0 fail). **Not run:** Firefox and WebKit, official-image layout lock and pixel baselines, hosted Actions (billing-blocked, I-7). The compliance change only makes the filter stricter. `main` has no required checks, so nothing was bypassed. [Report](../verification/code-defects-20261017.md).
 
+
+
+## 2026-10-18 release continuation after #115/#116
+
+Owner authorized implementation and release of the four previously deferred policy items: fixed five-minute/five-attempt OTP window with atomic 60-second resends and single consumption; decimal-comma weight inputs with all tenth-kilogram boundaries covered and pricing unchanged; fail-closed missing/error rate limits; transactional in-app staff review notices via additive migration 0016. No UI redesign, module boundary change, account grant or paid service. Details, measured checks, deployment state and remaining limitations: [release evidence](../verification/release-hardening-20261018.md).
+
+Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.0589166 (>0.05). Local Latin fallback metrics repair in `src/styles.css`/`tokens.css` makes that existing test pass while primary fonts and final loaded-font design remain unchanged. Final full browser counts are in the same release report.

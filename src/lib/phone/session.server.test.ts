@@ -173,3 +173,94 @@ describe("phone sign-in when a delivery channel is configured", () => {
     assert.equal((await counts()).sessions, 2);
   });
 });
+
+
+describe("bounded OTP resend and consumption", () => {
+  it("keeps the deadline and guess budget on resend, then recovers after expiry", async () => {
+    process.env.RL_PHONE_TEST_SINK = "1";
+    const national = "7509990001";
+    const phone = "+964" + national;
+    const sql = await getSql();
+    await sql`delete from rate_counters`;
+    assert.equal((await phoneStart(DIAL, national)).sent, true);
+    const first = (globalThis as { __rlLastCode?: string }).__rlLastCode!;
+    const deadline = (await sql<{ expires_at: string }>`select expires_at from phone_codes where phone = ${phone}`)[0].expires_at;
+    assert.equal((await phoneStart(DIAL, national)).error, "rate");
+    const wrong = first === "111111" ? "222222" : "111111";
+    for (let i = 0; i < 2; i += 1)
+      assert.equal((await phoneLogin({ dial: DIAL, national, pin: wrong })).error, "wrong");
+    await sql`update phone_codes set sent_at = now() - interval '61 seconds' where phone = ${phone}`;
+    assert.equal((await phoneStart(DIAL, national)).sent, true);
+    const row = (await sql<{ expires_at: string; attempts: number }>`select expires_at, attempts from phone_codes where phone = ${phone}`)[0];
+    assert.equal(new Date(row.expires_at).getTime(), new Date(deadline).getTime());
+    assert.equal(row.attempts, 2);
+    const second = (globalThis as { __rlLastCode?: string }).__rlLastCode!;
+    const wrongSecond = second === "111111" ? "222222" : "111111";
+    for (let i = 0; i < 3; i += 1)
+      assert.equal((await phoneLogin({ dial: DIAL, national, pin: wrongSecond })).error, "wrong");
+    await sql`update phone_codes set sent_at = now() - interval '61 seconds' where phone = ${phone}`;
+    const beforeBlocked = await sql`select key, n from rate_counters where key like 'phone:%' order by key`;
+    for (let i = 0; i < 12; i += 1)
+      assert.equal((await phoneStart(DIAL, national)).error, "rate");
+    assert.deepEqual(await sql`select key, n from rate_counters where key like 'phone:%' order by key`, beforeBlocked,
+      "locked resends never spend the daily send budget or prolong recovery");
+    assert.equal((await phoneLogin({ dial: DIAL, national, pin: second })).error, "wrong");
+    await sql`update phone_codes set expires_at = now() - interval '1 second' where phone = ${phone}`;
+    assert.equal((await phoneStart(DIAL, national)).sent, true);
+    const fresh = (await sql<{ attempts: number; ttl: number }>`select attempts, extract(epoch from expires_at - now()) as ttl from phone_codes where phone = ${phone}`)[0];
+    assert.equal(fresh.attempts, 0);
+    assert.ok(Number(fresh.ttl) > 290 && Number(fresh.ttl) <= 300);
+  });
+
+  it("allows one concurrent send and one concurrent consumption; pending or expired codes fail", async () => {
+    process.env.RL_PHONE_TEST_SINK = "1";
+    const sql = await getSql();
+    await sql`delete from rate_counters`;
+    const national = "7509990002";
+    const phone = "+964" + national;
+    const starts = await Promise.all([phoneStart(DIAL, national), phoneStart(DIAL, national)]);
+    assert.equal(starts.filter((s) => s.sent).length, 1);
+    const pin = (globalThis as { __rlLastCode?: string }).__rlLastCode!;
+    await sql`update phone_codes set code_salt = 'pending' where phone = ${phone}`;
+    assert.equal((await phoneLogin({ dial: DIAL, national, pin })).error, "wrong");
+    await sql`update phone_codes set code_salt = 'hmac' where phone = ${phone}`;
+    const before = await counts();
+    const results = await Promise.allSettled([1, 2].map(() => phoneConfirm({ dial: DIAL, national, pin, name: "Race User" })));
+    assert.equal((await counts()).sessions, before.sessions + 1);
+    assert.equal(results.filter((r) => r.status === "fulfilled" && r.value.error === "wrong").length, 1);
+    assert.equal((await sql`select phone from phone_codes where phone = ${phone}`).length, 0);
+  });
+});
+
+it("failed provider delivery leaves no usable code or session and permits a bounded retry", async () => {
+  const sql = await getSql();
+  await sql`delete from rate_counters`;
+  const originalFetch = globalThis.fetch;
+  const originalError = console.error;
+  delete process.env.RL_PHONE_TEST_SINK;
+  process.env.TWILIO_ACCOUNT_SID = "test-account";
+  process.env.TWILIO_AUTH_TOKEN = "test-token";
+  process.env.TWILIO_FROM = "+491234567890";
+  globalThis.fetch = async () => new Response("unavailable", { status: 503 });
+  console.error = () => {};
+  const national = "7509990003";
+  const phone = "+964" + national;
+  const before = await counts();
+  try {
+    assert.equal((await phoneStart(DIAL, national)).error, "unavailable");
+    const row = (await sql<{ code_salt: string; code_hash: string }>`select code_salt, code_hash from phone_codes where phone = ${phone}`)[0];
+    assert.equal(row.code_salt, "pending");
+    assert.equal(row.code_hash.length, 64);
+    assert.equal((await phoneLogin({ dial: DIAL, national, pin: PIN })).error, "wrong");
+    assert.deepEqual(await counts(), before);
+    assert.equal((await phoneStart(DIAL, national)).error, "rate");
+    await sql`update phone_codes set sent_at = now() - interval '61 seconds' where phone = ${phone}`;
+    process.env.RL_PHONE_TEST_SINK = "1";
+    assert.equal((await phoneStart(DIAL, national)).sent, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+    console.error = originalError;
+    clearDeliveryEnv();
+    process.env.RL_PHONE_TEST_SINK = "1";
+  }
+});
