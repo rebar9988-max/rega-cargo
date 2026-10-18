@@ -28,6 +28,7 @@ export type LayoutProjectUse = { breakpoint: Breakpoint };
 
 const chromium = devices["Desktop Chrome"];
 const safari = devices["Desktop Safari"];
+const firefox = devices["Desktop Firefox"];
 
 const VIEWPORTS = [
   { name: "iphone", width: 390, height: 844, mobile: true, breakpoint: "phone" },
@@ -106,6 +107,18 @@ export default defineConfig<LayoutProjectUse>({
         deviceScaleFactor: 1,
         isMobile: true,
         hasTouch: true,
+        breakpoint: "phone",
+      },
+    },
+    {
+      // Gecko coverage for the functional/geometry suite. It has no screenshot
+      // assertions, so it needs no baselines; Firefox has no isMobile emulation.
+      name: "firefox-premium-360",
+      testMatch: "**/premium.spec.ts",
+      use: {
+        ...firefox,
+        viewport: { width: 360, height: 800 },
+        deviceScaleFactor: 1,
         breakpoint: "phone",
       },
     },
