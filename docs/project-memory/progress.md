@@ -1,6 +1,6 @@
 # Progress
 
-## 2026-10-18 weight/size digit input (PR #118 merged `675c644`; production build failed, NOT deployed)
+## 2026-10-18 weight/size digit input (PR #118 merged `675c644`; deployed by Build `74e026c6`, Version `e3ab56d5-c74b-4317-9c63-c254af2a39cd`)
 
 Production inspection (78 read-only flows, 320/390/1440 px, ckb/en: 0 failures). The only remaining browser defect after the concurrent release `dc5bec0`: Arabic-Indic/Persian digits (and `1e1` on the server) in weight/size inputs. Fixed with one shared `parseDecimal`; pricing unchanged. Chromium 395/12 skipped/0 failed, 236 + 271 unit tests. [Report](../verification/digit-input-20261018.md).
 
