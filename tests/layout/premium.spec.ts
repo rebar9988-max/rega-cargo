@@ -339,6 +339,50 @@ test("reference homepage: sections, honest content and every service reachable",
   await expect(page).toHaveURL(/sub=smartphones/);
 });
 
+test.describe("reference homepage hero silk", () => {
+  test.use({ reducedMotion: "no-preference" });
+
+  test("only the silk moves; it stays in the art box and the foreground is the poster's pixels", async ({
+    page,
+  }) => {
+    await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+    const webgl = await page.evaluate(() => !!document.createElement("canvas").getContext("webgl"));
+    test.skip(
+      !webgl,
+      "no WebGL in this browser: the still artwork stays, which the other specs cover",
+    );
+    const stage = page.locator(".rl-ref-hero-stage");
+    await expect(stage).toHaveAttribute("data-silk", "on");
+    const boxes = await page.evaluate(() => {
+      const r = (s: string) => document.querySelector(s)!.getBoundingClientRect().toJSON();
+      return {
+        art: r(".rl-ref-hero-art"),
+        stage: r(".rl-ref-hero-stage"),
+        canvas: r(".rl-ref-hero-silk"),
+      };
+    });
+    expect(boxes.canvas).toEqual(boxes.stage);
+    expect(boxes.stage.left).toBeGreaterThanOrEqual(boxes.art.left - 0.5);
+    expect(boxes.stage.right).toBeLessThanOrEqual(boxes.art.right + 0.5);
+    // Copy and actions are static: same boxes after the silk has moved for a while.
+    const copy = () => page.locator(".rl-ref-hero-copy").boundingBox();
+    const before = await copy();
+    await page.waitForTimeout(600);
+    expect(await copy()).toEqual(before);
+    await expect(page.locator(".rl-ref-hero-fg")).toHaveAttribute("src", "/home/hero-fg.webp");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
+  });
+
+  test("reduced motion keeps the still artwork and never starts WebGL", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+    await page.waitForTimeout(500);
+    await expect(page.locator(".rl-ref-hero-stage")).not.toHaveAttribute("data-silk", "on");
+    await expect(page.locator(".rl-ref-hero-silk")).toBeHidden();
+    await expect(page.locator(".rl-ref-hero-poster")).toBeVisible();
+  });
+});
+
 test("shipping: the parcel card only links to tracking and invents no shipment", async ({
   page,
 }) => {

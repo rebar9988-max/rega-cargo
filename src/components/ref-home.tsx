@@ -8,6 +8,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { HeroSilk } from "./hero-silk";
 import { Icon } from "./ui";
 import { responsiveImage } from "@/lib/images";
 import { useI18n } from "@/lib/i18n";
@@ -77,14 +78,7 @@ export function RefHome({ market }: { market: DiscoveryData | null }) {
           </div>
         </div>
         <div className="rl-ref-hero-art" aria-hidden="true">
-          <img
-            src="/home/hero-art.webp"
-            alt=""
-            width={504}
-            height={496}
-            fetchPriority="high"
-            decoding="async"
-          />
+          <HeroSilk />
         </div>
       </section>
 
