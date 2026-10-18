@@ -120,3 +120,15 @@ test("every 0.1 kg step survives server pricing and signed quotes at the boundar
   assert.equal(priceQuote({ ...input, kg: 4.84, l: 1, w: 1, h: 1 })?.chargeable, 4.8);
   assert.equal(priceQuote({ ...input, kg: 4.85, l: 1, w: 1, h: 1 })?.chargeable, 4.9);
 });
+
+test("the quote server prices weights typed with a decimal comma or Arabic-Indic digits like the calculator does", () => {
+  const dot = priceQuote({ ...input, kg: "3.2" });
+  assert.ok(dot);
+  for (const kg of ["3,2", "\u0663\u066B\u0662", "\u0663.\u0662", "\u06F3\u066B\u06F2"]) {
+    assert.deepEqual(priceQuote({ ...input, kg }), dot, kg);
+  }
+  assert.equal(priceQuote({ ...input, kg: "1e1" }), null, "no exponent notation");
+  assert.equal(priceQuote({ ...input, kg: "3 kg" }), null);
+  assert.equal(priceQuote({ ...input, kg: "0,05" }), null, "below 0.1 kg");
+  assert.ok(priceQuote({ ...input, kg: "0,1" }), "0.1 kg is the smallest weight");
+});

@@ -602,3 +602,30 @@ test("refinement: header, hero and sections share one content edge; touch target
     await page.locator(".rl-site-footer").evaluate((el) => getComputedStyle(el).paddingBlockEnd),
   ).toBe("0px");
 });
+
+test("quote weight accepts the decimal comma and Arabic-Indic or Persian digits like a plain 3.2", async ({
+  page,
+}) => {
+  // Sorani and Arabic keyboards type these; the result must match 3.2 kg exactly.
+  const same = ["3,2", "٣٫٢", "٣.٢", "۳٫۲"];
+  const refused = ["abc", "1e1", "0", "70.1", "3 kg"];
+  for (const lang of ["ckb", "ar", "en"]) {
+    await page.goto(`/quote?lang=${lang}`, { waitUntil: "networkidle" });
+    const weight = page.locator("main input[inputmode=decimal]").first();
+    await weight.fill("3.2");
+    await expect(weight, lang).toHaveAttribute("aria-invalid", "false");
+    const reference = await page.locator("main").innerText();
+    for (const typed of same) {
+      await weight.fill(typed);
+      await expect(weight, `${lang} ${typed}`).toHaveAttribute("aria-invalid", "false");
+      expect(await page.locator("main").innerText(), `${lang} ${typed}`).toBe(reference);
+    }
+    for (const typed of refused) {
+      await weight.fill(typed);
+      await expect(weight, `${lang} ${typed}`).toHaveAttribute("aria-invalid", "true");
+    }
+    // 0.1 kg is the smallest accepted weight.
+    await weight.fill("0,1");
+    await expect(weight, lang).toHaveAttribute("aria-invalid", "false");
+  }
+});

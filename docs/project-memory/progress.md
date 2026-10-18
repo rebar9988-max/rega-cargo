@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-18 weight/size digit input (PR pending)
+
+Production inspection (78 read-only flows, 320/390/1440 px, ckb/en: 0 failures). The only remaining browser defect after the concurrent release `dc5bec0`: Arabic-Indic/Persian digits (and `1e1` on the server) in weight/size inputs. Fixed with one shared `parseDecimal`; pricing unchanged. Chromium 395/12 skipped/0 failed, 236 + 271 unit tests. [Report](../verification/digit-input-20261018.md).
+
 ## 2026-10-17 code defect sweep (PR #115 merged `56e53f2`, deployed)
 
 Six verified defects fixed with regression tests that fail on the old code: non-canonical quote signatures allowed up to 4 bookings per signed quote; request payloads over 4,000 characters were truncated into unreadable JSON (data loss, request still accepted); the alcohol-free exemption applied to the whole text and let banned alcohol words through as `review` (now clause-local, stricter only); a DB blip dropped admin compliance keywords; archived tracking events leaked to the owner; staff quote vs customer accept raced (now single atomic statements). Static analysis clean (tsc 0, ESLint 0 errors, audit 0). Left for the owner: phone-code resend lockout trade-off, 0.1 kg chargeable rounding (locked pricing formula), rate-limit fail-open, `review` matches not flagged on requests. Gate: 236 + 261 tests, build, dry-run, Chromium suite 394/12/0. Released on the local gate by owner instruction: Workers Builds `6cedf284`, Version ID `c0c4f5a6-441d-4162-9d53-9b3f837316a0`; live smoke checks passed (see deployments.md). [Report](../verification/code-defects-20261017.md).

@@ -74,6 +74,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
+- Weight/size digit input (2026-10-18): [report](docs/verification/digit-input-20261018.md). The OTP, rate-limit, review-notice and tenth-kilogram work is in `release-hardening-20261018.md` (another session). Drafts #87 and #98 touch the same files and need a rebase.
 - 2026-10-18 owner-authorized continuation after #115/#116: OTP fixed-window resends, decimal-weight regressions, fail-closed limits and transactional review inbox implemented. [Verification and release state](docs/verification/release-hardening-20261018.md). Live Workers API access is now available; initial version `db58bc44-faef-4a0d-bbaf-5c4b16dca311` verified at 100%. This supersedes older session-specific statements that allocation cannot be checked. Real OTP provider and approved staff accounts are still absent.
 
 - Code defect sweep (2026-10-17/18): [PR #115](https://github.com/rebar9988-max/rega-cargo/pull/115) merged `56e53f2`, Workers Builds `6cedf284`, Version `c0c4f5a6-441d-4162-9d53-9b3f837316a0`; live smoke checks passed. The four deferred policy items are now authorized by the 2026-10-18 continuation request (OTP, weight precision with unchanged pricing, fail-closed limits and review notices): [report](docs/verification/code-defects-20261017.md). Verify the active Worker version in Cloudflare (agent has no Workers API access).
