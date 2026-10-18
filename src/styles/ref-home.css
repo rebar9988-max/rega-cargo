@@ -410,20 +410,42 @@
   aspect-ratio: 504 / 496;
   max-block-size: 26rem;
 }
-.rl-ref-hero-art img {
+/* Preserve the original image footprint and fade. Only guarded silk pixels deform in the canvas. */
+.rl-ref-hero-stage {
   position: absolute;
   inset-block: 0;
   inset-inline-end: 0;
   inline-size: auto;
   block-size: 100%;
   max-inline-size: 100%;
-  object-fit: cover;
-  object-position: right center;
+  aspect-ratio: 504 / 496;
+  overflow: hidden;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
 }
+.rl-ref-hero-stage > * {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: right center;
+}
+.rl-ref-hero-silk {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--rl-motion-slow) var(--rl-ease);
+}
+.rl-ref-hero-stage[data-silk="on"] > .rl-ref-hero-silk {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rl-ref-hero-silk {
+    display: none;
+  }
+}
 @media (min-width: 48rem) {
-  .rl-ref-hero-art img {
+  .rl-ref-hero-stage {
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 30%);
     mask-image: linear-gradient(to right, transparent 0, #000 30%);
   }
@@ -448,9 +470,12 @@
     block-size: 100%;
     inline-size: 100%;
   }
-  .rl-ref-hero-art img {
+  .rl-ref-hero-stage {
     inset-inline-end: 0;
     inline-size: 100%;
+    aspect-ratio: auto;
+  }
+  .rl-ref-hero-stage > * {
     object-position: left center;
   }
   .rl-ref-actions {
