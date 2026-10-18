@@ -173,7 +173,7 @@ export async function requestDetail(userId: string, value: unknown) {
     phase: string;
     created_at: string;
   }>`
-    select title, title_ku, place, phase, created_at from tracking_events where shipment_id = ${row.id} order by created_at`;
+    select title, title_ku, place, phase, created_at from tracking_events where shipment_id = ${row.id} and archived_at is null order by created_at, id`;
   const payload = parsePayload(row.payload);
   const str = (key: string) => (typeof payload[key] === "string" ? (payload[key] as string) : "");
   return {
@@ -234,13 +234,17 @@ export async function acceptQuote(userId: string, value: unknown, quoteId: unkno
   const request = await ownRequest(sql, userId, value);
   const id = cleanText(quoteId, 80);
   if (request.status !== "quoted") throw new MarketError("invalid");
-  const updated = await sql<{ id: string }>`
-    update request_quotes set status = 'accepted', decided_at = now()
-    where id = ${id} and request_id = ${request.id} and status = 'sent' and valid_until > now()
+  // One statement: the quote is accepted only together with the request leaving "quoted".
+  const moved = await sql<{ id: string }>`
+    with q as (
+      update request_quotes set status = 'accepted', decided_at = now()
+      where id = ${id} and request_id = ${request.id} and status = 'sent' and valid_until > now()
+        and exists (select 1 from shipment_requests where id = ${request.id} and status = 'quoted')
+      returning request_id
+    )
+    update shipment_requests set status = 'accepted', updated_at = now()
+    where id in (select request_id from q) and status = 'quoted'
     returning id`;
-  if (!updated[0]) throw new MarketError("invalid");
-  const moved =
-    await sql`update shipment_requests set status = 'accepted', updated_at = now() where id = ${request.id} and status = 'quoted' returning id`;
   if (!moved[0]) throw new MarketError("invalid");
   await logStatus(sql, request.id, "accepted", "customer");
   await addEvent(sql, request.id, ...EVENT_TITLE.accepted, "", new Date().toISOString());
@@ -315,12 +319,24 @@ export async function staffQuote(userId: string, input: Record<string, unknown>)
   if (!request) throw new MarketError("notfound");
   if (!["received", "reviewing", "quoted"].includes(request.status))
     throw new MarketError("invalid");
-  await sql`update request_quotes set status = 'superseded', decided_at = now() where request_id = ${request.id} and status = 'sent'`;
   const id = crypto.randomUUID();
-  await sql`
+  // One statement: the status guard, the superseded quote and the new quote succeed or fail
+  // together, so a customer accepting a quote at the same moment can never be overwritten.
+  const created = await sql<{ id: string }>`
+    with req as (
+      update shipment_requests set status = 'quoted', updated_at = now()
+      where id = ${request.id} and status in ('received', 'reviewing', 'quoted')
+      returning id
+    ), old as (
+      update request_quotes set status = 'superseded', decided_at = now()
+      where request_id in (select id from req) and status = 'sent'
+      returning id
+    )
     insert into request_quotes (id, request_id, amount_iqd, customs_included, note, valid_until, created_by)
-    values (${id}, ${request.id}, ${amount}, ${input.customsIncluded}, ${note}, now() + make_interval(days => ${days}), ${userId})`;
-  await sql`update shipment_requests set status = 'quoted', updated_at = now() where id = ${request.id}`;
+    select ${id}, req.id, ${amount}, ${input.customsIncluded}, ${note}, now() + make_interval(days => ${days}), ${userId}
+    from req
+    returning id`;
+  if (!created[0]) throw new MarketError("invalid");
   await logStatus(sql, request.id, "quoted", "staff");
   await addEvent(sql, request.id, ...EVENT_TITLE.quoted, "", new Date().toISOString());
   await notify(sql, request.user_id, `نرخ بۆ ${code} ئامادەیە`, `Quote ready for ${code}`);

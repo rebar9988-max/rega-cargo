@@ -1,7 +1,7 @@
 /**
  * Server side of the compliance check: the bundled rules unioned with the locked DB rules
- * (prohibited_keywords) when a database is connected, cached for 5 minutes. Any DB error falls
- * back to the bundled rules, never to "allow everything".
+ * (prohibited_keywords) when a database is connected, cached for 5 minutes. Any DB error keeps the
+ * last loaded rules (or, before the first load, the bundled rules), never "allow everything".
  */
 import type { Sql } from "../db.ts";
 import { BUNDLED_KEYWORDS } from "./rules.ts";
@@ -17,6 +17,8 @@ import {
 } from "./check.ts";
 
 const TTL_MS = 5 * 60 * 1000;
+/** After a failed refresh, keep serving the last rules and retry after this long. */
+const RETRY_MS = 30 * 1000;
 let cache: { at: number; rules: CompiledRules } | null = null;
 
 export async function complianceRules(sql: Sql | null): Promise<CompiledRules> {
@@ -30,7 +32,12 @@ export async function complianceRules(sql: Sql | null): Promise<CompiledRules> {
     cache = { at: Date.now(), rules };
     return rules;
   } catch (err) {
-    console.error("[compliance] DB rules unavailable, using bundled list", (err as Error).message);
+    console.error("[compliance] DB rules unavailable", (err as Error).message);
+    if (cache) {
+      // Keep the admin-added keywords that were already loaded; do not hammer a failing DB.
+      cache = { at: Date.now() - TTL_MS + RETRY_MS, rules: cache.rules };
+      return cache.rules;
+    }
     return BUNDLED_RULES;
   }
 }

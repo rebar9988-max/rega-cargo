@@ -37,6 +37,9 @@ async function rate(userId: string) {
   if (rows[0]?.allowed !== true) throw new MarketError("rate");
 }
 
+/** Largest stored request JSON; the validated worst case is about 11,000 characters. */
+const PAYLOAD_MAX = 16000;
+
 export async function submitRequest(
   userId: string,
   kind: "quote" | "store" | "buy" | "forward",
@@ -96,12 +99,16 @@ export async function submitRequest(
       });
       throw new MarketError("prohibited");
     }
+    // Validation bounds every field (links 2000 x 4, text 500 x 2), so the JSON fits well below this.
+    // Cut JSON is unreadable (shown as an empty request), so refuse an oversize payload instead.
+    const storedJson = JSON.stringify(stored);
+    if (storedJson.length > PAYLOAD_MAX) throw new MarketError("invalid");
     const id = crypto.randomUUID();
     const tracking = newTrackingId();
     const inserted = await sql<{ id: string }>`
       with req as (
         insert into shipment_requests (id, user_id, kind, name, phone, payload, estimate_eur, tracking_id, idempotency_key)
-        values (${id}, ${userId}, ${kind}, ${name}, ${phone}, ${JSON.stringify(stored).slice(0, 4000)}, ${estimateEur}, ${tracking}, ${key})
+        values (${id}, ${userId}, ${kind}, ${name}, ${phone}, ${storedJson}, ${estimateEur}, ${tracking}, ${key})
         on conflict do nothing
         returning id
       ), ev as (

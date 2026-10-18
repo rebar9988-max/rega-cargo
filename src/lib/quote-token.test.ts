@@ -79,3 +79,21 @@ test("a signed quote maps to one stable booking key", async () => {
   assert.notEqual(quoteBookingKey(a.token), quoteBookingKey(b.token));
   assert.match(quoteBookingKey(a.token), /^quote:[A-Za-z0-9_-]{43}$/);
 });
+
+test("a signed quote has exactly one accepted spelling, so it books only once", async () => {
+  const priced = priceQuote(input);
+  assert.ok(priced);
+  const now = 1_700_000_000_000;
+  const { token } = await signQuote(priced, SECRET, now);
+  const [body, sig] = token.split(".");
+  // The last of the 43 signature characters carries 4 signature bits and 2 unused bits.
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  const base = alphabet.indexOf(sig.at(-1) as string) & 0b111100;
+  const accepted: string[] = [];
+  for (let unused = 0; unused < 4; unused += 1) {
+    const variant = `${body}.${sig.slice(0, -1)}${alphabet[base | unused]}`;
+    if (await verifyQuote(variant, SECRET, now)) accepted.push(variant);
+  }
+  assert.deepEqual(accepted, [token]);
+  assert.equal(quoteBookingKey(accepted[0]), quoteBookingKey(token));
+});
