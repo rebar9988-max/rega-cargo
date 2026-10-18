@@ -44,3 +44,10 @@ was removed from `use-current-user.ts`.
 typecheck, lint (0 errors), `npm test` 236 + 261 pass (6 new regression tests), build, `cf:dry-run`, and the
 Chromium layout suite on the built Worker: 394 passed, 12 by-design skips, 0 failed. Firefox/WebKit, the
 official-image layout lock and hosted CI were not run (see `final-verification-20261016.md`).
+
+## Release status
+
+Merged on the local gate by the owner's chat instruction of 2026-10-18 ("دیپلۆی بكە"), recorded in `decisions.md`.
+Deployment is the existing Cloudflare Workers Builds path on `main`; the Worker version and the post-deploy checks are
+recorded in `deployments.md` after the build. The fixes are server-side logic, so live checks are smoke checks (routes,
+console, network); behaviour is proven by the regression tests and the identical built bundle.

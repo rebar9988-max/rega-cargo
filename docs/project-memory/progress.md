@@ -1,6 +1,6 @@
 # Progress
 
-## 2026-10-17 code defect sweep (PR pending, not merged or deployed)
+## 2026-10-17 code defect sweep (PR #115, merging on owner instruction)
 
 Six verified defects fixed with regression tests that fail on the old code: non-canonical quote signatures allowed up to 4 bookings per signed quote; request payloads over 4,000 characters were truncated into unreadable JSON (data loss, request still accepted); the alcohol-free exemption applied to the whole text and let banned alcohol words through as `review` (now clause-local, stricter only); a DB blip dropped admin compliance keywords; archived tracking events leaked to the owner; staff quote vs customer accept raced (now single atomic statements). Static analysis clean (tsc 0, ESLint 0 errors, audit 0). Left for the owner: phone-code resend lockout trade-off, 0.1 kg chargeable rounding (locked pricing formula), rate-limit fail-open, `review` matches not flagged on requests. Gate: 236 + 261 tests, build, dry-run, Chromium suite 394/12/0. [Report](../verification/code-defects-20261017.md).
 
