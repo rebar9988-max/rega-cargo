@@ -536,7 +536,9 @@ test("header category strip: directly under the header, swipeable, active state,
     await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
     const cut = await page.$$eval(".rl-category-strip-label", (els) =>
-      els.filter((el) => el.scrollHeight > el.clientHeight + 1).map((el) => el.textContent),
+      els
+        .filter((el) => el.scrollHeight > el.clientHeight + 1)
+        .map((el) => `${el.textContent} (${el.scrollHeight}/${el.clientHeight}px)`),
     );
     expect(cut, lang).toEqual([]);
   }
