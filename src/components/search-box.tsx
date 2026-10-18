@@ -79,6 +79,13 @@ export function SearchBox({
     if (!open && search) setText(search.q);
   }, [search, search?.q, open]);
 
+  // Text typed before hydration stays in the field but not in state; adopt it so Enter
+  // searches what the customer sees (slow networks hydrate late).
+  useEffect(() => {
+    const typed = inputRef.current?.value;
+    if (typed) setText(typed);
+  }, []);
+
   useEffect(() => {
     const id = window.setTimeout(() => {
       setQuery(text);

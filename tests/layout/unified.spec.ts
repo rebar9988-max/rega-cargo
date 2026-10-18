@@ -72,6 +72,24 @@ test("homepage search uses internal marketplace and displays honest data states"
   await expect(page.locator("main")).not.toContainText(/Guaranteed delivery|Official partner/);
 });
 
+test("homepage search keeps text typed before the page hydrates", async ({ page }) => {
+  // Hold the app's scripts so the customer types into the server-rendered field first.
+  let release = () => {};
+  const scripts = new Promise<void>((resolve) => (release = resolve));
+  await page.route(/\.js(\?|$)/, async (route) => {
+    await scripts;
+    await route.continue();
+  });
+  await page.goto("/?lang=en", { waitUntil: "domcontentloaded" });
+  const search = page.locator('[data-layout="ref-header"] input[type="search"]');
+  await search.fill("kettle");
+  release();
+  await page.waitForLoadState("networkidle");
+  await expect(search).toHaveValue("kettle");
+  await search.press("Enter");
+  await expect(page).toHaveURL(/\/stores\?.*q=kettle/);
+});
+
 test("Bring For Me cannot lose a first submission while its client module loads", async ({
   page,
 }) => {
