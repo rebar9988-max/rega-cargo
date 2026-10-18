@@ -64,6 +64,10 @@ test("homepage search uses internal marketplace and displays honest data states"
   page,
 }) => {
   await page.goto("/?lang=en", { waitUntil: "networkidle" });
+  // Network idle can precede hydration, and a value typed before it is reset (WebKit iPad
+  // projects lost "kettle" this way in CI): the footer theme button stays disabled until
+  // its click handler is hydrated.
+  await expect(page.locator("footer button.rl-button").first()).toBeEnabled();
   // The reference homepage keeps search in its header; it opens the existing store search.
   const search = page.locator('[data-layout="ref-header"] input[type="search"]');
   await search.fill("kettle");

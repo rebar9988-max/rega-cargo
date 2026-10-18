@@ -535,8 +535,15 @@ test("header category strip: directly under the header, swipeable, active state,
   for (const lang of ["ckb", "ku", "de", "en", "ar", "fa", "tr"]) {
     await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    // A cut-off name hides a whole extra line (at least one font size). Firefox counts the
+    // font's ascent/descent of the last visible line in scrollHeight (about 5px over the
+    // 3-line box for ckb) without hiding anything, so allow less than one font size.
     const cut = await page.$$eval(".rl-category-strip-label", (els) =>
-      els.filter((el) => el.scrollHeight > el.clientHeight + 1).map((el) => el.textContent),
+      els
+        .filter(
+          (el) => el.scrollHeight > el.clientHeight + parseFloat(getComputedStyle(el).fontSize),
+        )
+        .map((el) => `${el.textContent} (${el.scrollHeight}/${el.clientHeight}px)`),
     );
     expect(cut, lang).toEqual([]);
   }

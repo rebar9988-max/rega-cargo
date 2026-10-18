@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-18 CI, WebKit/Firefox and layout lock (PR #121 open, not merged; tests/config/baselines only)
+
+GitHub Actions runs again (I-7 resolved). The official-image layout lock had failed on `main` @ `598e93f` only on stale pixel baselines (61 failed, 500 not run); baselines re-rendered with the `update_baselines` dispatch and reviewed (351 PNGs; `/` 5658 to 3485 px on iPhone, phone pages +16-24 px, laptop -72 px). On the PR head `46de4ca` (run 39117144355, no `update_baselines`): `scope`, `verify` and `layout lock` pass; layout lock 606 passed / 16 skipped / 0 failed / 0 flaky (Chromium 372, WebKit 188, new Firefox `premium.spec.ts` 23, premium-360 23). Two test-only fixes found on the way: Firefox needs `HOME=/root` in the job container and a one-font-size tolerance in the category-label cut-off check (66/61 px, nothing hidden); a WebKit iPad homepage-search flake now waits for hydration. Live `www.rlgo.net` re-checked read-only (routes 200, redirects, workers.dev 404); Cloudflare active version/traffic still **not verifiable** by the agent. Merge needs the owner's chat instruction. [Report](../verification/ci-gates-20261018.md).
+
 ## 2026-10-18 weight/size digit input (PR #118 merged `675c644`; deployed by Build `74e026c6`, Version `e3ab56d5-c74b-4317-9c63-c254af2a39cd`)
 
 Production inspection (78 read-only flows, 320/390/1440 px, ckb/en: 0 failures). The only remaining browser defect after the concurrent release `dc5bec0`: Arabic-Indic/Persian digits (and `1e1` on the server) in weight/size inputs. Fixed with one shared `parseDecimal`; pricing unchanged. Chromium 395/12 skipped/0 failed, 236 + 271 unit tests. [Report](../verification/digit-input-20261018.md).

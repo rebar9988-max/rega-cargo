@@ -101,7 +101,11 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: ''
-      - name: Layout lock (Chromium + WebKit)
+      - name: Layout lock (Chromium + WebKit + Firefox)
+        # Firefox refuses to start when $HOME is not owned by the current user, which
+        # is the case for the job container (Playwright CI guidance: HOME=/root).
+        env:
+          HOME: /root
         run: npx playwright test ${{ inputs.update_baselines && '--update-snapshots=all' || '' }}
       - name: Upload report, diffs and rendered baselines
         if: ${{ !cancelled() }}
