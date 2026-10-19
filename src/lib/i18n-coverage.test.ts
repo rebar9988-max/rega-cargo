@@ -8,6 +8,7 @@ import { marketCopy } from "./market-copy.ts";
 import { storeCopy } from "./store-copy.ts";
 import { catalogueCopy } from "./catalogue-copy.ts";
 import { JOURNEY_COPY } from "./journey-copy.ts";
+import { BRING_COPY, dashGroup, nextAction, stepStatus } from "./bring-copy.ts";
 
 const ids = LANGS.map((l) => l.id);
 const others = ids.filter((id) => id !== "en");
@@ -23,6 +24,53 @@ test("unified journey copy preserves all seven languages and truthful manual-rev
   }
   assert.equal(JOURNEY_COPY.ckb.shop, "بازاڕ بکە");
   assert.equal(JOURNEY_COPY.ckb.bring, "کاڵام بۆ بهێنەوە");
+});
+
+test("Bring For Me step and dashboard copy is complete in all seven languages", () => {
+  const en = BRING_COPY.en;
+  const keys = (value: object) => Object.keys(value).sort();
+  for (const id of ids) {
+    const copy = BRING_COPY[id];
+    assert.deepEqual(keys(copy), keys(en), `${id}: keys`);
+    assert.deepEqual(keys(copy.dash), keys(en.dash), `${id}: dashboard keys`);
+    assert.equal(copy.steps.length, 3, `${id}: three steps`);
+    for (const step of copy.steps) assert.ok(step.trim(), `${id}: empty step name`);
+    for (const placeholder of ["{n}", "{total}", "{name}"])
+      assert.ok(copy.stepStatus.includes(placeholder), `${id}: ${placeholder}`);
+    for (const [name, text] of Object.entries({ ...copy, ...copy.dash }))
+      if (typeof text === "string") assert.ok(text.trim(), `${id}.${name} empty`);
+    // The customer sees Western digits only, whatever the language.
+    assert.equal(stepStatus(copy, 2, 3).includes("{"), false, `${id}: unreplaced placeholder`);
+    assert.match(stepStatus(copy, 2, 3), /2/);
+    assert.match(stepStatus(copy, 2, 3), /3/);
+  }
+  for (const id of others) {
+    assert.notEqual(BRING_COPY[id].dash.emptyBody, en.dash.emptyBody, `${id}: still English`);
+    assert.notEqual(BRING_COPY[id].reviewHint, en.reviewHint, `${id}: still English`);
+  }
+});
+
+test("request dashboard groups every real status once and never invents a next action", () => {
+  assert.equal(dashGroup("quoted"), "action");
+  for (const status of [
+    "received",
+    "reviewing",
+    "accepted",
+    "confirmed",
+    "purchased",
+    "in_transit",
+    "arrived",
+  ])
+    assert.equal(dashGroup(status), "progress", status);
+  for (const status of ["delivered", "cancelled"]) assert.equal(dashGroup(status), "done", status);
+  assert.equal(dashGroup("something-new"), "progress");
+  const copy = BRING_COPY.en;
+  assert.equal(nextAction(copy, "quoted"), copy.dash.nextQuoted);
+  assert.equal(nextAction(copy, "received"), copy.dash.nextReview);
+  assert.equal(nextAction(copy, "delivered"), copy.dash.nextDelivered);
+  assert.equal(nextAction(copy, "cancelled"), copy.dash.nextCancelled);
+  // Only the quoted status asks the customer to act; no status promises a delivery date.
+  assert.doesNotMatch(Object.values(copy.dash).join(" "), /\b(today|tomorrow|within \d+)/i);
 });
 
 test("every language has the same SEO pages, with non-empty title and description", () => {

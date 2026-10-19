@@ -10,14 +10,17 @@ for (const lang of ["ckb", "ar", "en"] as const) {
     await page.goto(`/stores/request?store=zalando&intent=buy&lang=${lang}`, {
       waitUntil: "networkidle",
     });
+    const next = page.locator("[data-step-next]");
     await page.locator('main input[name="url"]').fill("https://www.zalando.de/shoes?size=42");
     await page.locator('main input[name="qty"]').fill("2");
-    await page.locator('main input[name="phone"]').fill("+9647501234567");
     await page.getByRole("checkbox", { name: t.keep }).check();
     const key = orderDraftKey("zalando", "buy");
     await expect
       .poll(() => page.evaluate((k) => sessionStorage.getItem(k), key))
       .toContain('"qty":"2"');
+    // The phone number lives on the delivery step and must never reach the draft.
+    await next.click();
+    await page.locator('main input[name="phone"]').fill("+9647501234567");
     const stored = await page.evaluate((k) => sessionStorage.getItem(k), key);
     expect(stored).not.toContain("7501234567");
     await page.reload({ waitUntil: "networkidle" });
@@ -25,9 +28,13 @@ for (const lang of ["ckb", "ar", "en"] as const) {
       "https://www.zalando.de/shoes?size=42",
     );
     await expect(page.locator('main input[name="qty"]')).toHaveValue("2");
-    await expect(page.locator('main input[name="phone"]')).toHaveValue("");
-    await expect(page.locator('main input[name="declared"]')).not.toBeChecked();
     await expect(page.getByText(t.restored)).toBeVisible();
+    await next.click();
+    await expect(page.locator('main input[name="phone"]')).toHaveValue("");
+    await next.click();
+    await expect(page.locator('main input[name="declared"]')).not.toBeChecked();
+    await page.locator("[data-step-back]").click();
+    await page.locator("[data-step-back]").click();
     await page.getByRole("button", { name: t.clear, exact: true }).click();
     await expect.poll(() => page.evaluate((k) => sessionStorage.getItem(k), key)).toBeNull();
     expect(await page.locator("html").getAttribute("dir")).toBe("rtl");
@@ -58,6 +65,10 @@ test("expired drafts are never restored and fallback is not a confirmed order", 
   );
   await page.goto("/stores/request?store=zalando&lang=en", { waitUntil: "networkidle" });
   await expect(page.locator('main input[name="url"]')).toHaveValue("");
+  // The email fallback is part of the review step.
+  await page.locator('main input[name="url"]').fill("https://www.zalando.de/shoes");
+  await page.locator("[data-step-next]").click();
+  await page.locator("[data-step-next]").click();
   const fallback = page.locator("[data-order-fallback]");
   await fallback.locator("summary").click();
   await expect(fallback.getByText(DRAFT_COPY.en.note)).toBeVisible();

@@ -28,32 +28,59 @@ test("unified navigation preserves deep links and marks the current customer jou
   }
 });
 
-test("Bring For Me preserves input, progressively discloses details and focuses field errors", async ({
+test("Bring For Me preserves input across three steps, discloses details and focuses field errors", async ({
   page,
 }) => {
   await page.goto("/stores/request?lang=en&intent=buy", { waitUntil: "networkidle" });
   const form = page.locator("form.rl-request-form");
+  const next = form.locator("[data-step-next]");
+  const steps = form.locator(".rl-steps li");
+  await expect(steps).toHaveCount(3);
+  await expect(steps.nth(0)).toHaveAttribute("aria-current", "step");
   await expect(form.locator('input[type="url"]')).toHaveCount(1);
   const optional = form.locator("details");
   await expect(optional.locator("input")).toHaveCount(2);
   for (const input of await optional.locator("input").all()) await expect(input).not.toBeVisible();
-  await form.locator('button[type="submit"]').click();
+  // Step 1 refuses an empty link and a bad quantity, and focuses the field to fix.
+  await next.click();
   await expect(form.locator('[name="url"]')).toBeFocused();
   await expect(form.locator('[name="url"]')).toHaveAttribute("aria-invalid", "true");
   await form.locator('[name="url"]').fill("https://www.zalando.de/shoes");
   await form.locator('[name="qty"]').fill("21");
-  await form.locator('button[type="submit"]').click();
+  await next.click();
   await expect(form.locator('[name="qty"]')).toBeFocused();
   await expect(form.locator('[name="url"]')).toHaveValue("https://www.zalando.de/shoes");
+  // Plus and minus keep the quantity inside the allowed range.
+  await form.locator('[name="qty"]').fill("20");
+  await expect(form.getByRole("button", { name: "Increase quantity" })).toBeDisabled();
+  await form.getByRole("button", { name: "Decrease quantity" }).click();
+  await expect(form.locator('[name="qty"]')).toHaveValue("19");
   await form.locator('[name="qty"]').fill("2");
+  // Step 2: delivery and contact.
+  await next.click();
+  await expect(steps.nth(1)).toHaveAttribute("aria-current", "step");
   await form.locator('[name="phone"]').fill("invalid");
-  await form.locator('button[type="submit"]').click();
+  await next.click();
   await expect(form.locator('[name="phone"]')).toBeFocused();
+  // Going back keeps everything that was typed, including the optional details.
+  await form.locator("[data-step-back]").click();
+  await expect(form.locator('[name="url"]')).toHaveValue("https://www.zalando.de/shoes");
+  await expect(form.locator('[name="qty"]')).toHaveValue("2");
   await optional.locator("summary").click();
   await optional.locator("input").first().fill("42");
   await optional.locator("summary").click();
   await optional.locator("summary").click();
   await expect(optional.locator("input").first()).toHaveValue("42");
+  await next.click();
+  await expect(form.locator('[name="phone"]')).toHaveValue("invalid");
+  await form.locator('[name="phone"]').fill("+9647501234567");
+  // Step 3 summarises the request and can send people back to edit a step.
+  await next.click();
+  await expect(steps.nth(2)).toHaveAttribute("aria-current", "step");
+  await expect(form.locator('[data-step-panel="3"]')).toContainText("https://www.zalando.de/shoes");
+  await expect(form.locator('[data-step-panel="3"]')).toContainText("42");
+  await form.getByRole("button", { name: "Edit" }).first().click();
+  await expect(form.locator('[name="url"]')).toHaveValue("https://www.zalando.de/shoes");
   await form.locator('a[href*="intent=ship"]').click();
   await expect(page).toHaveURL(/intent=ship/);
   await expect(form.locator('[name="url"]')).toHaveValue("https://www.zalando.de/shoes");
@@ -121,11 +148,14 @@ test("Bring For Me retries a failed submission and confirms only a backend-issue
   await page.goto("/stores/request?lang=en&intent=ship", { waitUntil: "networkidle" });
   const form = page.locator("form.rl-request-form");
   await form.locator('[name="url"]').fill("https://www.zalando.de/shoes");
+  await form.locator("[data-step-next]").click();
   await form.locator('[name="phone"]').fill("+9647501234567");
+  await form.locator("[data-step-next]").click();
   await form.locator('[name="declared"]').check();
   await form.locator('button[type="submit"]').click();
   await expect(form.getByRole("link", { name: /2233rega/ })).toBeVisible();
-  await expect(form.locator('[name="url"]')).toHaveValue("https://www.zalando.de/shoes");
+  // The review stays on screen with everything typed, so the retry loses nothing.
+  await expect(form.locator('[data-step-panel="3"]')).toContainText("https://www.zalando.de/shoes");
   await form.locator('button[type="submit"]').click();
   await expect(page.getByRole("status")).toHaveText("RG-TEST-TEST-TEST");
   await expect(page.locator("main")).toContainText("R&L received your request and will review it");

@@ -155,3 +155,10 @@ Invitation-only native Better Auth owner activation is in progress on `codex/rl-
 
 
 2026-10-19 verified mobile outcome: Mobile renderer repair released in #127 / 8d4d33a after combined gate 39303885139. Public Chromium 24/24 and WebKit retina 8/8 pass, product colour delta exactly zero, cached-client reload and four viewport samples verified; 13 routes finish at 200. Original photo/UI and #125 source preserved. [Release evidence](../verification/hero-silk-mobile-20261019.md).
+
+
+## 2026-10-19 Bring For Me three-step flow (PR #133, open, not merged)
+
+Owner requested a simpler Bring For Me request journey and requests dashboard. [PR #133](https://github.com/rebar9988-max/rega-cargo/pull/133) (`claude/bring-for-me-steps-20261019`, head `fe09d58`) splits `/stores/request` into Product, Delivery and Review steps (quantity plus/minus, edit buttons, state kept between steps, server errors return to the owning step) and adds status filters, next-action lines and a call-to-action empty state to `/account`. The `orderStore` contract, validation, rate limit, drafts, email fallback, pricing, payment and R&L AI are unchanged; weight/dimensions are not part of this request's contract, so no fields were added.
+
+Hosted gate on `fe09d58`: `scope` and `verify` (typecheck, unit tests, lint, build, wrangler dry-run) passed; `layout lock` FAILED. The agent session could not read the job log or the layout-report artifact (blob storage host refused by the session proxy), so the failing cases are unknown; the `/stores/request` screenshot baselines are expected to be stale, and the two request-flow e2e tests were rewritten for the step flow without being run. The sandbox also could not install dependencies (`registry.npmjs.org` returned 403). Not merged and not deployed; production unchanged. Next safe step: read the layout-report artifact (or run the `update_baselines` workflow and commit the re-rendered `/stores/request` baselines), fix any real e2e failures, then merge only on a green layout lock and verify https://www.rlgo.net.
