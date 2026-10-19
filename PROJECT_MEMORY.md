@@ -9,9 +9,9 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
-## Current state — visible silk repair released, 2026-10-19
+## Current state — mobile silk quality incident, 2026-10-19
 
-Owner could not perceive the initial released motion. Isolated original-silk repair [#124](https://github.com/rebar9988-max/rega-cargo/pull/124) passed the exact-head hosted gate (507 unit/script passes + 4 existing skips; 651 browser/pixel/layout passes + 16 skips, zero failures/flakes) and merged normally as `5faa822`. Existing main Build `f5dd0b70` succeeded; direct readback confirms version `788eccf7-99bd-4cd7-aeaa-6f2787abe05f` at 100%. Actual public suite 15/15 passed, with visible three-second silk changes near 19% versus 3.86% before; all protected product samples remain stationary. Four public viewport samples, an existing service-worker client and 13 final-200 routes verified. Original image/design/business/AI behaviour preserved. [Release evidence and limitations](docs/verification/hero-silk-20261019.md). Documentation-only builds may change the version while retaining this app.
+Owner supplied an iPhone screenshot showing colour/highlight corruption and no perceived motion after #124/#126. Original static main-built version `20ffc4f4-0cf5-43f2-b623-cc61410bdf10` restored to 100% at 08:30:03 UTC; independent public phone browsing confirms original image, zero animation canvases and 200. Main remains `ddcd005`; the rollback changes only the hero-related runtime relative to current main. Isolated repair fixes transparent RGB, preserves original colours, removes global-load startup blocking and adapts under slow frames rather than permanently freezing. Actual DPR3 composited product colours are identical across nine Chromium/WebKit sizes. Final full gate and animation publication pending. [Incident, checks and continuation](docs/verification/hero-silk-mobile-20261019.md). Previous software-only release checks are historical and do not prove native mobile quality.
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
 
@@ -78,7 +78,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
-- Visible silk repair (2026-10-19): **released and publicly verified** in #124 / `5faa822`. Preserve the original-image motion and smooth product protection. Re-query active Cloudflare allocation before future operations; no native-device/field-performance guarantee. [Evidence](docs/verification/hero-silk-20261019.md).
+- Mobile silk quality repair (2026-10-19): production temporarily restored to original static version `20ffc4f4`. Finish exact-head checks and normal main-only release of the compositing/startup/adaptive repair; verify actual public output. Do not restore the faulty #126 renderer through an unrelated deployment. [Evidence](docs/verification/hero-silk-mobile-20261019.md).
 
 - Hero original silk (2026-10-18): **released** in #122 / `f430d75`, after prerequisite #121 and the passing hosted gate. The original photograph supplies folds and stationary foreground; guarded 18/26-second motion, offscreen/tab pause and reduced-motion/static fallback verified on production. No native-device/field-performance claim. [Release and continuation](docs/verification/hero-silk-20261018.md).
 

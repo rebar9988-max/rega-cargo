@@ -143,3 +143,8 @@ Owner cannot perceive the released motion. The published renderer runs, but 1.45
 
 
 2026-10-19 verified outcome: Verified release supersedes the pending checkpoint above: #124 exact head fb79c2f passed hosted gate 39219963680, then merged normally as 5faa822. Main Build f5dd0b70 succeeded; version 788eccf7 at 100%. Real public suite 15/15 passed, four viewport samples and an already cached service-worker client verified, 13 routes finish at 200. No remaining visible-silk release blocker. [Evidence](../verification/hero-silk-20261019.md).
+
+
+## 2026-10-19 Mobile silk quality repair in progress
+
+Owner screenshot supersedes the earlier release-complete assessment. Production restored to original static version 20ffc4f4 at 100%; public 200/original image/no silk canvas confirmed. Candidate fixes transparent compositing, original colour preservation, independent startup and adaptive slow-device rendering. Actual DPR3 product colours are identical in nine Chromium/WebKit sizes; final hosted gate pending. [Evidence](../verification/hero-silk-mobile-20261019.md).
