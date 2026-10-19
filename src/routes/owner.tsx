@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Shell, PageHeader } from "@/components/shell";
 import { Field, btnPrimary, btnGhost, controlClass } from "@/components/field";
 import { useI18n } from "@/lib/i18n";
@@ -25,24 +25,46 @@ function OwnerPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
+  const inspection = useRef(0);
   useEffect(() => {
-    const secret = new URLSearchParams(window.location.hash.slice(1)).get("invite");
-    if (!secret) return;
-    // Keep the nonce only in memory, never storage, history, query strings or telemetry.
-    window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    setToken(secret);
-    setState("checking");
-    void inspectOwnerInvitation({ data: { token: secret } })
-      .then((result) => {
-        if (!result.valid) {
+    const inspectFragment = () => {
+      const secret = new URLSearchParams(window.location.hash.slice(1)).get("invite");
+      if (!secret) return;
+      // Same-document email navigation also needs immediate history cleanup.
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      const current = ++inspection.current;
+      setToken(secret);
+      setTicket(null);
+      setEmail("");
+      setName("");
+      setPassword("");
+      setError(false);
+      setState("checking");
+      void inspectOwnerInvitation({ data: { token: secret } })
+        .then((result) => {
+          if (current !== inspection.current) return;
+          if (!result.valid) {
+            setToken("");
+            setState("invalid");
+            return;
+          }
+          setTicket(result);
+          setEmail(result.email);
+          setState("login");
+        })
+        .catch(() => {
+          if (current !== inspection.current) return;
+          setToken("");
           setState("invalid");
-          return;
-        }
-        setTicket(result);
-        setEmail(result.email);
-        setState("login");
-      })
-      .catch(() => setState("invalid"));
+        });
+    };
+    inspectFragment();
+    window.addEventListener("hashchange", inspectFragment);
+    window.addEventListener("popstate", inspectFragment);
+    return () => {
+      window.removeEventListener("hashchange", inspectFragment);
+      window.removeEventListener("popstate", inspectFragment);
+    };
   }, []);
   async function submit(event: FormEvent) {
     event.preventDefault();
