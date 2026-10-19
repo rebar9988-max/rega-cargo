@@ -1,0 +1,50 @@
+[
+  {
+    "width": 390,
+    "status": 200,
+    "drawsDuringSample": 48,
+    "copyStationary": true,
+    "overflow": 0,
+    "cls": 0,
+    "reducedMotionStops": true,
+    "posterVisible": true,
+    "canvasHidden": true,
+    "errors": []
+  },
+  {
+    "width": 412,
+    "status": 200,
+    "drawsDuringSample": 48,
+    "copyStationary": true,
+    "overflow": 0,
+    "cls": 0,
+    "reducedMotionStops": true,
+    "posterVisible": true,
+    "canvasHidden": true,
+    "errors": []
+  },
+  {
+    "width": 820,
+    "status": 200,
+    "drawsDuringSample": 48,
+    "copyStationary": true,
+    "overflow": 0,
+    "cls": 0.0019760383384146343,
+    "reducedMotionStops": true,
+    "posterVisible": true,
+    "canvasHidden": true,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "status": 200,
+    "drawsDuringSample": 48,
+    "copyStationary": true,
+    "overflow": 0,
+    "cls": 0.0005196829487364969,
+    "reducedMotionStops": true,
+    "posterVisible": true,
+    "canvasHidden": true,
+    "errors": []
+  }
+]

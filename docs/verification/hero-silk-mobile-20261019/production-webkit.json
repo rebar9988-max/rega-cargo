@@ -1,0 +1,74 @@
+{
+  "stats": {
+    "startTime": "2026-10-19T18:51:49.383Z",
+    "duration": 37913.159,
+    "expected": 8,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "title": "silk pixels visibly flow while product edges, podium and page geometry stay stationary",
+      "project": "webkit-ios-retina",
+      "status": "passed",
+      "retry": 0,
+      "silk-motion": {
+        "intervalMs": 3000,
+        "productPixels": 23767,
+        "changedProduct": 0,
+        "silkPixels": 25737,
+        "changedSilk": 16781,
+        "visibleSilkChanges": 4840,
+        "visibleFraction": 0.18805610599525974
+      }
+    },
+    {
+      "title": "offscreen and hidden tabs stop drawing and resume without resetting",
+      "project": "webkit-ios-retina",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "unrelated pending images do not prevent visible silk startup",
+      "project": "webkit-ios-retina",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "sustained slow frames adapt resolution while silk keeps moving",
+      "project": "webkit-ios-retina",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "reduced motion avoids WebGL and the mask request, including live preference changes",
+      "project": "webkit-ios-retina",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "a lost WebGL context restores the original poster",
+      "project": "webkit-ios-retina",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "unavailable WebGL or a failed mask keeps the matching static artwork",
+      "project": "webkit-ios-retina",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "the displayed product retains the original poster colours",
+      "project": "webkit-ios-retina",
+      "status": "passed",
+      "retry": 0,
+      "displayed-product-colours": {
+        "samples": 69450,
+        "maxDelta": 0
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,67 @@
+[
+  {
+    "path": "/",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/stores",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/stores?cat=electronics",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/stores?fav=1",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/stores/request?store=zalando&intent=buy",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/stores/request?store=zalando&intent=ship",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/quote",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/market",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/ai",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/impressum",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/privacy",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/terms",
+    "status": "200",
+    "ok": true
+  },
+  {
+    "path": "/track",
+    "status": "200",
+    "ok": true
+  }
+]
