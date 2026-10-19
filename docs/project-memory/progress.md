@@ -136,6 +136,11 @@ Owner authorized implementation and release of the four previously deferred poli
 
 Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.0589166 (>0.05). Local Latin fallback metrics repair in `src/styles.css`/`tokens.css` makes that existing test pass while primary fonts and final loaded-font design remain unchanged. Final full browser counts are in the same release report.
 
+
+## 2026-10-19 Visible original silk follow-up
+
+Owner cannot perceive the released motion. The published renderer runs, but 1.45-pixel deformation is too restrained. Candidate increases local fold travel and moving sheen with smooth foreground protection; no other runtime layer changes. Checks and publication in progress; see [evidence](../verification/hero-silk-20261019.md).
+
 ## 2026-10-19 — First legitimate owner setup
 
 Invitation-only native Better Auth owner activation is in progress on `codex/rl-first-owner-20261014`, reconciled with main `2a0dfe5`. Independent authenticated repository-owner/admin evidence matches the production Build connection. Production has no native owner account or approved role; none has been granted. Additive dev migration and rolled-back PostgreSQL activation/replay smoke passed. Final hosted CI/deployment and real recipient activation are pending. [Evidence](../verification/first-owner-20261019.md).

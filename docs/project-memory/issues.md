@@ -149,6 +149,11 @@ The original hero art combines fabric and product in one photograph. The open #1
 
 Silk release follow-up: the #121 baseline/hydration prerequisites are resolved. #122 passed the full hosted gate and is live; the earlier blocked state above is historical. Production's initial combined browser run had one transient resource-loading failure; the unchanged case passed 3/3 serially. The report preserves both results and distinguishes emulation from native-device/field evidence.
 
+
+## 2026-10-19 Silk looks static despite active draw calls
+
+Root cause: a rendering-activity check accepted barely perceptible source-pixel deformation. Added a short-viewing contrast regression and stricter protection of all nonzero product-mask pixels. Larger waves need a smooth distance-field transition to avoid seams; the intermediate hard-mask candidate was not released. Final gate/public verification pending. [Evidence](../verification/hero-silk-20261019.md).
+
 ## 2026-10-19 — Native owner authentication preparation
 
 Existing email/password Better Auth was disabled, its availability predicate required missing federation credentials, native schema/HTTP routes were absent, and role approval only recognized phone identities. Invitation-only native activation, fresh verified identity checks and closed auth routes address these responsible layers. No existing user/password is overwritten and no public promotion exists. Final release and actual owner email/password activation remain pending. [Evidence](../verification/first-owner-20261019.md).

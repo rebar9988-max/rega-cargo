@@ -131,3 +131,8 @@ PR #122 was verified open, not merged. Direct Workers Deployments API reads at t
 ## 2026-10-18 original silk production release — verified
 
 Owner explicitly requested publication after the preview. Tested baseline prerequisite #121 merged as `96d9f15`; #122 final head `a479f06` passed hosted gate `39162395703` (507 unit/script passes, 4 skips; 651 browser/pixel/layout passes, 16 skips; no failures/flakes). Normal exact-head merge `f430d75`, 20:25:32 UTC. Existing Workers Build `5fb9e9c5-0ed4-4de9-a86b-d956a484ac5d` succeeded; matching version `b1ac11a9-fdc5-4a02-b123-ab3e723c0e9a` at 100%, deployment `12fba998-a67f-4a0d-a58d-58757e95cc3c`, 20:26:09 UTC, verified directly. Live motion/static fallback, stable foreground, four viewport samples and 13 public final-200 routes checked. Initial production browser resource errors and unchanged successful follow-up are retained honestly in the [release report](../verification/hero-silk-20261018.md). No runtime configuration/data change or rollback; immediate prior baseline-only version `20ffc4f4-0cf5-43f2-b623-cc61410bdf10`. A docs-only follow-up may deploy an identical app under another version.
+
+
+## 2026-10-19 Visible silk preflight — no new deploy yet
+
+Direct readback: deployment cdc299e2-71a3-4df8-90aa-0deebfffefa2, version 84f7890e-3536-4bed-bf63-3cd199f120dc at 100%. Main 2a0dfe5. Public browser confirms the renderer runs; repair is under test. No deployment/configuration mutation. [Evidence](../verification/hero-silk-20261019.md).

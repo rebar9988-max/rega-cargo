@@ -53,7 +53,7 @@ async function drawCount(page: import("@playwright/test").Page) {
   return page.evaluate(() => (window as any).silkProbe.draws as number);
 }
 
-test("silk pixels flow while the opaque product, podium and page geometry stay stationary", async ({
+test("silk pixels visibly flow while product edges, podium and page geometry stay stationary", async ({
   page,
 }) => {
   await ready(page);
@@ -73,7 +73,7 @@ test("silk pixels flow while the opaque product, podium and page geometry stay s
     });
   };
   const before = await capture();
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(3000);
   const after = await capture();
   expect(after.width).toBe(before.width);
   expect(after.height).toBe(before.height);
@@ -97,6 +97,8 @@ test("silk pixels flow while the opaque product, podium and page geometry stay s
   let productPixels = 0;
   let changedProduct = 0;
   let changedSilk = 0;
+  let silkPixels = 0;
+  let visibleSilkChanges = 0;
   for (let y = 0; y < before.height; y += 4) {
     for (let x = 0; x < before.width; x += 4) {
       const artX = Math.floor((x + 0.5 - offsetX) / scale);
@@ -104,15 +106,36 @@ test("silk pixels flow while the opaque product, podium and page geometry stay s
       if (artX < 1 || artX >= 503 || artY < 1 || artY >= 495) continue;
       const i = ((y / 4) * Math.ceil(before.width / 4) + x / 4) * 3;
       const changed = [0, 1, 2].some((c) => before.pixels[i + c] !== after.pixels[i + c]);
-      if (mask[artY * 504 + artX] === 255) {
+      if (mask[artY * 504 + artX] > 0) {
         productPixels++;
         if (changed) changedProduct++;
-      } else if (changed) changedSilk++;
+      } else {
+        silkPixels++;
+        if (changed) changedSilk++;
+        // A one-level colour change can pass a draw test while looking stationary.
+        // Require visible fold/highlight travel during an ordinary short viewing.
+        if ([0, 1, 2].some((c) => Math.abs(before.pixels[i + c] - after.pixels[i + c]) >= 12)) {
+          visibleSilkChanges++;
+        }
+      }
     }
   }
+  await test.info().attach("silk-motion", {
+    body: JSON.stringify({
+      intervalMs: 3000,
+      productPixels,
+      changedProduct,
+      silkPixels,
+      changedSilk,
+      visibleSilkChanges,
+      visibleFraction: visibleSilkChanges / silkPixels,
+    }),
+    contentType: "application/json",
+  });
   expect(productPixels).toBeGreaterThan(500);
   expect(changedProduct).toBe(0);
   expect(changedSilk).toBeGreaterThan(100);
+  expect(visibleSilkChanges / silkPixels).toBeGreaterThan(0.08);
   expect(await geometry()).toEqual(beforeGeometry);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
 });
