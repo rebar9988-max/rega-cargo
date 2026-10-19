@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-19 original shopping/shipping cleanup complete
+
+Dedicated-route separation from merged #72 remains live with the newer home design. Superseded alternative #74 closed without merging or deploying its tab architecture. Current canonical domain checked read-only: 18/18 Chromium page cases passed across 360/390/820/1440 px and ckb/ar/en; no horizontal overflow or page errors. [Evidence and exact scope](../verification/shopping-shipping-20261019.md). Documentation only; preserve the current static-art production mitigation while the separately tracked mobile silk repair is in progress.
+
 ## 2026-10-18 homepage hero: original silk released (PR #122 / `f430d75`)
 
 **Final:** owner requested publication; #121 prerequisite merged; complete hosted gate passed (507 unit/script + 651 browser/layout/pixel, 4/16 existing skips, zero failures). Main-only Cloudflare Build `5fb9e9c5` succeeded; version `b1ac11a9` verified at 100%. Live motion, stable foreground, reduced motion and required routes verified; detailed production rerun/environment limits are in the report below. Earlier diagnostic counts in this entry are superseded by that final gate.
