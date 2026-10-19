@@ -73,7 +73,7 @@ export default defineConfig<LayoutProjectUse>({
   // Leave CPU for the local Worker and WebKit's full-page captures on CI runners.
   workers: process.env.CI ? 3 : 6,
   timeout: 45_000,
-  reporter: process.env.CI ? [["list"], ["github"], ["html", { open: "never" }]] : [["list"]],
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
   expect: {
     // Tall full-page WebKit captures need more than the 5s default on CI runners.
     timeout: 20_000,
