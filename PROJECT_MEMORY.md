@@ -9,9 +9,9 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
-## Current state — visible silk follow-up, 2026-10-19
+## Current state — visible silk repair released, 2026-10-19
 
-Owner reports that the released silk looks stationary. Direct Cloudflare/public-browser checks confirm the deployed renderer is running, but original displacement was at most 1.45 source pixels. An isolated candidate increases local fold travel and softly protects product edges using the existing matte. Original design and business behaviour remain unchanged. Verification and normal main-only publication are in progress; no new release claimed. [Current evidence](docs/verification/hero-silk-20261019.md). Previous #122/#123 release history remains in the [original report](docs/verification/hero-silk-20261018.md).
+Owner could not perceive the initial released motion. Isolated original-silk repair [#124](https://github.com/rebar9988-max/rega-cargo/pull/124) passed the exact-head hosted gate (507 unit/script passes + 4 existing skips; 651 browser/pixel/layout passes + 16 skips, zero failures/flakes) and merged normally as `5faa822`. Existing main Build `f5dd0b70` succeeded; direct readback confirms version `788eccf7-99bd-4cd7-aeaa-6f2787abe05f` at 100%. Actual public suite 15/15 passed, with visible three-second silk changes near 19% versus 3.86% before; all protected product samples remain stationary. Four public viewport samples, an existing service-worker client and 13 final-200 routes verified. Original image/design/business/AI behaviour preserved. [Release evidence and limitations](docs/verification/hero-silk-20261019.md). Documentation-only builds may change the version while retaining this app.
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
 
@@ -78,7 +78,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
-- Hero visible-motion follow-up (2026-10-19): finish the exact-source browser/hosted gate, then use the authorized normal main-only delivery and verify public phone/desktop motion. [Evidence](docs/verification/hero-silk-20261019.md).
+- Visible silk repair (2026-10-19): **released and publicly verified** in #124 / `5faa822`. Preserve the original-image motion and smooth product protection. Re-query active Cloudflare allocation before future operations; no native-device/field-performance guarantee. [Evidence](docs/verification/hero-silk-20261019.md).
 
 - Hero original silk (2026-10-18): **released** in #122 / `f430d75`, after prerequisite #121 and the passing hosted gate. The original photograph supplies folds and stationary foreground; guarded 18/26-second motion, offscreen/tab pause and reduced-motion/static fallback verified on production. No native-device/field-performance claim. [Release and continuation](docs/verification/hero-silk-20261018.md).
 

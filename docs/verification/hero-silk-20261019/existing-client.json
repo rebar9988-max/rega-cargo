@@ -1,0 +1,9 @@
+{
+  "status": 200,
+  "previousControlled": true,
+  "scriptChanged": true,
+  "controlled": true,
+  "draws": 109,
+  "overflow": 0,
+  "drawsDuringSample": 90
+}
