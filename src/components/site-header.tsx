@@ -40,7 +40,7 @@ export function SiteHeader({
   reference = false,
 }: {
   search?: ShellSearch;
-  /** Reference homepage: the five-control header, no bottom bar. */
+  /** Reference homepage: the five-control header. The bottom bar is shown on every page. */
   reference?: boolean;
 }) {
   const { lang, t, setLang } = useI18n();
@@ -444,20 +444,20 @@ export function SiteHeader({
           </label>
         </div>
       </Modal>
-      {reference ? null : (
-        <nav
-          data-layout="bottom-bar"
-          className="rl-bottom-nav app-bottom-bar"
-          aria-label={c.navigation}
-        >
-          {tabs.map((tab) => (
-            <Link key={tab.to} to={tab.to} aria-current={journey === tab.to ? "page" : undefined}>
-              <Icon as={tab.icon} />
-              <span>{tab.label}</span>
-            </Link>
-          ))}
-        </nav>
-      )}
+      {/* Phones and tablets: the same five tabs on every page, the reference homepage included.
+          Fixed to the viewport bottom (CSS), so it never depends on scroll position. */}
+      <nav
+        data-layout="bottom-bar"
+        className="rl-bottom-nav app-bottom-bar"
+        aria-label={c.navigation}
+      >
+        {tabs.map((tab) => (
+          <Link key={tab.to} to={tab.to} aria-current={journey === tab.to ? "page" : undefined}>
+            <Icon as={tab.icon} />
+            <span>{tab.label}</span>
+          </Link>
+        ))}
+      </nav>
     </>
   );
 }

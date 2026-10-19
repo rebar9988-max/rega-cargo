@@ -297,8 +297,20 @@ test("reference homepage: five header controls in the reference's physical order
       "src",
       "/rl-mark-white-336.webp",
     );
-    // No bottom navigation on the reference homepage.
-    await expect(page.locator('[data-layout="bottom-bar"]')).toHaveCount(0);
+    // The five-tab bottom navigation is present on the homepage too: fixed to the viewport
+    // bottom on phones and tablets, hidden from 1024px up (desktop is unchanged).
+    const bar = page.locator('[data-layout="bottom-bar"]');
+    await expect(bar, lang).toHaveCount(1);
+    await expect(bar.locator("a"), lang).toHaveCount(5);
+    if (page.viewportSize()!.width < 1024) {
+      await expect(bar, lang).toBeVisible();
+      const box = (await bar.boundingBox())!;
+      expect(Math.abs(box.y + box.height - page.viewportSize()!.height), lang).toBeLessThanOrEqual(
+        1,
+      );
+    } else {
+      await expect(bar, lang).toBeHidden();
+    }
   }
 });
 

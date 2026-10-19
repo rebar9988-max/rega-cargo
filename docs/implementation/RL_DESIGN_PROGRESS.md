@@ -12,7 +12,7 @@ Last updated: 2026-10-14 (session `session_01QUGppPbUTeYsGApJpfoV8P`).
 ## Implemented
 
 * `src/components/ref-home.tsx`: hero, 8 category positions, 4 featured products, two banners, 4 benefit cards.
-* `src/components/site-header.tsx` + `shell.tsx`: `reference` variant = five-control header (logo, language, search, R&L AI, menu), no announcement bar, no primary-nav row, no bottom bar. Every other route keeps the existing header. The R&L AI capsule only links to the existing `/ai` route; the AI module is untouched.
+* `src/components/site-header.tsx` + `shell.tsx`: `reference` variant = five-control header (logo, language, search, R&L AI, menu), no announcement bar, no primary-nav row (the five-tab bottom bar is shown here too since 2026-10-19). Every other route keeps the existing header. The R&L AI capsule only links to the existing `/ai` route; the AI module is untouched.
 * `src/routes/index.tsx`: home without filters renders `RefHome` with the existing `marketHome` loader data; filtered home URLs (`/?q=`, `?cat=` …) still render `BazaarPage`.
 * `src/lib/ref-home-copy.ts` (ckb, ar, en; fa/de/tr/ku reuse English, `TODO(translate-review)`), `src/lib/ref-home-data.ts` (category mapping, compliance-filtered fallback examples).
 * `src/styles/ref-home.css`: unlayered, scoped to `.rl-ref*`.

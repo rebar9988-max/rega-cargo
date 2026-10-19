@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-19 mobile bottom navigation on the homepage (branch `claude/mobile-bottom-nav-20261019`)
+
+Owner-requested minimal fix: the bottom bar now renders on `/` like every other page (root cause in decisions.md / issues.md). Changed: `site-header.tsx`, `shell.tsx`, and the two layout assertions that expected no bar on the home. Local typecheck/lint/tests/build were **not run** (agent sandbox cannot reach the npm registry); results come from hosted CI only. Pending: re-render phone/tablet `/` baselines, review, release, live check at 320/375/390/430 px.
+
 ## 2026-10-18 homepage hero: original silk released (PR #122 / `f430d75`)
 
 **Final:** owner requested publication; #121 prerequisite merged; complete hosted gate passed (507 unit/script + 651 browser/layout/pixel, 4/16 existing skips, zero failures). Main-only Cloudflare Build `5fb9e9c5` succeeded; version `b1ac11a9` verified at 100%. Live motion, stable foreground, reduced motion and required routes verified; detailed production rerun/environment limits are in the report below. Earlier diagnostic counts in this entry are superseded by that final gate.
