@@ -9,7 +9,13 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
-## Current state — visible silk repair released, 2026-10-19
+## Current continuation — shopping/shipping verified, 2026-10-19
+
+The original mobile cleanup is complete on https://www.rlgo.net: home/stores have no shipping form or rates; `/quote` owns the dedicated form and three rate options. Eighteen public Chromium checks passed across 360/390/820/1440 px and ckb/ar/en, with no overflow or page errors. Superseded alternative PR #74 is closed; the merged #72 route architecture and subsequent refinements are preserved. [Evidence and limitations](docs/verification/shopping-shipping-20261019.md).
+
+**Current production mitigation:** direct Cloudflare readback confirms static original-art version `20ffc4f4-0cf5-43f2-b623-cc61410bdf10` at 100% (deployment `ecf64c82-7d11-4bc1-8335-a4d5b4ec03e6`, 08:30:03 UTC). The central Doc records the owner-reported mobile silk incident and a separate repair in progress. Do not redeploy the unchanged animated renderer from main during this task. This supersedes the earlier release status below; no runtime/deployment change was made in this continuation.
+
+## Earlier visible silk release checkpoint — superseded by the mitigation above
 
 Owner could not perceive the initial released motion. Isolated original-silk repair [#124](https://github.com/rebar9988-max/rega-cargo/pull/124) passed the exact-head hosted gate (507 unit/script passes + 4 existing skips; 651 browser/pixel/layout passes + 16 skips, zero failures/flakes) and merged normally as `5faa822`. Existing main Build `f5dd0b70` succeeded; direct readback confirms version `788eccf7-99bd-4cd7-aeaa-6f2787abe05f` at 100%. Actual public suite 15/15 passed, with visible three-second silk changes near 19% versus 3.86% before; all protected product samples remain stationary. Four public viewport samples, an existing service-worker client and 13 final-200 routes verified. Original image/design/business/AI behaviour preserved. [Release evidence and limitations](docs/verification/hero-silk-20261019.md). Documentation-only builds may change the version while retaining this app.
 
@@ -77,6 +83,8 @@ Presentation-only refinement of spacing, alignment and touch targets ([report](d
 Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are non-deploying (build `11b23adc`: no Version ID, no Preview URL); hosted Actions blocked by billing; `main` cannot have required checks on GitHub Free; production workers.dev still redirects (I-14). Code fix: branch/CI builds can never migrate production (I-13). Read the [CI/CD runbook](docs/operations/cicd.md) before touching CI, Builds, `wrangler.jsonc` or migrations.
 
 ## Next safe continuation point
+
+- Shopping/shipping cleanup (2026-10-19): complete; [18 public checks passed](docs/verification/shopping-shipping-20261019.md). PR #74 is superseded and closed. Preserve the separate hero-incident mitigation recorded above; re-query live allocation before future releases.
 
 - Visible silk repair (2026-10-19): **released and publicly verified** in #124 / `5faa822`. Preserve the original-image motion and smooth product protection. Re-query active Cloudflare allocation before future operations; no native-device/field-performance guarantee. [Evidence](docs/verification/hero-silk-20261019.md).
 
