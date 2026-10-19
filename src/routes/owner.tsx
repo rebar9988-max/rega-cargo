@@ -4,6 +4,7 @@ import { Shell, PageHeader } from "@/components/shell";
 import { Field, btnPrimary, btnGhost, controlClass } from "@/components/field";
 import { useI18n } from "@/lib/i18n";
 import { seo } from "@/lib/seo";
+import { useHydrated } from "@/lib/use-hydrated";
 import { ownerCopy } from "@/lib/owner/copy";
 import { activateFirstOwner, inspectOwnerInvitation } from "@/lib/owner/api";
 import { authClient, signOut } from "@/lib/auth/client";
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/owner")({
 function OwnerPage() {
   const { lang } = useI18n();
   const t = ownerCopy(lang);
+  const ready = useHydrated();
   const [token, setToken] = useState("");
   const [ticket, setTicket] = useState<{ email: string; existing: boolean } | null>(null);
   const [state, setState] = useState<"login" | "checking" | "invalid" | "ready">("login");
@@ -44,6 +46,7 @@ function OwnerPage() {
   }, []);
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (!ready || busy) return;
     setBusy(true);
     setError(false);
     try {
@@ -100,6 +103,7 @@ function OwnerPage() {
             <Field label={t.email}>
               <input
                 className={controlClass}
+                disabled={!ready || busy}
                 type="email"
                 autoComplete="username"
                 dir="ltr"
@@ -113,6 +117,7 @@ function OwnerPage() {
               <Field label={t.name}>
                 <input
                   className={controlClass}
+                  disabled={!ready || busy}
                   autoComplete="name"
                   required
                   maxLength={80}
@@ -124,6 +129,7 @@ function OwnerPage() {
             <Field label={t.password} hint={t.passwordHint}>
               <input
                 className={controlClass}
+                disabled={!ready || busy}
                 type="password"
                 autoComplete={ticket && !ticket.existing ? "new-password" : "current-password"}
                 dir="ltr"
@@ -135,7 +141,7 @@ function OwnerPage() {
               />
             </Field>
             {error ? <p role="alert">{t.failed}</p> : null}
-            <button type="submit" className={btnPrimary} disabled={busy}>
+            <button type="submit" className={btnPrimary} disabled={!ready || busy}>
               {ticket ? t.activate : t.signIn}
             </button>
           </form>
