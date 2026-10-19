@@ -6,12 +6,12 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
 - Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-18**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
+- Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
-## Current state — original silk released, 2026-10-18
+## Current state — visible silk follow-up, 2026-10-19
 
-Owner requested publication after the moving preview. Prerequisite #121 merged as `96d9f15`; #122 passed the complete hosted gate (507 unit/script passes + 4 skips; 651 browser/pixel/layout passes + 16 skips; zero failures) and merged as `f430d75`. Existing Cloudflare main Build `5fb9e9c5` succeeded; direct readback confirms version `b1ac11a9-fdc5-4a02-b123-ab3e723c0e9a` at 100%. Live silk movement, stationary product/copy, reduced motion and fallbacks verified; 13 public routes finish at 200. The original design and business behaviour are preserved. [Full evidence and limitations](docs/verification/hero-silk-20261018.md). Documentation-only builds can change the version without changing this app.
+Owner reports that the released silk looks stationary. Direct Cloudflare/public-browser checks confirm the deployed renderer is running, but original displacement was at most 1.45 source pixels. An isolated candidate increases local fold travel and softly protects product edges using the existing matte. Original design and business behaviour remain unchanged. Verification and normal main-only publication are in progress; no new release claimed. [Current evidence](docs/verification/hero-silk-20261019.md). Previous #122/#123 release history remains in the [original report](docs/verification/hero-silk-20261018.md).
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
 
@@ -77,6 +77,8 @@ Presentation-only refinement of spacing, alignment and touch targets ([report](d
 Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are non-deploying (build `11b23adc`: no Version ID, no Preview URL); hosted Actions blocked by billing; `main` cannot have required checks on GitHub Free; production workers.dev still redirects (I-14). Code fix: branch/CI builds can never migrate production (I-13). Read the [CI/CD runbook](docs/operations/cicd.md) before touching CI, Builds, `wrangler.jsonc` or migrations.
 
 ## Next safe continuation point
+
+- Hero visible-motion follow-up (2026-10-19): finish the exact-source browser/hosted gate, then use the authorized normal main-only delivery and verify public phone/desktop motion. [Evidence](docs/verification/hero-silk-20261019.md).
 
 - Hero original silk (2026-10-18): **released** in #122 / `f430d75`, after prerequisite #121 and the passing hosted gate. The original photograph supplies folds and stationary foreground; guarded 18/26-second motion, offscreen/tab pause and reduced-motion/static fallback verified on production. No native-device/field-performance claim. [Release and continuation](docs/verification/hero-silk-20261018.md).
 

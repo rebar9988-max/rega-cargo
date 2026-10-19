@@ -12,7 +12,7 @@ void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
 `;
 
 // Sample the original photograph: never replace its folds, colour or lighting. The foreground
-// matte and a four-art-pixel guard keep headphones, antialiased edges and podium stationary.
+// clearance matte anchors the foreground and softly releases the fabric around its edges.
 const FRAGMENT = `
 precision highp float;
 uniform vec2 u_res;
@@ -25,14 +25,9 @@ uniform sampler2D u_mask;
 void main() {
   vec2 pixel = (vec2(gl_FragCoord.x, u_res.y - gl_FragCoord.y) - u_offset) / u_scale;
   vec2 uv = pixel / u_artSize;
-  float protectedArea = 0.0;
-  for (int y = -1; y <= 1; y++) {
-    for (int x = -1; x <= 1; x++) {
-      protectedArea = max(protectedArea,
-        texture2D(u_mask, uv + vec2(float(x), float(y)) * 4.0 / u_artSize).a);
-    }
-  }
-  float silk = 1.0 - smoothstep(0.0, 0.025, protectedArea);
+  // Twelve stationary source pixels exceed the maximum displacement. Feather out to
+  // 32 pixels so the larger, visible waves never reveal a hard cut around the product.
+  float silk = smoothstep(12.0 / 32.0, 1.0, texture2D(u_mask, uv).a);
   // Anchor the frame edges and the stage; no breathing/translation of the entire background.
   vec2 edge = smoothstep(vec2(0.0), vec2(0.035), uv)
     * (1.0 - smoothstep(vec2(0.965), vec2(1.0), uv));
@@ -41,13 +36,56 @@ void main() {
   float secondaryPhase = u_time * 6.28318530718 / 26.0;
   float mainWave = sin(uv.y * 7.0 + uv.x * 2.0 + mainPhase);
   float secondaryWave = sin(uv.x * 6.0 - uv.y * 3.0 - secondaryPhase);
-  vec2 displacement = vec2(mainWave * 1.1 + secondaryWave * 0.35,
-    mainWave * 0.55 - secondaryWave * 0.45) * silk / u_artSize;
+  // A few source pixels of local fold travel remain visible at phone sizes. The old
+  // sub-pixel movement drew frames, but read as a still photograph at normal speed.
+  vec2 displacement = vec2(mainWave * 6.0 + secondaryWave * 2.0,
+    mainWave * 4.0 - secondaryWave * 2.5) * silk / u_artSize;
   vec4 cloth = texture2D(u_art, uv + displacement);
-  float sheen = 1.0 + silk * 0.012 * sin(uv.x * 5.0 + uv.y * 4.0 + secondaryPhase);
+  float sheen = 1.0 + silk * 0.03 * sin(uv.x * 5.0 + uv.y * 4.0 + secondaryPhase);
   gl_FragColor = vec4(cloth.rgb * sheen, silk);
 }
 `;
+
+// Build once at the small source resolution. A distance field gives smooth protection
+// around every edge without repeated per-frame mask samples or browser-specific filters.
+function clearanceMask(image: HTMLImageElement) {
+  const canvas = document.createElement("canvas");
+  canvas.width = ART_W;
+  canvas.height = ART_H;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) throw new Error("Silk protection canvas unavailable");
+  ctx.drawImage(image, 0, 0, ART_W, ART_H);
+  const pixels = ctx.getImageData(0, 0, ART_W, ART_H);
+  const distance = new Float32Array(ART_W * ART_H);
+  for (let i = 0; i < distance.length; i++) distance[i] = pixels.data[i * 4 + 3] ? 0 : 1000;
+  for (const direction of [1, -1]) {
+    for (let row = 0; row < ART_H; row++) {
+      const y = direction === 1 ? row : ART_H - 1 - row;
+      for (let col = 0; col < ART_W; col++) {
+        const x = direction === 1 ? col : ART_W - 1 - col;
+        const i = y * ART_W + x;
+        const previousX = x - direction;
+        const previousY = y - direction;
+        if (previousX >= 0 && previousX < ART_W) {
+          distance[i] = Math.min(distance[i], distance[i - direction] + 1);
+        }
+        if (previousY < 0 || previousY >= ART_H) continue;
+        for (let dx = -1; dx <= 1; dx++) {
+          if (x + dx < 0 || x + dx >= ART_W) continue;
+          distance[i] = Math.min(
+            distance[i],
+            distance[previousY * ART_W + x + dx] + (dx ? Math.SQRT2 : 1),
+          );
+        }
+      }
+    }
+  }
+  for (let i = 0; i < distance.length; i++) {
+    pixels.data[i * 4 + 3] = Math.round(255 * Math.min(1, distance[i] / 32));
+  }
+  ctx.putImageData(pixels, 0, 0);
+  return canvas;
+}
 
 function compile(gl: WebGLRenderingContext, type: number, source: string) {
   const shader = gl.createShader(type);
@@ -196,7 +234,7 @@ export function HeroSilk() {
       const loc = gl.getAttribLocation(program, "a_pos");
       gl.enableVertexAttribArray(loc);
       gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      for (const [unit, image] of [poster, mask].entries()) {
+      for (const [unit, image] of [poster, clearanceMask(mask)].entries()) {
         const texture = gl.createTexture();
         if (!texture) return fallback();
         textures.push(texture);
