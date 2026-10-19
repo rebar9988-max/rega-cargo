@@ -24,7 +24,8 @@ export const identityAdminResources: Record<string, ResourceSpec> = {
     async prepare(sql, _actor, data, current, operation) {
       if (operation !== "delete" && data.status === "approved") {
         const account = (
-          await sql`select id from phone_users where id = ${data.user_id ?? current?.user_id} and disabled_at is null and requires_verification = false`
+          await sql`select id from phone_users where id = ${data.user_id ?? current?.user_id} and disabled_at is null and requires_verification = false
+          union all select id from "user" where id = ${data.user_id ?? current?.user_id} and "emailVerified" = true and disabled_at is null`
         )[0];
         if (!account) throw new MarketError("forbidden");
       }

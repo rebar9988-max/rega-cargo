@@ -19,6 +19,7 @@ import { Route as CustomsRouteImport } from './routes/customs'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as MoveRouteImport } from './routes/move'
+import { Route as OwnerRouteImport } from './routes/owner'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProhibitedItemsRouteImport } from './routes/prohibited-items'
 import { Route as QuoteRouteImport } from './routes/quote'
@@ -33,6 +34,7 @@ import { Route as MarketSlugRouteImport } from './routes/market.$slug'
 import { Route as MarketSellRouteImport } from './routes/market.sell'
 import { Route as StoresIndexRouteImport } from './routes/stores.index'
 import { Route as StoresRequestRouteImport } from './routes/stores.request'
+import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -82,6 +84,11 @@ const MarketRoute = MarketRouteImport.update({
 const MoveRoute = MoveRouteImport.update({
   id: '/move',
   path: '/move',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OwnerRoute = OwnerRouteImport.update({
+  id: '/owner',
+  path: '/owner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -154,6 +161,11 @@ const StoresRequestRoute = StoresRequestRouteImport.update({
   path: '/request',
   getParentRoute: () => StoresRoute,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -166,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/impressum': typeof ImpressumRoute
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
+  '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
   '/quote': typeof QuoteRoute
@@ -180,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/account/': typeof AccountIndexRoute
   '/market/': typeof MarketIndexRoute
   '/stores/': typeof StoresIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -190,6 +204,7 @@ export interface FileRoutesByTo {
   '/customs': typeof CustomsRoute
   '/impressum': typeof ImpressumRoute
   '/move': typeof MoveRoute
+  '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
   '/quote': typeof QuoteRoute
@@ -203,6 +218,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountIndexRoute
   '/market': typeof MarketIndexRoute
   '/stores': typeof StoresIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -216,6 +232,7 @@ export interface FileRoutesById {
   '/impressum': typeof ImpressumRoute
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
+  '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
   '/quote': typeof QuoteRoute
@@ -230,6 +247,7 @@ export interface FileRoutesById {
   '/account/': typeof AccountIndexRoute
   '/market/': typeof MarketIndexRoute
   '/stores/': typeof StoresIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -244,6 +262,7 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/market'
     | '/move'
+    | '/owner'
     | '/privacy'
     | '/prohibited-items'
     | '/quote'
@@ -258,6 +277,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/market/'
     | '/stores/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -268,6 +288,7 @@ export interface FileRouteTypes {
     | '/customs'
     | '/impressum'
     | '/move'
+    | '/owner'
     | '/privacy'
     | '/prohibited-items'
     | '/quote'
@@ -281,6 +302,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/market'
     | '/stores'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
@@ -293,6 +315,7 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/market'
     | '/move'
+    | '/owner'
     | '/privacy'
     | '/prohibited-items'
     | '/quote'
@@ -307,6 +330,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/market/'
     | '/stores/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -320,6 +344,7 @@ export interface RootRouteChildren {
   ImpressumRoute: typeof ImpressumRoute
   MarketRoute: typeof MarketRouteWithChildren
   MoveRoute: typeof MoveRoute
+  OwnerRoute: typeof OwnerRoute
   PrivacyRoute: typeof PrivacyRoute
   ProhibitedItemsRoute: typeof ProhibitedItemsRoute
   QuoteRoute: typeof QuoteRoute
@@ -327,6 +352,7 @@ export interface RootRouteChildren {
   StoresRoute: typeof StoresRouteWithChildren
   TermsRoute: typeof TermsRoute
   TrackRoute: typeof TrackRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -399,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/move'
       fullPath: '/move'
       preLoaderRoute: typeof MoveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/owner': {
+      id: '/owner'
+      path: '/owner'
+      fullPath: '/owner'
+      preLoaderRoute: typeof OwnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -499,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoresRequestRouteImport
       parentRoute: typeof StoresRoute
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -554,6 +594,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImpressumRoute: ImpressumRoute,
   MarketRoute: MarketRouteWithChildren,
   MoveRoute: MoveRoute,
+  OwnerRoute: OwnerRoute,
   PrivacyRoute: PrivacyRoute,
   ProhibitedItemsRoute: ProhibitedItemsRoute,
   QuoteRoute: QuoteRoute,
@@ -561,6 +602,7 @@ const rootRouteChildren: RootRouteChildren = {
   StoresRoute: StoresRouteWithChildren,
   TermsRoute: TermsRoute,
   TrackRoute: TrackRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

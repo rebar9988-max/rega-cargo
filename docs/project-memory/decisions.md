@@ -98,3 +98,7 @@ Owner viewed the actual animated preview and explicitly requested publication on
 ## 2026-10-19 Owner-requested visible silk repair
 
 Owner explicitly reports imperceptible motion and requests repair; earlier explicit publication authorization persists. Increase only original-silk local deformation and sheen, keep the same 18/26-second timing and all UI/product geometry. Derive smooth protection once from the existing matte rather than replacing folds or assets. Release through existing checks and main-only Builds; no new approval, infrastructure or business scope. [Evidence](../verification/hero-silk-20261019.md).
+
+## 2026-10-19 — Independently authorized, one-time first owner
+
+Explicit owner instruction requires both independent platform-control confirmation and recipient email proof. Use the existing unified Better Auth identity store; no automatic email-based promotion, public signup, generated owner password or new paid mail provider. Authorize the singleton only through authenticated control-plane access with immutable audit; expire/hash the invitation; atomically verify/grant/consume/audit after native credential authentication; permanently close after success. Preserve the existing phone flow, architecture and AI baseline. [Runbook](../operations/first-owner.md).

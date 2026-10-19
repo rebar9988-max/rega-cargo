@@ -143,3 +143,7 @@ Owner cannot perceive the released motion. The published renderer runs, but 1.45
 
 
 2026-10-19 verified outcome: Verified release supersedes the pending checkpoint above: #124 exact head fb79c2f passed hosted gate 39219963680, then merged normally as 5faa822. Main Build f5dd0b70 succeeded; version 788eccf7 at 100%. Real public suite 15/15 passed, four viewport samples and an already cached service-worker client verified, 13 routes finish at 200. No remaining visible-silk release blocker. [Evidence](../verification/hero-silk-20261019.md).
+
+## 2026-10-19 — First legitimate owner setup
+
+Invitation-only native Better Auth owner activation is in progress on `codex/rl-first-owner-20261014`, reconciled with main `2a0dfe5`. Independent authenticated repository-owner/admin evidence matches the production Build connection. Production has no native owner account or approved role; none has been granted. Additive dev migration and rolled-back PostgreSQL activation/replay smoke passed. Final hosted CI/deployment and real recipient activation are pending. [Evidence](../verification/first-owner-20261019.md).

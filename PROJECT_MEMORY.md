@@ -9,6 +9,12 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
+## Owner setup continuation — 2026-10-19
+
+First legitimate SUPER_ADMIN setup is in progress, with no production grant or email-verification claim. Unpublished invitation-only work was reconciled with current main; independent GitHub owner/admin control matches the Cloudflare production repository connection. Final hosted gate, release and actual recipient activation are pending. [Evidence](docs/verification/first-owner-20261019.md). Preserve the released original silk and all existing architecture/AI identity.
+
+
+
 ## Current state — visible silk repair released, 2026-10-19
 
 Owner could not perceive the initial released motion. Isolated original-silk repair [#124](https://github.com/rebar9988-max/rega-cargo/pull/124) passed the exact-head hosted gate (507 unit/script passes + 4 existing skips; 651 browser/pixel/layout passes + 16 skips, zero failures/flakes) and merged normally as `5faa822`. Existing main Build `f5dd0b70` succeeded; direct readback confirms version `788eccf7-99bd-4cd7-aeaa-6f2787abe05f` at 100%. Actual public suite 15/15 passed, with visible three-second silk changes near 19% versus 3.86% before; all protected product samples remain stationary. Four public viewport samples, an existing service-worker client and 13 final-200 routes verified. Original image/design/business/AI behaviour preserved. [Release evidence and limitations](docs/verification/hero-silk-20261019.md). Documentation-only builds may change the version while retaining this app.
