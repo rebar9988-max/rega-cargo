@@ -616,10 +616,11 @@ test("refinement: header, hero and sections share one content edge; touch target
       ),
   );
   expect(small).toEqual([]);
-  // No bottom bar on the reference homepage, so the footer reserves no space for one.
+  // The bottom bar is on the homepage too, so the footer reserves its space on phones:
+  // bar height (4rem) + safe area (0 here) + one spacing step (1rem).
   expect(
     await page.locator(".rl-site-footer").evaluate((el) => getComputedStyle(el).paddingBlockEnd),
-  ).toBe("0px");
+  ).toBe("80px");
 });
 
 test("quote weight accepts the decimal comma and Arabic-Indic or Persian digits like a plain 3.2", async ({
