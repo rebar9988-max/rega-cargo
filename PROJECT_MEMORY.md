@@ -9,6 +9,10 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
+## Current state — customer email OTP sign-in released, 2026-10-19
+
+Gated pages offered only phone sign-in, which is closed (I-3), so nobody could sign in. [#131](https://github.com/rebar9988-max/rega-cargo/pull/131) (`63ad833`, merge `e0778e1`) adds customer email-code sign-in/registration via Resend (`no-reply@rlgo.net`) inside the existing Better Auth (native sessions; owner/admin/password identities refused). Additive migration `0018_email_codes` applied to production `old-cherry/cargo` after backup branch `backup-before-0018-email-codes-20261019`. Hosted gate green; live `/api/auth/rl-email/status` → available; real code to the authorized recipient **delivered** (Resend). Live code entry/session/logout not yet run (needs the inbox code); active Worker version not readable (DNS-only token). [Evidence](docs/verification/email-otp-20261019.md).
+
 ## Owner setup continuation — 2026-10-19
 
 First legitimate SUPER_ADMIN setup is in progress, with no production grant or email-verification claim. Unpublished invitation-only work was reconciled with current main; independent GitHub owner/admin control matches the Cloudflare production repository connection. Final hosted gate, release and actual recipient activation are pending. [Evidence](docs/verification/first-owner-20261019.md). Preserve the released original silk and all existing architecture/AI identity.
@@ -81,6 +85,8 @@ Presentation-only refinement of spacing, alignment and touch targets ([report](d
 Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are non-deploying (build `11b23adc`: no Version ID, no Preview URL); hosted Actions blocked by billing; `main` cannot have required checks on GitHub Free; production workers.dev still redirects (I-14). Code fix: branch/CI builds can never migrate production (I-13). Read the [CI/CD runbook](docs/operations/cicd.md) before touching CI, Builds, `wrangler.jsonc` or migrations.
 
 ## Next safe continuation point
+
+- Email OTP (2026-10-19): **released** in #131 / `e0778e1`. Next: complete a live code → session → refresh → sign-out run with the recipient inbox code and record it; native review of the new ckb/ku strings. [Evidence](docs/verification/email-otp-20261019.md).
 
 - Mobile silk repair (2026-10-19): **released** in #127 / `8d4d33a` after the integrated gate; actual public Chromium/WebKit suites pass 32/32 with identical product colours. Preserve the repaired renderer and re-query live allocation before further work. Native hardware/field performance remains unclaimed. [Evidence](docs/verification/hero-silk-mobile-20261019.md).
 

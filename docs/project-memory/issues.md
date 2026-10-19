@@ -64,6 +64,7 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - Current connected API supports Hyperdrive GET/PATCH and temporary Cargo-only Observability queries. Production post-release query: 378 sampled invocations `ok`; zero unexpected errors excluding known auth-disabled warnings. The older unavailable-scope evidence below is historical. I-1 was recovered without a scope change.
 
 ### I-3 · OPEN — phone sign-in cannot send codes
+- 2026-10-19: no longer blocks sign-in — customer email OTP (#131) is the default way in; phone remains closed until a provider is configured. [Evidence](../verification/email-otp-20261019.md).
 - No `WHATSAPP_*` / `TWILIO_*` / `PHONE_CODE_SECRET` secrets in production. Expected until the owner chooses a provider.
 
 ### I-9 · ROOT CAUSE FIXED IN FOLLOW-UP 2026-10-13 — first click lost before hydration: `360px filters, favorites, keyboard dialog and banned searches`
@@ -76,6 +77,7 @@ Keep each entry: ID · status · symptom · verified root cause · fix/next step
 - `TODO(translate-review)` strings need native ckb/ar/fa/ku/de/tr review; legal pages need real owner details.
 
 ### I-6 · OPEN — sign-in disabled in production
+- 2026-10-19: customer sign-in is enabled through email OTP in Better Auth (#131); owner/staff access stays invitation-only. [Evidence](../verification/email-otp-20261019.md).
 - Live log: `[auth] DATABASE_URL is set but auth is disabled (VITE_AUTH_ENABLED=false) — requireUserId() rejects every request (fail closed)`. This is the shipped default (`src/lib/auth/verify.server.ts`): the Better Auth path fails closed. `phoneOrAuthMiddleware` checks an `rl_phone` session first, but phone codes cannot be sent (I-3), so nobody can sign in today; account, request and admin features stay unavailable even after I-1. Needs an owner decision (phone provider and/or enabling Better Auth).
 
 ### I-7 · RESOLVED 2026-10-18 · hosted CI was blocked by billing; Actions runs again (history below)
