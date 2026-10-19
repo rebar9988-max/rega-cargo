@@ -3,9 +3,10 @@ import { useEffect, useRef } from "react";
 const ART_W = 504;
 const ART_H = 496;
 const FRAME_MS = 1000 / 30;
-// The source is only 504 × 496. Keep the silk near its native resolution; the product
-// always comes from the untouched full-quality poster below the transparent canvas.
-const MAX_PIXELS = 300_000;
+// Preserve crisp compositing on high-density phones; adapt only the decorative buffer
+// on slower devices. The product always comes from the untouched poster underneath.
+const MAX_PIXELS = 800_000;
+const MIN_PIXELS = 200_000;
 const VERTEX = `
 attribute vec2 a_pos;
 void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
@@ -41,8 +42,10 @@ void main() {
   vec2 displacement = vec2(mainWave * 6.0 + secondaryWave * 2.0,
     mainWave * 4.0 - secondaryWave * 2.5) * silk / u_artSize;
   vec4 cloth = texture2D(u_art, uv + displacement);
-  float sheen = 1.0 + silk * 0.03 * sin(uv.x * 5.0 + uv.y * 4.0 + secondaryPhase);
-  gl_FragColor = vec4(cloth.rgb * sheen, silk);
+  // Use the photograph's own moving highlights, without recolouring it. Explicit
+  // premultiplication also guarantees transparent product pixels contain zero RGB;
+  // masked mobile compositors must never receive hidden, bright foreground colours.
+  gl_FragColor = vec4(cloth.rgb * silk, silk);
 }
 `;
 
@@ -115,7 +118,6 @@ export function HeroSilk() {
     let disposed = false;
     let failed = false;
     let preparing = false;
-    let pageReady = document.readyState === "complete";
     let visible = false;
     let gl: WebGLRenderingContext | null = null;
     let program: WebGLProgram | null = null;
@@ -128,6 +130,7 @@ export function HeroSilk() {
     let last = 0;
     let painted = 0;
     let slowFrames = 0;
+    let pixelBudget = MAX_PIXELS;
     let resize: ResizeObserver | null = null;
 
     const allowed = () => !disposed && !failed && visible && !document.hidden && !motion.matches;
@@ -161,9 +164,14 @@ export function HeroSilk() {
       if (!painted || now - painted >= FRAME_MS - 1) {
         const delta = last ? now - last : 0;
         elapsed += Math.min(delta, 100) / 1000;
-        // Sustained poor performance keeps the matching poster. Intentional 30fps is not slow.
+        // Lower decorative resolution under sustained load instead of permanently
+        // freezing the silk after a short spell of slow mobile frames.
         slowFrames = delta > 70 ? slowFrames + 1 : 0;
-        if (slowFrames >= 30) return fallback();
+        if (slowFrames >= 20 && pixelBudget > MIN_PIXELS) {
+          pixelBudget = Math.max(MIN_PIXELS, pixelBudget / 2);
+          slowFrames = 0;
+          size();
+        }
         last = now;
         painted = now;
         gl.uniform1f(uTime, elapsed);
@@ -181,8 +189,8 @@ export function HeroSilk() {
       if (width <= 0 || height <= 0) return;
       const density = Math.min(
         window.devicePixelRatio || 1,
-        1.5,
-        Math.sqrt(MAX_PIXELS / (width * height)),
+        3,
+        Math.sqrt(pixelBudget / (width * height)),
       );
       canvas.width = Math.max(1, Math.round(width * density));
       canvas.height = Math.max(1, Math.round(height * density));
@@ -204,7 +212,7 @@ export function HeroSilk() {
     const init = () => {
       gl = canvas.getContext("webgl", {
         alpha: true,
-        premultipliedAlpha: false,
+        premultipliedAlpha: true,
         antialias: false,
         depth: false,
         stencil: false,
@@ -270,7 +278,7 @@ export function HeroSilk() {
     const resume = () => {
       if (!allowed()) return stop();
       if (gl) return start();
-      if (!pageReady || preparing || idle !== null) return;
+      if (preparing || idle !== null) return;
       const run = () => {
         idle = null;
         void boot();
@@ -278,10 +286,6 @@ export function HeroSilk() {
       idle = window.requestIdleCallback
         ? window.requestIdleCallback(run, { timeout: 2000 })
         : window.setTimeout(run, 300);
-    };
-    const onLoad = () => {
-      pageReady = true;
-      resume();
     };
     const onMotion = () => {
       if (motion.matches) {
@@ -298,7 +302,6 @@ export function HeroSilk() {
       resume();
     });
     inView.observe(stage);
-    window.addEventListener("load", onLoad, { once: true });
     document.addEventListener("visibilitychange", resume);
     motion.addEventListener("change", onMotion);
     canvas.addEventListener("webglcontextlost", onLost);
@@ -306,7 +309,6 @@ export function HeroSilk() {
       disposed = true;
       stop();
       if (idle !== null) (window.cancelIdleCallback ?? window.clearTimeout)(idle);
-      window.removeEventListener("load", onLoad);
       document.removeEventListener("visibilitychange", resume);
       motion.removeEventListener("change", onMotion);
       canvas.removeEventListener("webglcontextlost", onLost);

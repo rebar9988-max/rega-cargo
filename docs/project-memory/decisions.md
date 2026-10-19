@@ -99,6 +99,11 @@ Owner viewed the actual animated preview and explicitly requested publication on
 
 Owner explicitly reports imperceptible motion and requests repair; earlier explicit publication authorization persists. Increase only original-silk local deformation and sheen, keep the same 18/26-second timing and all UI/product geometry. Derive smooth protection once from the existing matte rather than replacing folds or assets. Release through existing checks and main-only Builds; no new approval, infrastructure or business scope. [Evidence](../verification/hero-silk-20261019.md).
 
+
+## 2026-10-19 Urgent quality restoration and isolated renderer repair
+
+Owner reports no motion, low quality and mixed colours and explicitly requests urgent repair. Reuse the verified original static main-built version as an immediate reversible mitigation; git diff proves only the four hero-related runtime files differ. Continue the animation repair, preserve original colours/assets/geometry and existing delivery safeguards; no new permission or unrelated scope is inferred. Native-quality claims require native evidence. [Evidence](../verification/hero-silk-mobile-20261019.md).
+
 ## 2026-10-19 — Independently authorized, one-time first owner
 
 Explicit owner instruction requires both independent platform-control confirmation and recipient email proof. Use the existing unified Better Auth identity store; no automatic email-based promotion, public signup, generated owner password or new paid mail provider. Authorize the singleton only through authenticated control-plane access with immutable audit; expire/hash the invitation; atomically verify/grant/consume/audit after native credential authentication; permanently close after success. Preserve the existing phone flow, architecture and AI baseline. [Runbook](../operations/first-owner.md).

@@ -3,12 +3,25 @@ import { expect, test } from "@playwright/test";
 // Observe actual draw calls, not React state; a paused canvas must stop doing GPU work.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    const probe = { draws: 0, capture: false, pixels: [] as number[], width: 0, height: 0 };
+    const probe = {
+      draws: 0,
+      capture: false,
+      pixels: [] as number[],
+      width: 0,
+      height: 0,
+      transparentPixels: 0,
+      transparentColorLeaks: 0,
+      transparentReference: false,
+    };
     Object.assign(window, { silkProbe: probe });
     const original = WebGLRenderingContext.prototype.drawArrays;
     WebGLRenderingContext.prototype.drawArrays = function (...args) {
       original.apply(this, args);
       if (!(this.canvas as HTMLCanvasElement).classList.contains("rl-ref-hero-silk")) return;
+      if (probe.transparentReference) {
+        this.clearColor(0, 0, 0, 0);
+        this.clear(this.COLOR_BUFFER_BIT);
+      }
       probe.draws++;
       if (probe.capture) {
         const pixels = new Uint8Array(this.drawingBufferWidth * this.drawingBufferHeight * 4);
@@ -23,6 +36,13 @@ test.beforeEach(async ({ page }) => {
         );
         // Transfer a fixed grid instead of megabytes per frame; read back only on request.
         probe.pixels = [];
+        probe.transparentPixels = 0;
+        probe.transparentColorLeaks = 0;
+        for (let i = 0; i < pixels.length; i += 4) {
+          if (pixels[i + 3] !== 0) continue;
+          probe.transparentPixels++;
+          if (pixels[i] || pixels[i + 1] || pixels[i + 2]) probe.transparentColorLeaks++;
+        }
         for (let y = 0; y < this.drawingBufferHeight; y += 4) {
           for (let x = 0; x < this.drawingBufferWidth; x += 4) {
             const i = (y * this.drawingBufferWidth + x) * 4;
@@ -68,13 +88,23 @@ test("silk pixels visibly flow while product edges, podium and page geometry sta
     });
     await expect.poll(() => page.evaluate(() => (window as any).silkProbe.capture)).toBe(false);
     return page.evaluate(() => {
-      const { width, height, pixels } = (window as any).silkProbe;
-      return { width, height, pixels: pixels as number[] };
+      const { width, height, pixels, transparentPixels, transparentColorLeaks } = (window as any)
+        .silkProbe;
+      return {
+        width,
+        height,
+        pixels: pixels as number[],
+        transparentPixels,
+        transparentColorLeaks,
+      };
     });
   };
   const before = await capture();
   await page.waitForTimeout(3000);
   const after = await capture();
+  expect(before.transparentPixels).toBeGreaterThan(500);
+  expect(before.transparentColorLeaks).toBe(0);
+  expect(after.transparentColorLeaks).toBe(0);
   expect(after.width).toBe(before.width);
   expect(after.height).toBe(before.height);
   // Classify source pixels with the real foreground matte, independently from the shader.
@@ -161,6 +191,126 @@ test("offscreen and hidden tabs stop drawing and resume without resetting", asyn
     document.dispatchEvent(new Event("visibilitychange"));
   });
   await expect.poll(() => drawCount(page)).toBeGreaterThan(hidden);
+});
+
+test("unrelated pending images do not prevent visible silk startup", async ({ page }) => {
+  let release!: () => void;
+  const held = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/silk-unrelated-hold.png", async (route) => {
+    await held;
+    await route.fulfill({ status: 404, body: "" });
+  });
+  await page.addInitScript(() => {
+    document.addEventListener("DOMContentLoaded", () => {
+      const image = new Image();
+      image.hidden = true;
+      image.src = "/silk-unrelated-hold.png";
+      document.body.append(image);
+    });
+  });
+  try {
+    await page.goto("/?lang=ckb", { waitUntil: "domcontentloaded" });
+    await page.locator(".rl-ref-hero-stage").scrollIntoViewIfNeeded();
+    const supported = await page.evaluate(
+      () => !!document.createElement("canvas").getContext("webgl"),
+    );
+    test.skip(!supported, "WebGL unavailable; static fallback is covered separately");
+    await expect(page.locator(".rl-ref-hero-stage")).toHaveAttribute("data-silk", "on");
+    expect(await page.evaluate(() => document.readyState)).not.toBe("complete");
+  } finally {
+    release();
+  }
+});
+
+test("sustained slow frames adapt resolution while silk keeps moving", async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = window.requestAnimationFrame;
+    window.requestAnimationFrame = (callback) =>
+      original.call(window, (time) => callback(time * 6));
+  });
+  await ready(page);
+  const before = await drawCount(page);
+  await expect.poll(() => drawCount(page)).toBeGreaterThan(before + 65);
+  await expect(page.locator(".rl-ref-hero-stage")).toHaveAttribute("data-silk", "on");
+  const continued = await drawCount(page);
+  await expect.poll(() => drawCount(page)).toBeGreaterThan(continued + 10);
+});
+
+test.describe("high-density mobile compositing", () => {
+  test.use({ deviceScaleFactor: 3 });
+
+  test("the displayed product retains the original poster colours", async ({ page }) => {
+    await ready(page);
+    const stage = page.locator(".rl-ref-hero-stage");
+    const animated = await stage.screenshot();
+    // Keep the same compositing layer and fractional pixel alignment. Hiding the
+    // canvas can rerasterize its masked parent and change antialiasing on desktop.
+    const draws = await drawCount(page);
+    await page.evaluate(() => {
+      (window as any).silkProbe.transparentReference = true;
+    });
+    await expect.poll(() => drawCount(page)).toBeGreaterThan(draws);
+    const original = await stage.screenshot();
+    const result = await page.evaluate(
+      async ({ animated, original }) => {
+        const decode = async (src: string) => {
+          const image = new Image();
+          image.src = src;
+          await image.decode();
+          const canvas = document.createElement("canvas");
+          canvas.width = image.width;
+          canvas.height = image.height;
+          const ctx = canvas.getContext("2d")!;
+          ctx.drawImage(image, 0, 0);
+          return {
+            width: canvas.width,
+            height: canvas.height,
+            pixels: ctx.getImageData(0, 0, canvas.width, canvas.height).data,
+          };
+        };
+        const [a, b, mask] = await Promise.all([
+          decode(animated),
+          decode(original),
+          decode("/home/hero-fg.webp"),
+        ]);
+        const scale = Math.max(a.width / 504, a.height / 496);
+        const offsetX = matchMedia("(min-width:48rem)").matches ? 0 : a.width - 504 * scale;
+        const offsetY = (a.height - 496 * scale) / 2;
+        let samples = 0;
+        let maxDelta = 0;
+        for (let y = 0; y < a.height; y += 3)
+          for (let x = 0; x < a.width; x += 3) {
+            const sx = Math.floor((x - offsetX) / scale);
+            const sy = Math.floor((y - offsetY) / scale);
+            if (
+              sx < 0 ||
+              sx >= 504 ||
+              sy < 0 ||
+              sy >= 496 ||
+              mask.pixels[(sy * 504 + sx) * 4 + 3] < 250
+            )
+              continue;
+            samples++;
+            const i = (y * a.width + x) * 4;
+            for (let c = 0; c < 3; c++)
+              maxDelta = Math.max(maxDelta, Math.abs(a.pixels[i + c] - b.pixels[i + c]));
+          }
+        return { samples, maxDelta };
+      },
+      {
+        animated: `data:image/png;base64,${animated.toString("base64")}`,
+        original: `data:image/png;base64,${original.toString("base64")}`,
+      },
+    );
+    expect(result.samples).toBeGreaterThan(1000);
+    expect(result.maxDelta).toBe(0);
+    await test.info().attach("displayed-product-colours", {
+      body: JSON.stringify(result),
+      contentType: "application/json",
+    });
+  });
 });
 
 test("reduced motion avoids WebGL and the mask request, including live preference changes", async ({
