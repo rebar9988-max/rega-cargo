@@ -107,3 +107,8 @@ Owner reports no motion, low quality and mixed colours and explicitly requests u
 ## 2026-10-19 — Independently authorized, one-time first owner
 
 Explicit owner instruction requires both independent platform-control confirmation and recipient email proof. Use the existing unified Better Auth identity store; no automatic email-based promotion, public signup, generated owner password or new paid mail provider. Authorize the singleton only through authenticated control-plane access with immutable audit; expire/hash the invitation; atomically verify/grant/consume/audit after native credential authentication; permanently close after success. Preserve the existing phone flow, architecture and AI baseline. [Runbook](../operations/first-owner.md).
+
+
+## 2026-10-19 — Customer email OTP inside existing Better Auth
+
+Owner brief "R&L EMAIL OTP PRODUCTION ACTIVATION" authorized implementation, merge, deploy and live verification. Email customers are plain Better Auth `user` rows with native sessions (no second login system); codes are issued/consumed by our own atomic SQL in a narrow plugin because the stock emailOTP plugin signs in any user, including the owner. Public code flow never opens password/provider-linked, admin/super_admin, disabled, unverified or invited identities. Phone code stays isolated and appears only when its provider is configured. Additive migration only, applied after a Neon backup branch. [Evidence](../verification/email-otp-20261019.md).
