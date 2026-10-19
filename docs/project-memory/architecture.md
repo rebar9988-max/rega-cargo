@@ -71,3 +71,7 @@ R&L AI conversation policy/UI is owned by `src/modules/rl-ai/`; existing `src/li
 Owner authorized implementation and release of the four previously deferred policy items: fixed five-minute/five-attempt OTP window with atomic 60-second resends and single consumption; decimal-comma weight inputs with all tenth-kilogram boundaries covered and pricing unchanged; fail-closed missing/error rate limits; transactional in-app staff review notices via additive migration 0016. No UI redesign, module boundary change, account grant or paid service. Details, measured checks, deployment state and remaining limitations: [release evidence](../verification/release-hardening-20261018.md).
 
 Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.0589166 (>0.05). Local Latin fallback metrics repair in `src/styles.css`/`tokens.css` makes that existing test pass while primary fonts and final loaded-font design remain unchanged. Final full browser counts are in the same release report.
+
+## 2026-10-19 — Invitation-only owner identity
+
+`src/lib/owner/` belongs to the existing identity/control plane and uses the unified database. `/owner` and closed `/api/auth/*` reuse native Better Auth; `0017_owner_bootstrap.sql` contains no seeded identity or grant. Independent approval, a single-use expiring email nonce and native credentials are all required. Private authorization reads verified/non-disabled identity and database roles freshly. [Runbook](../operations/first-owner.md).

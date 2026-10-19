@@ -93,3 +93,7 @@ Owner requests silk-only motion, preservation, passing checks and verified deplo
 ## 2026-10-18 owner-authorized original silk publication
 
 Owner viewed the actual animated preview and explicitly requested publication on the website. This authorizes the necessary tested #121 baseline prerequisite and #122 release, not unrelated app changes. Both merged normally; the exact final head passed the complete hosted gate before the animation merge. Existing main-only Workers Builds handled delivery. Direct allocation and real production browser checks establish the release; no safeguard waiver, new public hostname, fake 3D model or business change. [Release evidence](../verification/hero-silk-20261018.md).
+
+## 2026-10-19 — Independently authorized, one-time first owner
+
+Explicit owner instruction requires both independent platform-control confirmation and recipient email proof. Use the existing unified Better Auth identity store; no automatic email-based promotion, public signup, generated owner password or new paid mail provider. Authorize the singleton only through authenticated control-plane access with immutable audit; expire/hash the invitation; atomically verify/grant/consume/audit after native credential authentication; permanently close after success. Preserve the existing phone flow, architecture and AI baseline. [Runbook](../operations/first-owner.md).

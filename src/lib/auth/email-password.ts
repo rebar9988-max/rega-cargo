@@ -1,10 +1,4 @@
-/**
- * Local email/password sign-in (this app's Better Auth DB — not the broker).
- *
- * Off by default. To enable: set `emailAndPasswordEnabled` to `true` below,
- * then build sign-up / sign-in forms with `authClient.signUp.email` /
- * `authClient.signIn.email` from `@/lib/auth/client` (see the auth skill).
- *
- * Do NOT edit `server.ts` for this — that file is frozen pre-wired config.
+/** Owner invitation-only email/password authentication in the existing Better Auth database.
+ * Native public signup is denied by /api/auth/*; owner creation is server-side.
  */
-export const emailAndPasswordEnabled = false;
+export const emailAndPasswordEnabled = true;

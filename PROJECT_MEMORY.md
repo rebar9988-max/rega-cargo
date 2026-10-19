@@ -9,6 +9,10 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-18**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
+## Owner setup continuation — 2026-10-19
+
+First legitimate SUPER_ADMIN setup is in progress, with no production grant or email-verification claim. Unpublished invitation-only work was reconciled with current main; independent GitHub owner/admin control matches the Cloudflare production repository connection. Final hosted gate, release and actual recipient activation are pending. [Evidence](docs/verification/first-owner-20261019.md). Preserve the released original silk and all existing architecture/AI identity.
+
 ## Current state — original silk released, 2026-10-18
 
 Owner requested publication after the moving preview. Prerequisite #121 merged as `96d9f15`; #122 passed the complete hosted gate (507 unit/script passes + 4 skips; 651 browser/pixel/layout passes + 16 skips; zero failures) and merged as `f430d75`. Existing Cloudflare main Build `5fb9e9c5` succeeded; direct readback confirms version `b1ac11a9-fdc5-4a02-b123-ab3e723c0e9a` at 100%. Live silk movement, stationary product/copy, reduced motion and fallbacks verified; 13 public routes finish at 200. The original design and business behaviour are preserved. [Full evidence and limitations](docs/verification/hero-silk-20261018.md). Documentation-only builds can change the version without changing this app.

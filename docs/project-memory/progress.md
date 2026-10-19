@@ -135,3 +135,7 @@ Owner-only protection review: [PR #94](https://github.com/rebar9988-max/rega-car
 Owner authorized implementation and release of the four previously deferred policy items: fixed five-minute/five-attempt OTP window with atomic 60-second resends and single consumption; decimal-comma weight inputs with all tenth-kilogram boundaries covered and pricing unchanged; fail-closed missing/error rate limits; transactional in-app staff review notices via additive migration 0016. No UI redesign, module boundary change, account grant or paid service. Details, measured checks, deployment state and remaining limitations: [release evidence](../verification/release-hardening-20261018.md).
 
 Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.0589166 (>0.05). Local Latin fallback metrics repair in `src/styles.css`/`tokens.css` makes that existing test pass while primary fonts and final loaded-font design remain unchanged. Final full browser counts are in the same release report.
+
+## 2026-10-19 — First legitimate owner setup
+
+Invitation-only native Better Auth owner activation is in progress on `codex/rl-first-owner-20261014`, reconciled with main `2a0dfe5`. Independent authenticated repository-owner/admin evidence matches the production Build connection. Production has no native owner account or approved role; none has been granted. Additive dev migration and rolled-back PostgreSQL activation/replay smoke passed. Final hosted CI/deployment and real recipient activation are pending. [Evidence](../verification/first-owner-20261019.md).
