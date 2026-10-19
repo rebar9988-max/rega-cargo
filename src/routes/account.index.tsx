@@ -3,6 +3,7 @@ import { seo } from "@/lib/seo";
 import { btnGhost, btnPrimary } from "@/components/field";
 import { PageHeader, Shell } from "@/components/shell";
 import { SignInGate } from "@/components/sign-in-gate";
+import { SignOutButton } from "@/components/phone-gate";
 import { IqdAmount, RequestHelp, StatusBadge } from "@/components/request-bits";
 import { when } from "@/lib/requests/format";
 import { useI18n } from "@/lib/i18n";
@@ -43,6 +44,7 @@ function AccountPage() {
           <Link to="/request" search={{ flow: "forward" }} className={btnGhost}>
             {t.newForward}
           </Link>
+          <SignOutButton className={`${btnGhost} ms-auto`} />
         </div>
         {"error" in list ? (
           <p role="alert" className="text-sm text-clay">
