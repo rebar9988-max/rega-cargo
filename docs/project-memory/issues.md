@@ -154,6 +154,9 @@ Silk release follow-up: the #121 baseline/hydration prerequisites are resolved. 
 
 Root cause: a rendering-activity check accepted barely perceptible source-pixel deformation. Added a short-viewing contrast regression and stricter protection of all nonzero product-mask pixels. Larger waves need a smooth distance-field transition to avoid seams; the intermediate hard-mask candidate was not released. Final gate/public verification pending. [Evidence](../verification/hero-silk-20261019.md).
 
+
+2026-10-19 verified outcome: Resolved and independently verified: real public short-viewing contrast samples are ~19% versus the previous 3.86%, with zero changed product-mask pixels. Fifteen public cases pass; four viewport samples keep geometry stable and correctly respect reduced motion. An existing service-worker client obtains the new bundle on normal reload. No SW/cache/configuration change was needed. Native hardware/field performance remains unclaimed. [Evidence](../verification/hero-silk-20261019.md).
+
 ## 2026-10-19 — Native owner authentication preparation
 
 Existing email/password Better Auth was disabled, its availability predicate required missing federation credentials, native schema/HTTP routes were absent, and role approval only recognized phone identities. Invitation-only native activation, fresh verified identity checks and closed auth routes address these responsible layers. No existing user/password is overwritten and no public promotion exists. Final release and actual owner email/password activation remain pending. [Evidence](../verification/first-owner-20261019.md).
