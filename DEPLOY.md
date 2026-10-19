@@ -128,6 +128,7 @@ local HTTP/2 performance reproduction, and translation/data release limits.
 | `DATABASE_URL` | only if not using Hyperdrive | Postgres connection string |
 | `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`, `WHATSAPP_TEMPLATE`, `WHATSAPP_TEMPLATE_LANG` | for phone sign-in via WhatsApp | Meta WhatsApp Cloud API |
 | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | for phone sign-in via SMS | Twilio |
+| `RESEND_API_KEY` | for customer email sign-in | Resend key scoped to the verified `rlgo.net` domain. Codes are sent from `R&L <no-reply@rlgo.net>`; an optional `EMAIL_FROM` var is honoured only on `@rlgo.net`. Codes are HMAC-stored with `EMAIL_CODE_SECRET` if set, else `BETTER_AUTH_SECRET`. Needs migration `0018_email_codes.sql`. |
 
 Without WhatsApp **or** Twilio credentials, phone sign-in cannot send codes
 (the UI reports that sending failed); nobody can sign in.

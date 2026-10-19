@@ -3,7 +3,10 @@ import { createPortal } from "react-dom";
 import { UX_COPY } from "@/lib/ux-copy";
 import { UserRound, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { EmailSignIn } from "@/components/email-sign-in";
 import { btnGhost, btnPrimary, controlClass } from "@/components/field";
+import { authClient } from "@/lib/auth/client";
+import { emailOtpCopy } from "@/lib/email-otp/copy";
 import { REQUEST_COPY } from "@/lib/requests/copy";
 import { useI18n } from "@/lib/i18n";
 import { phoneBegin, phoneCheck, phoneLeave, phoneStatus, phoneWho } from "@/lib/phone/api";
@@ -185,6 +188,53 @@ const copy = {
 
 type PhoneCopy = { [K in keyof typeof copy.en]: string };
 
+/** Signed-in customer: a phone session or a native (email-code) Better Auth session. */
+type Me = { name: string; phone?: string; email?: string };
+
+async function whoAmI(): Promise<Me | null> {
+  const phone = await phoneWho().catch(() => null);
+  if (phone) return phone;
+  try {
+    const { data } = await authClient.getSession();
+    return data?.user ? { name: data.user.name, email: data.user.email } : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Ends whichever customer session this browser holds (phone, email or both). */
+async function leave(): Promise<boolean> {
+  const results = await Promise.allSettled([
+    phoneLeave(),
+    authClient.signOut().then(({ error }) => {
+      if (error) throw new Error("sign-out");
+    }),
+  ]);
+  navigator.serviceWorker?.controller?.postMessage("rl-sign-out");
+  return results.every((r) => r.status === "fulfilled");
+}
+
+/** Sign-out control for signed-in pages (account dashboard). */
+export function SignOutButton({ className }: { className?: string }) {
+  const { lang } = useI18n();
+  const t: PhoneCopy = copy[lang] ?? copy.en;
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      className={className ?? btnGhost}
+      onClick={async () => {
+        setBusy(true);
+        await leave();
+        window.location.reload();
+      }}
+    >
+      {t.out}
+    </button>
+  );
+}
+
 export function PhoneButton({
   variant = "pill",
   label,
@@ -192,15 +242,15 @@ export function PhoneButton({
 }: {
   variant?: "pill" | "icon" | "block";
   label?: string;
-  onUser?: (user: { name: string; phone: string } | null) => void;
+  onUser?: (user: Me | null) => void;
 } = {}) {
   const { lang } = useI18n();
   const t: PhoneCopy = copy[lang] ?? copy.en;
   const [open, setOpen] = useState(false);
-  const [me, setMe] = useState<{ name: string; phone: string } | null>(null);
+  const [me, setMe] = useState<Me | null>(null);
 
   useEffect(() => {
-    void phoneWho().then((user) => setMe(user));
+    void whoAmI().then((user) => setMe(user));
   }, []);
 
   return (
@@ -257,10 +307,14 @@ function PhoneDialog({
 }: {
   t: PhoneCopy;
   lang: keyof typeof UX_COPY;
-  me: { name: string; phone: string } | null;
+  me: Me | null;
   onClose: () => void;
-  onUser: (user: { name: string; phone: string } | null) => void;
+  onUser: (user: Me | null) => void;
 }) {
+  // Email codes are the default way in; the phone form stays available only when
+  // its delivery provider is configured (phoneStatus).
+  const [mode, setMode] = useState<"email" | "phone">("email");
+  const et = emailOtpCopy(lang);
   const [country, setCountry] = useState<PhoneCountry>(COUNTRIES[0]);
   const [picking, setPicking] = useState(false);
   const [query, setQuery] = useState("");
@@ -382,7 +436,9 @@ function PhoneDialog({
         className="flex max-h-[94vh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl outline-none md:rounded-3xl"
       >
         <div className="flex items-center justify-between gap-3 px-5 pt-5">
-          <h2 id={titleId} className="text-2xl leading-tight font-bold tracking-tight">{me ? me.name : t.title}</h2>
+          <h2 id={titleId} className="text-2xl leading-tight font-bold tracking-tight">
+            {me ? me.name : mode === "email" ? et.title : t.title}
+          </h2>
           <button
             type="button"
             onClick={onClose}
@@ -394,8 +450,10 @@ function PhoneDialog({
         </div>
         {me ? (
           <p className="px-5 pt-2 text-sm leading-relaxed text-muted">
-            <bdi dir="ltr">{me.phone}</bdi>
+            <bdi dir="ltr">{me.phone ?? me.email}</bdi>
           </p>
+        ) : mode === "email" ? (
+          <p className="px-5 pt-2 text-sm leading-relaxed text-muted">{et.lede}</p>
         ) : available === false ? null : (
           <p className="px-5 pt-2 text-sm leading-relaxed text-muted">{t.lede}</p>
         )}
@@ -410,13 +468,21 @@ function PhoneDialog({
             type="button"
             className={`${btnPrimary} mt-6 w-full`}
             onClick={async () => {
-              await phoneLeave();
-              navigator.serviceWorker?.controller?.postMessage("rl-sign-out");
+              await leave();
               onUser(null);
             }}
           >
             {t.out}
           </button>
+        ) : mode === "email" ? (
+          <>
+            <EmailSignIn onUser={(user) => onUser(user)} />
+            {available === true ? (
+              <button type="button" className="mb-5 min-h-11 px-5 text-sm text-muted underline" onClick={() => setMode("phone")}>
+                {et.usePhone}
+              </button>
+            ) : null}
+          </>
         ) : available === false ? (
           <p role="status" className="px-5 py-6 text-sm leading-relaxed text-clay">
             {t.unavailable}
@@ -483,6 +549,9 @@ function PhoneDialog({
               className={`${btnPrimary} h-12 w-full rounded-2xl`}
             >
               {t.next}
+            </button>
+            <button type="button" className="min-h-11 text-sm text-muted underline" onClick={() => setMode("email")}>
+              {et.useEmail}
             </button>
           </div>
         ) : (

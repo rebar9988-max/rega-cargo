@@ -12,6 +12,7 @@ import { Client, Pool, type ClientConfig } from "pg";
 import { ensureDbReady, getPglite } from "../db";
 import { hasWorkersDatabase, isWorkersRuntime, resolveDatabaseUrl } from "../db-config.server";
 import { emailAndPasswordEnabled } from "./email-password";
+import { rlEmailOtp } from "./email-otp-plugin";
 import { pgliteDialect } from "./pglite-dialect";
 import { PREVIEW_ALLOWED_HOSTS } from "./preview";
 
@@ -201,8 +202,10 @@ export const auth = betterAuth({
   },
 
   plugins: [
-    // Phone sign-in is the live session. Federated Grok OAuth, the preview
-    // bearer token, and the gate-identity plugin are not mounted.
+    // Phone sign-in keeps its own session. Customer email sign-in codes open a
+    // native session here (see ./email-otp-plugin). Federated Grok OAuth, the
+    // preview bearer token, and the gate-identity plugin are not mounted.
+    rlEmailOtp(),
     tanstackStartCookies(),
   ],
 });
