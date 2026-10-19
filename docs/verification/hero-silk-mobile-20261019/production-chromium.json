@@ -1,0 +1,196 @@
+{
+  "stats": {
+    "startTime": "2026-10-19T18:49:54.521Z",
+    "duration": 77130.779,
+    "expected": 24,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "title": "silk pixels visibly flow while product edges, podium and page geometry stay stationary",
+      "project": "chromium-iphone",
+      "status": "passed",
+      "retry": 0,
+      "silk-motion": {
+        "intervalMs": 3000,
+        "productPixels": 4422,
+        "changedProduct": 0,
+        "silkPixels": 4793,
+        "changedSilk": 3122,
+        "visibleSilkChanges": 797,
+        "visibleFraction": 0.16628416440642604
+      }
+    },
+    {
+      "title": "offscreen and hidden tabs stop drawing and resume without resetting",
+      "project": "chromium-iphone",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "unrelated pending images do not prevent visible silk startup",
+      "project": "chromium-iphone",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "sustained slow frames adapt resolution while silk keeps moving",
+      "project": "chromium-iphone",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "reduced motion avoids WebGL and the mask request, including live preference changes",
+      "project": "chromium-iphone",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "a lost WebGL context restores the original poster",
+      "project": "chromium-iphone",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "unavailable WebGL or a failed mask keeps the matching static artwork",
+      "project": "chromium-iphone",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "silk pixels visibly flow while product edges, podium and page geometry stay stationary",
+      "project": "chromium-laptop-1440",
+      "status": "passed",
+      "retry": 0,
+      "silk-motion": {
+        "intervalMs": 3000,
+        "productPixels": 14631,
+        "changedProduct": 0,
+        "silkPixels": 15817,
+        "changedSilk": 10253,
+        "visibleSilkChanges": 2726,
+        "visibleFraction": 0.1723462097742935
+      }
+    },
+    {
+      "title": "offscreen and hidden tabs stop drawing and resume without resetting",
+      "project": "chromium-laptop-1440",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "unrelated pending images do not prevent visible silk startup",
+      "project": "chromium-laptop-1440",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "sustained slow frames adapt resolution while silk keeps moving",
+      "project": "chromium-laptop-1440",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "reduced motion avoids WebGL and the mask request, including live preference changes",
+      "project": "chromium-laptop-1440",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "a lost WebGL context restores the original poster",
+      "project": "chromium-laptop-1440",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "unavailable WebGL or a failed mask keeps the matching static artwork",
+      "project": "chromium-laptop-1440",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "silk pixels visibly flow while product edges, podium and page geometry stay stationary",
+      "project": "chromium-android",
+      "status": "passed",
+      "retry": 0,
+      "silk-motion": {
+        "intervalMs": 3000,
+        "productPixels": 4927,
+        "changedProduct": 0,
+        "silkPixels": 5273,
+        "changedSilk": 3424,
+        "visibleSilkChanges": 897,
+        "visibleFraction": 0.1701118907642708
+      }
+    },
+    {
+      "title": "offscreen and hidden tabs stop drawing and resume without resetting",
+      "project": "chromium-android",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "unrelated pending images do not prevent visible silk startup",
+      "project": "chromium-android",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "sustained slow frames adapt resolution while silk keeps moving",
+      "project": "chromium-android",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "reduced motion avoids WebGL and the mask request, including live preference changes",
+      "project": "chromium-android",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "a lost WebGL context restores the original poster",
+      "project": "chromium-android",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "unavailable WebGL or a failed mask keeps the matching static artwork",
+      "project": "chromium-android",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "the displayed product retains the original poster colours",
+      "project": "chromium-iphone",
+      "status": "passed",
+      "retry": 0,
+      "displayed-product-colours": {
+        "samples": 68355,
+        "maxDelta": 0
+      }
+    },
+    {
+      "title": "the displayed product retains the original poster colours",
+      "project": "chromium-laptop-1440",
+      "status": "passed",
+      "retry": 0,
+      "displayed-product-colours": {
+        "samples": 225114,
+        "maxDelta": 0
+      }
+    },
+    {
+      "title": "the displayed product retains the original poster colours",
+      "project": "chromium-android",
+      "status": "passed",
+      "retry": 0,
+      "displayed-product-colours": {
+        "samples": 76055,
+        "maxDelta": 0
+      }
+    }
+  ],
+  "errors": []
+}

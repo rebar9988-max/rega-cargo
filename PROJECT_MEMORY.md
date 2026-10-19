@@ -13,9 +13,9 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 First legitimate SUPER_ADMIN setup is in progress, with no production grant or email-verification claim. Unpublished invitation-only work was reconciled with current main; independent GitHub owner/admin control matches the Cloudflare production repository connection. Final hosted gate, release and actual recipient activation are pending. [Evidence](docs/verification/first-owner-20261019.md). Preserve the released original silk and all existing architecture/AI identity.
 
-## Current state — mobile silk quality incident, 2026-10-19
+## Current state — mobile silk repair released, 2026-10-19
 
-Owner supplied an iPhone screenshot showing colour/highlight corruption and no perceived motion after #124/#126. Original static main-built version `20ffc4f4-0cf5-43f2-b623-cc61410bdf10` restored to 100% at 08:30:03 UTC; independent public phone browsing confirms original image, zero animation canvases and 200. The repair is reconciled with new main `131064d` (#125); its separately authorized owner/auth work is preserved unchanged. The earlier rollback preceded that main update; final integrated checks are required before releasing both from main. Isolated repair fixes transparent RGB, preserves original colours, removes global-load startup blocking and adapts under slow frames rather than permanently freezing. Actual DPR3 composited product colours are identical across nine Chromium/WebKit sizes. Final full gate and animation publication pending. [Incident, checks and continuation](docs/verification/hero-silk-mobile-20261019.md). Previous software-only release checks are historical and do not prove native mobile quality.
+Owner-reported mobile colour/highlight corruption and frozen motion prompted a verified static rollback, then isolated repair [#127](https://github.com/rebar9988-max/rega-cargo/pull/127). Exact integrated head passed gate 39303885139: 517 unit/script passes + 4 skips; 712 clean browser/pixel/layout passes, 2 successful configured retries in unchanged owner-denial cases and 16 skips, zero final failures. Normal merge `8d4d33a`; main Build `d4241c56` succeeded. Direct allocation: version `913d6dd4-38f7-4a7b-91c9-305c99052dea` at 100%, 18:48:18 UTC. Actual public Chromium 24/24 and retina WebKit 8/8 pass without retries; displayed product colour delta is exactly 0, silk changes visibly and cached-client reload works. Four public viewport samples and 13 final-200 routes verified. Original image/layout and separately merged #125 source are preserved; no owner action or data/config mutation by this task. [Evidence and native-hardware limits](docs/verification/hero-silk-mobile-20261019.md). Documentation-only builds may change the version while retaining this app.
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
 
@@ -82,7 +82,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
-- Mobile silk quality repair (2026-10-19): production temporarily restored to original static version `20ffc4f4`. Finish exact-head checks and normal main-only release of the compositing/startup/adaptive repair; verify actual public output. Do not restore the faulty #126 renderer through an unrelated deployment. [Evidence](docs/verification/hero-silk-mobile-20261019.md).
+- Mobile silk repair (2026-10-19): **released** in #127 / `8d4d33a` after the integrated gate; actual public Chromium/WebKit suites pass 32/32 with identical product colours. Preserve the repaired renderer and re-query live allocation before further work. Native hardware/field performance remains unclaimed. [Evidence](docs/verification/hero-silk-mobile-20261019.md).
 
 - Hero original silk (2026-10-18): **released** in #122 / `f430d75`, after prerequisite #121 and the passing hosted gate. The original photograph supplies folds and stationary foreground; guarded 18/26-second motion, offscreen/tab pause and reduced-motion/static fallback verified on production. No native-device/field-performance claim. [Release and continuation](docs/verification/hero-silk-20261018.md).
 
