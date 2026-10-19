@@ -136,3 +136,6 @@ Owner explicitly requested publication after the preview. Tested baseline prereq
 ## 2026-10-19 Visible silk preflight — no new deploy yet
 
 Direct readback: deployment cdc299e2-71a3-4df8-90aa-0deebfffefa2, version 84f7890e-3536-4bed-bf63-3cd199f120dc at 100%. Main 2a0dfe5. Public browser confirms the renderer runs; repair is under test. No deployment/configuration mutation. [Evidence](../verification/hero-silk-20261019.md).
+
+
+2026-10-19 verified outcome: PR #124 exact tested head fb79c2fb9770610860213adcbad454ffe9c2a3ad normally merged as 5faa822dede7d2fcf6ef78eac164b88f064e5932, 08:15:27 UTC. Hosted run 39219963680: 507 unit/script passes + 4 skips; 651 browser/pixel/layout passes + 16 skips, no failures/flakes. Existing main-only Build f5dd0b70-f630-4392-a2c5-5c053068f4b5 succeeded. Direct API allocation: version 788eccf7-99bd-4cd7-aeaa-6f2787abe05f at 100%, deployment fe84421d-0c7c-4fb8-8729-31480304b23d, 08:18:08 UTC. Real public focused suite 15/15 passed, four viewport/cadence/fallback samples and 13 public final-200 routes verified. Existing controlled SW client reloads the new script and draws 90 frames/3sec. No data/config/domain/binding/secret mutation or rollback. Previous version 84f7890e-3536-4bed-bf63-3cd199f120dc is the rollback reference. [Evidence](../verification/hero-silk-20261019.md).

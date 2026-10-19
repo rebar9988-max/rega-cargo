@@ -140,3 +140,6 @@ Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.05891
 ## 2026-10-19 Visible original silk follow-up
 
 Owner cannot perceive the released motion. The published renderer runs, but 1.45-pixel deformation is too restrained. Candidate increases local fold travel and moving sheen with smooth foreground protection; no other runtime layer changes. Checks and publication in progress; see [evidence](../verification/hero-silk-20261019.md).
+
+
+2026-10-19 verified outcome: Verified release supersedes the pending checkpoint above: #124 exact head fb79c2f passed hosted gate 39219963680, then merged normally as 5faa822. Main Build f5dd0b70 succeeded; version 788eccf7 at 100%. Real public suite 15/15 passed, four viewport samples and an already cached service-worker client verified, 13 routes finish at 200. No remaining visible-silk release blocker. [Evidence](../verification/hero-silk-20261019.md).
