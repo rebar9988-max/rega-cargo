@@ -135,3 +135,8 @@ Owner-only protection review: [PR #94](https://github.com/rebar9988-max/rega-car
 Owner authorized implementation and release of the four previously deferred policy items: fixed five-minute/five-attempt OTP window with atomic 60-second resends and single consumption; decimal-comma weight inputs with all tenth-kilogram boundaries covered and pricing unchanged; fail-closed missing/error rate limits; transactional in-app staff review notices via additive migration 0016. No UI redesign, module boundary change, account grant or paid service. Details, measured checks, deployment state and remaining limitations: [release evidence](../verification/release-hardening-20261018.md).
 
 Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.0589166 (>0.05). Local Latin fallback metrics repair in `src/styles.css`/`tokens.css` makes that existing test pass while primary fonts and final loaded-font design remain unchanged. Final full browser counts are in the same release report.
+
+
+## 2026-10-19 Visible original silk follow-up
+
+Owner cannot perceive the released motion. The published renderer runs, but 1.45-pixel deformation is too restrained. Candidate increases local fold travel and moving sheen with smooth foreground protection; no other runtime layer changes. Checks and publication in progress; see [evidence](../verification/hero-silk-20261019.md).

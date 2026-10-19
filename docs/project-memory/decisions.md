@@ -93,3 +93,8 @@ Owner requests silk-only motion, preservation, passing checks and verified deplo
 ## 2026-10-18 owner-authorized original silk publication
 
 Owner viewed the actual animated preview and explicitly requested publication on the website. This authorizes the necessary tested #121 baseline prerequisite and #122 release, not unrelated app changes. Both merged normally; the exact final head passed the complete hosted gate before the animation merge. Existing main-only Workers Builds handled delivery. Direct allocation and real production browser checks establish the release; no safeguard waiver, new public hostname, fake 3D model or business change. [Release evidence](../verification/hero-silk-20261018.md).
+
+
+## 2026-10-19 Owner-requested visible silk repair
+
+Owner explicitly reports imperceptible motion and requests repair; earlier explicit publication authorization persists. Increase only original-silk local deformation and sheen, keep the same 18/26-second timing and all UI/product geometry. Derive smooth protection once from the existing matte rather than replacing folds or assets. Release through existing checks and main-only Builds; no new approval, infrastructure or business scope. [Evidence](../verification/hero-silk-20261019.md).
