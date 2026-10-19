@@ -9,9 +9,13 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
+## Owner setup continuation — 2026-10-19
+
+First legitimate SUPER_ADMIN setup is in progress, with no production grant or email-verification claim. Unpublished invitation-only work was reconciled with current main; independent GitHub owner/admin control matches the Cloudflare production repository connection. Final hosted gate, release and actual recipient activation are pending. [Evidence](docs/verification/first-owner-20261019.md). Preserve the released original silk and all existing architecture/AI identity.
+
 ## Current state — mobile silk quality incident, 2026-10-19
 
-Owner supplied an iPhone screenshot showing colour/highlight corruption and no perceived motion after #124/#126. Original static main-built version `20ffc4f4-0cf5-43f2-b623-cc61410bdf10` restored to 100% at 08:30:03 UTC; independent public phone browsing confirms original image, zero animation canvases and 200. Main remains `ddcd005`; the rollback changes only the hero-related runtime relative to current main. Isolated repair fixes transparent RGB, preserves original colours, removes global-load startup blocking and adapts under slow frames rather than permanently freezing. Actual DPR3 composited product colours are identical across nine Chromium/WebKit sizes. Final full gate and animation publication pending. [Incident, checks and continuation](docs/verification/hero-silk-mobile-20261019.md). Previous software-only release checks are historical and do not prove native mobile quality.
+Owner supplied an iPhone screenshot showing colour/highlight corruption and no perceived motion after #124/#126. Original static main-built version `20ffc4f4-0cf5-43f2-b623-cc61410bdf10` restored to 100% at 08:30:03 UTC; independent public phone browsing confirms original image, zero animation canvases and 200. The repair is reconciled with new main `131064d` (#125); its separately authorized owner/auth work is preserved unchanged. The earlier rollback preceded that main update; final integrated checks are required before releasing both from main. Isolated repair fixes transparent RGB, preserves original colours, removes global-load startup blocking and adapts under slow frames rather than permanently freezing. Actual DPR3 composited product colours are identical across nine Chromium/WebKit sizes. Final full gate and animation publication pending. [Incident, checks and continuation](docs/verification/hero-silk-mobile-20261019.md). Previous software-only release checks are historical and do not prove native mobile quality.
 
 ## R&L AI owner-only permanent baseline (2026-10-14)
 

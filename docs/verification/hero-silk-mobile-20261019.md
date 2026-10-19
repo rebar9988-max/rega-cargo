@@ -31,3 +31,9 @@ Node 22: typecheck, lint (four existing warnings), 507 unit/script/security pass
 ## Release state
 
 No new animation release yet. Production intentionally remains on the verified original static artwork. Require final exact-head hosted success, normal main-only release and actual public colour/motion checks. Do not redeploy the old #126 renderer as a purported quality fix. Current evidence is stored in the existing project-memory system, not a new parallel system.
+
+## Concurrent main reconciliation
+
+Initial exact head `7b54e3e3f3423f44c257631546608391c525a440` passed the full automatic PR gate [39301683648](https://github.com/rebar9988-max/rega-cargo/actions/runs/39301683648): 507 unit/script/security passes + 4 existing skips, and 678 browser/pixel/layout passes + 16 existing skips, zero failures/flakes. Clean local focused confirmation: 73 passed / 7 unsupported-WebGL skips / 0 failures. The initially absent automatic event appeared after a manual dispatch; redundant manual run 39301604762 was cancelled, not called passed.
+
+During that gate, separately authorized #125 merged as `131064d58faa493b1567814a35470cabc7c2d930`. Its own final head `40d2625` had a successful hosted gate. A normal merge of current main into the repair branch resolves documentation-only conflicts by preserving both sets of history. Hero runtime/tests remain identical to the tested `7b54e3e`; owner/auth/routes/migrations/package remain identical to new main. A fresh combined exact-head gate is required. The other release process re-confirmed static version `20ffc4f4` at 100% at 18:33:55 UTC (deployment `bf6a8f7c-1dc0-4de0-8a6e-014e4cc15248`) while waiting for this repair; no owner activation is performed by this task.

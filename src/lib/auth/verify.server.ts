@@ -1,5 +1,7 @@
 import { getRequest } from "@tanstack/react-start/server";
 import { resolveDatabaseUrl } from "../db-config.server";
+import { getSql } from "../db";
+import { verifiedEmailAccount } from "./verified-email.server";
 import { auth, authConfigured } from "./server";
 
 /**
@@ -61,7 +63,9 @@ export async function getSessionUser(bearerToken?: string): Promise<VerifiedUser
   }
   const session = await auth.api.getSession({ headers });
   if (!session?.user) return null;
-  return { id: session.user.id, email: session.user.email ?? null };
+  const user = await verifiedEmailAccount(await getSql(), session.user.id);
+  if (!user) return null;
+  return { id: session.user.id, email: user.email };
 }
 
 /**

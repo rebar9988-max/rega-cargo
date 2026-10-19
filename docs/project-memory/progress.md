@@ -148,3 +148,7 @@ Owner cannot perceive the released motion. The published renderer runs, but 1.45
 ## 2026-10-19 Mobile silk quality repair in progress
 
 Owner screenshot supersedes the earlier release-complete assessment. Production restored to original static version 20ffc4f4 at 100%; public 200/original image/no silk canvas confirmed. Candidate fixes transparent compositing, original colour preservation, independent startup and adaptive slow-device rendering. Actual DPR3 product colours are identical in nine Chromium/WebKit sizes; final hosted gate pending. [Evidence](../verification/hero-silk-mobile-20261019.md).
+
+## 2026-10-19 — First legitimate owner setup
+
+Invitation-only native Better Auth owner activation is in progress on `codex/rl-first-owner-20261014`, reconciled with main `2a0dfe5`. Independent authenticated repository-owner/admin evidence matches the production Build connection. Production has no native owner account or approved role; none has been granted. Additive dev migration and rolled-back PostgreSQL activation/replay smoke passed. Final hosted CI/deployment and real recipient activation are pending. [Evidence](../verification/first-owner-20261019.md).

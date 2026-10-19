@@ -161,3 +161,7 @@ Root cause: a rendering-activity check accepted barely perceptible source-pixel 
 ## 2026-10-19 Native mobile colour/motion regression
 
 Old tests compared changing framebuffer values but missed absolute composited product colour and native renderer differences. Confirmed code hazards: nonzero RGB at alpha zero, global-load startup dependency, permanent fallback after ordinary sustained slow frames. Software WebKit does not reproduce the exact owner hardware overexposure; candidate removes these hazards and adds displayed-product PNG equality plus startup/slow-frame regressions. Static original hero restored while checks run. [Evidence](../verification/hero-silk-mobile-20261019.md).
+
+## 2026-10-19 — Native owner authentication preparation
+
+Existing email/password Better Auth was disabled, its availability predicate required missing federation credentials, native schema/HTTP routes were absent, and role approval only recognized phone identities. Invitation-only native activation, fresh verified identity checks and closed auth routes address these responsible layers. No existing user/password is overwritten and no public promotion exists. Final release and actual owner email/password activation remain pending. [Evidence](../verification/first-owner-20261019.md).
