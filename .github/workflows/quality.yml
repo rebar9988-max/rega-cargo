@@ -9,6 +9,10 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
+      live_matrix:
+        description: "Diagnostic: read-only live matrix against the production site"
+        type: boolean
+        default: false
       update_baselines:
         description: "Re-render layout baselines (download the layout-report artifact and commit tests/layout/__screenshots__)"
         type: boolean
@@ -81,7 +85,7 @@ jobs:
   layout:
     name: layout lock
     needs: scope
-    if: needs.scope.outputs.layout == 'true'
+    if: needs.scope.outputs.layout == 'true' && !inputs.live_matrix
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -130,3 +134,35 @@ jobs:
             test-results/
             tests/layout/__screenshots__/
           retention-days: 7
+
+  live-matrix:
+    name: live matrix (diagnostic, read-only)
+    if: github.event_name == 'workflow_dispatch' && inputs.live_matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      contents: write
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: "1"
+      HOME: /root
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Read-only matrix against the live site
+        run: npx playwright test -c playwright.matrix.config.ts
+      - name: Push results to a throwaway branch
+        if: ${{ !cancelled() }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "claude-diagnostic"
+          git config user.email "noreply@anthropic.com"
+          git add -f matrix-results
+          git commit -q -m "diag: live matrix results" || { echo "no results"; exit 0; }
+          git push origin HEAD:refs/heads/diag/live-matrix-results-20261020 --force
