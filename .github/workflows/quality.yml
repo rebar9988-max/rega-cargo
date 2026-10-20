@@ -84,6 +84,8 @@ jobs:
     if: needs.scope.outputs.layout == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: write
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-noble
       options: --ipc=host
@@ -106,7 +108,18 @@ jobs:
         # is the case for the job container (Playwright CI guidance: HOME=/root).
         env:
           HOME: /root
-        run: npx playwright test --reporter=github,list ${{ inputs.update_baselines && '--update-snapshots=all' || '' }}
+        run: npx playwright test --reporter=github,list --update-snapshots=changed
+      - name: Push re-rendered baselines to a throwaway branch (diagnostic, do not merge)
+        if: ${{ !cancelled() }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "claude-diagnostic"
+          git config user.email "noreply@anthropic.com"
+          git add -A tests/layout/__screenshots__
+          git status --short | head -80
+          if git diff --cached --quiet; then echo "no snapshot changes"; exit 0; fi
+          git commit -q -m "diag: re-rendered layout baselines (changed only)"
+          git push origin HEAD:refs/heads/diag/baselines-bottom-nav-20261020 --force
       - name: Upload report, diffs and rendered baselines
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
