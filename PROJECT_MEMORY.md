@@ -86,7 +86,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
-- Mobile bottom nav on the homepage (2026-10-20): **released** in #132 / `8a06f23` (Build `9db330d7`). Next safe step: commit the re-rendered phone/tablet `/` screenshot baselines from the `layout-report` artifact of run 39343192196 so `layout lock` is green again, then verify on a real phone at 320/375/390/430 px. [Details](docs/project-memory/progress.md).
+- Mobile bottom nav on the homepage (2026-10-20): **released** in #132 / `8a06f23` (Build `9db330d7`). **Resolved 2026-10-20:** the 24 stale phone/tablet snapshots (home pages +80 px, iPad search sheet, WebKit iPad language picker/search sheet) were re-rendered in the official Playwright image by the `update_baselines` dispatch (run 39492515054, since artifacts cannot be downloaded from the agent sandbox the dispatch run committed them to a branch through a temporary workflow step that was removed again) and merged tests-only in [PR #138](https://github.com/rebar9988-max/rega-cargo/pull/138) as `a9dd606`; `scope`, `verify` and `layout lock` (without `update_baselines`) passed on the PR head and on `main`, `Workers Builds: rega-cargo` succeeded. No application change. Still open: verify on a real phone at 320/375/390/430 px, the active Worker version (no Workers access). [Details](docs/project-memory/progress.md).
 
 - Email OTP (2026-10-19): **released** in #131 / `e0778e1`. Next: complete a live code → session → refresh → sign-out run with the recipient inbox code and record it; native review of the new ckb/ku strings. [Evidence](docs/verification/email-otp-20261019.md).
 
