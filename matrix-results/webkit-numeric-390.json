@@ -1,0 +1,28 @@
+{
+ "western": {
+  "value": "3.2",
+  "price": "€56.16\n85,363 IQD"
+ },
+ "arabicIndic": {
+  "typed": "٣٫٢",
+  "value": "٣٫٢",
+  "price": "€56.16\n85,363 IQD",
+  "invalid": "false"
+ },
+ "persian": {
+  "typed": "۳.۲",
+  "value": "۳.۲",
+  "price": "€56.16\n85,363 IQD",
+  "invalid": "false"
+ },
+ "comma": {
+  "typed": "3,2",
+  "value": "3,2",
+  "price": "€56.16\n85,363 IQD",
+  "invalid": "false"
+ },
+ "letters": {
+  "invalid": "true",
+  "options": 0
+ }
+}

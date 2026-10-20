@@ -1,0 +1,48 @@
+{
+ "/api/auth/rl-email/status": {
+  "status": 200,
+  "body": "{\"available\":true}"
+ },
+ "/api/ai/status": {
+  "status": 200,
+  "body": "{\"enabled\":true}"
+ },
+ "accountGate": {
+  "emailInputs": 0,
+  "url": "https://www.rlgo.net/account?lang=en"
+ },
+ "ownerPage": {
+  "status": 200,
+  "passwordInputs": 1,
+  "url": "https://www.rlgo.net/owner?lang=en"
+ },
+ "langButtonVisible": true,
+ "langPopoverVisible": false,
+ "bottomTabs": [
+  {
+   "href": "/?lang=en",
+   "now": "/",
+   "h1": 1
+  },
+  {
+   "href": "/market?lang=en",
+   "now": "/market",
+   "h1": 1
+  },
+  {
+   "href": "/stores/request?lang=en",
+   "now": "/stores/request",
+   "h1": 1
+  },
+  {
+   "href": "/track?lang=en",
+   "now": "/track",
+   "h1": 1
+  },
+  {
+   "href": "/account?lang=en",
+   "now": "/account",
+   "h1": 1
+  }
+ ]
+}

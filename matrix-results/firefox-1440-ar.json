@@ -1,0 +1,126 @@
+[
+ {
+  "route": "/",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": [
+   "[JavaScript Error: \"downloadable font: STAT: Invalid nameID: 257 (font-family: \"Vazirmatn\" style:normal weight:100..900 width:100 src index:0) source: https://www.rlgo.net/fonts/vazirmatn-nl-v33.003.w",
+   "[JavaScript Error: \"downloadable font: Table discarded (font-family: \"Vazirmatn\" style:normal weight:100..900 width:100 src index:0) source: https://www.rlgo.net/fonts/vazirmatn-nl-v33.003.woff2\"]"
+  ]
+ },
+ {
+  "route": "/stores",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": []
+ },
+ {
+  "route": "/stores/request",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": []
+ },
+ {
+  "route": "/quote",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": []
+ },
+ {
+  "route": "/track",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": []
+ },
+ {
+  "route": "/ai",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": [
+   "[JavaScript Error: \"downloadable font: STAT: Invalid nameID: 257 (font-family: \"Vazirmatn\" style:normal weight:100..900 width:100 src index:0) source: https://www.rlgo.net/fonts/vazirmatn-nl-v33.003.w",
+   "[JavaScript Error: \"downloadable font: Table discarded (font-family: \"Vazirmatn\" style:normal weight:100..900 width:100 src index:0) source: https://www.rlgo.net/fonts/vazirmatn-nl-v33.003.woff2\"]",
+   "[JavaScript Error: \"Content-Security-Policy: The page’s settings blocked a JavaScript eval (script-src) from being executed because it violates the following directive: “script-src 'self' 'nonce-abdc5"
+  ]
+ },
+ {
+  "route": "/account",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": []
+ },
+ {
+  "route": "/market",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": []
+ },
+ {
+  "route": "/contact",
+  "status": 200,
+  "sw": 1440,
+  "cw": 1440,
+  "iw": 1440,
+  "dir": "rtl",
+  "lang": "ar",
+  "h1": 1,
+  "sticking": [],
+  "overflowPx": 0,
+  "errors": []
+ }
+]
