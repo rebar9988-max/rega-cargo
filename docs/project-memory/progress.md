@@ -159,3 +159,6 @@ Invitation-only native Better Auth owner activation is in progress on `codex/rl-
 
 
 2026-10-19 verified mobile outcome: Mobile renderer repair released in #127 / 8d4d33a after combined gate 39303885139. Public Chromium 24/24 and WebKit retina 8/8 pass, product colour delta exactly zero, cached-client reload and four viewport samples verified; 13 routes finish at 200. Original photo/UI and #125 source preserved. [Release evidence](../verification/hero-silk-mobile-20261019.md).
+
+
+2026-10-19 email OTP: #131 merged `e0778e1` (feature `63ad833`). Customer email-code sign-in/registration through Better Auth + Resend; migration 0018 applied to production after a backup branch. Hosted gate green, real delivery confirmed; live session run pending the inbox code. [Evidence](../verification/email-otp-20261019.md).

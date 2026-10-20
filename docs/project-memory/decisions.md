@@ -111,3 +111,8 @@ Explicit owner instruction requires both independent platform-control confirmati
 ## 2026-10-19 Owner-requested persistent mobile bottom navigation
 
 Owner reports the phone bottom navigation disappears at the top of the homepage and asks for a permanent, minimal fix. Root cause (code audit): the homepage is the only route rendered as `<Shell reference>`, and `reference` deliberately skipped the `rl-bottom-nav` element and the footer's bottom-bar clearance (PR #100). The existing fixed/safe-area CSS (`position: fixed`, `--rl-z-header`, `app-bottom-bar`, `viewport-fit=cover`) was already correct. Fix: render the same five-tab bar on every page and always reserve footer clearance; header, hero, R&L AI capsule, routes, icons, labels and desktop (hidden from 1024px) are untouched. Layout tests that asserted "no bottom bar on the home" were inverted. Phone/tablet `/` screenshot baselines must be re-rendered in the official image (`update_baselines` dispatch).
+
+
+## 2026-10-19 — Customer email OTP inside existing Better Auth
+
+Owner brief "R&L EMAIL OTP PRODUCTION ACTIVATION" authorized implementation, merge, deploy and live verification. Email customers are plain Better Auth `user` rows with native sessions (no second login system); codes are issued/consumed by our own atomic SQL in a narrow plugin because the stock emailOTP plugin signs in any user, including the owner. Public code flow never opens password/provider-linked, admin/super_admin, disabled, unverified or invited identities. Phone code stays isolated and appears only when its provider is configured. Additive migration only, applied after a Neon backup branch. [Evidence](../verification/email-otp-20261019.md).
