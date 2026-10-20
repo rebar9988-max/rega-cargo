@@ -86,7 +86,7 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
-- Mobile bottom nav on the homepage (2026-10-20): **released** in #132 / `8a06f23` (Build `9db330d7`). Next safe step: commit the re-rendered phone/tablet `/` screenshot baselines from the `layout-report` artifact of run 39343192196 so `layout lock` is green again, then verify on a real phone at 320/375/390/430 px. [Details](docs/project-memory/progress.md).
+- Mobile bottom nav on the homepage (2026-10-20): **released** in #132 / `8a06f23` (Build `9db330d7`). Next safe step: merge the pixel-checked baseline re-render (branch `fix/layout-baselines-bottom-bar-20261020`, 24 PNGs, [evidence](docs/verification/layout-baselines-bottom-bar-20261020.md)) once its own `layout lock` is green so `main` is green again, then verify on a real phone at 320/375/390/430 px. Note: docs-only runs skip `layout lock`; their "success" is not a layout pass. [Details](docs/project-memory/progress.md).
 
 - Email OTP (2026-10-19): **released** in #131 / `e0778e1`. Next: complete a live code → session → refresh → sign-out run with the recipient inbox code and record it; native review of the new ckb/ku strings. [Evidence](docs/verification/email-otp-20261019.md).
 
