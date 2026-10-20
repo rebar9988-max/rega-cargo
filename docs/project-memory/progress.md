@@ -1,8 +1,8 @@
 # Progress
 
-## 2026-10-19 mobile bottom navigation on the homepage (branch `claude/mobile-bottom-nav-20261019`)
+## 2026-10-19 mobile bottom navigation on the homepage (PR #132, merged `8a06f23`, released 2026-10-20)
 
-Owner-requested minimal fix: the bottom bar now renders on `/` like every other page (root cause in decisions.md / issues.md). Changed: `site-header.tsx`, `shell.tsx`, and the two layout assertions that expected no bar on the home. Local typecheck/lint/tests/build were **not run** (agent sandbox cannot reach the npm registry); results come from hosted CI only. Pending: re-render phone/tablet `/` baselines, review, release, live check at 320/375/390/430 px.
+Owner-requested minimal fix: the bottom bar now renders on `/` like every other page (root cause in decisions.md / issues.md). Changed: `site-header.tsx`, `shell.tsx`, and the layout assertions that expected no bar on the home (including the home footer padding, now 80px on phones). Hosted `verify` passed on the merged head. A baseline-update dispatch (run 39343192196) passed `layout lock` after the footer assertion fix; its only annotations were the known unchanged owner-denial retry. **Open:** the phone/tablet `/` screenshot baselines were not committed (CI artifacts cannot be downloaded from the agent sandbox), so `layout lock` on `main` fails on those pixel diffs until `tests/layout/__screenshots__` from that run's `layout-report` artifact is committed. Owner explicitly chose to merge before that. Not verified: iPhone Safari widths 320/375/390/430, scroll and toolbar behaviour, active Worker version/allocation (no Workers access). Local typecheck/lint/tests/build were never run in this session (npm registry unreachable).
 
 ## 2026-10-18 homepage hero: original silk released (PR #122 / `f430d75`)
 

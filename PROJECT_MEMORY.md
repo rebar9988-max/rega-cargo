@@ -86,6 +86,8 @@ Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are
 
 ## Next safe continuation point
 
+- Mobile bottom nav on the homepage (2026-10-20): **released** in #132 / `8a06f23` (Build `9db330d7`). Next safe step: commit the re-rendered phone/tablet `/` screenshot baselines from the `layout-report` artifact of run 39343192196 so `layout lock` is green again, then verify on a real phone at 320/375/390/430 px. [Details](docs/project-memory/progress.md).
+
 - Email OTP (2026-10-19): **released** in #131 / `e0778e1`. Next: complete a live code → session → refresh → sign-out run with the recipient inbox code and record it; native review of the new ckb/ku strings. [Evidence](docs/verification/email-otp-20261019.md).
 
 - Mobile silk repair (2026-10-19): **released** in #127 / `8d4d33a` after the integrated gate; actual public Chromium/WebKit suites pass 32/32 with identical product colours. Preserve the repaired renderer and re-query live allocation before further work. Native hardware/field performance remains unclaimed. [Evidence](docs/verification/hero-silk-mobile-20261019.md).
