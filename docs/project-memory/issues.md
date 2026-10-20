@@ -170,3 +170,7 @@ Existing email/password Better Auth was disabled, its availability predicate req
 
 
 2026-10-19 verified mobile outcome: Mobile repair verified publicly: explicit premultiplied transparency removes hidden RGB, original texture colours are retained, startup no longer waits for unrelated load, and slow frames adapt instead of permanently freezing. Thirty-two public cases pass without retry; WebKit retina foreground PNG delta is exactly zero. Native hardware remains unavailable. Combined CI also retains two unchanged owner-denial cases returning fail-closed 500 instead of 403 initially, then passing their configured retry; no privilege grant, no test suppression or owner/API change in this patch. [Evidence](../verification/hero-silk-mobile-20261019.md).
+
+## 2026-10-19 — Bottom navigation missing on the homepage
+
+Symptom: on phones the five-tab bottom bar vanished on `/` (top, middle and bottom of the page) while every other route showed it. Root cause: `Shell reference` (homepage only) did not render the bar nor the footer clearance. Fix: single shared render path, no new CSS. Not verified locally in this session (npm registry unreachable from the agent sandbox: DNS ENOTFOUND, recorded as an environment limitation, not a code failure); verification is the hosted `verify` and `layout lock` jobs plus live checks after release.

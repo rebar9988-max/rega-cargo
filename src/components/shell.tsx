@@ -63,7 +63,7 @@ export function Shell({
 }: {
   children: ReactNode;
   search?: ShellSearch;
-  /** Reference homepage: the five-control header, no bottom bar. */
+  /** Reference homepage: the five-control header. The bottom bar is shown on every page. */
   reference?: boolean;
 }) {
   const { t, lang } = useI18n();
@@ -78,7 +78,7 @@ export function Shell({
       <main id="content" className="flex-1">
         {children}
       </main>
-      <SiteFooter bottomBar={!reference} />
+      <SiteFooter bottomBar />
     </div>
   );
 }

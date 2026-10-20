@@ -108,6 +108,10 @@ Owner reports no motion, low quality and mixed colours and explicitly requests u
 
 Explicit owner instruction requires both independent platform-control confirmation and recipient email proof. Use the existing unified Better Auth identity store; no automatic email-based promotion, public signup, generated owner password or new paid mail provider. Authorize the singleton only through authenticated control-plane access with immutable audit; expire/hash the invitation; atomically verify/grant/consume/audit after native credential authentication; permanently close after success. Preserve the existing phone flow, architecture and AI baseline. [Runbook](../operations/first-owner.md).
 
+## 2026-10-19 Owner-requested persistent mobile bottom navigation
+
+Owner reports the phone bottom navigation disappears at the top of the homepage and asks for a permanent, minimal fix. Root cause (code audit): the homepage is the only route rendered as `<Shell reference>`, and `reference` deliberately skipped the `rl-bottom-nav` element and the footer's bottom-bar clearance (PR #100). The existing fixed/safe-area CSS (`position: fixed`, `--rl-z-header`, `app-bottom-bar`, `viewport-fit=cover`) was already correct. Fix: render the same five-tab bar on every page and always reserve footer clearance; header, hero, R&L AI capsule, routes, icons, labels and desktop (hidden from 1024px) are untouched. Layout tests that asserted "no bottom bar on the home" were inverted. Phone/tablet `/` screenshot baselines must be re-rendered in the official image (`update_baselines` dispatch).
+
 
 ## 2026-10-19 — Customer email OTP inside existing Better Auth
 
