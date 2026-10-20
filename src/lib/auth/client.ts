@@ -177,6 +177,8 @@ function waitForPopupToken(popup: Window): Promise<string | null> {
     };
     const onMessage = (event: MessageEvent) => {
       if (event.origin !== origin) return;
+      // Only the window this sign-in opened may deliver the token, not any other same-origin window.
+      if (event.source !== popup) return;
       const data = event.data as PopupMessage | undefined;
       if (!data || data.source !== "grok-auth-popup") return;
       settle(data.token ?? null);

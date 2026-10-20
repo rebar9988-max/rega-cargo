@@ -63,6 +63,29 @@ export function seo(input: {
   return { meta, links };
 }
 
+/**
+ * Structured data for the home page: who the site is, nothing else. Only facts the site already
+ * publishes (name, canonical origin, logo, site languages, page description).
+ * The "<" escape keeps the JSON from ever closing its own <script> element.
+ */
+export function homeJsonLdScript(description: string) {
+  const origin = siteOrigin();
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", name: "R&L", url: origin, logo: `${origin}/icon-512.png` },
+      {
+        "@type": "WebSite",
+        name: "R&L",
+        url: origin,
+        description,
+        inLanguage: [...SEO_LOCALES],
+      },
+    ],
+  };
+  return { type: "application/ld+json", children: JSON.stringify(data).replace(/</g, "\\u003c") };
+}
+
 /** Public, indexable pages for sitemap.xml. */
 export const SITEMAP_PATHS = [
   "/",
