@@ -88,7 +88,7 @@ Accepted evidence: [desktop/mobile before-and-after gallery](ui-continuation-202
 | Worker bundle dry-run | Passed; no deploy |
 | New focused Chromium/WebKit regressions | **4/4 passed**, all seven locales inside each case |
 | Full existing official-image E2E/pixel gate | **722 passed, 1 flaky passed on the existing retry, 1 failed, 16 existing skips, 8 not run**; hit the unchanged 19-minute global limit. This is not a passing single full run. |
-| Unchanged Firefox completion | **23/23 passed**, no retry; includes the failed catalog navigation and all eight unrun cases. Together the final runs cover **732 unique passing cases and 16 existing skips**, with the original WebKit retry retained. Hosted exact-head verification is still required. |
+| Unchanged Firefox completion | **23/23 passed**, no retry; includes the failed catalog navigation and all eight unrun cases. Together the final runs cover **732 unique passing cases and 16 existing skips**, with the original WebKit retry retained. Check the PR's current Checks tab for the hosted exact-head gate; local completion is not a substitute for that gate. |
 
 The full-run Firefox failure was `NS_BINDING_ABORTED` in the unchanged catalog-navigation test. The WebKit retry concerned an interrupted navigation in the unchanged journey test. An earlier exploratory run also observed the already documented intermittent owner-denial 500; an unchanged-main focused control passed. No auth logic or test was altered. Earlier partial runs were interrupted as the extra category defect and natural email wrap were verified; their counts are not substituted for a complete gate.
 
@@ -119,7 +119,7 @@ Full raw reports and the reduced-motion diagnostic are in [performance](ui-conti
 - The central Doc's old bottom-nav baseline hold is superseded by #138/#140. Existing main `7115ea7` has passing hosted `scope`/`verify` and Workers Builds; its docs-only layout job is skipped. This does not establish current Cloudflare traffic allocation.
 - Cloudflare API discovery failed twice in this session; no active Worker version or percentage is claimed. No Cloudflare, database, auth, payment, business-rule or REGA Platform change was made.
 
-Review: [PR #142](https://github.com/rebar9988-max/rega-cargo/pull/142), currently draft while the remaining gate is checked. **Not merged or deployed.** The targeted UI fixes and their evidence are reviewable; the whole master performance objective is not reported complete.
+Review: [PR #142](https://github.com/rebar9988-max/rega-cargo/pull/142). Its current hosted checks are authoritative for exact-head readiness. **Not merged or deployed.** The targeted UI fixes and their evidence are reviewable; the whole master performance objective is not reported complete.
 
 ### Reproduce the additional audit
 
