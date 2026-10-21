@@ -1,5 +1,10 @@
 # Progress
 
+## 2026-10-21 Bring For Me Phase 1: order by link + automatic cost estimate (Draft PR, branch `claude/bring-for-me-phase1-20261020`)
+
+Owner-approved plan with eight binding conditions (DoH + fail-closed IP-bound fetch, single URL, whole-IQD money with verified FX snapshot, one shipment per cart with stated limits, SUPER_ADMIN-only audited settings with no fake defaults, estimate only, no UI/brand changes, full test set). Implemented server side only: pure `calculateQuote`, SSRF-safe link import, cart, quote snapshots, prohibited-product screening reusing the marketplace engine, owner settings/coupons/review queue, additive migration `0019`. 131 new pure tests + 37 Postgres end-to-end tests pass; typecheck/lint/build/dry-run, PGLite and hosted CI were **not** run (npm registry and billing blockers). Not merged, not deployed; production has no approved SUPER_ADMIN, so no setting can be filled yet. [Report](../verification/bring-for-me-phase1-20261021.md)
+
+
 ## 2026-10-19 mobile bottom navigation on the homepage (PR #132, merged `8a06f23`, released 2026-10-20)
 
 Owner-requested minimal fix: the bottom bar now renders on `/` like every other page (root cause in decisions.md / issues.md). Changed: `site-header.tsx`, `shell.tsx`, and the layout assertions that expected no bar on the home (including the home footer padding, now 80px on phones). Hosted `verify` passed on the merged head. A baseline-update dispatch (run 39343192196) passed `layout lock` after the footer assertion fix; its only annotations were the known unchanged owner-denial retry. **Open:** the phone/tablet `/` screenshot baselines were not committed (CI artifacts cannot be downloaded from the agent sandbox), so `layout lock` on `main` fails on those pixel diffs until `tests/layout/__screenshots__` from that run's `layout-report` artifact is committed. Owner explicitly chose to merge before that. Not verified: iPhone Safari widths 320/375/390/430, scroll and toolbar behaviour, active Worker version/allocation (no Workers access). Local typecheck/lint/tests/build were never run in this session (npm registry unreachable).
