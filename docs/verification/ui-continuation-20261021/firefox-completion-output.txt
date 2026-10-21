@@ -1,0 +1,28 @@
+
+Running 23 tests using 1 worker
+
+  ✓   1 [firefox-premium-360] › tests/layout/premium.spec.ts:3:1 › slow font swaps keep the mobile hero within the layout-shift budget (9.7s)
+  ✓   2 [firefox-premium-360] › tests/layout/premium.spec.ts:41:1 › shipping stays on its own route even with a remembered delivery preference (5.0s)
+  ✓   3 [firefox-premium-360] › tests/layout/premium.spec.ts:62:1 › shipping preserves quote parameters, recalculates rates and saves the chosen quote (2.4s)
+  ✓   4 [firefox-premium-360] › tests/layout/premium.spec.ts:100:1 › language switches preserve store query parameters and reload in the selected locale (4.0s)
+  ✓   5 [firefox-premium-360] › tests/layout/premium.spec.ts:123:5 › ckb light: required routes at 360px (11.2s)
+  ✓   6 [firefox-premium-360] › tests/layout/premium.spec.ts:123:5 › ckb dark: required routes at 360px (11.0s)
+  ✓   7 [firefox-premium-360] › tests/layout/premium.spec.ts:123:5 › ar light: required routes at 360px (10.9s)
+  ✓   8 [firefox-premium-360] › tests/layout/premium.spec.ts:123:5 › ar dark: required routes at 360px (10.6s)
+  ✓   9 [firefox-premium-360] › tests/layout/premium.spec.ts:123:5 › en light: required routes at 360px (10.5s)
+  ✓  10 [firefox-premium-360] › tests/layout/premium.spec.ts:123:5 › en dark: required routes at 360px (11.3s)
+  ✓  11 [firefox-premium-360] › tests/layout/premium.spec.ts:165:1 › 360px filters, favorites, keyboard dialog and banned searches (5.4s)
+  ✓  12 [firefox-premium-360] › tests/layout/premium.spec.ts:200:1 › catalogue: ten category rows, direct URLs, history, subcategories and honest empty states (14.1s)
+  ✓  13 [firefox-premium-360] › tests/layout/premium.spec.ts:244:1 › R&L AI capsule opens the existing assistant in the chosen language (5.3s)
+  ✓  14 [firefox-premium-360] › tests/layout/premium.spec.ts:271:1 › reference homepage: five header controls in the reference's physical order (3.4s)
+  ✓  15 [firefox-premium-360] › tests/layout/premium.spec.ts:317:1 › reference homepage: sections, honest content and every service reachable (1.7s)
+  ✓  16 [firefox-premium-360] › tests/layout/premium.spec.ts:354:1 › shipping: the parcel card only links to tracking and invents no shipment (2.7s)
+  ✓  17 [firefox-premium-360] › tests/layout/premium.spec.ts:371:1 › marketplace toolbar: filter button and audience chips share one row (3.1s)
+  ✓  18 [firefox-premium-360] › tests/layout/premium.spec.ts:393:1 › compact forms and store cards at 360px (3.4s)
+  ✓  19 [firefox-premium-360] › tests/layout/premium.spec.ts:429:1 › product link: the panel is in the server HTML and the request form never shifts (3.4s)
+  ✓  20 [firefox-premium-360] › tests/layout/premium.spec.ts:470:1 › accessibility: every homepage landmark is named and all page text sits in a landmark (2.1s)
+  ✓  21 [firefox-premium-360] › tests/layout/premium.spec.ts:494:1 › header category strip: directly under the header, swipeable, active state, every language (16.1s)
+  ✓  22 [firefox-premium-360] › tests/layout/premium.spec.ts:571:1 › refinement: header, hero and sections share one content edge; touch targets stay 44px (8.2s)
+  ✓  23 [firefox-premium-360] › tests/layout/premium.spec.ts:626:1 › quote weight accepts the decimal comma and Arabic-Indic or Persian digits like a plain 3.2 (4.5s)
+
+  23 passed (2.7m)

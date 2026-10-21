@@ -1,0 +1,292 @@
+[
+  {
+    "phase": "before",
+    "mode": "mobile",
+    "lighthouse": "13.5.0",
+    "fetchTime": "2026-10-21T15:25:13.317Z",
+    "url": "http://localhost:8789/?lang=ckb",
+    "categories": {
+      "performance": 59,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92,
+      "agentic-browsing": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 1813.3361999999997,
+      "largest-contentful-paint": 4389.504299999999,
+      "cumulative-layout-shift": 0,
+      "total-blocking-time": 941.0000000000005,
+      "speed-index": 4573.615595777132
+    },
+    "warnings": [],
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.89,
+        "displayValue": "1.8 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.39,
+        "displayValue": "4.4 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.71,
+        "displayValue": "4.6 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.29,
+        "displayValue": "940 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.54,
+        "displayValue": "240 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.53,
+        "displayValue": "7.0 s"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "displayValue": "6.8 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "displayValue": "Est savings of 38 KiB"
+      },
+      {
+        "id": "canonical",
+        "title": "Document does not have a valid `rel=canonical`",
+        "score": 0
+      },
+      {
+        "id": "image-delivery-insight",
+        "title": "Improve image delivery",
+        "score": 0,
+        "displayValue": "Est savings of 57 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "phase": "before",
+    "mode": "desktop",
+    "lighthouse": "13.5.0",
+    "fetchTime": "2026-10-21T15:25:29.846Z",
+    "url": "http://localhost:8789/?lang=ckb",
+    "categories": {
+      "performance": 99,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92,
+      "agentic-browsing": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 489.93270000000007,
+      "largest-contentful-paint": 1006.8149249999999,
+      "cumulative-layout-shift": 0,
+      "total-blocking-time": 3,
+      "speed-index": 730.6033910693404
+    },
+    "warnings": [],
+    "failedAudits": [
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.94,
+        "displayValue": "1.0 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "displayValue": "Est savings of 38 KiB"
+      },
+      {
+        "id": "canonical",
+        "title": "Document does not have a valid `rel=canonical`",
+        "score": 0
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0
+      },
+      {
+        "id": "image-delivery-insight",
+        "title": "Improve image delivery",
+        "score": 0,
+        "displayValue": "Est savings of 46 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "phase": "after",
+    "mode": "mobile",
+    "lighthouse": "13.5.0",
+    "fetchTime": "2026-10-21T15:25:44.185Z",
+    "url": "http://localhost:8788/?lang=ckb",
+    "categories": {
+      "performance": 62,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92,
+      "agentic-browsing": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 1814.0382,
+      "largest-contentful-paint": 4405.0572999999995,
+      "cumulative-layout-shift": 0,
+      "total-blocking-time": 813.4999999999991,
+      "speed-index": 4492.001380218925
+    },
+    "warnings": [],
+    "failedAudits": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 0.89,
+        "displayValue": "1.8 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.39,
+        "displayValue": "4.4 s"
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 0.72,
+        "displayValue": "4.5 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "score": 0.36,
+        "displayValue": "810 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "score": 0.47,
+        "displayValue": "260 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 0.58,
+        "displayValue": "6.6 s"
+      },
+      {
+        "id": "mainthread-work-breakdown",
+        "title": "Minimize main-thread work",
+        "score": 0,
+        "displayValue": "6.4 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "displayValue": "Est savings of 38 KiB"
+      },
+      {
+        "id": "canonical",
+        "title": "Document does not have a valid `rel=canonical`",
+        "score": 0
+      },
+      {
+        "id": "image-delivery-insight",
+        "title": "Improve image delivery",
+        "score": 0,
+        "displayValue": "Est savings of 57 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "phase": "after",
+    "mode": "desktop",
+    "lighthouse": "13.5.0",
+    "fetchTime": "2026-10-21T15:26:00.431Z",
+    "url": "http://localhost:8788/?lang=ckb",
+    "categories": {
+      "performance": 98,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 92,
+      "agentic-browsing": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 505.9232999999999,
+      "largest-contentful-paint": 1110.7699,
+      "cumulative-layout-shift": 0.0006434345903384575,
+      "total-blocking-time": 7.5,
+      "speed-index": 725.8579782599768
+    },
+    "warnings": [],
+    "failedAudits": [
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 0.92,
+        "displayValue": "1.1 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "displayValue": "Est savings of 38 KiB"
+      },
+      {
+        "id": "canonical",
+        "title": "Document does not have a valid `rel=canonical`",
+        "score": 0
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "score": 0
+      },
+      {
+        "id": "image-delivery-insight",
+        "title": "Improve image delivery",
+        "score": 0,
+        "displayValue": "Est savings of 46 KiB"
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0
+      }
+    ]
+  }
+]

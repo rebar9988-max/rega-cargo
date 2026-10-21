@@ -1,0 +1,66 @@
+
+Running 2 tests using 1 worker
+
+  ✘  1 [chromium-iphone] › tests/layout/contact-responsive.spec.ts:5:1 › 320px contact card keeps its complete email inside the content column (2.9s)
+  ✘  2 [webkit-iphone] › tests/layout/contact-responsive.spec.ts:5:1 › 320px contact card keeps its complete email inside the content column (4.7s)
+
+
+  1) [chromium-iphone] › tests/layout/contact-responsive.spec.ts:5:1 › 320px contact card keeps its complete email inside the content column 
+
+    Error: ckb
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 320
+    Received: 326
+
+      31 |       };
+      32 |     });
+    > 33 |     expect(geometry.document, id).toBe(geometry.viewport);
+         |                                   ^
+      34 |     expect(geometry.left, id).toBeGreaterThanOrEqual(0);
+      35 |     expect(geometry.right, id).toBeLessThanOrEqual(geometry.viewport);
+      36 |     expect(geometry.addressLeft, id).toBeGreaterThanOrEqual(geometry.left);
+        at /workspace/rega-cargo/tests/layout/contact-responsive.spec.ts:33:35
+
+    Error Context: test-results/contact-responsive-320px-c-80a5b-l-inside-the-content-column-chromium-iphone/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/contact-responsive-320px-c-80a5b-l-inside-the-content-column-chromium-iphone/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/contact-responsive-320px-c-80a5b-l-inside-the-content-column-chromium-iphone/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit-iphone] › tests/layout/contact-responsive.spec.ts:5:1 › 320px contact card keeps its complete email inside the content column 
+
+    Error: ckb
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 320
+    Received: 323
+
+      31 |       };
+      32 |     });
+    > 33 |     expect(geometry.document, id).toBe(geometry.viewport);
+         |                                   ^
+      34 |     expect(geometry.left, id).toBeGreaterThanOrEqual(0);
+      35 |     expect(geometry.right, id).toBeLessThanOrEqual(geometry.viewport);
+      36 |     expect(geometry.addressLeft, id).toBeGreaterThanOrEqual(geometry.left);
+        at /workspace/rega-cargo/tests/layout/contact-responsive.spec.ts:33:35
+
+    Error Context: test-results/contact-responsive-320px-c-80a5b-l-inside-the-content-column-webkit-iphone/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/contact-responsive-320px-c-80a5b-l-inside-the-content-column-webkit-iphone/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/contact-responsive-320px-c-80a5b-l-inside-the-content-column-webkit-iphone/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium-iphone] › tests/layout/contact-responsive.spec.ts:5:1 › 320px contact card keeps its complete email inside the content column 
+    [webkit-iphone] › tests/layout/contact-responsive.spec.ts:5:1 › 320px contact card keeps its complete email inside the content column 
