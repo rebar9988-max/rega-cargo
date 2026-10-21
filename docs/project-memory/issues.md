@@ -1,5 +1,9 @@
 # Known issues, root causes and fixes
 
+## 2026-10-21 — Narrow contact/category overflow and desktop voice-control label
+
+Fresh production: `/contact` at 320px extends beyond the left viewport edge because a start-aligned flex card is limited by 36rem rather than its containing column. Candidate clamps to the column, keeps the entire address and permits a natural line break after `@`. The seven-locale local audit also reproduces long anonymous-flex category labels overflowing `/prohibited-items` in Kurmanji/German; a shrinkable, emergency-wrapping label preserves the existing grid and rules. The shared language control's parenthetical code causes axe `label-content-name-mismatch`; an accessible-name separator fixes it without a visual change. All three are P2; verification in progress. Protected Vazirmatn metadata is reported only. [Evidence and regression risks](../verification/ui-continuation-20261021.md).
+
 ## I-13 · FIXED 2026-10-15 — branch builds could migrate production if DATABASE_URL became a build variable
 
 Root cause: `npm run build` ends in `db:migrate`; Workers Builds runs the same build command for PR branches as for `main`, and build variables are shared across branches. Today there are no build variables, so nothing ran, but one added `DATABASE_URL` would have let unreviewed branch code migrate production. Fix: `migrationGate()` (`scripts/migration-plan.mjs`): in CI only `WORKERS_CI=1` + `WORKERS_CI_BRANCH=main` migrates; branch builds, GitHub Actions and self-hosted runners skip. Manual runs outside CI unchanged. Tests in `scripts/migration-plan.test.mjs` (including an end-to-end `migrate.mjs` run against an unresolvable host). [Runbook](../operations/cicd.md).

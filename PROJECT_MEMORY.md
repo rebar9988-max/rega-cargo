@@ -6,6 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
 - Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
+- UI/UX continuation checkpoint **2026-10-21**: branch `fix/rl-responsive-contact-20261021`, based on verified `main@7115ea7`. Three reproduced issues: 320px contact-card overflow, long prohibited-category labels in narrow multilingual cards, and the desktop language code's accessible-name mismatch. Targeted presentation/ARIA repairs and regression tests are in progress; final exact-source browser gate and evidence pending. Existing bottom-nav/hero repairs are preserved. [Continuation report](docs/verification/ui-continuation-20261021.md).
 - Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
@@ -85,6 +86,8 @@ Presentation-only refinement of spacing, alignment and touch targets ([report](d
 Verified: production `4a48cd8c` = `main` `5d66eee`; PR branch Workers Builds are non-deploying (build `11b23adc`: no Version ID, no Preview URL); hosted Actions blocked by billing; `main` cannot have required checks on GitHub Free; production workers.dev still redirects (I-14). Code fix: branch/CI builds can never migrate production (I-13). Read the [CI/CD runbook](docs/operations/cicd.md) before touching CI, Builds, `wrangler.jsonc` or migrations.
 
 ## Next safe continuation point
+
+- **UI/UX 2026-10-21:** finish the existing official-image layout lock and nine-width/seven-locale matrix on the continuation branch, review before/after evidence, measure Lighthouse, update this checkpoint and the central Doc, then open a review PR. Do not merge or deploy. Protected font diagnostics, native hardware, real OTP/private-account checks and active Worker allocation are not established by local UI testing.
 
 - Mobile bottom nav on the homepage (2026-10-20): **released** in #132 / `8a06f23` (Build `9db330d7`). **Resolved 2026-10-20:** the 24 stale phone/tablet snapshots (home pages +80 px, iPad search sheet, WebKit iPad language picker/search sheet) were re-rendered in the official Playwright image by the `update_baselines` dispatch (run 39492515054, since artifacts cannot be downloaded from the agent sandbox the dispatch run committed them to a branch through a temporary workflow step that was removed again) and merged tests-only in [PR #138](https://github.com/rebar9988-max/rega-cargo/pull/138) as `a9dd606`; `scope`, `verify` and `layout lock` (without `update_baselines`) passed on the PR head and on `main`, `Workers Builds: rega-cargo` succeeded. No application change. Still open: verify on a real phone at 320/375/390/430 px, the active Worker version (no Workers access). [Details](docs/project-memory/progress.md).
 

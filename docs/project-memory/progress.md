@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-21 targeted UI/UX continuation (in progress)
+
+Resumed `main@7115ea7`; #132/#127/#138 are already implemented and are preserved. Reviewed open #141's read-only matrix and #133's separate Bring For Me proposal. Fresh production captures reproduce contact overflow at 320px; fresh official-image multilingual checks additionally reproduce overflowing prohibited-category labels, and axe 4.14 reproduces a desktop language-code label/name mismatch. Three local presentation/ARIA repairs plus two regression cases are on `fix/rl-responsive-contact-20261021`. Both geometry regressions fail on the unchanged base in Chromium/WebKit. Final verification/evidence pending; no merge or deployment. [Report](../verification/ui-continuation-20261021.md).
+
 ## 2026-10-19 mobile bottom navigation on the homepage (PR #132, merged `8a06f23`, released 2026-10-20)
 
 Owner-requested minimal fix: the bottom bar now renders on `/` like every other page (root cause in decisions.md / issues.md). Changed: `site-header.tsx`, `shell.tsx`, and the layout assertions that expected no bar on the home (including the home footer padding, now 80px on phones). Hosted `verify` passed on the merged head. A baseline-update dispatch (run 39343192196) passed `layout lock` after the footer assertion fix; its only annotations were the known unchanged owner-denial retry. **Open:** the phone/tablet `/` screenshot baselines were not committed (CI artifacts cannot be downloaded from the agent sandbox), so `layout lock` on `main` fails on those pixel diffs until `tests/layout/__screenshots__` from that run's `layout-report` artifact is committed. Owner explicitly chose to merge before that. Not verified: iPhone Safari widths 320/375/390/430, scroll and toolbar behaviour, active Worker version/allocation (no Workers access). Local typecheck/lint/tests/build were never run in this session (npm registry unreachable).

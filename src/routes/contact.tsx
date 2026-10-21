@@ -27,7 +27,7 @@ function ContactPage() {
       <div className="page flex flex-col items-start gap-6 py-10 md:py-16">
         <a
           href={`mailto:${CONTACT_EMAIL}`}
-          className="group flex max-w-xl items-center gap-4 rounded-3xl border border-line bg-surface p-5 transition-colors hover:border-pine md:p-6"
+          className="group flex max-w-[min(100%,36rem)] items-center gap-4 rounded-3xl border border-line bg-surface p-5 transition-colors hover:border-pine md:p-6"
         >
           <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-pine text-pine-ink">
             <Mail className="size-6" aria-hidden="true" />
@@ -38,9 +38,10 @@ function ContactPage() {
             </span>
             <bdi
               dir="ltr"
-              className="truncate text-lg font-semibold text-ink group-hover:text-pine md:text-xl"
+              className="max-w-full text-lg font-semibold text-ink [overflow-wrap:anywhere] group-hover:text-pine md:text-xl"
             >
-              {CONTACT_EMAIL}
+              {CONTACT_EMAIL.split("@")[0]}@<wbr />
+              {CONTACT_EMAIL.split("@")[1]}
             </bdi>
           </span>
         </a>

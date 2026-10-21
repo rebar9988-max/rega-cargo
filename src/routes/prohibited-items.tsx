@@ -47,7 +47,9 @@ function ItemsPage() {
                 <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-pine text-pine-ink">
                   <Ban className="size-4" />
                 </span>
-                {t.categories[category.slug] ?? category.name_en}
+                <span className="min-w-0 [overflow-wrap:anywhere]">
+                  {t.categories[category.slug] ?? category.name_en}
+                </span>
               </li>
             ))}
           </ul>
