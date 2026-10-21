@@ -75,3 +75,7 @@ Gate follow-up: the unchanged-base English slow-font test reproduced CLS 0.05891
 ## 2026-10-19 — Invitation-only owner identity
 
 `src/lib/owner/` belongs to the existing identity/control plane and uses the unified database. `/owner` and closed `/api/auth/*` reuse native Better Auth; `0017_owner_bootstrap.sql` contains no seeded identity or grant. Independent approval, a single-use expiring email nonce and native credentials are all required. Private authorization reads verified/non-disabled identity and database roles freshly. [Runbook](../operations/first-owner.md).
+
+## 2026-10-21 — Bring For Me quote/import modules (candidate)
+
+Inside the existing orders / Bring For Me area: `src/lib/orders/quote/` (pure `calc.ts`, `settings.ts`, `screening.ts`, `proof.ts`; `*.server.ts` functions take an injected `sql`; `api.ts` + `handlers.server.ts` are the only wiring) and `src/lib/product-link/` (`ssrf`, `http1`, `safe-fetch`, `extract` pure; `dns.server.ts` DoH; `transport.server.ts` Workers sockets). Settings live in `bfm_settings` (+ trigger-written `bfm_settings_history`), snapshots in `bfm_quotes`, all append-only by trigger. The module reuses `compliance`, `authority.server`, `rate-limit.server` and `QUOTE_SECRET`; it does not touch Marketplace, Delivery/Tracking, R&L AI or `corridor.ts`. Quality gate: new test files are listed in `package.json` `test`; `bfm.e2e.test.ts` needs PGLite like the other e2e files. [Report](../verification/bring-for-me-phase1-20261021.md).

@@ -174,3 +174,8 @@ Existing email/password Better Auth was disabled, its availability predicate req
 ## 2026-10-19 — Bottom navigation missing on the homepage
 
 Symptom: on phones the five-tab bottom bar vanished on `/` (top, middle and bottom of the page) while every other route showed it. Root cause: `Shell reference` (homepage only) did not render the bar nor the footer clearance. Fix: single shared render path, no new CSS. Not verified locally in this session (npm registry unreachable from the agent sandbox: DNS ENOTFOUND, recorded as an environment limitation, not a code failure); verification is the hosted `verify` and `layout lock` jobs plus live checks after release.
+
+## 2026-10-21 — Bring For Me Phase 1: open items for the owner
+
+No quote can be produced in production until a SUPER_ADMIN exists (see the first-owner runbook) and fills the settings listed in the report (rates, customs, fee, governorate zones/fees, free-delivery threshold, validity, category estimates). Not verified in this sandbox: repository typecheck/lint/build/Worker dry-run, PGLite-backed tests, live behaviour of the socket transport on Cloudflare (some stores may block or be unreachable and then need manual entry), and CI (hosted Actions still billing-blocked, I-7). UI screens are not built (visual scope forbidden); see "UI hook-up needed". Do not merge before the full CI gate passes: `main` auto-deploys and auto-migrates `0019`. [Report](../verification/bring-for-me-phase1-20261021.md)
+

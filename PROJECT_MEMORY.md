@@ -6,8 +6,12 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
 - Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-19**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
+- Last memory update: **2026-10-21**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
+
+## Current state — Bring For Me Phase 1 on a Draft PR, 2026-10-21
+
+Branch `claude/bring-for-me-phase1-20261020` (Draft PR, not merged, not deployed): server-side order-by-link import, cart and automatic cost estimate with owner-editable settings, additive migration `0019_bring_for_me_phase1`. Verified locally: 131 new pure tests, 37 Postgres end-to-end tests, migration applied twice. Not verified: repo typecheck/lint/build/dry-run, PGLite, CI. **Next safe step:** run the hosted gate on the PR once billing allows, then merge only on green; the owner must have a SUPER_ADMIN and fill the settings before quotes work; UI screens still to be requested by the owner. [Report](docs/verification/bring-for-me-phase1-20261021.md).
 
 ## Current state — customer email OTP sign-in released, 2026-10-19
 
