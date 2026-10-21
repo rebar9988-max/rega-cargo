@@ -1,0 +1,60 @@
+{
+  "sourceCommit": "ad1e5c73daef2f11f5d53367533fd316a37d7ca4",
+  "baseCommit": "7115ea7d4f1ba54056ce8b692b1fc2439a1b2846",
+  "pageLoads": 1323,
+  "engines": {
+    "chromium": 1197,
+    "webkit": 63,
+    "firefox": 63
+  },
+  "widths": [
+    320,
+    360,
+    375,
+    390,
+    430,
+    768,
+    1024,
+    1280,
+    1440
+  ],
+  "languages": [
+    "ar",
+    "ckb",
+    "de",
+    "en",
+    "fa",
+    "ku",
+    "tr"
+  ],
+  "non200": 0,
+  "overflows": 0,
+  "pageErrors": 0,
+  "axeScans": 266,
+  "axeViolations": 0,
+  "languageSwitches": 42,
+  "stablePixelPairs": 70,
+  "identicalStablePairs": 59,
+  "intendedChangedPairs": 11,
+  "unexpectedStablePairs": [],
+  "localFullRun": {
+    "passed": 722,
+    "flakyPassed": 1,
+    "failed": 1,
+    "skipped": 16,
+    "notRun": 8,
+    "globalTimeoutSeconds": 1140
+  },
+  "unchangedFirefoxCompletion": {
+    "passed": 23,
+    "failed": 0,
+    "retried": 0
+  },
+  "uniqueFinalCaseCoverage": {
+    "passed": 732,
+    "skipped": 16,
+    "singleFullRunPassed": false
+  },
+  "productionImpact": "No merge or deployment",
+  "pullRequest": "https://github.com/rebar9988-max/rega-cargo/pull/142"
+}

@@ -1,0 +1,66 @@
+
+Running 2 tests using 1 worker
+
+  ✘  1 [chromium-iphone] › tests/layout/responsive-content.spec.ts:43:1 › prohibited category labels remain readable inside narrow cards in every locale (2.1s)
+  ✘  2 [webkit-iphone] › tests/layout/responsive-content.spec.ts:43:1 › prohibited category labels remain readable inside narrow cards in every locale (2.2s)
+
+
+  1) [chromium-iphone] › tests/layout/responsive-content.spec.ts:43:1 › prohibited category labels remain readable inside narrow cards in every locale 
+
+    Error: ku
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 320
+    Received: 340
+
+      63 |       }),
+      64 |     }));
+    > 65 |     expect(geometry.document, id).toBe(geometry.viewport);
+         |                                   ^
+      66 |     expect(geometry.cards.length).toBeGreaterThan(0);
+      67 |     for (const card of geometry.cards) {
+      68 |       expect(card.text, id).toBeTruthy();
+        at /workspace/rega-cargo/tests/layout/responsive-content.spec.ts:65:35
+
+    Error Context: test-results/responsive-content-prohibi-e541a-arrow-cards-in-every-locale-chromium-iphone/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/responsive-content-prohibi-e541a-arrow-cards-in-every-locale-chromium-iphone/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/responsive-content-prohibi-e541a-arrow-cards-in-every-locale-chromium-iphone/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit-iphone] › tests/layout/responsive-content.spec.ts:43:1 › prohibited category labels remain readable inside narrow cards in every locale 
+
+    Error: ku
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 320
+    Received: 334
+
+      63 |       }),
+      64 |     }));
+    > 65 |     expect(geometry.document, id).toBe(geometry.viewport);
+         |                                   ^
+      66 |     expect(geometry.cards.length).toBeGreaterThan(0);
+      67 |     for (const card of geometry.cards) {
+      68 |       expect(card.text, id).toBeTruthy();
+        at /workspace/rega-cargo/tests/layout/responsive-content.spec.ts:65:35
+
+    Error Context: test-results/responsive-content-prohibi-e541a-arrow-cards-in-every-locale-webkit-iphone/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/responsive-content-prohibi-e541a-arrow-cards-in-every-locale-webkit-iphone/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/responsive-content-prohibi-e541a-arrow-cards-in-every-locale-webkit-iphone/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium-iphone] › tests/layout/responsive-content.spec.ts:43:1 › prohibited category labels remain readable inside narrow cards in every locale 
+    [webkit-iphone] › tests/layout/responsive-content.spec.ts:43:1 › prohibited category labels remain readable inside narrow cards in every locale 

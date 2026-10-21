@@ -1,0 +1,1822 @@
+[
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 320,
+      "height": 3609
+    },
+    "after": {
+      "width": 320,
+      "height": 3609
+    },
+    "changed": 0,
+    "beforeHeight": 3609,
+    "afterHeight": 3609,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/stores/request",
+    "before": {
+      "width": 320,
+      "height": 3851
+    },
+    "after": {
+      "width": 320,
+      "height": 3851
+    },
+    "changed": 0,
+    "beforeHeight": 3851,
+    "afterHeight": 3851,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/stores",
+    "before": {
+      "width": 320,
+      "height": 7913
+    },
+    "after": {
+      "width": 320,
+      "height": 7913
+    },
+    "changed": 0,
+    "beforeHeight": 7913,
+    "afterHeight": 7913,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/track",
+    "before": {
+      "width": 320,
+      "height": 1964
+    },
+    "after": {
+      "width": 320,
+      "height": 1964
+    },
+    "changed": 0,
+    "beforeHeight": 1964,
+    "afterHeight": 1964,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/quote",
+    "before": {
+      "width": 320,
+      "height": 4886
+    },
+    "after": {
+      "width": 320,
+      "height": 4886
+    },
+    "changed": 0,
+    "beforeHeight": 4886,
+    "afterHeight": 4886,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/market",
+    "before": {
+      "width": 320,
+      "height": 1878
+    },
+    "after": {
+      "width": 320,
+      "height": 1878
+    },
+    "changed": 0,
+    "beforeHeight": 1878,
+    "afterHeight": 1878,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/account",
+    "before": {
+      "width": 320,
+      "height": 1618
+    },
+    "after": {
+      "width": 320,
+      "height": 1618
+    },
+    "changed": 0,
+    "beforeHeight": 1618,
+    "afterHeight": 1618,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/ai",
+    "before": {
+      "width": 320,
+      "height": 3798
+    },
+    "after": {
+      "width": 320,
+      "height": 3798
+    },
+    "changed": 0,
+    "beforeHeight": 3798,
+    "afterHeight": 3798,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 326,
+      "height": 2847
+    },
+    "after": {
+      "width": 320,
+      "height": 2876
+    },
+    "changed": null,
+    "beforeHeight": 2847,
+    "afterHeight": 2876,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/privacy",
+    "before": {
+      "width": 320,
+      "height": 5203
+    },
+    "after": {
+      "width": 320,
+      "height": 5203
+    },
+    "changed": 0,
+    "beforeHeight": 5203,
+    "afterHeight": 5203,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/impressum",
+    "before": {
+      "width": 320,
+      "height": 2718
+    },
+    "after": {
+      "width": 320,
+      "height": 2718
+    },
+    "changed": 0,
+    "beforeHeight": 2718,
+    "afterHeight": 2718,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/terms",
+    "before": {
+      "width": 320,
+      "height": 3142
+    },
+    "after": {
+      "width": 320,
+      "height": 3142
+    },
+    "changed": 0,
+    "beforeHeight": 3142,
+    "afterHeight": 3142,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/customs",
+    "before": {
+      "width": 320,
+      "height": 3422
+    },
+    "after": {
+      "width": 320,
+      "height": 3422
+    },
+    "changed": 0,
+    "beforeHeight": 3422,
+    "afterHeight": 3422,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 320,
+      "height": 5719
+    },
+    "after": {
+      "width": 320,
+      "height": 5788
+    },
+    "changed": null,
+    "beforeHeight": 5719,
+    "afterHeight": 5788,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/market/sell",
+    "before": {
+      "width": 320,
+      "height": 1618
+    },
+    "after": {
+      "width": 320,
+      "height": 1618
+    },
+    "changed": 0,
+    "beforeHeight": 1618,
+    "afterHeight": 1618,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/request",
+    "before": {
+      "width": 320,
+      "height": 1618
+    },
+    "after": {
+      "width": 320,
+      "height": 1618
+    },
+    "changed": 0,
+    "beforeHeight": 1618,
+    "afterHeight": 1618,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/move",
+    "before": {
+      "width": 320,
+      "height": 1618
+    },
+    "after": {
+      "width": 320,
+      "height": 1618
+    },
+    "changed": 0,
+    "beforeHeight": 1618,
+    "afterHeight": 1618,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/owner",
+    "before": {
+      "width": 320,
+      "height": 2047
+    },
+    "after": {
+      "width": 320,
+      "height": 2047
+    },
+    "changed": 0,
+    "beforeHeight": 2047,
+    "afterHeight": 2047,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ckb",
+    "route": "/admin",
+    "before": {
+      "width": 320,
+      "height": 1618
+    },
+    "after": {
+      "width": 320,
+      "height": 1618
+    },
+    "changed": 0,
+    "beforeHeight": 1618,
+    "afterHeight": 1618,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 340,
+      "height": 6010
+    },
+    "after": {
+      "width": 320,
+      "height": 6149
+    },
+    "changed": null,
+    "beforeHeight": 6010,
+    "afterHeight": 6149,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 350,
+      "height": 6262
+    },
+    "after": {
+      "width": 320,
+      "height": 6447
+    },
+    "changed": null,
+    "beforeHeight": 6262,
+    "afterHeight": 6447,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 360,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 360,
+      "height": 3557
+    },
+    "after": {
+      "width": 360,
+      "height": 3557
+    },
+    "changed": 0,
+    "beforeHeight": 3557,
+    "afterHeight": 3557,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 360,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 360,
+      "height": 2760
+    },
+    "after": {
+      "width": 360,
+      "height": 2760
+    },
+    "changed": 0,
+    "beforeHeight": 2760,
+    "afterHeight": 2760,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 360,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 360,
+      "height": 5597
+    },
+    "after": {
+      "width": 360,
+      "height": 5620
+    },
+    "changed": null,
+    "beforeHeight": 5597,
+    "afterHeight": 5620,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 360,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 370,
+      "height": 6012
+    },
+    "after": {
+      "width": 360,
+      "height": 6104
+    },
+    "changed": null,
+    "beforeHeight": 6012,
+    "afterHeight": 6104,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 375,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 375,
+      "height": 3561
+    },
+    "after": {
+      "width": 375,
+      "height": 3561
+    },
+    "changed": 0,
+    "beforeHeight": 3561,
+    "afterHeight": 3561,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 375,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 375,
+      "height": 2760
+    },
+    "after": {
+      "width": 375,
+      "height": 2760
+    },
+    "changed": 0,
+    "beforeHeight": 2760,
+    "afterHeight": 2760,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 375,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 375,
+      "height": 5499
+    },
+    "after": {
+      "width": 375,
+      "height": 5522
+    },
+    "changed": null,
+    "beforeHeight": 5499,
+    "afterHeight": 5522,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 375,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 378,
+      "height": 5799
+    },
+    "after": {
+      "width": 375,
+      "height": 5868
+    },
+    "changed": null,
+    "beforeHeight": 5799,
+    "afterHeight": 5868,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 390,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 390,
+      "height": 3565
+    },
+    "after": {
+      "width": 390,
+      "height": 3565
+    },
+    "changed": 0,
+    "beforeHeight": 3565,
+    "afterHeight": 3565,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 390,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 390,
+      "height": 2760
+    },
+    "after": {
+      "width": 390,
+      "height": 2760
+    },
+    "changed": 0,
+    "beforeHeight": 2760,
+    "afterHeight": 2760,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 390,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 390,
+      "height": 5344
+    },
+    "after": {
+      "width": 390,
+      "height": 5367
+    },
+    "changed": null,
+    "beforeHeight": 5344,
+    "afterHeight": 5367,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 390,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 390,
+      "height": 5636
+    },
+    "after": {
+      "width": 390,
+      "height": 5659
+    },
+    "changed": null,
+    "beforeHeight": 5636,
+    "afterHeight": 5659,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 430,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 430,
+      "height": 3622
+    },
+    "after": {
+      "width": 430,
+      "height": 3622
+    },
+    "changed": 0,
+    "beforeHeight": 3622,
+    "afterHeight": 3622,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 430,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 430,
+      "height": 2665
+    },
+    "after": {
+      "width": 430,
+      "height": 2665
+    },
+    "changed": 0,
+    "beforeHeight": 2665,
+    "afterHeight": 2665,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 430,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 430,
+      "height": 5048
+    },
+    "after": {
+      "width": 430,
+      "height": 5048
+    },
+    "changed": 0,
+    "beforeHeight": 5048,
+    "afterHeight": 5048,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 430,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 430,
+      "height": 5301
+    },
+    "after": {
+      "width": 430,
+      "height": 5324
+    },
+    "changed": null,
+    "beforeHeight": 5301,
+    "afterHeight": 5324,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 768,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 768,
+      "height": 2706
+    },
+    "after": {
+      "width": 768,
+      "height": 2706
+    },
+    "changed": 0,
+    "beforeHeight": 2706,
+    "afterHeight": 2706,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 768,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 768,
+      "height": 2198
+    },
+    "after": {
+      "width": 768,
+      "height": 2198
+    },
+    "changed": 0,
+    "beforeHeight": 2198,
+    "afterHeight": 2198,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 768,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 768,
+      "height": 3559
+    },
+    "after": {
+      "width": 768,
+      "height": 3559
+    },
+    "changed": 0,
+    "beforeHeight": 3559,
+    "afterHeight": 3559,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 768,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 768,
+      "height": 3708
+    },
+    "after": {
+      "width": 768,
+      "height": 3708
+    },
+    "changed": 0,
+    "beforeHeight": 3708,
+    "afterHeight": 3708,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1024,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 1024,
+      "height": 2051
+    },
+    "after": {
+      "width": 1024,
+      "height": 2051
+    },
+    "changed": 0,
+    "beforeHeight": 2051,
+    "afterHeight": 2051,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1024,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 1024,
+      "height": 1964
+    },
+    "after": {
+      "width": 1024,
+      "height": 1964
+    },
+    "changed": 0,
+    "beforeHeight": 1964,
+    "afterHeight": 1964,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1024,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 1024,
+      "height": 2972
+    },
+    "after": {
+      "width": 1024,
+      "height": 2972
+    },
+    "changed": 0,
+    "beforeHeight": 2972,
+    "afterHeight": 2972,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1024,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 1024,
+      "height": 3164
+    },
+    "after": {
+      "width": 1024,
+      "height": 3164
+    },
+    "changed": 0,
+    "beforeHeight": 3164,
+    "afterHeight": 3164,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1280,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 1280,
+      "height": 2220
+    },
+    "after": {
+      "width": 1280,
+      "height": 2220
+    },
+    "changed": 0,
+    "beforeHeight": 2220,
+    "afterHeight": 2220,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1280,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 1280,
+      "height": 1941
+    },
+    "after": {
+      "width": 1280,
+      "height": 1941
+    },
+    "changed": 0,
+    "beforeHeight": 1941,
+    "afterHeight": 1941,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1280,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 1280,
+      "height": 2900
+    },
+    "after": {
+      "width": 1280,
+      "height": 2900
+    },
+    "changed": 0,
+    "beforeHeight": 2900,
+    "afterHeight": 2900,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1280,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 1280,
+      "height": 3088
+    },
+    "after": {
+      "width": 1280,
+      "height": 3088
+    },
+    "changed": 0,
+    "beforeHeight": 3088,
+    "afterHeight": 3088,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/",
+    "before": {
+      "width": 1440,
+      "height": 2297
+    },
+    "after": {
+      "width": 1440,
+      "height": 2297
+    },
+    "changed": 0,
+    "beforeHeight": 2297,
+    "afterHeight": 2297,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/stores",
+    "before": {
+      "width": 1440,
+      "height": 5678
+    },
+    "after": {
+      "width": 1440,
+      "height": 5678
+    },
+    "changed": 0,
+    "beforeHeight": 5678,
+    "afterHeight": 5678,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/stores/request",
+    "before": {
+      "width": 1440,
+      "height": 2223
+    },
+    "after": {
+      "width": 1440,
+      "height": 2223
+    },
+    "changed": 0,
+    "beforeHeight": 2223,
+    "afterHeight": 2223,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/quote",
+    "before": {
+      "width": 1440,
+      "height": 2677
+    },
+    "after": {
+      "width": 1440,
+      "height": 2677
+    },
+    "changed": 0,
+    "beforeHeight": 2677,
+    "afterHeight": 2677,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/market",
+    "before": {
+      "width": 1440,
+      "height": 1242
+    },
+    "after": {
+      "width": 1440,
+      "height": 1242
+    },
+    "changed": 0,
+    "beforeHeight": 1242,
+    "afterHeight": 1242,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/track",
+    "before": {
+      "width": 1440,
+      "height": 1313
+    },
+    "after": {
+      "width": 1440,
+      "height": 1313
+    },
+    "changed": 0,
+    "beforeHeight": 1313,
+    "afterHeight": 1313,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/ai",
+    "before": {
+      "width": 1440,
+      "height": 2262
+    },
+    "after": {
+      "width": 1440,
+      "height": 2262
+    },
+    "changed": 0,
+    "beforeHeight": 2262,
+    "afterHeight": 2262,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/account",
+    "before": {
+      "width": 1440,
+      "height": 1031
+    },
+    "after": {
+      "width": 1440,
+      "height": 1031
+    },
+    "changed": 0,
+    "beforeHeight": 1031,
+    "afterHeight": 1031,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/contact",
+    "before": {
+      "width": 1440,
+      "height": 1941
+    },
+    "after": {
+      "width": 1440,
+      "height": 1941
+    },
+    "changed": 0,
+    "beforeHeight": 1941,
+    "afterHeight": 1941,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/impressum",
+    "before": {
+      "width": 1440,
+      "height": 1976
+    },
+    "after": {
+      "width": 1440,
+      "height": 1976
+    },
+    "changed": 0,
+    "beforeHeight": 1976,
+    "afterHeight": 1976,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/privacy",
+    "before": {
+      "width": 1440,
+      "height": 3360
+    },
+    "after": {
+      "width": 1440,
+      "height": 3360
+    },
+    "changed": 0,
+    "beforeHeight": 3360,
+    "afterHeight": 3360,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/terms",
+    "before": {
+      "width": 1440,
+      "height": 2166
+    },
+    "after": {
+      "width": 1440,
+      "height": 2166
+    },
+    "changed": 0,
+    "beforeHeight": 2166,
+    "afterHeight": 2166,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/customs",
+    "before": {
+      "width": 1440,
+      "height": 1905
+    },
+    "after": {
+      "width": 1440,
+      "height": 1905
+    },
+    "changed": 0,
+    "beforeHeight": 1905,
+    "afterHeight": 1905,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 1440,
+      "height": 2815
+    },
+    "after": {
+      "width": 1440,
+      "height": 2815
+    },
+    "changed": 0,
+    "beforeHeight": 2815,
+    "afterHeight": 2815,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/market/sell",
+    "before": {
+      "width": 1440,
+      "height": 1031
+    },
+    "after": {
+      "width": 1440,
+      "height": 1031
+    },
+    "changed": 0,
+    "beforeHeight": 1031,
+    "afterHeight": 1031,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/request",
+    "before": {
+      "width": 1440,
+      "height": 1031
+    },
+    "after": {
+      "width": 1440,
+      "height": 1031
+    },
+    "changed": 0,
+    "beforeHeight": 1031,
+    "afterHeight": 1031,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/move",
+    "before": {
+      "width": 1440,
+      "height": 1031
+    },
+    "after": {
+      "width": 1440,
+      "height": 1031
+    },
+    "changed": 0,
+    "beforeHeight": 1031,
+    "afterHeight": 1031,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/owner",
+    "before": {
+      "width": 1440,
+      "height": 1357
+    },
+    "after": {
+      "width": 1440,
+      "height": 1357
+    },
+    "changed": 0,
+    "beforeHeight": 1357,
+    "afterHeight": 1357,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ckb",
+    "route": "/admin",
+    "before": {
+      "width": 1440,
+      "height": 1031
+    },
+    "after": {
+      "width": 1440,
+      "height": 1031
+    },
+    "changed": 0,
+    "beforeHeight": 1031,
+    "afterHeight": 1031,
+    "beforeHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "CKB",
+      "font": "\"Noto Sans Arabic RL\", Vazirmatn, \"Inter RL\", \"Inter RL Fallback\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "ku",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 1440,
+      "height": 2900
+    },
+    "after": {
+      "width": 1440,
+      "height": 2900
+    },
+    "changed": 0,
+    "beforeHeight": 2900,
+    "afterHeight": 2900,
+    "beforeHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "KU",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  },
+  {
+    "width": 1440,
+    "lang": "de",
+    "route": "/prohibited-items",
+    "before": {
+      "width": 1440,
+      "height": 3088
+    },
+    "after": {
+      "width": 1440,
+      "height": 3088
+    },
+    "changed": 0,
+    "beforeHeight": 3088,
+    "afterHeight": 3088,
+    "beforeHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    },
+    "afterHeader": {
+      "text": "DE",
+      "font": "\"Inter RL\", \"Inter RL Fallback\", \"Noto Sans Arabic RL\", Vazirmatn, Arial, \"Liberation Sans\", system-ui, sans-serif",
+      "visibility": "visible"
+    }
+  }
+]

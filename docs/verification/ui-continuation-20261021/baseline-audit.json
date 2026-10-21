@@ -1,0 +1,654 @@
+[
+  {
+    "route": "/",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/stores",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/stores?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/stores/request",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/stores/request?lang=ckb&intent=buy",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/quote",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/quote?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/track",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/track?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/market",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/market?lang=ckb&q=&category=&brand=&min=&max=&stock=&sort=price&page=1&saved=",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/ai",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/ai?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/account",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/account?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/contact",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/contact?lang=ckb",
+    "viewport": 320,
+    "scroll": 326,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/impressum",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/impressum?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/privacy",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/privacy?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/terms",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/terms?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/customs",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/customs?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/prohibited-items",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/prohibited-items?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/market/sell",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/market/sell?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/request",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/request?lang=ckb&flow=buy",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/move",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/move?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/owner",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/owner?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/admin",
+    "width": 320,
+    "status": 200,
+    "url": "http://localhost:8789/admin?lang=ckb",
+    "viewport": 320,
+    "scroll": 320,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [],
+    "errors": []
+  },
+  {
+    "route": "/stores",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/stores?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/stores/request",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/stores/request?lang=ckb&intent=buy",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-10"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/quote",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/quote?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-10"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/track",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/track?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/market",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/market?lang=ckb&q=&category=&brand=&min=&max=&stock=&sort=price&page=1&saved=",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/ai",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/ai?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/account",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/account?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-10"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/contact",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/contact?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/impressum",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/impressum?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/privacy",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/privacy?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/terms",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/terms?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/customs",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/customs?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/prohibited-items",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/prohibited-items?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-10"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/market/sell",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/market/sell?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-10"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/request",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/request?lang=ckb&flow=buy",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-10"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/move",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/move?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-10"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/owner",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/owner?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".inline-flex"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  {
+    "route": "/admin",
+    "width": 1440,
+    "status": 200,
+    "url": "http://localhost:8789/admin?lang=ckb",
+    "viewport": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".h-10"
+            ],
+            "summary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  }
+]
