@@ -179,3 +179,7 @@ Symptom: on phones the five-tab bottom bar vanished on `/` (top, middle and bott
 
 No quote can be produced in production until a SUPER_ADMIN exists (see the first-owner runbook) and fills the settings listed in the report (rates, customs, fee, governorate zones/fees, free-delivery threshold, validity, category estimates). Not verified in this sandbox: repository typecheck/lint/build/Worker dry-run, PGLite-backed tests, live behaviour of the socket transport on Cloudflare (some stores may block or be unreachable and then need manual entry), and CI (hosted Actions still billing-blocked, I-7). UI screens are not built (visual scope forbidden); see "UI hook-up needed". Do not merge before the full CI gate passes: `main` auto-deploys and auto-migrates `0019`. [Report](../verification/bring-for-me-phase1-20261021.md)
 
+
+## 2026-10-22 — Bring For Me Phase 1: hosted `verify` found TypeScript errors in `api.ts` (fixed)
+
+Root cause: four server functions returned types TanStack Start cannot prove serialisable (`unknown` jsonb values, `Record<string, unknown>` rows, and the open-ended `failure()` result). Fix (types only): explicit JSON-safe return shapes for the settings history, coupon list and review queue, and `failure(err) as { error: string }` in `bfmImportLink`. The first hosted run (PR #143, head 57aafd0) is the evidence; the fix is verified only locally (172 tests pass) until the next hosted run is green. Nothing is merged or deployed.

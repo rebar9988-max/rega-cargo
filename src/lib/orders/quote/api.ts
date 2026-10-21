@@ -51,7 +51,7 @@ export const bfmImportLink = createServerFn({ method: "POST" })
     try {
       return await runImport(context.userId, data.url);
     } catch (err) {
-      return failure(err);
+      return failure(err) as { error: string };
     }
   });
 

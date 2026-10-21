@@ -77,6 +77,17 @@ export async function adminSetSettings(sql: Sql, actorId: string, entries: unkno
   return { applied };
 }
 
+/** Settings hold only a number, a string or nothing (enforced by the table); keep that type. */
+function settingValue(v: unknown): string | number | null {
+  return typeof v === "string" || typeof v === "number" ? v : null;
+}
+
+function iso(v: unknown): string | null {
+  if (v === null || v === undefined) return null;
+  const d = new Date(v as string | number | Date);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 export async function adminSettingsHistory(sql: Sql, actorId: string, key?: unknown) {
   await requireSuperAdmin(sql, actorId);
   if (key !== undefined && key !== null && typeof key !== "string") throw new BfmError("invalid");
@@ -97,8 +108,8 @@ export async function adminSettingsHistory(sql: Sql, actorId: string, key?: unkn
     history: rows.map((r) => ({
       id: Number(r.id),
       key: r.key,
-      oldValue: r.old_value,
-      newValue: r.new_value,
+      oldValue: settingValue(r.old_value),
+      newValue: settingValue(r.new_value),
       revision: Number(r.revision),
       actorId: r.actor_id,
       at: new Date(r.created_at).toISOString(),
@@ -177,22 +188,65 @@ export async function adminDeactivateCoupon(sql: Sql, actorId: string, codeIn: u
 
 export async function adminListCoupons(sql: Sql, actorId: string) {
   await requireSuperAdmin(sql, actorId);
-  const rows = await sql<Record<string, unknown>>`
+  const rows = await sql<{
+    code: string;
+    kind: string;
+    value: number | string;
+    max_discount_iqd: number | string | null;
+    min_items_iqd: number | string | null;
+    starts_at: string | Date | null;
+    expires_at: string | Date;
+    active: boolean;
+    created_at: string | Date;
+  }>`
     select code, kind, value, max_discount_iqd, min_items_iqd, starts_at, expires_at, active, created_at
     from bfm_coupons order by created_at desc limit 200`;
-  return { coupons: rows };
+  const num = (v: number | string | null) => (v === null ? null : Number(v));
+  return {
+    coupons: rows.map((r) => ({
+      code: r.code,
+      kind: r.kind,
+      value: Number(r.value),
+      maxDiscountIqd: num(r.max_discount_iqd),
+      minItemsIqd: num(r.min_items_iqd),
+      startsAt: iso(r.starts_at),
+      expiresAt: iso(r.expires_at),
+      active: r.active === true,
+      createdAt: iso(r.created_at),
+    })),
+  };
 }
 
 // ------------------------------------------------------------------------------- review queue
 
 export async function adminReviewQueue(sql: Sql, actorId: string) {
   await requireSuperAdmin(sql, actorId);
-  const rows = await sql<Record<string, unknown>>`
+  const rows = await sql<{
+    id: string;
+    store_name: string;
+    source_host: string;
+    title: string;
+    category: string;
+    quantity: number | string;
+    review_reason: string | null;
+    created_at: string | Date;
+  }>`
     select id, store_name, source_host, title, category, quantity, review_reason, created_at
     from bfm_cart_items
     where screening = 'needs_review' and removed_at is null
     order by created_at asc limit 100`;
-  return { items: rows };
+  return {
+    items: rows.map((r) => ({
+      id: r.id,
+      storeName: r.store_name,
+      sourceHost: r.source_host,
+      title: r.title,
+      category: r.category,
+      quantity: Number(r.quantity),
+      reviewReason: r.review_reason,
+      createdAt: iso(r.created_at),
+    })),
+  };
 }
 
 export async function adminDecideReview(
