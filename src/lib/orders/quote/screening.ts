@@ -29,7 +29,7 @@ export type Screening =
   | { decision: "needs_review"; reason: string }
   | { decision: "clear" };
 
-const PATH_JUNK = /[\/_\-+.=&?%]+/g;
+const PATH_JUNK = /[/_\-+.=&?%]+/g;
 
 export function screenItem(input: ScreenInput, rules: CompiledRules): Screening {
   const urlText = decodeSafely(input.url.pathname + " " + input.url.search).replace(PATH_JUNK, " ");

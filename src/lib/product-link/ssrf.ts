@@ -64,7 +64,7 @@ export function parseImportUrl(
   if (typeof raw !== "string") return { ok: false, error: "url" };
   const text = raw.trim();
   if (!text || text.length > IMPORT_URL_MAX) return { ok: false, error: "url" };
-  if (/[\s\u0000-\u001f\u007f]/.test(text)) return { ok: false, error: "multiple" };
+  if (/[\s\p{Cc}]/u.test(text)) return { ok: false, error: "multiple" };
   let url: URL;
   try {
     url = new URL(text);
@@ -89,7 +89,7 @@ export function parseRedirectTarget(
     return { ok: false, error: "url" };
   }
   // A Location header never contains whitespace; resolving it would silently %-encode it.
-  if (/[\s\u0000-\u001f\u007f]/.test(location.trim())) return { ok: false, error: "multiple" };
+  if (/[\s\p{Cc}]/u.test(location.trim())) return { ok: false, error: "multiple" };
   let next: URL;
   try {
     next = new URL(location.trim(), base);
@@ -227,7 +227,7 @@ export function onlyPublicAddresses(
 export function safeImageUrl(raw: unknown, base?: URL): string | null {
   if (typeof raw !== "string") return null;
   const text = raw.trim();
-  if (!text || text.length > IMPORT_URL_MAX || /[\s\u0000-\u001f\u007f]/.test(text)) return null;
+  if (!text || text.length > IMPORT_URL_MAX || /[\s\p{Cc}]/u.test(text)) return null;
   let url: URL;
   try {
     url = base ? new URL(text, base) : new URL(text);

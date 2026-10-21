@@ -71,7 +71,7 @@ export function cleanText(value: unknown, max = MAX_TEXT): string | null {
   if (typeof value !== "string") return null;
   const text = decodeEntities(value)
     .replace(/<[^>]*>/g, " ")
-    .replace(/[\u0000-\u001f\u007f\u200b-\u200f\u2028-\u202e\ufeff]/g, " ")
+    .replace(/[\p{Cc}\u200b-\u200f\u2028-\u202e\ufeff]/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
   if (!text) return null;

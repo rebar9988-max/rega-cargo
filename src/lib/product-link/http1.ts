@@ -114,7 +114,7 @@ export function buildRequest(
   pathAndQuery: string,
   opts: Http1Options,
 ): Uint8Array | null {
-  const bad = /[\r\n\u0000]/;
+  const bad = /[\r\n\p{Cc}]/u;
   if (bad.test(host) || bad.test(pathAndQuery) || bad.test(opts.userAgent) || bad.test(opts.accept))
     return null;
   if (!pathAndQuery.startsWith("/") || /\s/.test(pathAndQuery)) return null;
