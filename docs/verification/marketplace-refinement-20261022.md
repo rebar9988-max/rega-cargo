@@ -125,3 +125,13 @@ was rejected by the tests: names such as Decathlon wrapped at 360 px and rows no
 up. New test: from 320 px every card logo renders at its normalised size (≥ 10 px tall),
 inside its tile, the badge keeps a 44 px target and its icon never covers the logo.
 
+Release: PR #154 squash-merged as `9d4c476` after the hosted gate on `4e21e38` (scope, verify,
+layout lock 728 passed / 16 skipped / 0 failed, Workers Builds). Cloudflare Workers Build
+`5b831d60-a692-4a15-9dee-ea3f9c690796` succeeded, Version `1881b5b7-118b-4b34-a278-ddb034df74d6`.
+Production run 2 (GitHub Actions run 39873759891, read-only against `https://www.rlgo.net`):
+30/30 passed, including the full-size card logo and favourite-badge checks at every width;
+screenshots reviewed (320 px ckb/en, 390 px ar, 1280 px ckb). Not verified: a physical phone and
+the active version allocation. The throwaway branch `claude/marketplace-live-verify-20261023`
+could not be deleted from the agent session (proxy policy); it is never merged and its workflow
+runs only on pushes to that branch.
+

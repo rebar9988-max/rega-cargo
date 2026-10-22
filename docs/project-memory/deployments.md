@@ -1,5 +1,9 @@
 # CI/CD and deployments
 
+## 2026-10-23 PR #154 Marketplace follow-up (logo tile, corner favourite) — merged `9d4c476`, deployed
+
+Squash-merged after the full hosted gate on head `4e21e38` (run 39871878678: scope, verify, layout lock 728 passed / 16 skipped / 0 failed, Workers Builds). Cloudflare Workers Build `5b831d60-a692-4a15-9dee-ea3f9c690796` succeeded, Version ID `1881b5b7-118b-4b34-a278-ddb034df74d6`. Production verification (read-only GitHub Actions run 39873759891 against `https://www.rlgo.net`, official Playwright image): 30/30 passed — Chromium desktop, WebKit iPhone and iPad emulation at 320/375/390/430/820/1280/1440 px × ckb/ar/en (no overflow, equal rail tiles, aligned cards, two-line meta, hosts not cut, card logos at full size ≥ 10 px, 44 px favourite badge not covering logos, request store row and equal switch) plus the Chromium/Firefox 360 px store tests. Earlier PR #153 (docs only) built `e5e8ee34` / Version `677e21d3`. Active-at-100% not verified (no deployments access). Rollback pointer: `main` `a3066ed`. [Evidence](../verification/marketplace-refinement-20261022.md).
+
 ## 2026-10-22 PR #152 Marketplace refinement — merged `30011be`, deployed
 
 Squash-merged after the full hosted gate on head `267f537` (run 39863179609: scope, verify, layout lock 726 passed / 16 skipped / 0 failed, Workers Builds). `main` @ `30011be`: scope, verify, layout lock (726/16/0) all success. Cloudflare Workers Build `3c949399-f21a-4760-a537-b0aca02212fa` succeeded, Version ID `3cb56beb-8826-4e83-908b-04cf52cdcfb4` (from the check output). Live (Firecrawl, `maxAge: 0`): `/stores?lang=en&country=DE` 200 with the normalised rail logo sizes and the two-line country/host meta; `/stores/request?store=zalando-it&lang=ckb` 200 with the store logo row (`zalando.it`) and the equal buy/ship switch. Active-at-100% not verified (the Cloudflare connector returns no deployments). Rollback pointer: previous `main` `499b48d`. [Evidence](../verification/marketplace-refinement-20261022.md).
@@ -70,6 +74,8 @@ Production Hyperdrive origin repointed to verified `old-cherry-79292410/cargo` u
 
 | When (UTC) | Worker | Version | Notes |
 |---|---|---|---|
+| 2026-10-22 23:44 | `rega-cargo` | `1881b5b7` | PR #154 -> main `9d4c476` (logo tile, corner favourite); Cloudflare Builds `5b831d60` succeeded; live run 39873759891 30/30; active-at-100% not verified |
+| 2026-10-22 22:42 | `rega-cargo` | `677e21d3` | PR #153 -> main `a3066ed` (docs only, same app as `3cb56beb`); Cloudflare Builds `e5e8ee34` succeeded |
 | 2026-10-22 22:27 | `rega-cargo` | `3cb56beb` | PR #152 -> main `30011be` (Marketplace refinement); Cloudflare Builds `3c949399` succeeded; live checks above; active-at-100% not verified |
 | 2026-10-18 08:14 | `rega-cargo` | `e3ab56d5` | `main` `57d4121` includes PR #118 (digit input); Cloudflare Builds `74e026c6` succeeded after `be61d4c3` (for `675c644`) failed transiently; live checks above; active-at-100% not verified |
 | 2026-10-18 06:40 | `rega-cargo` | `c0c4f5a6` | PR #115 -> main `56e53f2` (six code-defect fixes); Cloudflare Builds `6cedf284` succeeded; live checks above; active-at-100% not verified |
