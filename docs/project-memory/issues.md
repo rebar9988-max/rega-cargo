@@ -183,3 +183,15 @@ No quote can be produced in production until a SUPER_ADMIN exists (see the first
 ## 2026-10-22 — Bring For Me Phase 1: hosted `verify` found TypeScript errors in `api.ts` (fixed)
 
 Root cause: four server functions returned types TanStack Start cannot prove serialisable (`unknown` jsonb values, `Record<string, unknown>` rows, and the open-ended `failure()` result). Fix (types only): explicit JSON-safe return shapes for the settings history, coupon list and review queue, and `failure(err) as { error: string }` in `bfmImportLink`. The first hosted run (PR #143, head 57aafd0) is the evidence; the fix is verified only locally (172 tests pass) until the next hosted run is green. Nothing is merged or deployed.
+
+## 2026-10-22 — `layout lock` flake: `wrangler dev`'s ProxyWorker drops requests under suite load (fixed)
+
+Symptom: `tests/layout/owner.spec.ts` "public privileged signup is denied before auth initialization" intermittently saw one `500` instead of `403`, at a different endpoint each time. The same commit (`cda24b0`) passed at 23:11 UTC and failed at 07:00 UTC, so no code change caused it.
+
+Root cause, with evidence (diagnostic run 39747070993, throwaway branch): the 500 is produced by Wrangler's own dev proxy, not by the app. Its stderr says `Error inside ProxyWorker (the affected request failed; the dev server continues): POST http://localhost:8788/api/auth/change-email (failed after 1 attempt): Network connection lost.` and the body returned to the browser is `Error: Network connection lost. at async Object.fetch (…/miniflare/dist/src/workers/core/entry.worker.js)`. A control run that sent the same 4 denied POSTs 40 times each with the rest of the suite idle got 403 on all 160 (run 39746762922), so the authorization path itself is sound; the drops only appear while 3 Playwright workers load the single dev server.
+
+Fix: `tests/layout/dev-proxy.ts` recognises exactly that signature (status 500 **and** "Network connection lost") as a request that never reached the Worker, and `denialVerdict()` decides what a sequence of attempts proves — an acceptance (any status < 400) fails immediately wherever it appears, any other answer (including any other 500) is judged as given, and a run where every attempt was dropped fails as `all_dropped` rather than passing. The owner spec re-sends only dropped requests (max 4) and still asserts `[403, 403, 403, 403]`. `tests/layout/dev-proxy.test.ts` (7 cases, in `npm test`) covers the rules without a browser.
+
+Also fixed the diagnosability that cost most of the time here: CI now runs Playwright with the `github` reporter, so a failed layout job annotates the failing file and assertion instead of only `Process completed with exit code 1`. The HTML report artifact is still uploaded, but artifact storage hosts are not reachable from every reviewer or agent session.
+
+Not changed: Playwright worker count, timeouts, the app's auth code, and the baselines. The drops come from the dev proxy under load; the suite tolerates them honestly instead of hiding them.

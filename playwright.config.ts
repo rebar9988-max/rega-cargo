@@ -73,7 +73,11 @@ export default defineConfig<LayoutProjectUse>({
   // Leave CPU for the local Worker and WebKit's full-page captures on CI runners.
   workers: process.env.CI ? 3 : 6,
   timeout: 45_000,
-  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
+  // `github` turns every failure into a file annotation on the check run. The HTML report
+  // is uploaded as an artifact, but an artifact cannot always be fetched (storage-host
+  // access differs per reviewer and per agent session), and without annotations a failed
+  // layout job says only "exit code 1" — which is what made run 39688684033 unreadable.
+  reporter: process.env.CI ? [["github"], ["list"], ["html", { open: "never" }]] : [["list"]],
   expect: {
     // Tall full-page WebKit captures need more than the 5s default on CI runners.
     timeout: 20_000,
