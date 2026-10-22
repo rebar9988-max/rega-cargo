@@ -1436,23 +1436,36 @@
   max-block-size: 1.75rem;
   object-fit: contain;
 }
-/* Store name and the favourite heart on one row; the 48 px target reaches into the row gaps
-   instead of adding height. */
-.rl-store-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--rl-space-1);
-  min-inline-size: 0;
+/* Favourite: a small round badge in the card's top corner with a 44 px target, so the logo
+   tile can span the whole card. Logos are centred and at most 80 px wide, so the badge never
+   covers one. */
+.rl-store-card {
+  position: relative;
 }
-.rl-store-head h3 {
-  min-inline-size: 0;
+.rl-store-top .rl-store-fav {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inline-size: 2.75rem;
+  min-inline-size: 2.75rem;
+  block-size: 2.75rem;
+  min-block-size: 2.75rem;
+  padding-inline: 0;
+  padding-block: 0;
 }
-.rl-store-head .rl-button {
-  flex: none;
-  min-inline-size: var(--rl-control-h);
-  margin-block: calc(-1 * var(--rl-space-1));
-  padding-inline: var(--rl-space-1);
+.rl-store-top .rl-store-fav::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: var(--rl-space-0);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-pill);
+  background: var(--rl-surface);
+}
+.rl-store-top .rl-store-fav .rl-icon {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
 }
 .rl-store-card h3 {
   font-size: var(--text-base);

@@ -947,8 +947,12 @@ test("marketplace refinement: store-card logos keep their full size on narrow ph
           const img = el.querySelector(".rl-store-logo img") as HTMLImageElement;
           const r = img.getBoundingClientRect();
           const tile = el.querySelector(".rl-store-logo")!.getBoundingClientRect();
-          const heart = el.querySelector(".rl-store-head button[aria-pressed]")!;
+          const heart = el.querySelector(".rl-store-fav")!;
           const h = heart.getBoundingClientRect();
+          const icon = heart.querySelector("svg")!.getBoundingClientRect();
+          const overlap =
+            Math.max(0, Math.min(icon.right, r.right) - Math.max(icon.left, r.left)) *
+            Math.max(0, Math.min(icon.bottom, r.bottom) - Math.max(icon.top, r.top));
           return {
             id: el.getAttribute("data-store"),
             w: r.width,
@@ -956,6 +960,7 @@ test("marketplace refinement: store-card logos keep their full size on narrow ph
             attr: Number(img.getAttribute("width")),
             inside: r.left >= tile.left && r.right <= tile.right,
             heart: Math.min(h.width, h.height),
+            overlap,
           };
         }),
       );
@@ -967,6 +972,8 @@ test("marketplace refinement: store-card logos keep their full size on narrow ph
         expect(card.h).toBeLessThanOrEqual(28);
         expect(card.inside, `${card.id} inside`).toBe(true);
         expect(card.heart, `${card.id} favourite target`).toBeGreaterThanOrEqual(44);
+        // The favourite badge never covers the logo.
+        expect(card.overlap, `${width} ${lang} ${card.id} badge over logo`).toBe(0);
       }
     }
   }

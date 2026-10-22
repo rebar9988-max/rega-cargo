@@ -293,7 +293,7 @@ export function storeLogoSize(
 }
 /** Retailer rail tiles and store-card logo tiles: one size rule each. */
 export const RAIL_LOGO = { area: 900, maxWidth: 76, maxHeight: 24 } as const;
-export const CARD_LOGO = { area: 1100, maxWidth: 88, maxHeight: 28 } as const;
+export const CARD_LOGO = { area: 1100, maxWidth: 80, maxHeight: 28 } as const;
 
 /** The logo id of a store: its retailer (brand) for a country storefront, else its own id. */
 export function storeBrand(store: StoreEntry | DirectoryStore): string {

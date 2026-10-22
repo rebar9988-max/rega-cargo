@@ -3,7 +3,7 @@
 # (stores-*.png, stores-request-*.png × 9 screenshot projects) in the official Playwright image,
 # plus unmasked review shots in tmp-review/, and commits them back to this branch, because the
 # agent sandbox cannot install packages or download Actions artifacts. Runs only on pushes to
-# this branch that change this file. Removed (with tmp-review/) before merge. Logo tile follow-up.
+# this branch that change this file. Removed (with tmp-review/) before merge. Logo tile follow-up 2.
 name: tmp marketplace baselines
 on:
   push:
