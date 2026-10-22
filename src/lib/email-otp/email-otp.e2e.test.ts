@@ -17,7 +17,10 @@ for (const file of readdirSync(new URL("migrations/", root))
   await pg.exec(readFileSync(new URL(`migrations/${file}`, root), "utf8"));
 
 async function getSql(): Promise<Sql> {
-  const sql = async <T = Record<string, unknown>>(strings: TemplateStringsArray, ...values: unknown[]) => {
+  const sql = async <T = Record<string, unknown>>(
+    strings: TemplateStringsArray,
+    ...values: unknown[]
+  ) => {
     let text = strings[0];
     for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
     return (await pg.query<T>(text, values)).rows;
@@ -110,7 +113,10 @@ async function call(
 }
 
 /** Service-level send with a capturing delivery. */
-async function send(email: string, opts: { ip?: string; deliver?: (e: string, c: string) => Promise<boolean> } = {}) {
+async function send(
+  email: string,
+  opts: { ip?: string; deliver?: (e: string, c: string) => Promise<boolean> } = {},
+) {
   let code: string | null = null;
   const result = await svc.requestEmailCode(await sql(), {
     email,
@@ -142,7 +148,20 @@ after(async () => {
 describe("email normalisation and copy", () => {
   it("accepts single mailboxes only, lower-cased", () => {
     assert.equal(svc.normalizeEmail("  Rebar@Example.COM "), "rebar@example.com");
-    for (const bad of ["", "a@b", "no-at.example.com", "a@@b.com", "a b@c.com", "x@y.com, z@w.com", "<a@b.com>", "a..b@c.com", ".a@b.com", "a@b..com", 42, null])
+    for (const bad of [
+      "",
+      "a@b",
+      "no-at.example.com",
+      "a@@b.com",
+      "a b@c.com",
+      "x@y.com, z@w.com",
+      "<a@b.com>",
+      "a..b@c.com",
+      ".a@b.com",
+      "a@b..com",
+      42,
+      null,
+    ])
       assert.equal(svc.normalizeEmail(bad), null, String(bad));
     assert.equal(svc.cleanCode("123 456"), "123456");
     assert.equal(svc.cleanCode("12345"), null);
@@ -158,9 +177,14 @@ describe("email normalisation and copy", () => {
     assert.equal(LANGS.length, 7);
     for (const { id } of LANGS) {
       const c = leaves(EMAIL_OTP_COPY[id]);
-      assert.deepEqual(c.map(([k]) => k), en.map(([k]) => k), `${id}: keys`);
+      assert.deepEqual(
+        c.map(([k]) => k),
+        en.map(([k]) => k),
+        `${id}: keys`,
+      );
       for (const [k, v] of c) assert.ok(v.trim(), `${id}${k} empty`);
-      if (id !== "en") assert.notEqual(EMAIL_OTP_COPY[id].lede, EMAIL_OTP_COPY.en.lede, `${id}: lede`);
+      if (id !== "en")
+        assert.notEqual(EMAIL_OTP_COPY[id].lede, EMAIL_OTP_COPY.en.lede, `${id}: lede`);
       assert.match(EMAIL_OTP_COPY[id].resendIn, /\{s\}/, `${id}: resendIn placeholder`);
       assert.match(EMAIL_OTP_COPY[id].mail.subject, /R&L/, `${id}: subject`);
     }
@@ -227,16 +251,18 @@ describe("code generation, storage and verification", () => {
     assert.deepEqual(await verify(email, code as string), { error: "expired" });
   });
 
-  it("enforces the 60-second resend cooldown; a resend replaces the code and keeps the guess count", async () => {
+  it("enforces the resend cooldown; a resend replaces the code and keeps the guess count", async () => {
     const email = "resend@example.com";
     const first = await send(email);
     assert.deepEqual((await send(email)).result, { error: "rate" });
     const wrong = first.code === "111111" ? "222222" : "111111";
     assert.deepEqual(await verify(email, wrong), { error: "code" });
-    await age(email, 61);
+    await age(email, svc.RESEND_COOLDOWN_SECONDS + 1);
     const second = await send(email);
     assert.deepEqual(second.result, { sent: true });
-    const rows = await (await sql())<{ attempts: number }>`select attempts from email_codes where email = ${email}`;
+    const rows = await (await sql())<{
+      attempts: number;
+    }>`select attempts from email_codes where email = ${email}`;
     assert.equal(rows[0].attempts, 1);
     if (first.code !== second.code)
       assert.deepEqual(await verify(email, first.code as string), { error: "code" });
@@ -252,15 +278,19 @@ describe("code generation, storage and verification", () => {
   it("concurrent verifications of the right code have exactly one winner", async () => {
     const email = "race-verify@example.com";
     const { code } = await send(email);
-    const results = await Promise.all(Array.from({ length: 8 }, () => verify(email, code as string)));
+    const results = await Promise.all(
+      Array.from({ length: 8 }, () => verify(email, code as string)),
+    );
     assert.equal(results.filter((r) => "ok" in r).length, 1);
   });
 
   it("rate-limits sends per address per hour and per IP", async () => {
     const email = "busy@example.com";
-    for (let i = 0; i < 5; i += 1) {
+    // Read the limit from the module: a future change to the number must not need a
+    // matching edit here, and must not quietly stop this from testing the limit.
+    for (let i = 0; i < svc.EMAIL_HOUR_LIMIT; i += 1) {
       assert.deepEqual((await send(email)).result, { sent: true }, `send ${i + 1}`);
-      await age(email, 61);
+      await age(email, svc.RESEND_COOLDOWN_SECONDS + 1);
     }
     assert.deepEqual((await send(email)).result, { error: "rate" });
     const ip = "203.0.113.77";
@@ -297,9 +327,14 @@ describe("accounts and privilege isolation", () => {
     const b = await svc.customerAccount(await sql(), email, "Other", createUser);
     assert.ok("id" in a && "id" in b);
     assert.equal(a.id, b.id);
-    const roles = await (await sql())<{ role: string; status: string }>`select role, status from user_roles where user_id = ${a.id}`;
+    const roles = await (await sql())<{
+      role: string;
+      status: string;
+    }>`select role, status from user_roles where user_id = ${a.id}`;
     assert.deepEqual(roles, [{ role: "buyer", status: "approved" }]);
-    const users = await (await sql())<{ n: number }>`select count(*)::int as n from "user" where lower(email) = ${email}`;
+    const users = await (await sql())<{
+      n: number;
+    }>`select count(*)::int as n from "user" where lower(email) = ${email}`;
     assert.equal(users[0].n, 1);
   });
 
@@ -312,7 +347,10 @@ describe("accounts and privilege isolation", () => {
     assert.deepEqual(result, { id: winner.id });
   });
 
-  async function privileged(email: string, kind: "password" | "admin" | "super_admin" | "disabled" | "unverified" | "invited") {
+  async function privileged(
+    email: string,
+    kind: "password" | "admin" | "super_admin" | "disabled" | "unverified" | "invited",
+  ) {
     const s = await sql();
     if (kind === "invited") {
       await s`insert into owner_bootstrap (approved_email, approved_by, ownership_proof, invitation_hash, expires_at)
@@ -331,7 +369,14 @@ describe("accounts and privilege isolation", () => {
   }
 
   it("never mails, signs in, or reveals owner, admin, password, disabled, unverified or invited identities", async () => {
-    for (const kind of ["password", "admin", "super_admin", "disabled", "unverified", "invited"] as const) {
+    for (const kind of [
+      "password",
+      "admin",
+      "super_admin",
+      "disabled",
+      "unverified",
+      "invited",
+    ] as const) {
       const email = `${kind.replace("_", "")}@staff.example.com`;
       const id = await privileged(email, kind);
       let mailed = false;
@@ -344,13 +389,17 @@ describe("accounts and privilege isolation", () => {
       // Same answer as for any other address: no enumeration.
       assert.deepEqual(result, { sent: true }, kind);
       assert.equal(mailed, false, `${kind}: no mail`);
-      const state = await (await sql())<{ state: string }>`select state from email_codes where email = ${email}`;
+      const state = await (await sql())<{
+        state: string;
+      }>`select state from email_codes where email = ${email}`;
       assert.equal(state[0].state, "pending", `${kind}: code never becomes usable`);
       // Even with a valid code the account is refused.
       const account = await svc.customerAccount(await sql(), email, "", createUser);
       assert.deepEqual(account, { error: "code" }, kind);
       if (id) {
-        const roles = await (await sql())<{ role: string }>`select role from user_roles where user_id = ${id} and role = 'buyer'`;
+        const roles = await (await sql())<{
+          role: string;
+        }>`select role from user_roles where user_id = ${id} and role = 'buyer'`;
         assert.equal(roles.length, 0, `${kind}: no role added`);
       }
     }
@@ -362,12 +411,16 @@ describe("Better Auth integration (real handler)", () => {
     const email = "rebar.e2e@example.com";
     const status = await call("rl-email/status");
     assert.deepEqual(status.json, { available: true });
-    const sent = await call("rl-email/send", { body: { email: "Rebar.E2E@example.com", lang: "ckb" } });
+    const sent = await call("rl-email/send", {
+      body: { email: "Rebar.E2E@example.com", lang: "ckb" },
+    });
     assert.equal(sent.status, 200);
     assert.deepEqual(sent.json, { sent: true });
     const code = lastCode();
     assert.equal(code?.email, email);
-    const wrong = await call("rl-email/verify", { body: { email, code: code?.code === "111111" ? "222222" : "111111" } });
+    const wrong = await call("rl-email/verify", {
+      body: { email, code: code?.code === "111111" ? "222222" : "111111" },
+    });
     assert.equal(wrong.status, 400);
     assert.deepEqual(wrong.json, { error: "code" });
     assert.equal(wrong.cookie, undefined);
@@ -379,8 +432,13 @@ describe("Better Auth integration (real handler)", () => {
     const again = await call("get-session", { cookie: ok.cookie });
     assert.equal((again.json?.user as { email?: string })?.email, email);
     const userId = (again.json?.user as { id: string }).id;
-    const roles = await (await sql())<{ role: string }>`select role from user_roles where user_id = ${userId}`;
-    assert.deepEqual(roles.map((r) => r.role), ["buyer"]);
+    const roles = await (await sql())<{
+      role: string;
+    }>`select role from user_roles where user_id = ${userId}`;
+    assert.deepEqual(
+      roles.map((r) => r.role),
+      ["buyer"],
+    );
     // Replay of the consumed code opens nothing.
     const replay = await call("rl-email/verify", { body: { email, code: code?.code } });
     assert.equal(replay.status, 400);
@@ -419,19 +477,30 @@ describe("Better Auth integration (real handler)", () => {
     assert.equal(attempt.status, 400);
     assert.deepEqual(attempt.json, { error: "code" });
     assert.equal(attempt.cookie, undefined);
-    const sessions = await s<{ n: number }>`select count(*)::int as n from session where "userId" = 'owner-1'`;
+    const sessions = await s<{
+      n: number;
+    }>`select count(*)::int as n from session where "userId" = 'owner-1'`;
     assert.equal(sessions[0].n, 0);
   });
 
   it("Better Auth rejects a cross-origin verification", async () => {
     const email = "csrf@example.com";
     await call("rl-email/send", { body: { email } });
-    const forged = await call("rl-email/verify", { body: { email, code: lastCode()?.code }, origin: "https://attacker.test" });
+    const forged = await call("rl-email/verify", {
+      body: { email, code: lastCode()?.code },
+      origin: "https://attacker.test",
+    });
     assert.equal(forged.status, 403);
     assert.equal(forged.cookie, undefined);
-    const noOrigin = await call("rl-email/verify", { body: { email, code: lastCode()?.code }, origin: "" });
+    const noOrigin = await call("rl-email/verify", {
+      body: { email, code: lastCode()?.code },
+      origin: "",
+    });
     assert.equal(noOrigin.status, 403);
-    const sendForged = await call("rl-email/send", { body: { email: "victim@example.com" }, origin: "https://attacker.test" });
+    const sendForged = await call("rl-email/send", {
+      body: { email: "victim@example.com" },
+      origin: "https://attacker.test",
+    });
     assert.equal(sendForged.status, 403);
     // The real code still works afterwards: the rejected requests spent no guess.
     const ok = await call("rl-email/verify", { body: { email, code: lastCode()?.code } });
@@ -440,19 +509,35 @@ describe("Better Auth integration (real handler)", () => {
 });
 
 describe("route allowlist", () => {
-  const request = (path: string, method = "POST", headers: Record<string, string> = { origin: ORIGIN }) =>
-    new Request(`${ORIGIN}/api/auth/${path}`, { method, headers });
+  const request = (
+    path: string,
+    method = "POST",
+    headers: Record<string, string> = { origin: ORIGIN },
+  ) => new Request(`${ORIGIN}/api/auth/${path}`, { method, headers });
   it("opens only the R&L email-code routes, same-origin", () => {
     assert.equal(ownerAuthRequestAllowed(request("rl-email/send")), true);
     assert.equal(ownerAuthRequestAllowed(request("rl-email/verify")), true);
     assert.equal(ownerAuthRequestAllowed(request("rl-email/status", "GET", {})), true);
-    const attacks: Record<string, string>[] = [{}, { origin: "https://attacker.test" }, { origin: ORIGIN, "sec-fetch-site": "cross-site" }];
+    const attacks: Record<string, string>[] = [
+      {},
+      { origin: "https://attacker.test" },
+      { origin: ORIGIN, "sec-fetch-site": "cross-site" },
+    ];
     for (const headers of attacks)
       for (const path of ["rl-email/send", "rl-email/verify"])
-        assert.equal(ownerAuthRequestAllowed(request(path, "POST", headers)), false, `${path} ${JSON.stringify(headers)}`);
+        assert.equal(
+          ownerAuthRequestAllowed(request(path, "POST", headers)),
+          false,
+          `${path} ${JSON.stringify(headers)}`,
+        );
     assert.equal(ownerAuthRequestAllowed(request("rl-email/verify", "GET", {})), false);
     // Better Auth's stock email-OTP and other account routes stay closed.
-    for (const path of ["email-otp/send-verification-otp", "sign-in/email-otp", "email-otp/verify-email", "sign-up/email"])
+    for (const path of [
+      "email-otp/send-verification-otp",
+      "sign-in/email-otp",
+      "email-otp/verify-email",
+      "sign-up/email",
+    ])
       assert.equal(ownerAuthRequestAllowed(request(path)), false, path);
   });
 });

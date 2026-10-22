@@ -3,7 +3,7 @@
  *
  * Same guarantees as the phone flow (src/lib/phone/session.server.ts): codes are
  * six digits from crypto.randomInt, stored only as an HMAC, usable for five
- * minutes, at most five guesses per window, a 60-second resend cooldown that
+ * minutes, at most five guesses per window, a 30-second resend cooldown that
  * concurrent requests cannot evade, and single consumption (one winner even
  * under concurrent verification). A failed delivery never creates a usable code.
  *
@@ -15,24 +15,28 @@
  */
 import type { Sql } from "../db.ts";
 import { codesMatch, hmacHex, randomCode } from "../phone/codes.ts";
+import {
+  CODE_TTL_MINUTES,
+  EMAIL_DAY_LIMIT,
+  EMAIL_HOUR_LIMIT,
+  IP_SEND_HOUR_LIMIT,
+  IP_VERIFY_HOUR_LIMIT,
+  MAX_ATTEMPTS,
+  RESEND_COOLDOWN_SECONDS,
+} from "./limits.ts";
 
-export const CODE_TTL_MINUTES = 5;
-export const RESEND_COOLDOWN_SECONDS = 60;
-export const MAX_ATTEMPTS = 5;
-const EMAIL_HOUR_LIMIT = 5;
-const EMAIL_DAY_LIMIT = 10;
-const IP_SEND_HOUR_LIMIT = 20;
-const IP_VERIFY_HOUR_LIMIT = 30;
+export {
+  CODE_TTL_MINUTES,
+  EMAIL_DAY_LIMIT,
+  EMAIL_HOUR_LIMIT,
+  MAX_ATTEMPTS,
+  RESEND_COOLDOWN_SECONDS,
+} from "./limits.ts";
 
 export type Deliver = (email: string, code: string) => Promise<boolean>;
 export type SendResult = { sent: true } | { error: "email" | "rate" | "unavailable" };
-export type VerifyResult =
-  | { ok: true; email: string }
-  | { error: "code" | "expired" | "rate" };
-export type Identity =
-  | { kind: "new" }
-  | { kind: "customer"; id: string }
-  | { kind: "blocked" };
+export type VerifyResult = { ok: true; email: string } | { error: "code" | "expired" | "rate" };
+export type Identity = { kind: "new" } | { kind: "customer"; id: string } | { kind: "blocked" };
 
 /** Lower-cased, trimmed address, or null when it is not a plausible single mailbox. */
 export function normalizeEmail(raw: unknown): string | null {
@@ -40,9 +44,14 @@ export function normalizeEmail(raw: unknown): string | null {
   const email = raw.trim().toLowerCase();
   if (email.length < 6 || email.length > 254) return null;
   // One @, a dotted domain, no whitespace, quotes, angle brackets or commas (no header tricks).
-  if (!/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/.test(email))
+  if (
+    !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/.test(
+      email,
+    )
+  )
     return null;
-  if (email.startsWith(".") || email.includes("..") || email.split("@")[0].endsWith(".")) return null;
+  if (email.startsWith(".") || email.includes("..") || email.split("@")[0].endsWith("."))
+    return null;
   return email;
 }
 
@@ -114,7 +123,8 @@ export async function identityFor(sql: Sql, email: string): Promise<Identity> {
     from "user" u where lower(u.email) = ${email}`;
   const row = rows[0];
   if (!row) return { kind: "new" };
-  if (row.verified !== true || row.disabled || row.linked || row.privileged) return { kind: "blocked" };
+  if (row.verified !== true || row.disabled || row.linked || row.privileged)
+    return { kind: "blocked" };
   return { kind: "customer", id: row.id };
 }
 

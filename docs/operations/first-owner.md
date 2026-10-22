@@ -12,6 +12,20 @@ Generate a fresh cryptographically random 32-byte hex nonce; store only its SHA-
 
 For an expired, unconsumed invitation, an independently authorized operator may rotate the hash/expiry and append a distinct immutable audit entry. There is no public resend or self-approval endpoint. Successful activation permanently closes the singleton; normal SQL updates/deletes cannot reopen it.
 
+## Issue the invitation only after the recipient is signed in
+
+An unconsumed invitation makes the public email-code flow refuse that address (`identityFor` in
+`src/lib/email-otp/service.server.ts` treats a pending invitation as blocked, and the UI shows the
+same answer an unknown address gets). An account without a password proves its mailbox with a
+fresh email-code session, so issuing the invitation first locks the recipient out of the step the
+activation needs, and the wasted attempts also burn the per-address hourly send window.
+
+The order is therefore: the recipient signs in with an email code, confirms it, and only then does
+the operator create the ticket and send the link. The recipient must open that link in the SAME
+browser the session is in — a link tapped inside a mail app opens an in-app browser that carries no
+session, and the activation is refused (observed 2026-10-22). If an invitation has to be withdrawn
+unused, delete the unconsumed row and append a distinct immutable audit entry for the withdrawal.
+
 ## Recipient action and security
 
 The recipient opens their time-limited link, then explicitly submits their own password. A new account needs 16–128 characters; an existing account must authenticate with its current password. An existing account that has no password (it signs in with an emailed code) authenticates instead with a live session for exactly the invited, verified email that was created in the last 15 minutes (`sessionProof`, owner decision 2026-10-22); the server decides this from the database, never from the client, and no password is created or replaced. Better Auth owns password hashing, sessions and secure host cookies. The nonce stays in page memory and is removed from browser history; it is never put in local/session storage. Loading/scanning the link alone grants nothing.
