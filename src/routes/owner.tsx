@@ -18,7 +18,11 @@ function OwnerPage() {
   const t = ownerCopy(lang);
   const ready = useHydrated();
   const [token, setToken] = useState("");
-  const [ticket, setTicket] = useState<{ email: string; existing: boolean } | null>(null);
+  const [ticket, setTicket] = useState<{
+    email: string;
+    existing: boolean;
+    hasPassword: boolean;
+  } | null>(null);
   const [state, setState] = useState<"login" | "checking" | "invalid" | "ready">("login");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -44,6 +48,9 @@ function OwnerPage() {
       })
       .catch(() => setState("invalid"));
   }, []);
+  // An existing account that signs in with an emailed code has no password: it proves the
+  // mailbox with a fresh sign-in instead (checked on the server).
+  const sessionMode = Boolean(ticket?.existing && !ticket.hasPassword);
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (!ready || busy) return;
@@ -51,7 +58,11 @@ function OwnerPage() {
     setError(false);
     try {
       if (ticket) {
-        const result = await activateFirstOwner({ data: { token, name: name || "R&L", password } });
+        const result = await activateFirstOwner({
+          data: sessionMode
+            ? { token, name: name || "R&L" }
+            : { token, name: name || "R&L", password },
+        });
         if (!result.activated) throw new Error();
         setToken("");
         setTicket(null);
@@ -98,7 +109,13 @@ function OwnerPage() {
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-5">
             <p className="text-sm text-muted">
-              {ticket?.existing ? t.existing : !ticket ? t.loginHint : t.passwordHint}
+              {sessionMode
+                ? t.sessionHint
+                : ticket?.existing
+                  ? t.existing
+                  : !ticket
+                    ? t.loginHint
+                    : t.passwordHint}
             </p>
             <Field label={t.email}>
               <input
@@ -126,21 +143,28 @@ function OwnerPage() {
                 />
               </Field>
             ) : null}
-            <Field label={t.password} hint={t.passwordHint}>
-              <input
-                className={controlClass}
-                disabled={!ready || busy}
-                type="password"
-                autoComplete={ticket && !ticket.existing ? "new-password" : "current-password"}
-                dir="ltr"
-                required
-                minLength={ticket && !ticket.existing ? 16 : 1}
-                maxLength={128}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Field>
-            {error ? <p role="alert">{t.failed}</p> : null}
+            {sessionMode ? null : (
+              <Field label={t.password} hint={t.passwordHint}>
+                <input
+                  className={controlClass}
+                  disabled={!ready || busy}
+                  type="password"
+                  autoComplete={ticket && !ticket.existing ? "new-password" : "current-password"}
+                  dir="ltr"
+                  required
+                  minLength={ticket && !ticket.existing ? 16 : 1}
+                  maxLength={128}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Field>
+            )}
+            {error ? <p role="alert">{sessionMode ? t.sessionFailed : t.failed}</p> : null}
+            {sessionMode ? (
+              <a className={btnGhost} href={`/account?lang=${lang}`}>
+                {t.signInFirst}
+              </a>
+            ) : null}
             <button type="submit" className={btnPrimary} disabled={!ready || busy}>
               {ticket ? t.activate : t.signIn}
             </button>
