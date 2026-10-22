@@ -129,7 +129,7 @@ export default defineConfig<LayoutProjectUse>({
         // Built worker served locally by wrangler (no Cloudflare credentials, no database).
         // Preserve localhost: inferring the production www host over local
         // HTTP would exercise its HTTPS redirect instead of the test app.
-        command: `npx wrangler dev --config ${LAYOUT_CONFIG} --port ${PORT} --local --host localhost --show-interactive-dev-session=false`,
+        command: `npx wrangler dev --config ${LAYOUT_CONFIG} --port ${PORT} --local --host localhost --show-interactive-dev-session=false 2>&1 | tee /tmp/wrangler-diag.log`,
         url: `http://localhost:${PORT}/`,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
