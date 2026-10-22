@@ -839,33 +839,42 @@ test("marketplace refinement: store cards in a row line up (meta, categories, ac
         els.map((el) => {
           const top = (selector: string) =>
             Math.round(el.querySelector(selector)!.getBoundingClientRect().top);
-          const meta = el.querySelector(".rl-store-meta")!.getBoundingClientRect();
+          const meta = el.querySelector(".rl-store-meta")!;
+          const lines = [...meta.children].map((line) => line.getBoundingClientRect().height);
+          const host = meta.children[1] as HTMLElement;
           return {
             id: el.getAttribute("data-store"),
             row: Math.round(el.getBoundingClientRect().top),
             name: top("h3"),
             meta: top(".rl-store-meta"),
-            metaHeight: meta.height,
+            metaHeight: meta.getBoundingClientRect().height,
+            lines,
+            hostCut: host.scrollWidth > host.clientWidth + 1,
             site: top(".rl-store-site"),
             primary: top(".rl-store-primary"),
           };
         }),
       );
       expect(cards.length, `${width} ${lang}`).toBeGreaterThan(10);
-      const lineHeight = Math.min(...cards.map((card) => card.metaHeight));
+      const lineHeight = Math.min(...cards.flatMap((card) => card.lines));
       const rows = new Map<number, typeof cards>();
       for (const card of cards) rows.set(card.row, [...(rows.get(card.row) ?? []), card]);
       for (const [row, cells] of rows) {
-        for (const key of ["name", "meta", "site", "primary"] as const) {
+        for (const key of ["name", "meta", "metaHeight", "site", "primary"] as const) {
           const values = cells.map((cell) => cell[key]);
           expect(
             Math.max(...values) - Math.min(...values),
             `${width} ${lang} row ${row} ${key}`,
           ).toBeLessThanOrEqual(1);
         }
-        // Country · host is one line in every card.
-        for (const cell of cells)
-          expect(cell.metaHeight, `${cell.id} meta`).toBeLessThan(lineHeight * 1.5);
+        // Country and host: exactly two lines, each a single line, in every card.
+        for (const cell of cells) {
+          expect(cell.lines.length, `${cell.id} meta lines`).toBe(2);
+          for (const line of cell.lines)
+            expect(line, `${cell.id} meta line`).toBeLessThan(lineHeight * 1.5);
+          // The official host is never cut off.
+          expect(cell.hostCut, `${width} ${lang} ${cell.id} host`).toBe(false);
+        }
       }
     }
   }

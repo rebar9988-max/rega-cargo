@@ -447,7 +447,8 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                             className="rl-store-meta"
                             title={`${countryName(store.country)} · ${store.host}`}
                           >
-                            {countryName(store.country)} · <bdi dir="ltr">{store.host}</bdi>
+                            <span>{countryName(store.country)}</span>
+                            <bdi dir="ltr">{store.host}</bdi>
                           </p>
                           <p className="rl-muted rl-store-categories">
                             {store.categories
