@@ -1182,14 +1182,16 @@
 .rl-retailer-rail li {
   flex: none;
 }
+/* Every retailer tile has the same size; the logo inside is sized for equal visual weight
+   (storeLogoSize), so short marks (dm) and long wordmarks (Sephora) read as one set. */
 .rl-retailer {
   display: inline-flex;
   align-items: center;
   gap: var(--rl-space-1);
   min-block-size: var(--rl-control-h);
   justify-content: center;
-  min-inline-size: 5.5rem;
-  padding-inline: var(--rl-space-2);
+  inline-size: 6rem;
+  padding-inline: var(--rl-space-1);
   border: var(--rl-border) solid var(--rl-line);
   border-radius: var(--rl-radius-sm);
   background: var(--rl-logo-paper);
@@ -1201,9 +1203,8 @@
   transition: border-color var(--rl-motion-fast) var(--rl-ease);
 }
 .rl-retailer img {
-  inline-size: auto;
-  max-inline-size: 5rem;
-  block-size: 1.5rem;
+  max-inline-size: 100%;
+  block-size: auto;
   object-fit: contain;
 }
 .rl-retailer:hover {
@@ -1270,12 +1271,27 @@
   align-items: center;
   gap: var(--rl-space-1);
 }
+/* Country and host: always two single lines (ellipsis only if a host outgrows a narrow card),
+   so names, categories and actions sit at the same height in every card of a row. */
 .rl-store-meta {
+  display: grid;
+  /* Lines align by the card's direction, not by the LTR host's own. */
+  justify-items: start;
+  min-inline-size: 0;
   color: var(--rl-muted);
   font-size: var(--text-xs);
 }
-/* Long category lists stay at two lines so store cards in a row line up. */
+.rl-store-meta > * {
+  max-inline-size: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Long category lists stay at two lines and short ones reserve two, so store cards in a row
+   line up. */
 .rl-store-categories {
+  min-block-size: 3.3em;
+  min-block-size: 2lh;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -1402,6 +1418,7 @@
 }
 .rl-store-logo {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
   min-inline-size: 0;
   flex: 1;
@@ -1414,9 +1431,8 @@
 }
 /* Small official logos at their own proportions: contained, never stretched or cropped. */
 .rl-store-logo img {
-  inline-size: auto;
   max-inline-size: 100%;
-  block-size: 100%;
+  block-size: auto;
   max-block-size: 1.75rem;
   object-fit: contain;
 }
@@ -1446,31 +1462,36 @@
 .rl-store-card > .rl-store-site + .rl-store-primary {
   margin-block-start: 0;
 }
+/* Quiet links under the two buttons: one hairline, then both links in the same style and
+   alignment ("I bought it myself" and the store notes). */
 .rl-store-links {
   display: flex;
   justify-content: center;
+  border-block-start: var(--rl-border) solid var(--rl-line);
 }
-.rl-store-links .rl-text-action {
-  display: inline-flex;
+.rl-store-links .rl-text-action,
+.rl-store-card summary {
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--rl-space-0);
   min-block-size: var(--rl-control-h);
   color: var(--rl-ink);
   font-weight: var(--rl-weight-medium);
-}
-.rl-store-links .rl-text-action:hover {
-  color: var(--rl-accent);
   text-decoration: underline;
+  text-underline-offset: var(--rl-underline-offset);
+  text-align: center;
+}
+.rl-store-links .rl-text-action:hover,
+.rl-store-card summary:hover {
+  color: var(--rl-accent);
 }
 .rl-store-card details {
   color: var(--rl-muted);
+  margin-block-start: calc(-1 * var(--rl-space-1));
 }
 .rl-store-card summary {
-  min-block-size: var(--rl-control-h);
-  display: flex;
-  align-items: center;
   cursor: pointer;
-  text-decoration: underline;
 }
 .rl-store-card details p {
   margin-block-end: var(--rl-space-1);
@@ -1503,6 +1524,74 @@
 }
 .rl-awaiting {
   text-align: end;
+}
+/* Request form: the chosen store at a glance (directory logo tile, name, host). */
+.rl-request-store {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-2);
+  min-inline-size: 0;
+}
+.rl-request-store .rl-store-logo {
+  flex: none;
+  inline-size: 6.5rem;
+}
+.rl-request-store p {
+  display: grid;
+  justify-items: start;
+  min-inline-size: 0;
+}
+.rl-request-store-name {
+  font-weight: var(--rl-weight-semibold);
+}
+.rl-request-store-host {
+  color: var(--rl-muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+/* Buy for me / I bought it myself: two equal halves, never two uneven wrapped pills. */
+.rl-intent-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Equal heights even when only one label wraps (narrow phones). */
+  align-items: stretch;
+  gap: var(--rl-space-1);
+}
+.rl-intent-switch .rl-chip {
+  padding-block: var(--rl-space-0);
+  padding-inline: var(--rl-space-1);
+  line-height: var(--rl-leading-heading);
+  text-align: center;
+}
+/* Sent: status with its icon, the reference, then two actions side by side. */
+.rl-request-sent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rl-space-2);
+}
+.rl-request-sent-title {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+  font-size: var(--text-2xl);
+  font-weight: var(--rl-weight-semibold);
+}
+.rl-request-sent-title .rl-icon {
+  color: var(--rl-success);
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+}
+.rl-request-sent-ref {
+  font-size: var(--text-sm);
+  font-weight: var(--rl-weight-semibold);
+}
+.rl-request-sent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rl-space-1);
+}
+.rl-request-sent-actions .rl-button {
+  flex: 1 1 10rem;
 }
 @media (hover: hover) and (min-width: 64rem) {
   .rl-product-quick {

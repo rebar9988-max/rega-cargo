@@ -9,7 +9,9 @@ import { PageHeader, Shell } from "@/components/shell";
 import { DESTS, getDest, placeName } from "@/lib/corridor";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
-import { storeById, goodById } from "@/lib/stores";
+import { CircleCheck } from "lucide-react";
+import { Icon } from "@/components/ui";
+import { storeById, goodById, storeBrand, storeLogo, storeLogoSize, CARD_LOGO } from "@/lib/stores";
 import {
   checkProductUrl,
   normalizePhone,
@@ -214,21 +216,24 @@ function RequestPage() {
       <PageHeader kicker={t.requestKicker} title={j.bring} lede={j.bringBody} />
       <div className="page rl-form-layout">
         {saved ? (
-          <div className="rl-card">
-            <h2 className="text-2xl font-semibold">{t.sentTitle}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">{j.received}</p>
-            <p role="status" className="mt-4 font-sans text-sm font-semibold">
+          // One clear confirmation: status, reference, then the next step and the way back.
+          <div className="rl-card rl-request-sent">
+            <h2 className="rl-request-sent-title">
+              <Icon as={CircleCheck} />
+              {t.sentTitle}
+            </h2>
+            <p className="text-sm leading-relaxed text-muted">{j.received}</p>
+            <p role="status" className="rl-request-sent-ref">
               <bdi dir="ltr">{saved}</bdi>
             </p>
-            <Link to="/track" search={{ id: saved }} className="rl-button" data-variant="secondary">
-              {global.nav.track}
-            </Link>
-            <Link
-              to="/stores"
-              className="mt-6 inline-flex h-12 items-center rounded-full border border-line px-5 text-sm"
-            >
-              {t.back}
-            </Link>
+            <div className="rl-request-sent-actions">
+              <Link to="/track" search={{ id: saved }} className="rl-button" data-variant="primary">
+                {global.nav.track}
+              </Link>
+              <Link to="/stores" className="rl-button" data-variant="secondary">
+                {t.back}
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col gap-6">
@@ -285,11 +290,28 @@ function RequestPage() {
                 </div>
               ) : null}
               {store ? (
-                <p className="font-sans text-sm text-muted">
-                  {store.name} · <bdi dir="ltr">{store.host}</bdi>
-                </p>
+                // The chosen store at a glance: its official logo (same tile as the directory),
+                // name and host.
+                <div className="rl-request-store">
+                  <span className="rl-store-logo">
+                    <img
+                      src={storeLogo(storeBrand(store))}
+                      alt=""
+                      {...storeLogoSize(storeBrand(store), CARD_LOGO)}
+                      decoding="async"
+                    />
+                  </span>
+                  <p>
+                    <bdi dir="ltr" className="rl-request-store-name">
+                      {store.name}
+                    </bdi>
+                    <bdi dir="ltr" className="rl-request-store-host">
+                      {store.host}
+                    </bdi>
+                  </p>
+                </div>
               ) : null}
-              <nav className="rl-row" aria-label={j.bring}>
+              <nav className="rl-row rl-intent-switch" aria-label={j.bring}>
                 <Link
                   to="/stores/request"
                   search={{ store: storeId, item, intent: "buy" }}

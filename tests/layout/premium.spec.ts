@@ -784,3 +784,153 @@ test("european stores: Bring For Me opens for a country storefront with its own 
     await expect(page.locator("main")).toContainText(host);
   }
 });
+
+test("marketplace refinement: one tile size and equal visual weight for every retailer logo", async ({
+  page,
+}) => {
+  for (const width of [360, 390, 820, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const lang of ["ckb", "ar", "en"]) {
+      await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+      const tiles = await page.locator(".rl-retailer").evaluateAll((els) =>
+        els.map((el) => {
+          const tile = el.getBoundingClientRect();
+          const img = el.querySelector("img")!;
+          const logo = img.getBoundingClientRect();
+          return {
+            id: el.getAttribute("data-retailer"),
+            w: tile.width,
+            h: tile.height,
+            lw: logo.width,
+            lh: logo.height,
+            fit: getComputedStyle(img).objectFit,
+            inside:
+              logo.left >= tile.left && logo.right <= tile.right && logo.top >= tile.top - 0.5,
+          };
+        }),
+      );
+      expect(tiles.length, `${width} ${lang}`).toBeGreaterThan(5);
+      const widths = tiles.map((tile) => tile.w);
+      expect(
+        Math.max(...widths) - Math.min(...widths),
+        `${width} ${lang} tile widths`,
+      ).toBeLessThan(1);
+      for (const tile of tiles) {
+        expect(tile.h, `${tile.id} target`).toBeGreaterThanOrEqual(44);
+        expect(tile.lh, `${tile.id} logo height`).toBeLessThanOrEqual(24.5);
+        expect(tile.fit).toBe("contain");
+        expect(tile.inside, `${tile.id} logo inside its tile`).toBe(true);
+        // Unclamped logos share one area (900 px², rounding and clamping aside).
+        if (tile.lh < 24 && tile.lw < 76)
+          expect(Math.abs(tile.lw * tile.lh - 900), `${tile.id} area`).toBeLessThan(90);
+      }
+    }
+  }
+});
+
+test("marketplace refinement: store cards in a row line up (meta, categories, actions)", async ({
+  page,
+}) => {
+  for (const width of [360, 820, 1280, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const lang of ["ckb", "ar", "en"]) {
+      await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+      const cards = await page.locator(".rl-store-card").evaluateAll((els) =>
+        els.map((el) => {
+          const top = (selector: string) =>
+            Math.round(el.querySelector(selector)!.getBoundingClientRect().top);
+          const meta = el.querySelector(".rl-store-meta")!;
+          const lines = [...meta.children].map((line) => line.getBoundingClientRect().height);
+          const host = meta.children[1] as HTMLElement;
+          // Both lines start at the same edge (the card's own direction decides which).
+          const rtl = getComputedStyle(meta).direction === "rtl";
+          const edges = [...meta.children].map((line) => {
+            const r = line.getBoundingClientRect();
+            return rtl ? r.right : r.left;
+          });
+          return {
+            id: el.getAttribute("data-store"),
+            row: Math.round(el.getBoundingClientRect().top),
+            name: top("h3"),
+            meta: top(".rl-store-meta"),
+            metaHeight: meta.getBoundingClientRect().height,
+            lines,
+            hostCut: host.scrollWidth > host.clientWidth + 1,
+            edgeGap: Math.abs(edges[0] - edges[1]),
+            site: top(".rl-store-site"),
+            primary: top(".rl-store-primary"),
+          };
+        }),
+      );
+      expect(cards.length, `${width} ${lang}`).toBeGreaterThan(10);
+      const lineHeight = Math.min(...cards.flatMap((card) => card.lines));
+      const rows = new Map<number, typeof cards>();
+      for (const card of cards) rows.set(card.row, [...(rows.get(card.row) ?? []), card]);
+      for (const [row, cells] of rows) {
+        for (const key of ["name", "meta", "metaHeight", "site", "primary"] as const) {
+          const values = cells.map((cell) => cell[key]);
+          expect(
+            Math.max(...values) - Math.min(...values),
+            `${width} ${lang} row ${row} ${key}`,
+          ).toBeLessThanOrEqual(1);
+        }
+        // Country and host: exactly two lines, each a single line, in every card.
+        for (const cell of cells) {
+          expect(cell.lines.length, `${cell.id} meta lines`).toBe(2);
+          for (const line of cell.lines)
+            expect(line, `${cell.id} meta line`).toBeLessThan(lineHeight * 1.5);
+          // The official host is never cut off.
+          expect(cell.hostCut, `${width} ${lang} ${cell.id} host`).toBe(false);
+          expect(cell.edgeGap, `${width} ${lang} ${cell.id} meta edge`).toBeLessThanOrEqual(1);
+        }
+      }
+    }
+  }
+});
+
+test("marketplace refinement: request page shows the store logo and an even buy/ship switch", async ({
+  page,
+}) => {
+  for (const width of [320, 390, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const lang of ["ckb", "ar", "en"]) {
+      for (const [store, host, logo] of [
+        ["zalando", "zalando.de", "zalando"],
+        ["sephora-fr", "sephora.fr", "sephora"],
+      ]) {
+        await page.goto(`/stores/request?store=${store}&intent=buy&lang=${lang}`, {
+          waitUntil: "networkidle",
+        });
+        const row = page.locator(".rl-request-store");
+        await expect(row).toContainText(host);
+        const img = row.locator("img");
+        await expect(img).toHaveAttribute("src", `/store-logos/${logo}.svg`);
+        const box = (await img.boundingBox())!;
+        expect(box.height, `${width} ${lang} ${store}`).toBeLessThanOrEqual(28.5);
+        expect(box.width).toBeGreaterThan(0);
+        const edges = await row.locator("p > bdi").evaluateAll((els) =>
+          els.map((el) => {
+            const r = el.getBoundingClientRect();
+            return getComputedStyle(el.parentElement!).direction === "rtl" ? r.right : r.left;
+          }),
+        );
+        expect(
+          Math.abs(edges[0] - edges[1]),
+          `${width} ${lang} store row edge`,
+        ).toBeLessThanOrEqual(1);
+        const halves = page.locator(".rl-intent-switch .rl-chip");
+        await expect(halves).toHaveCount(2);
+        const [a, b] = [(await halves.nth(0).boundingBox())!, (await halves.nth(1).boundingBox())!];
+        expect(Math.abs(a.width - b.width), `${width} ${lang} equal halves`).toBeLessThan(1);
+        expect(Math.abs(a.y - b.y), `${width} ${lang} one row`).toBeLessThan(1);
+        expect(Math.abs(a.height - b.height), `${width} ${lang} equal heights`).toBeLessThan(1);
+        expect(Math.min(a.height, b.height)).toBeGreaterThanOrEqual(44);
+        await expect(halves.nth(0)).toHaveAttribute("aria-current", "page");
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - innerWidth,
+        );
+        expect(overflow, `${width} ${lang} overflow`).toBe(0);
+      }
+    }
+  }
+});
