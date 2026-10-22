@@ -98,8 +98,20 @@ async function bump(sql: Sql, key: string, limit: number, window: "hour" | "day"
   return rows[0]?.allowed !== true;
 }
 
-async function sweep(sql: Sql) {
-  await sql`delete from email_codes where expires_at < now() - interval '1 day'`;
+/**
+ * Which sign-in a code belongs to. Customer codes and administrative codes live in
+ * separate tables with separate rate-limit keys, so traffic aimed at one cannot occupy
+ * the other's single row per address or spend its budget.
+ */
+export type CodeScope = "customer" | "admin";
+const TABLE: Record<CodeScope, string> = {
+  customer: "email_codes",
+  admin: "admin_codes",
+};
+const KEY: Record<CodeScope, string> = { customer: "email", admin: "admin" };
+
+async function sweep(sql: Sql, scope: CodeScope) {
+  await sql.query(`delete from ${TABLE[scope]} where expires_at < now() - interval '1 day'`);
 }
 
 /** Which account (if any) a verified code for this address may open. */
@@ -128,47 +140,76 @@ export async function identityFor(sql: Sql, email: string): Promise<Identity> {
   return { kind: "customer", id: row.id };
 }
 
+/**
+ * Which account an administrative code may open: an approved, verified, enabled holder of
+ * an administrative role, and never a plain customer. A pending owner invitation still
+ * blocks the address, so an invitation in flight cannot be paired with this entrance.
+ */
+export async function adminIdentityFor(sql: Sql, email: string): Promise<Identity> {
+  const rows = await sql<{ id: string }>`
+    select u.id from "user" u
+    where lower(u.email) = ${email}
+      and u."emailVerified" = true
+      and u.disabled_at is null
+      and exists(select 1 from user_roles r where r.user_id = u.id
+        and r.role in ('admin', 'super_admin') and r.status = 'approved')
+      and not exists(select 1 from owner_bootstrap b
+        where b.approved_email = ${email} and b.consumed_at is null)`;
+  const row = rows[0];
+  return row ? { kind: "customer", id: row.id } : { kind: "blocked" };
+}
+
 export async function requestEmailCode(
   sql: Sql,
-  input: { email: unknown; ip: string; secret: string; deliver: Deliver },
+  input: { email: unknown; ip: string; secret: string; deliver: Deliver; scope?: CodeScope },
 ): Promise<SendResult> {
+  const scope = input.scope ?? "customer";
+  const table = TABLE[scope];
+  const key = KEY[scope];
   const email = normalizeEmail(input.email);
   if (!email) return { error: "email" };
-  await sweep(sql);
+  await sweep(sql, scope);
   // Cooldown first, so a too-early resend does not spend the hourly budget.
-  const cool = await sql<{ busy: boolean }>`
-    select (sent_at > now() - make_interval(secs => ${RESEND_COOLDOWN_SECONDS})
-      or attempts >= ${MAX_ATTEMPTS}) as busy
-    from email_codes where email = ${email} and expires_at > now()`;
+  const cool = await sql.query<{ busy: boolean }>(
+    `select (sent_at > now() - make_interval(secs => $2)
+      or attempts >= $3) as busy
+    from ${table} where email = $1 and expires_at > now()`,
+    [email, RESEND_COOLDOWN_SECONDS, MAX_ATTEMPTS],
+  );
   if (cool[0]?.busy === true) return { error: "rate" };
   const day = new Date().toISOString().slice(0, 10);
   const over =
-    (await bump(sql, `email:send:hour:${email}`, EMAIL_HOUR_LIMIT, "hour")) ||
-    (await bump(sql, `ip:email-send:hour:${input.ip}`, IP_SEND_HOUR_LIMIT, "hour")) ||
-    (await bump(sql, `email:send:day:${email}:${day}`, EMAIL_DAY_LIMIT, "day"));
+    (await bump(sql, `${key}:send:hour:${email}`, EMAIL_HOUR_LIMIT, "hour")) ||
+    (await bump(sql, `ip:${key}-send:hour:${input.ip}`, IP_SEND_HOUR_LIMIT, "hour")) ||
+    (await bump(sql, `${key}:send:day:${email}:${day}`, EMAIL_DAY_LIMIT, "day"));
   if (over) return { error: "rate" };
 
   const code = await randomCode();
   const hash = await emailCodeHash(input.secret, email, code);
   // Reserve atomically BEFORE delivery: concurrent resends cannot evade the cooldown,
   // and a resend inside a live window keeps that window's guess count.
-  const reserved = await sql`
-    insert into email_codes (email, code_hash, state, expires_at, attempts, sent_at)
-    values (${email}, ${hash}, 'pending', now() + make_interval(mins => ${CODE_TTL_MINUTES}), 0, now())
+  const reserved = await sql.query(
+    `insert into ${table} (email, code_hash, state, expires_at, attempts, sent_at)
+    values ($1, $2, 'pending', now() + make_interval(mins => $3), 0, now())
     on conflict (email) do update set
       code_hash = excluded.code_hash,
       state = 'pending',
       expires_at = excluded.expires_at,
-      attempts = case when email_codes.expires_at > now() then email_codes.attempts else 0 end,
+      attempts = case when ${table}.expires_at > now() then ${table}.attempts else 0 end,
       sent_at = excluded.sent_at
-    where email_codes.expires_at <= now()
-       or (email_codes.sent_at <= now() - make_interval(secs => ${RESEND_COOLDOWN_SECONDS})
-           and email_codes.attempts < ${MAX_ATTEMPTS})
-    returning email`;
+    where ${table}.expires_at <= now()
+       or (${table}.sent_at <= now() - make_interval(secs => $4)
+           and ${table}.attempts < $5)
+    returning email`,
+    [email, hash, CODE_TTL_MINUTES, RESEND_COOLDOWN_SECONDS, MAX_ATTEMPTS],
+  );
   if (!reserved[0]) return { error: "rate" };
 
-  // Privileged or closed identities get the same answer, but no mail and no usable code.
-  if ((await identityFor(sql, email)).kind === "blocked") return { sent: true };
+  // An address this entrance does not serve gets the same answer, but no mail and no
+  // usable code, so neither side reveals who holds an account or a role.
+  const who =
+    scope === "admin" ? await adminIdentityFor(sql, email) : await identityFor(sql, email);
+  if (who.kind === "blocked") return { sent: true };
 
   let delivered = false;
   try {
@@ -178,31 +219,41 @@ export async function requestEmailCode(
   }
   if (!delivered) return { error: "unavailable" };
   // Never activate a newer reservation.
-  const active = await sql`update email_codes set state = 'active'
-    where email = ${email} and code_hash = ${hash} and state = 'pending' and expires_at > now()
-    returning email`;
+  const active = await sql.query(
+    `update ${table} set state = 'active'
+    where email = $1 and code_hash = $2 and state = 'pending' and expires_at > now()
+    returning email`,
+    [email, hash],
+  );
   return active[0] ? { sent: true } : { error: "unavailable" };
 }
 
 export async function verifyEmailCode(
   sql: Sql,
-  input: { email: unknown; code: unknown; ip: string; secret: string },
+  input: { email: unknown; code: unknown; ip: string; secret: string; scope?: CodeScope },
 ): Promise<VerifyResult> {
+  const scope = input.scope ?? "customer";
+  const table = TABLE[scope];
+  const key = KEY[scope];
   const email = normalizeEmail(input.email);
   const code = cleanCode(input.code);
   if (!email || !code) return { error: "code" };
-  if (await bump(sql, `ip:email-verify:hour:${input.ip}`, IP_VERIFY_HOUR_LIMIT, "hour"))
+  if (await bump(sql, `ip:${key}-verify:hour:${input.ip}`, IP_VERIFY_HOUR_LIMIT, "hour"))
     return { error: "rate" };
   // Spend one guess atomically; the attempts < 5 guard holds under concurrency.
-  const rows = await sql<{ code_hash: string }>`
-    update email_codes set attempts = attempts + 1
-    where email = ${email} and expires_at > now() and attempts < ${MAX_ATTEMPTS} and state = 'active'
-    returning code_hash`;
+  const rows = await sql.query<{ code_hash: string }>(
+    `update ${table} set attempts = attempts + 1
+    where email = $1 and expires_at > now() and attempts < $2 and state = 'active'
+    returning code_hash`,
+    [email, MAX_ATTEMPTS],
+  );
   const row = rows[0];
   if (!row) {
-    const old = await sql<{ expired: boolean; locked: boolean }>`
-      select expires_at <= now() as expired, attempts >= ${MAX_ATTEMPTS} as locked
-      from email_codes where email = ${email} and state = 'active'`;
+    const old = await sql.query<{ expired: boolean; locked: boolean }>(
+      `select expires_at <= now() as expired, attempts >= $2 as locked
+      from ${table} where email = $1 and state = 'active'`,
+      [email, MAX_ATTEMPTS],
+    );
     if (old[0]?.expired) return { error: "expired" };
     if (old[0]?.locked) return { error: "rate" };
     return { error: "code" };
@@ -210,10 +261,25 @@ export async function verifyEmailCode(
   const actual = await emailCodeHash(input.secret, email, code);
   if (!codesMatch(actual, row.code_hash)) return { error: "code" };
   // Single winner; an old verification cannot consume a concurrently resent code.
-  const consumed = await sql`delete from email_codes
-    where email = ${email} and code_hash = ${row.code_hash} and state = 'active' and expires_at > now()
-    returning email`;
+  const consumed = await sql.query(
+    `delete from ${table}
+    where email = $1 and code_hash = $2 and state = 'active' and expires_at > now()
+    returning email`,
+    [email, row.code_hash],
+  );
   return consumed.length === 1 ? { ok: true, email } : { error: "code" };
+}
+
+/**
+ * After a verified administrative code: the existing privileged account, and nothing else.
+ * This entrance never creates a user and never grants a role.
+ */
+export async function adminAccount(
+  sql: Sql,
+  email: string,
+): Promise<{ id: string } | { error: "code" }> {
+  const who = await adminIdentityFor(sql, email);
+  return who.kind === "customer" ? { id: who.id } : { error: "code" };
 }
 
 function displayName(raw: unknown, email: string) {

@@ -8,9 +8,16 @@ type Signed = { name: string; email: string };
 type ErrorKey = keyof EmailOtpCopy["errors"];
 
 /** Same-origin POST to the email-code endpoints; codes are generated and checked only on the server. */
-async function post(path: "send" | "verify", body: Record<string, string>) {
+/** Which entrance: the customer one, or the administrative one (same mechanics, own table). */
+export type SignInEndpoint = "rl-email" | "rl-admin";
+
+async function post(
+  endpoint: SignInEndpoint,
+  path: "send" | "verify",
+  body: Record<string, string>,
+) {
   try {
-    const response = await fetch(`/api/auth/rl-email/${path}`, {
+    const response = await fetch(`/api/auth/${endpoint}/${path}`, {
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
@@ -33,7 +40,15 @@ async function post(path: "send" | "verify", body: Record<string, string>) {
 /** Seconds a resend must wait. Shared with the server, which stays authoritative. */
 const COOLDOWN = RESEND_COOLDOWN_SECONDS;
 
-export function EmailSignIn({ onUser }: { onUser: (user: Signed) => void }) {
+export function EmailSignIn({
+  onUser,
+  endpoint = "rl-email",
+}: {
+  onUser: (user: Signed) => void;
+  /** The administrative entrance never creates an account, so it asks for no name. */
+  endpoint?: SignInEndpoint;
+}) {
+  const asksForName = endpoint === "rl-email";
   const { lang } = useI18n();
   const t = emailOtpCopy(lang);
   const [email, setEmail] = useState("");
@@ -58,7 +73,7 @@ export function EmailSignIn({ onUser }: { onUser: (user: Signed) => void }) {
   async function send(address: string) {
     setBusy(true);
     setError(null);
-    const result = await post("send", { email: address, lang });
+    const result = await post(endpoint, "send", { email: address, lang });
     setBusy(false);
     if ("sent" in result && result.sent) {
       setSentTo(address.trim().toLowerCase());
@@ -74,7 +89,11 @@ export function EmailSignIn({ onUser }: { onUser: (user: Signed) => void }) {
     if (!sentTo) return;
     setBusy(true);
     setError(null);
-    const result = await post("verify", { email: sentTo, code, name });
+    const result = await post(
+      endpoint,
+      "verify",
+      asksForName ? { email: sentTo, code, name } : { email: sentTo, code },
+    );
     setBusy(false);
     if ("ok" in result && result.ok && result.email) {
       onUser({ name: result.name ?? "", email: result.email });
@@ -155,15 +174,17 @@ export function EmailSignIn({ onUser }: { onUser: (user: Signed) => void }) {
         aria-describedby={error ? errorId : undefined}
         className={`${controlClass} text-center font-sans text-2xl tracking-[0.4em]`}
       />
-      <input
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        autoComplete="name"
-        maxLength={40}
-        placeholder={t.name}
-        aria-label={t.name}
-        className={controlClass}
-      />
+      {asksForName ? (
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          autoComplete="name"
+          maxLength={40}
+          placeholder={t.name}
+          aria-label={t.name}
+          className={controlClass}
+        />
+      ) : null}
       <p className="text-xs text-muted">{t.expiry}</p>
       {message}
       <button type="submit" disabled={busy || code.length !== 6} className={`${btnPrimary} w-full`}>

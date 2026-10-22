@@ -20,8 +20,8 @@ export function ownerAuthRequestAllowed(request: Request): boolean {
       "/api/auth/change-password",
       "/api/auth/rl-email/send",
       "/api/auth/rl-email/verify",
-    ].includes(
-      url.pathname,
-    )
+      "/api/auth/rl-admin/send",
+      "/api/auth/rl-admin/verify",
+    ].includes(url.pathname)
   );
 }
