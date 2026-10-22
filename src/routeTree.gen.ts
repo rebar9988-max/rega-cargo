@@ -19,6 +19,7 @@ import { Route as CustomsRouteImport } from './routes/customs'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as MoveRouteImport } from './routes/move'
+import { Route as DrRouteImport } from './routes/dr'
 import { Route as OwnerRouteImport } from './routes/owner'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProhibitedItemsRouteImport } from './routes/prohibited-items'
@@ -84,6 +85,11 @@ const MarketRoute = MarketRouteImport.update({
 const MoveRoute = MoveRouteImport.update({
   id: '/move',
   path: '/move',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrRoute = DrRouteImport.update({
+  id: '/dr',
+  path: '/dr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OwnerRoute = OwnerRouteImport.update({
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/impressum': typeof ImpressumRoute
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
+  '/dr': typeof DrRoute
   '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/customs': typeof CustomsRoute
   '/impressum': typeof ImpressumRoute
   '/move': typeof MoveRoute
+  '/dr': typeof DrRoute
   '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
@@ -232,6 +240,7 @@ export interface FileRoutesById {
   '/impressum': typeof ImpressumRoute
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
+  '/dr': typeof DrRoute
   '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
@@ -262,6 +271,7 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/market'
     | '/move'
+    | '/dr'
     | '/owner'
     | '/privacy'
     | '/prohibited-items'
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/customs'
     | '/impressum'
     | '/move'
+    | '/dr'
     | '/owner'
     | '/privacy'
     | '/prohibited-items'
@@ -315,6 +326,7 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/market'
     | '/move'
+    | '/dr'
     | '/owner'
     | '/privacy'
     | '/prohibited-items'
@@ -344,6 +356,7 @@ export interface RootRouteChildren {
   ImpressumRoute: typeof ImpressumRoute
   MarketRoute: typeof MarketRouteWithChildren
   MoveRoute: typeof MoveRoute
+  DrRoute: typeof DrRoute
   OwnerRoute: typeof OwnerRoute
   PrivacyRoute: typeof PrivacyRoute
   ProhibitedItemsRoute: typeof ProhibitedItemsRoute
@@ -425,6 +438,13 @@ declare module '@tanstack/react-router' {
       path: '/move'
       fullPath: '/move'
       preLoaderRoute: typeof MoveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dr': {
+      id: '/dr'
+      path: '/dr'
+      fullPath: '/dr'
+      preLoaderRoute: typeof DrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/owner': {
@@ -594,6 +614,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImpressumRoute: ImpressumRoute,
   MarketRoute: MarketRouteWithChildren,
   MoveRoute: MoveRoute,
+  DrRoute: DrRoute,
   OwnerRoute: OwnerRoute,
   PrivacyRoute: PrivacyRoute,
   ProhibitedItemsRoute: ProhibitedItemsRoute,
