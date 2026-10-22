@@ -1,5 +1,9 @@
 # CI/CD and deployments
 
+## 2026-10-22 PR #150 European stores directory — merged `d26efeb`, deployed
+
+Squash-merged after the full hosted gate on head `a6dc806` (run 39821232416: scope, verify, layout lock 720/16 skipped/0 failed, Workers Builds). `main` run 39823755324 all green. Cloudflare Workers Build `a5e35c83-a0e8-4110-991c-1acb74aeb90c` succeeded; live `/stores` serves the new directory (ckb/ar/en, mobile/desktop) and `/stores/request?store=zalando-it` shows `zalando.it`. Active version ID not readable by the agent (no deployments API). Rollback pointer: previous `main` `53d863c`. [Evidence](../verification/european-stores-20261022.md).
+
 ## 2026-10-18 PR #118 merged, production build FAILED (not deployed)
 
 [PR #118](https://github.com/rebar9988-max/rega-cargo/pull/118) (weight/size digit input) merged as `675c644` on the owner's chat instruction, on the local gate (decisions.md 2026-10-18). The existing Cloudflare Workers Build `be61d4c3-e649-457a-a714-f772f9936c79` for that commit finished with **failure** (check run 117625164795, started and completed 08:10:18 UTC; GitHub shows no log or annotation). Production was not changed by it: live `/quote` still rejects Arabic-Indic digits and `main`'s previous release `dc5bec0` (Build `a3ec9012`, Version `1bf425b0-b566-4c9f-a47e-c9062bb10e8a`) stays what the last successful build produced. Reproduction: a fresh clone of `675c644` passes `npm ci`, `npm run build` (empty DATABASE_URL, `WORKERS_CI_BRANCH=main`), `npm run release:check` and `wrangler deploy --dry-run`. Read-only check of the production `cargo` database: `_migrations` is applied through `0016` and the repo has no newer migration, so the migration step is a no-op. Cause therefore unknown from here (Cloudflare build log is not readable by the agent). Owner action if the next build also fails: open the build in the Cloudflare dashboard (Workers & Pages > rega-cargo > Builds > `be61d4c3`) and read the failing step.

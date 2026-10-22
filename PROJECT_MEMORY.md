@@ -20,9 +20,9 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Never mix between the projects: code, database connections/migrations, Cloudflare Workers/bindings, environments, variables/secrets, branches/commits/PRs, CI/CD and run IDs, authentication, domains/routing, project memory/checkpoints, design/branding/assets.
 - Status 2026-10-22: persisted on branch `claude/p0-project-isolation-guard-20261022` (PR, not yet merged; no application, UI, dependency, secret, database or Cloudflare change). Local gate run: see [progress.md](docs/project-memory/progress.md). **Next safe step:** confirm the hosted gate on the PR, merge normally, then run `npm run guard:identity` once from a clean `main` checkout and record it.
 
-## Current state — European stores directory, 2026-10-22
+## Current state — European stores directory released, 2026-10-22
 
-Branch `claude/european-stores-directory-20261022`: `/stores` refined per the owner's Marketplace brief (countries DE/CH/IT/FR/GB, retailer rail, active filters, compact cards, official-site handoff with a return card). 19 verified country storefronts; Bring For Me enabled for all five countries via `BRING_FOR_ME_STORES` (owner instruction); `STORES` (search, R&L AI) unchanged. [Report](docs/verification/european-stores-20261022.md). **Next safe step:** see the report's release section.
+Branch `claude/european-stores-directory-20261022`: `/stores` refined per the owner's Marketplace brief (countries DE/CH/IT/FR/GB, retailer rail, active filters, compact cards, official-site handoff with a return card). 19 verified country storefronts; Bring For Me enabled for all five countries via `BRING_FOR_ME_STORES` (owner instruction); `STORES` (search, R&L AI) unchanged. [Report](docs/verification/european-stores-20261022.md). **Released:** PR #150 merged `d26efeb`; gate green on PR head and `main`; Workers Build `a5e35c83` succeeded; live `/stores` verified in ckb/ar/en on mobile/desktop. **Next safe step:** native-speaker review of the new ckb/ku/ar/fa/tr directory strings (TODO translate-review); active version ID needs Cloudflare dashboard access.
 
 ## Current state — Bring For Me Phase 1 on a Draft PR, 2026-10-21
 
