@@ -169,6 +169,9 @@ Old tests compared changing framebuffer values but missed absolute composited pr
 Existing email/password Better Auth was disabled, its availability predicate required missing federation credentials, native schema/HTTP routes were absent, and role approval only recognized phone identities. Invitation-only native activation, fresh verified identity checks and closed auth routes address these responsible layers. No existing user/password is overwritten and no public promotion exists. Final release and actual owner email/password activation remain pending. [Evidence](../verification/first-owner-20261019.md).
 
 
+## 2026-10-19 Owner invitation opened in an existing tab
+Public post-release verification reproduced a mount-only invitation reader: a same-document hash navigation leaves the link unprocessed and uncleared. Owner-only hash/popstate handling, previous-credential clearing and stale-response protection are prepared with a focused browser regression. Real invitation remains held until final checks and production verification pass. [Evidence](../verification/first-owner-20261019.md).
+
 2026-10-19 verified mobile outcome: Mobile repair verified publicly: explicit premultiplied transparency removes hidden RGB, original texture colours are retained, startup no longer waits for unrelated load, and slow frames adapt instead of permanently freezing. Thirty-two public cases pass without retry; WebKit retina foreground PNG delta is exactly zero. Native hardware remains unavailable. Combined CI also retains two unchanged owner-denial cases returning fail-closed 500 instead of 403 initially, then passing their configured retry; no privilege grant, no test suppression or owner/API change in this patch. [Evidence](../verification/hero-silk-mobile-20261019.md).
 
 ## 2026-10-19 — Bottom navigation missing on the homepage

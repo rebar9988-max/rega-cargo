@@ -65,3 +65,17 @@ test("owner credentials stay disabled until hydration and retain typed values", 
   await expect(email).toHaveValue("owner@example.test");
   await expect(page.getByRole("button", { name: t.signIn, exact: true })).toBeEnabled();
 });
+
+test("an invitation opened in the current owner tab is inspected and scrubbed", async ({ page }) => {
+  const t = ownerCopy("en");
+  await page.goto("/owner?lang=en", { waitUntil: "networkidle" });
+  await expect(page.getByLabel(t.email)).toBeEnabled();
+  await page.getByLabel(t.email).fill("owner@example.test");
+  await page.getByLabel(t.password).fill("Unsaved input must be discarded");
+  await page.goto(`/owner?lang=en#invite=${"0".repeat(64)}`, { waitUntil: "networkidle" });
+  await expect(page.getByRole("alert")).toHaveText(t.invalid);
+  expect(new URL(page.url()).hash).toBe("");
+  await expect(page.getByRole("button", { name: t.activate })).toHaveCount(0);
+  expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage })))
+    .not.toContain("Unsaved input must be discarded");
+});

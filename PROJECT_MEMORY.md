@@ -19,7 +19,7 @@ Gated pages offered only phone sign-in, which is closed (I-3), so nobody could s
 
 ## Owner setup continuation — 2026-10-19
 
-First legitimate SUPER_ADMIN setup is in progress, with no production grant or email-verification claim. Unpublished invitation-only work was reconciled with current main; independent GitHub owner/admin control matches the Cloudflare production repository connection. Final hosted gate, release and actual recipient activation are pending. [Evidence](docs/verification/first-owner-20261019.md). Preserve the released original silk and all existing architecture/AI identity.
+Invitation-only owner implementation merged as #125 / `131064d`; additive production auth/bootstrap schema applied with zero users/grants/bootstrap rows afterward. Integrated #127 / `8d4d33a` passed hosted checks and main Build; runtime `913d6dd4` was verified at 100%. Public native session/closed privileged endpoints pass, but same-tab invitation navigation exposed a missing hash listener. A focused owner-only repair and regression are prepared; require its final gate and public verification before sending the real invitation. Independent GitHub owner/admin control matches the Cloudflare production repository connection. Actual email/password activation remains the recipient’s action. [Evidence](docs/verification/first-owner-20261019.md). Preserve all mobile renderer work and existing architecture/AI identity.
 
 ## Current state — mobile silk repair released, 2026-10-19
 

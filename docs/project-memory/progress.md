@@ -163,6 +163,9 @@ Owner screenshot supersedes the earlier release-complete assessment. Production 
 Invitation-only native Better Auth owner activation is in progress on `codex/rl-first-owner-20261014`, reconciled with main `2a0dfe5`. Independent authenticated repository-owner/admin evidence matches the production Build connection. Production has no native owner account or approved role; none has been granted. Additive dev migration and rolled-back PostgreSQL activation/replay smoke passed. Final hosted CI/deployment and real recipient activation are pending. [Evidence](../verification/first-owner-20261019.md).
 
 
+## 2026-10-19 Owner release and invitation navigation follow-up
+#125 merged and additive production auth/schema applied without users or grants. Integrated #127 main Build succeeded at913d6dd4/100%, preserving mobile repair. Actual production session/privileged-denial checks pass; a same-tab invitation hash bug was reproduced before any real invitation. Focused owner-only fix/regression prepared; require final gate/public proof, then independently audited approval and the recipient’s real email/password activation. [Evidence](../verification/first-owner-20261019.md).
+
 2026-10-19 verified mobile outcome: Mobile renderer repair released in #127 / 8d4d33a after combined gate 39303885139. Public Chromium 24/24 and WebKit retina 8/8 pass, product colour delta exactly zero, cached-client reload and four viewport samples verified; 13 routes finish at 200. Original photo/UI and #125 source preserved. [Release evidence](../verification/hero-silk-mobile-20261019.md).
 
 
