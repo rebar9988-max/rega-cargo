@@ -20,9 +20,9 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Never mix between the projects: code, database connections/migrations, Cloudflare Workers/bindings, environments, variables/secrets, branches/commits/PRs, CI/CD and run IDs, authentication, domains/routing, project memory/checkpoints, design/branding/assets.
 - Status 2026-10-22: persisted on branch `claude/p0-project-isolation-guard-20261022` (PR, not yet merged; no application, UI, dependency, secret, database or Cloudflare change). Local gate run: see [progress.md](docs/project-memory/progress.md). **Next safe step:** confirm the hosted gate on the PR, merge normally, then run `npm run guard:identity` once from a clean `main` checkout and record it.
 
-## Current state — Marketplace refinement, 2026-10-22
+## Current state — Marketplace refinement released, 2026-10-22
 
-Branch `claude/marketplace-refinement-20261022`, PR #152: refinement of the existing `/stores` directory and `/stores/request` form per the owner's "existing UX audit" brief (refine, never rebuild). Even logo weight (`storeLogoSize`), aligned store cards (two-line country/host, RTL-correct), consistent quiet links, store logo row + equal buy/ship switch + system buttons on the request form. No journey/route/data/copy/brand change; 54 baselines re-rendered in the official image. [Report](docs/verification/marketplace-refinement-20261022.md). Release state: deployments.md.
+PR #152 (merged `30011be`): refinement of the existing `/stores` directory and `/stores/request` form per the owner's "existing UX audit" brief (refine, never rebuild). Even logo weight (`storeLogoSize`), aligned store cards (two-line country/host, RTL-correct), consistent quiet links, store logo row + equal buy/ship switch + system buttons on the request form. No journey/route/data/copy/brand change; 54 baselines re-rendered in the official image. [Report](docs/verification/marketplace-refinement-20261022.md). **Released:** gate green on PR head and `main` (layout lock 726/16/0); Workers Build `3c949399`, Version `3cb56beb`; live `/stores` and `/stores/request` serve the new code. **Next safe step:** owner review on a real phone (320–430 px) and native-speaker check; active version allocation needs Cloudflare dashboard access.
 
 ## Current state — European stores directory released, 2026-10-22
 

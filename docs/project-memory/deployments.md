@@ -1,5 +1,9 @@
 # CI/CD and deployments
 
+## 2026-10-22 PR #152 Marketplace refinement — merged `30011be`, deployed
+
+Squash-merged after the full hosted gate on head `267f537` (run 39863179609: scope, verify, layout lock 726 passed / 16 skipped / 0 failed, Workers Builds). `main` @ `30011be`: scope, verify, layout lock (726/16/0) all success. Cloudflare Workers Build `3c949399-f21a-4760-a537-b0aca02212fa` succeeded, Version ID `3cb56beb-8826-4e83-908b-04cf52cdcfb4` (from the check output). Live (Firecrawl, `maxAge: 0`): `/stores?lang=en&country=DE` 200 with the normalised rail logo sizes and the two-line country/host meta; `/stores/request?store=zalando-it&lang=ckb` 200 with the store logo row (`zalando.it`) and the equal buy/ship switch. Active-at-100% not verified (the Cloudflare connector returns no deployments). Rollback pointer: previous `main` `499b48d`. [Evidence](../verification/marketplace-refinement-20261022.md).
+
 ## 2026-10-22 PR #150 European stores directory — merged `d26efeb`, deployed
 
 Squash-merged after the full hosted gate on head `a6dc806` (run 39821232416: scope, verify, layout lock 720/16 skipped/0 failed, Workers Builds). `main` run 39823755324 all green. Cloudflare Workers Build `a5e35c83-a0e8-4110-991c-1acb74aeb90c` succeeded; live `/stores` serves the new directory (ckb/ar/en, mobile/desktop) and `/stores/request?store=zalando-it` shows `zalando.it`. Active version ID not readable by the agent (no deployments API). Rollback pointer: previous `main` `53d863c`. [Evidence](../verification/european-stores-20261022.md).
@@ -66,6 +70,7 @@ Production Hyperdrive origin repointed to verified `old-cherry-79292410/cargo` u
 
 | When (UTC) | Worker | Version | Notes |
 |---|---|---|---|
+| 2026-10-22 22:27 | `rega-cargo` | `3cb56beb` | PR #152 -> main `30011be` (Marketplace refinement); Cloudflare Builds `3c949399` succeeded; live checks above; active-at-100% not verified |
 | 2026-10-18 08:14 | `rega-cargo` | `e3ab56d5` | `main` `57d4121` includes PR #118 (digit input); Cloudflare Builds `74e026c6` succeeded after `be61d4c3` (for `675c644`) failed transiently; live checks above; active-at-100% not verified |
 | 2026-10-18 06:40 | `rega-cargo` | `c0c4f5a6` | PR #115 -> main `56e53f2` (six code-defect fixes); Cloudflare Builds `6cedf284` succeeded; live checks above; active-at-100% not verified |
 | 2026-10-16 13:17 | `rega-cargo` | `63811e37` | PR #111 -> main `d96c4a8` (ref-home.css: narrow search placeholder, dark hero glow); Cloudflare Builds `f276441a` succeeded; live checks above; active-at-100% not verified |
