@@ -9,6 +9,17 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Last memory update: **2026-10-21**. Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
+## PERMANENT P0 RULE — REGA / R&L project isolation (owner instruction, 2026-10-22)
+
+**REGA ≠ R&L. Never mix. Never silently switch. Always verify. Stop automatically on mismatch.** Full rule: `CLAUDE.md` / `AGENTS.md` section "PERMANENT P0 RULE — STRICT REGA / R&L PROJECT ISOLATION" (identical in both).
+- PROJECT B — R&L Marketplace & Delivery: repository `rebar9988-max/rega-cargo`, production `https://www.rlgo.net`, Workers `rega-cargo` / `rega-cargo-staging`. **This repository.**
+- PROJECT A — REGA Platform: repository `rebar9988-max/Rega`, production `https://www.regaplatform.com`, Workers `rega-platform` / `rega-ai-python`. A separate repository, database, Worker and domain set; `cargo.regaplatform.com` is a retired R&L host, never a valid target.
+- Before any edit, migration, commit, PR, merge or deployment verify repository owner/name, git remote, branch, production domain and deployment configuration, and that every referenced PR, commit, CI run and Cloudflare resource belongs to this repository. A PR number or CI run ID alone never identifies a project.
+- On any mismatch: STOP (fail closed), change nothing, show the Sorani error from the rule, report expected vs detected project, conflicting identifiers and operations already performed, and resume only after explicit owner confirmation.
+- Enforced by `scripts/project-identity-guard.mjs` (read-only, no dependencies; `npm run guard:identity`), run first in `npm run deploy`, `npm run deploy:staging` and the `verify` job of `quality.yml`, and tested by `scripts/project-identity-guard.test.mjs` (part of `npm test`). Not covered: Cloudflare Workers Builds (no Actions/git context; its build also runs `db:migrate`) — verify its repository connection, Worker and database in Cloudflare.
+- Never mix between the projects: code, database connections/migrations, Cloudflare Workers/bindings, environments, variables/secrets, branches/commits/PRs, CI/CD and run IDs, authentication, domains/routing, project memory/checkpoints, design/branding/assets.
+- Status 2026-10-22: persisted on branch `claude/p0-project-isolation-guard-20261022` (PR, not yet merged; no application, UI, dependency, secret, database or Cloudflare change). Local gate run: see [progress.md](docs/project-memory/progress.md). **Next safe step:** confirm the hosted gate on the PR, merge normally, then run `npm run guard:identity` once from a clean `main` checkout and record it.
+
 ## Current state — Bring For Me Phase 1 on a Draft PR, 2026-10-21
 
 Branch `claude/bring-for-me-phase1-20261020` (Draft PR, not merged, not deployed): server-side order-by-link import, cart and automatic cost estimate with owner-editable settings, additive migration `0019_bring_for_me_phase1`. Verified locally: 131 new pure tests, 37 Postgres end-to-end tests, migration applied twice. Not verified: repo typecheck/lint/build/dry-run, PGLite, CI. **Next safe step:** run the hosted gate on the PR once billing allows, then merge only on green; the owner must have a SUPER_ADMIN and fill the settings before quotes work; UI screens still to be requested by the owner. [Report](docs/verification/bring-for-me-phase1-20261021.md).

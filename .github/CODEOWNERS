@@ -14,3 +14,8 @@
 /CLAUDE.md @rebar9988-max
 /PROJECT_MEMORY.md @rebar9988-max
 /.github/CODEOWNERS @rebar9988-max
+
+# P0 REGA / R&L project-isolation guard: owner review when repository protections require it.
+/scripts/project-identity-guard.mjs @rebar9988-max
+/scripts/project-identity-guard.test.mjs @rebar9988-max
+/.github/workflows/quality.yml @rebar9988-max

@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-22 P0 project isolation: REGA ≠ R&L (branch `claude/p0-project-isolation-guard-20261022`, PR open, not merged)
+
+Owner's permanent P0 rule persisted in `CLAUDE.md`, `AGENTS.md` (identical section) and project memory, plus a read-only fail-closed identity guard (`scripts/project-identity-guard.mjs`) wired into `npm run deploy`, `npm run deploy:staging` and the `verify` job of `quality.yml`. No application code, UI, dependency, route, secret, database or Cloudflare change. The REGA repository received its own separate PR; nothing was shared between the two. Local gate: see the PR description for exact results; hosted gate pending when written.
+
 ## 2026-10-21 Bring For Me Phase 1: order by link + automatic cost estimate (Draft PR, branch `claude/bring-for-me-phase1-20261020`)
 
 Owner-approved plan with eight binding conditions (DoH + fail-closed IP-bound fetch, single URL, whole-IQD money with verified FX snapshot, one shipment per cart with stated limits, SUPER_ADMIN-only audited settings with no fake defaults, estimate only, no UI/brand changes, full test set). Implemented server side only: pure `calculateQuote`, SSRF-safe link import, cart, quote snapshots, prohibited-product screening reusing the marketplace engine, owner settings/coupons/review queue, additive migration `0019`. 131 new pure tests + 37 Postgres end-to-end tests pass; typecheck/lint/build/dry-run, PGLite and hosted CI were **not** run (npm registry and billing blockers). Not merged, not deployed; production has no approved SUPER_ADMIN, so no setting can be filled yet. [Report](../verification/bring-for-me-phase1-20261021.md)
