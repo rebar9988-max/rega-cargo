@@ -842,6 +842,12 @@ test("marketplace refinement: store cards in a row line up (meta, categories, ac
           const meta = el.querySelector(".rl-store-meta")!;
           const lines = [...meta.children].map((line) => line.getBoundingClientRect().height);
           const host = meta.children[1] as HTMLElement;
+          // Both lines start at the same edge (the card's own direction decides which).
+          const rtl = getComputedStyle(meta).direction === "rtl";
+          const edges = [...meta.children].map((line) => {
+            const r = line.getBoundingClientRect();
+            return rtl ? r.right : r.left;
+          });
           return {
             id: el.getAttribute("data-store"),
             row: Math.round(el.getBoundingClientRect().top),
@@ -850,6 +856,7 @@ test("marketplace refinement: store cards in a row line up (meta, categories, ac
             metaHeight: meta.getBoundingClientRect().height,
             lines,
             hostCut: host.scrollWidth > host.clientWidth + 1,
+            edgeGap: Math.abs(edges[0] - edges[1]),
             site: top(".rl-store-site"),
             primary: top(".rl-store-primary"),
           };
@@ -874,6 +881,7 @@ test("marketplace refinement: store cards in a row line up (meta, categories, ac
             expect(line, `${cell.id} meta line`).toBeLessThan(lineHeight * 1.5);
           // The official host is never cut off.
           expect(cell.hostCut, `${width} ${lang} ${cell.id} host`).toBe(false);
+          expect(cell.edgeGap, `${width} ${lang} ${cell.id} meta edge`).toBeLessThanOrEqual(1);
         }
       }
     }
@@ -900,6 +908,16 @@ test("marketplace refinement: request page shows the store logo and an even buy/
         const box = (await img.boundingBox())!;
         expect(box.height, `${width} ${lang} ${store}`).toBeLessThanOrEqual(28.5);
         expect(box.width).toBeGreaterThan(0);
+        const edges = await row.locator("p > bdi").evaluateAll((els) =>
+          els.map((el) => {
+            const r = el.getBoundingClientRect();
+            return getComputedStyle(el.parentElement!).direction === "rtl" ? r.right : r.left;
+          }),
+        );
+        expect(
+          Math.abs(edges[0] - edges[1]),
+          `${width} ${lang} store row edge`,
+        ).toBeLessThanOrEqual(1);
         const halves = page.locator(".rl-intent-switch .rl-chip");
         await expect(halves).toHaveCount(2);
         const [a, b] = [(await halves.nth(0).boundingBox())!, (await halves.nth(1).boundingBox())!];

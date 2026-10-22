@@ -3,7 +3,7 @@
 # (stores-*.png, stores-request-*.png × 9 screenshot projects) in the official Playwright image,
 # plus unmasked review shots in tmp-review/, and commits them back to this branch, because the
 # agent sandbox cannot install packages or download Actions artifacts. Runs only on pushes to
-# this branch that change this file. Removed (with tmp-review/) before merge. Render 2.
+# this branch that change this file. Removed (with tmp-review/) before merge. Render 3.
 name: tmp marketplace baselines
 on:
   push:
@@ -31,6 +31,12 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - name: TypeScript (report only)
+        continue-on-error: true
+        run: npm run typecheck
+      - name: Lint (report only)
+        continue-on-error: true
+        run: npm run lint
       - name: Build without production DB migrations
         run: npm run build
         env:
@@ -46,6 +52,15 @@ jobs:
           --project=chromium-laptop --project=chromium-laptop-1440
           --project=webkit-iphone --project=webkit-ipad-portrait --project=webkit-ipad-landscape
           --update-snapshots=all
+      - name: Marketplace browser tests (report only)
+        continue-on-error: true
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/layout/premium.spec.ts
+          --project=premium-360 --project=firefox-premium-360
+          --grep "marketplace refinement|european stores"
+          --reporter=github,list
       - name: Unmasked review shots
         env:
           HOME: /root

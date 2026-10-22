@@ -1275,11 +1275,14 @@
    so names, categories and actions sit at the same height in every card of a row. */
 .rl-store-meta {
   display: grid;
+  /* Lines align by the card's direction, not by the LTR host's own. */
+  justify-items: start;
   min-inline-size: 0;
   color: var(--rl-muted);
   font-size: var(--text-xs);
 }
 .rl-store-meta > * {
+  max-inline-size: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1535,6 +1538,7 @@
 }
 .rl-request-store p {
   display: grid;
+  justify-items: start;
   min-inline-size: 0;
 }
 .rl-request-store-name {
