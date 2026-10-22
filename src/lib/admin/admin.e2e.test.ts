@@ -310,6 +310,38 @@ describe("Authenticated SUPER_ADMIN management through domain adapters", () => {
         (item) => Array.isArray(item.fields) && !JSON.stringify(item).includes("test-only"),
       ),
     );
+    // The editor's pager steps by 50. The audit list has to honour that offset, or an
+    // owner can only ever see the newest page of their own accountability record.
+    const firstPage = await managePlatform(sql, "owner", {
+      resource: "audit",
+      operation: "list",
+      offset: 0,
+    });
+    const secondPage = await managePlatform(sql, "owner", {
+      resource: "audit",
+      operation: "list",
+      offset: 50,
+    });
+    assert.ok("rows" in firstPage && "rows" in secondPage);
+    assert.equal(firstPage.rows!.length, 50);
+    assert.ok(secondPage.rows!.length > 0, "a second page of audit history is reachable");
+    const firstIds = new Set(firstPage.rows!.map((item) => item.id));
+    assert.ok(
+      secondPage.rows!.every((item) => !firstIds.has(item.id)),
+      "pages do not repeat entries",
+    );
+    await assert.rejects(
+      managePlatform(sql, "owner", { resource: "audit", operation: "list", offset: -1 }),
+    );
+    await assert.rejects(
+      managePlatform(sql, "owner", { resource: "audit", operation: "list", offset: 1.5 }),
+    );
+    // Only listing is open on the audit resource; it is not an editable table.
+    for (const operation of ["read", "create", "update", "delete"]) {
+      await assert.rejects(
+        managePlatform(sql, "owner", { resource: "audit", operation, key: { id: "x" } }),
+      );
+    }
     await assert.rejects(sql`delete from platform_audit_log`, /immutable/);
     const before = (await sql`select count(*) as n from platform_audit_log`)[0].n;
     await assert.rejects(call("users", "update", { pin_hash: "injected" }, { id: "staff" }));
