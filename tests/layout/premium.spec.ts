@@ -934,3 +934,40 @@ test("marketplace refinement: request page shows the store logo and an even buy/
     }
   }
 });
+
+test("marketplace refinement: store-card logos keep their full size on narrow phones", async ({
+  page,
+}) => {
+  for (const width of [320, 375, 390, 430, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const lang of ["ckb", "ar", "en"]) {
+      await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+      const cards = await page.locator(".rl-store-card").evaluateAll((els) =>
+        els.map((el) => {
+          const img = el.querySelector(".rl-store-logo img") as HTMLImageElement;
+          const r = img.getBoundingClientRect();
+          const tile = el.querySelector(".rl-store-logo")!.getBoundingClientRect();
+          const heart = el.querySelector(".rl-store-head button[aria-pressed]")!;
+          const h = heart.getBoundingClientRect();
+          return {
+            id: el.getAttribute("data-store"),
+            w: r.width,
+            h: r.height,
+            attr: Number(img.getAttribute("width")),
+            inside: r.left >= tile.left && r.right <= tile.right,
+            heart: Math.min(h.width, h.height),
+          };
+        }),
+      );
+      expect(cards.length).toBeGreaterThan(10);
+      for (const card of cards) {
+        // Rendered at the normalised size (never squeezed by the card), inside its tile.
+        expect(Math.abs(card.w - card.attr), `${width} ${lang} ${card.id} width`).toBeLessThan(1);
+        expect(card.h, `${width} ${lang} ${card.id} height`).toBeGreaterThanOrEqual(10);
+        expect(card.h).toBeLessThanOrEqual(28);
+        expect(card.inside, `${card.id} inside`).toBe(true);
+        expect(card.heart, `${card.id} favourite target`).toBeGreaterThanOrEqual(44);
+      }
+    }
+  }
+});

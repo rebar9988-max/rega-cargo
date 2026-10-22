@@ -1436,8 +1436,22 @@
   max-block-size: 1.75rem;
   object-fit: contain;
 }
-.rl-store-top .rl-button {
+/* Store name and the favourite heart on one row; the 48 px target reaches into the row gaps
+   instead of adding height. */
+.rl-store-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rl-space-1);
+  min-inline-size: 0;
+}
+.rl-store-head h3 {
+  min-inline-size: 0;
+}
+.rl-store-head .rl-button {
+  flex: none;
   min-inline-size: var(--rl-control-h);
+  margin-block: calc(-1 * var(--rl-space-1));
   padding-inline: var(--rl-space-1);
 }
 .rl-store-card h3 {

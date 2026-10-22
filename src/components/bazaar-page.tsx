@@ -427,6 +427,13 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                                 decoding="async"
                               />
                             </span>
+                          </div>
+                          {/* The logo tile has the full card width (readable wordmarks on
+                              narrow phones); the favourite sits beside the store name. */}
+                          <div className="rl-store-head">
+                            <h3>
+                              <bdi dir="ltr">{store.name}</bdi>
+                            </h3>
                             <Button
                               variant="ghost"
                               aria-pressed={favs.includes(store.id)}
@@ -440,9 +447,6 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                               />
                             </Button>
                           </div>
-                          <h3>
-                            <bdi dir="ltr">{store.name}</bdi>
-                          </h3>
                           <p
                             className="rl-store-meta"
                             title={`${countryName(store.country)} · ${store.host}`}
