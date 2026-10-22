@@ -16,10 +16,10 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AiRouteImport } from './routes/ai'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CustomsRouteImport } from './routes/customs'
+import { Route as DrRouteImport } from './routes/dr'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as MoveRouteImport } from './routes/move'
-import { Route as DrRouteImport } from './routes/dr'
 import { Route as OwnerRouteImport } from './routes/owner'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProhibitedItemsRouteImport } from './routes/prohibited-items'
@@ -72,6 +72,11 @@ const CustomsRoute = CustomsRouteImport.update({
   path: '/customs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DrRoute = DrRouteImport.update({
+  id: '/dr',
+  path: '/dr',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ImpressumRoute = ImpressumRouteImport.update({
   id: '/impressum',
   path: '/impressum',
@@ -85,11 +90,6 @@ const MarketRoute = MarketRouteImport.update({
 const MoveRoute = MoveRouteImport.update({
   id: '/move',
   path: '/move',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DrRoute = DrRouteImport.update({
-  id: '/dr',
-  path: '/dr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OwnerRoute = OwnerRouteImport.update({
@@ -181,10 +181,10 @@ export interface FileRoutesByFullPath {
   '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/dr': typeof DrRoute
   '/impressum': typeof ImpressumRoute
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
-  '/dr': typeof DrRoute
   '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
@@ -209,9 +209,9 @@ export interface FileRoutesByTo {
   '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/dr': typeof DrRoute
   '/impressum': typeof ImpressumRoute
   '/move': typeof MoveRoute
-  '/dr': typeof DrRoute
   '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
@@ -237,10 +237,10 @@ export interface FileRoutesById {
   '/ai': typeof AiRoute
   '/contact': typeof ContactRoute
   '/customs': typeof CustomsRoute
+  '/dr': typeof DrRoute
   '/impressum': typeof ImpressumRoute
   '/market': typeof MarketRouteWithChildren
   '/move': typeof MoveRoute
-  '/dr': typeof DrRoute
   '/owner': typeof OwnerRoute
   '/privacy': typeof PrivacyRoute
   '/prohibited-items': typeof ProhibitedItemsRoute
@@ -268,10 +268,10 @@ export interface FileRouteTypes {
     | '/ai'
     | '/contact'
     | '/customs'
+    | '/dr'
     | '/impressum'
     | '/market'
     | '/move'
-    | '/dr'
     | '/owner'
     | '/privacy'
     | '/prohibited-items'
@@ -296,9 +296,9 @@ export interface FileRouteTypes {
     | '/ai'
     | '/contact'
     | '/customs'
+    | '/dr'
     | '/impressum'
     | '/move'
-    | '/dr'
     | '/owner'
     | '/privacy'
     | '/prohibited-items'
@@ -323,10 +323,10 @@ export interface FileRouteTypes {
     | '/ai'
     | '/contact'
     | '/customs'
+    | '/dr'
     | '/impressum'
     | '/market'
     | '/move'
-    | '/dr'
     | '/owner'
     | '/privacy'
     | '/prohibited-items'
@@ -353,10 +353,10 @@ export interface RootRouteChildren {
   AiRoute: typeof AiRoute
   ContactRoute: typeof ContactRoute
   CustomsRoute: typeof CustomsRoute
+  DrRoute: typeof DrRoute
   ImpressumRoute: typeof ImpressumRoute
   MarketRoute: typeof MarketRouteWithChildren
   MoveRoute: typeof MoveRoute
-  DrRoute: typeof DrRoute
   OwnerRoute: typeof OwnerRoute
   PrivacyRoute: typeof PrivacyRoute
   ProhibitedItemsRoute: typeof ProhibitedItemsRoute
@@ -419,6 +419,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dr': {
+      id: '/dr'
+      path: '/dr'
+      fullPath: '/dr'
+      preLoaderRoute: typeof DrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/impressum': {
       id: '/impressum'
       path: '/impressum'
@@ -438,13 +445,6 @@ declare module '@tanstack/react-router' {
       path: '/move'
       fullPath: '/move'
       preLoaderRoute: typeof MoveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dr': {
-      id: '/dr'
-      path: '/dr'
-      fullPath: '/dr'
-      preLoaderRoute: typeof DrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/owner': {
@@ -611,10 +611,10 @@ const rootRouteChildren: RootRouteChildren = {
   AiRoute: AiRoute,
   ContactRoute: ContactRoute,
   CustomsRoute: CustomsRoute,
+  DrRoute: DrRoute,
   ImpressumRoute: ImpressumRoute,
   MarketRoute: MarketRouteWithChildren,
   MoveRoute: MoveRoute,
-  DrRoute: DrRoute,
   OwnerRoute: OwnerRoute,
   PrivacyRoute: PrivacyRoute,
   ProhibitedItemsRoute: ProhibitedItemsRoute,

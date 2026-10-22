@@ -684,10 +684,10 @@ test("european stores: five countries, official handoff, preserved filters and n
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", "noopener noreferrer");
   }
-  // A country storefront has no Bring For Me action it cannot honour, only an honest note.
+  // A country storefront offers Bring For Me for its own store id.
   const regional = page.locator("[data-store=zalando-it]");
-  await expect(regional.locator(".rl-store-primary")).toHaveCount(0);
-  await expect(regional.locator(".rl-store-pending")).toBeVisible();
+  await expect(regional.locator(".rl-store-primary")).toHaveCount(1);
+  await expect(regional.locator(".rl-store-primary")).toHaveAttribute("href", /store=zalando-it/);
 
   // Active filters are visible chips; removing one keeps the others, reset clears all.
   await page.locator('.rl-retailer[data-retailer="zalando"]').click();
@@ -766,5 +766,21 @@ test("european stores: compact logos, no overflow at 320–430px in every direct
         .all())
         expect((await target.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     }
+  }
+});
+
+test("european stores: Bring For Me opens for a country storefront with its own host", async ({
+  page,
+}) => {
+  for (const [id, host] of [
+    ["zalando-ch", "zalando.ch"],
+    ["amazon-it", "amazon.it"],
+    ["sephora-fr", "sephora.fr"],
+    ["ebay-gb", "ebay.co.uk"],
+  ]) {
+    await page.goto(`/stores?lang=en&store=${id}`, { waitUntil: "networkidle" });
+    await page.locator(`[data-store=${id}] .rl-store-primary`).click();
+    await expect(page).toHaveURL(new RegExp(`/stores/request\\?.*store=${id}`));
+    await expect(page.locator("main")).toContainText(host);
   }
 });

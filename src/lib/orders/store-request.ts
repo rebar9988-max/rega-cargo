@@ -5,7 +5,7 @@
  */
 import { DESTS } from "../corridor.ts";
 import { westernDigits } from "../numbers.ts";
-import { GOODS, STORES, type StoreEntry } from "../stores.ts";
+import { BRING_FOR_ME_STORES, GOODS, type StoreEntry } from "../stores.ts";
 
 export const URL_MAX = 2000;
 export const TEXT_MAX = { size: 40, color: 40, notes: 500 } as const;
@@ -71,7 +71,7 @@ export function checkProductUrl(raw: unknown, store: StoreEntry | undefined): { 
   }
   if (parsed.protocol !== "https:" || parsed.username || parsed.password || parsed.port) return { ok: false, error: "url" };
   const host = parsed.hostname.toLowerCase().replace(/\.$/, "");
-  const allowed = store ? [store.host] : STORES.map((entry) => entry.host);
+  const allowed = store ? [store.host] : BRING_FOR_ME_STORES.map((entry) => entry.host);
   if (!allowed.some((domain) => hostMatches(host, domain))) return { ok: false, error: "host" };
   const url = parsed.href;
   return url.length > URL_MAX ? { ok: false, error: "url" } : { ok: true, url };
@@ -86,9 +86,9 @@ export function validateStoreRequest(
   if (!intent) return { ok: false, error: "invalid" };
   const good = typeof raw.item === "string" ? GOODS.find((entry) => entry.id === raw.item) : undefined;
   if (raw.item != null && raw.item !== "" && !good) return { ok: false, error: "invalid" };
-  const picked = typeof raw.storeId === "string" ? STORES.find((entry) => entry.id === raw.storeId) : undefined;
+  const picked = typeof raw.storeId === "string" ? BRING_FOR_ME_STORES.find((entry) => entry.id === raw.storeId) : undefined;
   if (raw.storeId != null && raw.storeId !== "" && !picked) return { ok: false, error: "invalid" };
-  const store = picked ?? (good ? STORES.find((entry) => entry.id === good.storeId) : undefined);
+  const store = picked ?? (good ? BRING_FOR_ME_STORES.find((entry) => entry.id === good.storeId) : undefined);
 
   let url = "";
   if (typeof raw.url === "string" && raw.url.trim()) {

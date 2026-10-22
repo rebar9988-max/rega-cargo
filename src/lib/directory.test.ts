@@ -10,7 +10,7 @@ import {
   GOODS,
   REGIONAL_STOREFRONTS,
   STORES,
-  offersBringForMe,
+  BRING_FOR_ME_STORES,
 } from "./stores.ts";
 
 const TLD: Record<string, RegExp> = {
@@ -56,15 +56,19 @@ test("every directory store is an official https storefront of a known retailer"
   for (const store of REGIONAL_STOREFRONTS) assert.equal(store.note, "link", store.id);
 });
 
-test("Bring For Me is offered only where its link check accepts the store", () => {
-  for (const store of DIRECTORY_STORES)
-    assert.equal(
-      offersBringForMe(store),
-      STORES.some((entry) => entry.id === store.id && entry.host === store.host),
+test("every directory store is a Bring For Me store; search and R&L AI keep STORES", () => {
+  for (const store of DIRECTORY_STORES) {
+    const entry = BRING_FOR_ME_STORES.find((item) => item.id === store.id);
+    assert.ok(entry, `${store.id}: Bring For Me`);
+    assert.equal(entry.host, store.host, store.id);
+  }
+  // Bring For Me covers only the five authorized countries and the existing SHEIN entry.
+  for (const store of BRING_FOR_ME_STORES)
+    assert.ok(
+      EUROPEAN_COUNTRIES.includes(store.country as never) || store.id === "shein",
       store.id,
     );
-  for (const store of REGIONAL_STOREFRONTS) assert.equal(offersBringForMe(store), false, store.id);
-  // The shared registry used by Bring For Me, search and R&L AI is unchanged by the directory.
+  // The registry behind header search and the R&L AI shop filter is unchanged.
   assert.equal(STORES.length, 11);
 });
 

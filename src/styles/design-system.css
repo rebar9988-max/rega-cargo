@@ -1274,9 +1274,6 @@
   color: var(--rl-muted);
   font-size: var(--text-xs);
 }
-.rl-store-pending {
-  font-size: var(--text-xs);
-}
 /* Long category lists stay at two lines so store cards in a row line up. */
 .rl-store-categories {
   display: -webkit-box;

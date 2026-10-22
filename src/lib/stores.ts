@@ -22,7 +22,7 @@ export type StoreNote = "amazon" | "ebay" | "otto" | "zalando" | "shein" | "seph
 export type StoreCaution = "perfume" | "aerosol" | "battery" | "cosmetics";
 
 /** Extend this data configuration when additional store origins are introduced. */
-export const STORE_COUNTRIES = ["DE", "INT"] as const;
+export const STORE_COUNTRIES = ["DE", "CH", "IT", "FR", "GB", "INT"] as const;
 
 export type StoreEntry = {
   id: string;
@@ -239,12 +239,12 @@ export const DIRECTORY_STORES: DirectoryStore[] = [
 ];
 
 /**
- * Bring For Me accepts product links only from STORES hosts (src/lib/orders/store-request.ts),
- * so only those entries offer it; a country storefront links to its official site only.
+ * Every store Bring For Me accepts (owner instruction 2026-10-22): STORES plus the verified
+ * country storefronts. Requests are validated against this list (lib/orders/store-request.ts),
+ * so a storefront's product links must be on its own official host. STORES alone still drives
+ * the header search and the R&L AI shop-name filter.
  */
-export function offersBringForMe(store: { id: string }): boolean {
-  return STORES.some((entry) => entry.id === store.id);
-}
+export const BRING_FOR_ME_STORES: StoreEntry[] = [...STORES, ...REGIONAL_STOREFRONTS];
 
 /** Self-hosted official logo (Wikimedia Commons; see public/store-logos/LOGOS.md). */
 export function storeLogo(id: string): string {
@@ -283,7 +283,7 @@ export function writeFavs(ids: string[]) {
 }
 
 export function storeById(id: string | undefined) {
-  return STORES.find((store) => store.id === id);
+  return BRING_FOR_ME_STORES.find((store) => store.id === id);
 }
 
 export function hostAllowed(store: StoreEntry | undefined, raw: string) {

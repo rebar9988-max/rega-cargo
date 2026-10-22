@@ -17,7 +17,6 @@ import {
   DIRECTORY_STORES,
   EUROPEAN_COUNTRIES,
   isEuropeanCountry,
-  offersBringForMe,
   readFavs,
   storeById,
   storeLogo,
@@ -459,37 +458,30 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                             className="rl-button rl-store-site"
                             data-variant="secondary"
                             aria-label={`${e.official} · ${store.host}`}
-                            onClick={() => {
-                              if (offersBringForMe(store)) writeHandoff(store.id);
-                            }}
+                            onClick={() => writeHandoff(store.id)}
                           >
                             {e.official}
                             <Icon as={ArrowUpRight} directional />
                           </a>
-                          {offersBringForMe(store) ? (
-                            <>
-                              {/* One primary action; "I bought it myself" is a quiet link under it. */}
-                              <Link
-                                to="/stores/request"
-                                search={{ store: store.id, intent: "buy", item: undefined }}
-                                className="rl-button rl-store-primary"
-                                data-variant="primary"
-                              >
-                                {t.assist}
-                              </Link>
-                              <div className="rl-store-links">
-                                <Link
-                                  to="/stores/request"
-                                  search={{ store: store.id, intent: "ship", item: undefined }}
-                                  className="rl-text-action"
-                                >
-                                  {t.shipOwn}
-                                </Link>
-                              </div>
-                            </>
-                          ) : (
-                            <p className="rl-muted rl-store-pending">{e.bringPending}</p>
-                          )}
+                          {/* One primary action; "I bought it myself" is a quiet link under it. */}
+                          <Link
+                            to="/stores/request"
+                            search={{ store: store.id, intent: "buy", item: undefined }}
+                            className="rl-button rl-store-primary"
+                            data-variant="primary"
+                          >
+                            {t.assist}
+                          </Link>
+                          <div className="rl-store-links">
+                            <Link
+                              to="/stores/request"
+                              search={{ store: store.id, intent: "ship", item: undefined }}
+                              className="rl-text-action"
+                            >
+                              {t.shipOwn}
+                            </Link>
+                          </div>
+
                           <details>
                             <summary>{t.external}</summary>
                             <p>{t.notes[store.note]}</p>
