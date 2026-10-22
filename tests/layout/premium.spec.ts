@@ -923,6 +923,7 @@ test("marketplace refinement: request page shows the store logo and an even buy/
         const [a, b] = [(await halves.nth(0).boundingBox())!, (await halves.nth(1).boundingBox())!];
         expect(Math.abs(a.width - b.width), `${width} ${lang} equal halves`).toBeLessThan(1);
         expect(Math.abs(a.y - b.y), `${width} ${lang} one row`).toBeLessThan(1);
+        expect(Math.abs(a.height - b.height), `${width} ${lang} equal heights`).toBeLessThan(1);
         expect(Math.min(a.height, b.height)).toBeGreaterThanOrEqual(44);
         await expect(halves.nth(0)).toHaveAttribute("aria-current", "page");
         const overflow = await page.evaluate(

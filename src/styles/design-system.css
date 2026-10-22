@@ -1553,6 +1553,8 @@
 .rl-intent-switch {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Equal heights even when only one label wraps (narrow phones). */
+  align-items: stretch;
   gap: var(--rl-space-1);
 }
 .rl-intent-switch .rl-chip {
