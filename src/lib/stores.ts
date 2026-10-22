@@ -22,7 +22,7 @@ export type StoreNote = "amazon" | "ebay" | "otto" | "zalando" | "shein" | "seph
 export type StoreCaution = "perfume" | "aerosol" | "battery" | "cosmetics";
 
 /** Extend this data configuration when additional store origins are introduced. */
-export const STORE_COUNTRIES = ["DE", "INT"] as const;
+export const STORE_COUNTRIES = ["DE", "CH", "IT", "FR", "GB", "INT"] as const;
 
 export type StoreEntry = {
   id: string;
@@ -173,6 +173,79 @@ export const STORES: StoreEntry[] = [
   },
 ];
 
+/** Countries of the European stores directory, in the owner's order (2026-10-22). */
+export const EUROPEAN_COUNTRIES = ["DE", "CH", "IT", "FR", "GB"] as const;
+export type EuropeanCountry = (typeof EUROPEAN_COUNTRIES)[number];
+
+export function isEuropeanCountry(value: string | undefined): value is EuropeanCountry {
+  return EUROPEAN_COUNTRIES.includes(value as EuropeanCountry);
+}
+
+/**
+ * A country storefront of a retailer already in STORES, shown only in the European stores
+ * directory. `brand` is that retailer's STORES id (its logo, notes and Bring For Me entry).
+ * Each URL was opened on its official site on 2026-10-22 (docs/verification).
+ */
+export type DirectoryStore = Omit<StoreEntry, "country"> & {
+  country: EuropeanCountry;
+  brand: string;
+};
+
+const storefront = (brand: string, country: EuropeanCountry, host: string): DirectoryStore => {
+  const base = STORES.find((store) => store.id === brand)!;
+  return {
+    ...base,
+    id: `${brand.replace(/-de$/, "")}-${country.toLowerCase()}`,
+    host,
+    url: `https://www.${host}/`,
+    country,
+    brand,
+    // The brand's API notes describe its German site; no approval is known for this one.
+    note: "link",
+  };
+};
+
+export const REGIONAL_STOREFRONTS: DirectoryStore[] = [
+  storefront("zalando", "CH", "zalando.ch"),
+  storefront("decathlon", "CH", "decathlon.ch"),
+  storefront("ebay-de", "CH", "ebay.ch"),
+  storefront("amazon-de", "IT", "amazon.it"),
+  storefront("zalando", "IT", "zalando.it"),
+  storefront("ebay-de", "IT", "ebay.it"),
+  storefront("decathlon", "IT", "decathlon.it"),
+  storefront("sephora", "IT", "sephora.it"),
+  storefront("douglas", "IT", "douglas.it"),
+  storefront("amazon-de", "FR", "amazon.fr"),
+  storefront("zalando", "FR", "zalando.fr"),
+  storefront("ebay-de", "FR", "ebay.fr"),
+  storefront("decathlon", "FR", "decathlon.fr"),
+  storefront("sephora", "FR", "sephora.fr"),
+  storefront("amazon-de", "GB", "amazon.co.uk"),
+  storefront("zalando", "GB", "zalando.co.uk"),
+  storefront("ebay-de", "GB", "ebay.co.uk"),
+  storefront("decathlon", "GB", "decathlon.co.uk"),
+  storefront("sephora", "GB", "sephora.co.uk"),
+];
+
+/**
+ * The European stores directory: the STORES entries in an authorized country, then the
+ * country storefronts. Stores elsewhere (SHEIN, "INT") stay in STORES for every other use.
+ */
+export const DIRECTORY_STORES: DirectoryStore[] = [
+  ...STORES.flatMap((store) =>
+    isEuropeanCountry(store.country) ? [{ ...store, country: store.country, brand: store.id }] : [],
+  ),
+  ...REGIONAL_STOREFRONTS,
+];
+
+/**
+ * Every store Bring For Me accepts (owner instruction 2026-10-22): STORES plus the verified
+ * country storefronts. Requests are validated against this list (lib/orders/store-request.ts),
+ * so a storefront's product links must be on its own official host. STORES alone still drives
+ * the header search and the R&L AI shop-name filter.
+ */
+export const BRING_FOR_ME_STORES: StoreEntry[] = [...STORES, ...REGIONAL_STOREFRONTS];
+
 /** Self-hosted official logo (Wikimedia Commons; see public/store-logos/LOGOS.md). */
 export function storeLogo(id: string): string {
   return `/store-logos/${id}.svg`;
@@ -210,7 +283,7 @@ export function writeFavs(ids: string[]) {
 }
 
 export function storeById(id: string | undefined) {
-  return STORES.find((store) => store.id === id);
+  return BRING_FOR_ME_STORES.find((store) => store.id === id);
 }
 
 export function hostAllowed(store: StoreEntry | undefined, raw: string) {

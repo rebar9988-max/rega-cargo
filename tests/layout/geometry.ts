@@ -5,6 +5,8 @@ export const LAYOUT = {
   /** Reference homepage header (one row): 64px on phones, 98px from 768px. */
   refHeaderRow: { phone: 64, tablet: 98, laptop: 98 },
   catalogueColumns: { phone: 2, tablet: 3, laptop: 3 },
+  /** European stores directory cards are compact: one more column beside the filter sidebar. */
+  storeColumns: { phone: 2, tablet: 3, laptop: 4 },
   bottomBarHeight: 64,
   maxContent: 1200,
   gutter: { phone: 16, tablet: 24, laptop: 32 },
@@ -105,10 +107,13 @@ export function measureLayout(args: { bp: Bp; layout: typeof LAYOUT; sheet: bool
   for (const grid of document.querySelectorAll('[data-layout="card-grid"]')) {
     if (!visible(grid)) continue;
     const cols = getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length;
+    const kind = grid.getAttribute("data-layout-cols");
     const expected =
-      grid.getAttribute("data-layout-cols") === "catalogue"
+      kind === "catalogue"
         ? layout.catalogueColumns[bp]
-        : layout.cardColumns[bp];
+        : kind === "stores"
+          ? layout.storeColumns[bp]
+          : layout.cardColumns[bp];
     if (cols !== expected)
       out.push(`card grid has ${cols} columns (want ${expected}) ${describe(grid)}`);
     const rows = new Map<number, DOMRect[]>();

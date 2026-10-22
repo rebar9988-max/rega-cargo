@@ -20,7 +20,7 @@ Routes in AGENTS.md "ROUTES THAT MUST KEEP WORKING" must never break.
 | Route / feature | Files | Status | Notes |
 |---|---|---|---|
 | `/` home (AI shopping hero, catalogue, calculator) | `routes/index.tsx`, `components/premium-home.tsx`, `bazaar-page.tsx` | live | Hero art is inline SVG; calculator lazy-loads |
-| `/stores`, `?cat=`, `?sub=`, `?who=`, `?fav=1`, `?q=` | `routes/stores*.tsx`, `components/bazaar-page.tsx`, `lib/stores.ts`, `lib/catalogue.ts` | live | Ten catalogue groups; `food` + some subcategories held for owner approval. Photos are examples, no prices/stock |
+| `/stores`, `?cat=`, `?sub=`, `?who=`, `?fav=1`, `?q=`, `?country=`, `?store=` | `routes/stores*.tsx`, `components/bazaar-page.tsx`, `lib/stores.ts`, `lib/catalogue.ts`, `lib/directory-copy.ts` | live | Ten catalogue groups; `food` + some subcategories held for owner approval. Photos are examples, no prices/stock. European stores directory (2026-10-22): countries DE/CH/IT/FR/GB, `?store=` takes a retailer (all its storefronts) or one storefront id; storefronts outside `STORES` have no Bring For Me yet |
 | `/stores/request?store=..&intent=buy\|ship` | `routes/stores.request.tsx`, `lib/orders/` | degraded | Needs DB; mandatory prohibited-items declaration |
 | `/quote` | `routes/quote.tsx`, `components/quote-panel.tsx`, `lib/corridor.ts` | live (pricing) / degraded (saving) | Chargeable weight = max(actual, volumetric); EUR + IQD |
 | `/market`, `/market/$slug`, `/market/sell` | `routes/market*.tsx`, `lib/market/` | **degraded** | Shows error state until DB is repointed (issues I-1) |

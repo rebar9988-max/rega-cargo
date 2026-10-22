@@ -1149,13 +1149,139 @@
   font-size: var(--text-xs);
   margin-block-end: var(--rl-space-4);
 }
-/* Long category lists stay at three lines so store cards in a row line up. */
+/* European stores discovery: country chips and the retailer rail are single rows that scroll
+   sideways on narrow screens, so they never wrap into a tall block or overflow the page. */
+.rl-discovery {
+  display: grid;
+  gap: var(--rl-space-1);
+  margin-block-end: var(--rl-space-2);
+  min-inline-size: 0;
+}
+.rl-country-chips,
+.rl-retailer-rail {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+.rl-country-chips::-webkit-scrollbar,
+.rl-retailer-rail::-webkit-scrollbar {
+  display: none;
+}
+.rl-country-chips .rl-chip {
+  flex: none;
+  font-size: var(--text-sm);
+}
+.rl-retailer-rail {
+  display: flex;
+  gap: var(--rl-space-1);
+  list-style: none;
+  padding-block: var(--rl-focus);
+  padding-inline: var(--rl-focus);
+}
+.rl-retailer-rail li {
+  flex: none;
+}
+.rl-retailer {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+  min-block-size: var(--rl-control-h);
+  justify-content: center;
+  min-inline-size: 5.5rem;
+  padding-inline: var(--rl-space-2);
+  border: var(--rl-border) solid var(--rl-line);
+  border-radius: var(--rl-radius-sm);
+  background: var(--rl-logo-paper);
+  color: var(--rl-ink);
+  font-size: var(--text-sm);
+  font-weight: var(--rl-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--rl-motion-fast) var(--rl-ease);
+}
+.rl-retailer img {
+  inline-size: auto;
+  max-inline-size: 5rem;
+  block-size: 1.5rem;
+  object-fit: contain;
+}
+.rl-retailer:hover {
+  border-color: var(--rl-ink);
+}
+.rl-retailer[aria-pressed="true"] {
+  border-color: var(--rl-accent);
+  color: var(--rl-accent);
+  background: var(--rl-soft-accent);
+}
+.rl-retailer:focus-visible,
+.rl-active-filter:focus-visible {
+  outline: var(--rl-focus) solid var(--rl-accent);
+  outline-offset: var(--rl-focus);
+}
+.rl-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rl-space-1);
+  font-size: var(--text-sm);
+}
+.rl-active-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rl-space-0);
+  min-block-size: var(--rl-control-h);
+  padding-inline: var(--rl-space-2) var(--rl-space-1);
+  border: var(--rl-border) solid var(--rl-accent);
+  border-radius: var(--rl-radius-pill);
+  background: var(--rl-soft-accent);
+  color: var(--rl-accent);
+  cursor: pointer;
+}
+.rl-active-filters .rl-text-action {
+  min-block-size: var(--rl-control-h);
+  padding-inline: var(--rl-space-1);
+  color: var(--rl-ink);
+  font-weight: var(--rl-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: var(--rl-underline-offset);
+  cursor: pointer;
+}
+.rl-handoff-hint {
+  margin-block-start: var(--rl-space-0);
+}
+/* Back from an official store site: one quiet card above the results, never a modal. */
+.rl-handoff-back {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rl-space-2);
+  padding-block: var(--rl-space-2);
+  padding-inline: var(--rl-space-2);
+  margin-block-end: var(--rl-space-3);
+  font-size: var(--text-sm);
+}
+.rl-handoff-title {
+  font-weight: var(--rl-weight-semibold);
+}
+.rl-handoff-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--rl-space-1);
+}
+.rl-store-meta {
+  color: var(--rl-muted);
+  font-size: var(--text-xs);
+}
+/* Long category lists stay at two lines so store cards in a row line up. */
 .rl-store-categories {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
+  font-size: var(--text-xs);
 }
 .rl-market-layout {
   display: grid;
@@ -1283,11 +1409,15 @@
   border-radius: var(--rl-radius-sm);
   padding-block: var(--rl-space-1);
   padding-inline: var(--rl-space-1);
-  min-block-size: var(--rl-space-7);
+  block-size: var(--rl-control-h);
+  border: var(--rl-border) solid var(--rl-line);
 }
+/* Small official logos at their own proportions: contained, never stretched or cropped. */
 .rl-store-logo img {
+  inline-size: auto;
   max-inline-size: 100%;
-  block-size: var(--rl-logo-height);
+  block-size: 100%;
+  max-block-size: 1.75rem;
   object-fit: contain;
 }
 .rl-store-top .rl-button {
@@ -1295,7 +1425,7 @@
   padding-inline: var(--rl-space-1);
 }
 .rl-store-card h3 {
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: var(--rl-weight-semibold);
 }
 .rl-store-card > .rl-button {
@@ -1308,18 +1438,13 @@
 .rl-store-card > .rl-badge {
   align-self: start;
 }
-.rl-store-site {
-  display: inline-flex;
-  align-items: center;
+.rl-store-card > .rl-store-site {
+  margin-block-start: auto;
   gap: var(--rl-space-0);
-  min-block-size: var(--rl-control-h);
-  color: var(--rl-ink);
-  font-weight: var(--rl-weight-medium);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+  white-space: nowrap;
 }
-.rl-store-site:hover {
-  color: var(--rl-accent);
+.rl-store-card > .rl-store-site + .rl-store-primary {
+  margin-block-start: 0;
 }
 .rl-store-links {
   display: flex;
@@ -1400,6 +1525,9 @@
   }
 }
 @media (min-width: 64rem) {
+  .rl-store-grid {
+    --rl-market-cols: 4;
+  }
   .rl-mobile-filters {
     display: none;
   }

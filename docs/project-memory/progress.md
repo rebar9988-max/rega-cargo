@@ -1,5 +1,10 @@
 # Progress
 
+## 2026-10-22 European stores directory + official-site handoff (branch `claude/european-stores-directory-20261022`)
+
+Owner brief "Marketplace final refinement — European Stores & Hybrid Smart Browser": `/stores` only. Country chips DE/CH/IT/FR/GB, logo-only retailer rail, removable active-filter chips, compact store cards (48 px logo tile, contained logos, official-site button, one Bring For Me action), 2/3/4-column store grid, return-from-official-site card offering Bring For Me; filters stay in the URL. 19 verified country storefronts of retailers already listed; SHEIN kept in `STORES` but not in this directory. Owner then enabled Bring For Me for all five countries: request validation uses `BRING_FOR_ME_STORES` (`STORES` + storefronts); `STORES` (header search, R&L AI) unchanged. Local gate: typecheck, lint, 754 unit tests, 469 Chromium Playwright (geometry) pass. Baselines, hosted gate and release: see the [report](../verification/european-stores-20261022.md).
+
+
 ## 2026-10-22 P0 project isolation: REGA ≠ R&L (branch `claude/p0-project-isolation-guard-20261022`, PR open, not merged)
 
 Owner's permanent P0 rule persisted in `CLAUDE.md`, `AGENTS.md` (identical section) and project memory, plus a read-only fail-closed identity guard (`scripts/project-identity-guard.mjs`) wired into `npm run deploy`, `npm run deploy:staging` and the `verify` job of `quality.yml`. No application code, UI, dependency, route, secret, database or Cloudflare change. The REGA repository received its own separate PR; nothing was shared between the two. Local gate: see the PR description for exact results; hosted gate pending when written.

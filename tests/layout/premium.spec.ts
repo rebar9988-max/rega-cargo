@@ -169,9 +169,12 @@ test("360px filters, favorites, keyboard dialog and banned searches", async ({ p
   const dialog = page.locator("dialog[open]");
   await expect(dialog).toBeVisible();
   await dialog.locator("select").nth(0).selectOption("fashion");
-  await dialog.locator("select").nth(1).selectOption("zalando");
   await page.keyboard.press("Escape");
   await expect(filters).toBeFocused();
+  // Country and retailer are chosen in the discovery rows above the results.
+  await page.locator('.rl-country-chips [data-country="DE"]').click();
+  await page.locator('.rl-retailer[data-retailer="zalando"]').click();
+  await expect(page).toHaveURL(/store=zalando/);
   await page.reload({ waitUntil: "networkidle" });
   await expect(page.locator("[data-good]")).toHaveCount(1);
   await expect(page.locator("[data-store=zalando]")).toHaveCount(1);
@@ -647,5 +650,137 @@ test("quote weight accepts the decimal comma and Arabic-Indic or Persian digits 
     // 0.1 kg is the smallest accepted weight.
     await weight.fill("0,1");
     await expect(weight, lang).toHaveAttribute("aria-invalid", "false");
+  }
+});
+
+test("european stores: five countries, official handoff, preserved filters and no China/US store", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+  const countries = page.locator(".rl-country-chips [data-country]");
+  await expect(countries).toHaveCount(5);
+  expect(
+    await countries.evaluateAll((els) => els.map((el) => el.getAttribute("data-country"))),
+  ).toEqual(["DE", "CH", "IT", "FR", "GB"]);
+  // SHEIN (outside Europe) stays in the shared data but is not in this directory.
+  await expect(page.locator("[data-store=shein]")).toHaveCount(0);
+  await expect(page.locator('[data-retailer="shein"]')).toHaveCount(0);
+  for (const country of ["CN", "US", "INT"])
+    await expect(page.locator(`[data-store][data-country="${country}"]`)).toHaveCount(0);
+
+  // Country selection filters in place: same page, real URL, every card from that country.
+  await page.locator('.rl-country-chips [data-country="IT"]').click();
+  await expect(page).toHaveURL(/country=IT/);
+  const cards = page.locator("[data-store]");
+  expect(await cards.count()).toBeGreaterThan(0);
+  expect(
+    new Set(await cards.evaluateAll((els) => els.map((el) => el.getAttribute("data-country")))),
+  ).toEqual(new Set(["IT"]));
+  // The rail lists one entry per retailer with a storefront there; OTTO has none in Italy.
+  await expect(page.locator('.rl-retailer[data-retailer="otto"]')).toHaveCount(0);
+  for (const link of await page.locator("[data-store] a.rl-store-site").all()) {
+    expect(await link.getAttribute("href")).toMatch(/^https:\/\/www\.[a-z.]+\.(it)\/$/);
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  }
+  // A country storefront offers Bring For Me for its own store id.
+  const regional = page.locator("[data-store=zalando-it]");
+  await expect(regional.locator(".rl-store-primary")).toHaveCount(1);
+  await expect(regional.locator(".rl-store-primary")).toHaveAttribute("href", /store=zalando-it/);
+
+  // Active filters are visible chips; removing one keeps the others, reset clears all.
+  await page.locator('.rl-retailer[data-retailer="zalando"]').click();
+  await expect(page).toHaveURL(/store=zalando/);
+  const active = page.locator(".rl-active-filter");
+  await expect(active).toHaveCount(2);
+  await active.filter({ hasText: "Zalando" }).click();
+  await expect(page).not.toHaveURL(/store=/);
+  await expect(page).toHaveURL(/country=IT/);
+  await page.locator(".rl-active-filters .rl-text-action").click();
+  await expect(page).not.toHaveURL(/country=/);
+  await expect(page.locator(".rl-active-filter")).toHaveCount(0);
+
+  // Keyboard: the retailer rail is reachable and operable without a pointer.
+  const otto = page.locator('.rl-retailer[data-retailer="otto"]');
+  await otto.focus();
+  await page.keyboard.press("Enter");
+  await expect(otto).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(/store=otto/);
+
+  // Handoff: the official site opens in a new tab; coming back offers Bring For Me for it.
+  await page.goto("/stores?lang=en&country=DE&cat=fashion", { waitUntil: "networkidle" });
+  await context.route(/zalando\.de/, (route) => route.fulfill({ body: "<title>stub</title>" }));
+  const [popup] = await Promise.all([
+    context.waitForEvent("page"),
+    page.locator("[data-store=zalando] a.rl-store-site").click(),
+  ]);
+  await popup.close();
+  await page.bringToFront();
+  await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+  const back = page.locator(".rl-handoff-back");
+  await expect(back).toBeVisible();
+  await expect(back).toContainText("Zalando");
+  await expect(back.locator("a.rl-button")).toHaveAttribute("href", /store=zalando/);
+  await expect(page).toHaveURL(/country=DE/);
+  await expect(page).toHaveURL(/cat=fashion/);
+
+  // Bring For Me and back: the browser restores the same filtered directory.
+  await back.locator("a.rl-button").click();
+  await expect(page).toHaveURL(/\/stores\/request/);
+  await page.goBack();
+  await expect(page).toHaveURL(/country=DE/);
+  await expect(page).toHaveURL(/cat=fashion/);
+  await expect(page.locator("[data-store=zalando]")).toBeVisible();
+  await expect(page.locator(".rl-handoff-back")).toHaveCount(0);
+});
+
+test("european stores: compact logos, no overflow at 320–430px in every direction", async ({
+  page,
+}) => {
+  for (const width of [320, 360, 390, 430]) {
+    await page.setViewportSize({ width, height: 800 });
+    for (const lang of ["ckb", "ar", "en"]) {
+      await page.goto(`/stores?lang=${lang}&country=GB`, { waitUntil: "networkidle" });
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      expect(overflow, `${width} ${lang}`).toBe(0);
+      const logos = page.locator(".rl-store-logo img");
+      expect(await logos.count()).toBeGreaterThan(0);
+      for (const box of await logos.evaluateAll((els) =>
+        els.map((el) => {
+          const img = el as HTMLImageElement;
+          const r = img.getBoundingClientRect();
+          return { h: r.height, fit: getComputedStyle(img).objectFit };
+        }),
+      )) {
+        expect(box.h, `${width} ${lang} logo height`).toBeLessThanOrEqual(28);
+        expect(box.fit).toBe("contain");
+      }
+      // Two columns on phones; every control keeps a 44px target.
+      const cols = await page
+        .locator(".rl-store-grid")
+        .evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+      expect(cols).toBe(2);
+      for (const target of await page
+        .locator(".rl-country-chips .rl-chip, .rl-retailer, [data-store] a.rl-button")
+        .all())
+        expect((await target.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    }
+  }
+});
+
+test("european stores: Bring For Me opens for a country storefront with its own host", async ({
+  page,
+}) => {
+  for (const [id, host] of [
+    ["zalando-ch", "zalando.ch"],
+    ["amazon-it", "amazon.it"],
+    ["sephora-fr", "sephora.fr"],
+    ["ebay-gb", "ebay.co.uk"],
+  ]) {
+    await page.goto(`/stores?lang=en&store=${id}`, { waitUntil: "networkidle" });
+    await page.locator(`[data-store=${id}] .rl-store-primary`).click();
+    await expect(page).toHaveURL(new RegExp(`/stores/request\\?.*store=${id}`));
+    await expect(page.locator("main")).toContainText(host);
   }
 });

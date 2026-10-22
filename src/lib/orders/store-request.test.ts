@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { checkProductUrl, cleanField, normalizePhone, validateStoreRequest } from "./store-request.ts";
-import { STORES } from "../stores.ts";
+import { BRING_FOR_ME_STORES, REGIONAL_STOREFRONTS, STORES } from "../stores.ts";
 
 const amazon = STORES.find((s) => s.id === "amazon-de")!;
 const base = { intent: "buy", storeId: "amazon-de", url: "https://www.amazon.de/dp/B0TEST", qty: "2", dest: "ebl", phone: "+49 151 2345678" };
@@ -28,6 +28,28 @@ describe("product link", () => {
   it("without a selected store, only domains from the store list", () => {
     assert.equal(checkProductUrl("https://www.otto.de/p/1", undefined).ok, true);
     assert.equal(checkProductUrl("https://evil.com/", undefined).ok, false);
+  });
+});
+
+describe("country storefronts (DE, CH, IT, FR, GB)", () => {
+  it("accept a product link only on the chosen storefront's own official host", () => {
+    for (const store of REGIONAL_STOREFRONTS) {
+      assert.equal(checkProductUrl(`https://www.${store.host}/p/1`, store).ok, true, store.id);
+      const brand = STORES.find((s) => s.id === store.brand)!;
+      assert.deepEqual(checkProductUrl(`https://www.${brand.host}/p/1`, store), { ok: false, error: "host" }, store.id);
+    }
+    assert.deepEqual(checkProductUrl("https://www.zalando.it.evil.com/x", BRING_FOR_ME_STORES.find((s) => s.id === "zalando-it")), { ok: false, error: "host" });
+  });
+  it("are valid request stores, and their hosts are accepted without a selected store", () => {
+    const ok = validateStoreRequest({ ...base, storeId: "zalando-it", url: "https://www.zalando.it/p/1" }, "+491512345678");
+    assert.equal(ok.ok, true);
+    if (ok.ok) assert.equal(ok.data.storeId, "zalando-it");
+    assert.deepEqual(validateStoreRequest({ ...base, storeId: "zalando-it", url: "https://www.zalando.de/p/1" }, "+491512345678"), { ok: false, error: "host" });
+    assert.equal(checkProductUrl("https://www.amazon.co.uk/dp/X", undefined).ok, true);
+    // Countries outside the directory are still refused.
+    for (const url of ["https://www.amazon.com/dp/X", "https://www.amazon.cn/dp/X", "https://www.zalando.pl/x"])
+      assert.deepEqual(checkProductUrl(url, undefined), { ok: false, error: "host" }, url);
+    assert.deepEqual(validateStoreRequest({ ...base, storeId: "amazon-us" }, "+491512345678"), { ok: false, error: "invalid" });
   });
 });
 

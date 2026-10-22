@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Heart, SlidersHorizontal, ArrowUpRight, Info } from "lucide-react";
+import { Heart, SlidersHorizontal, ArrowUpRight, Info, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Shell, PageHeader } from "./shell";
 import { Badge, BottomSheet, Button, Chip, Icon, Select, Skeleton } from "./ui";
@@ -13,22 +13,76 @@ import { redesignCopy } from "@/lib/redesign-copy";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
 import { storeCopy } from "@/lib/store-copy";
-import { readFavs, STORES, storeById, storeLogo, writeFavs } from "@/lib/stores";
+import {
+  DIRECTORY_STORES,
+  EUROPEAN_COUNTRIES,
+  isEuropeanCountry,
+  readFavs,
+  storeById,
+  storeLogo,
+  writeFavs,
+  type StoreCategory,
+} from "@/lib/stores";
+import { DIRECTORY_COPY } from "@/lib/directory-copy";
 import { PUBLISHED_STORE_CATEGORIES, isPublishedCategory } from "@/lib/catalogue";
 
-/** Store catalogue only; shipping lives on /quote in ShippingPage. */
 import { JOURNEY_COPY } from "@/lib/journey-copy";
+
+/**
+ * The store a customer last opened on its official site (this tab only), so that coming back
+ * can offer Bring For Me for it. Nothing about the external visit is known or claimed.
+ */
+const HANDOFF_KEY = "rl-store-handoff-v1";
+function readHandoff(): string | null {
+  try {
+    return window.sessionStorage.getItem(HANDOFF_KEY);
+  } catch {
+    return null;
+  }
+}
+function writeHandoff(id: string | null) {
+  try {
+    if (id) window.sessionStorage.setItem(HANDOFF_KEY, id);
+    else window.sessionStorage.removeItem(HANDOFF_KEY);
+  } catch {
+    // Storage blocked: the handoff note is a convenience only.
+  }
+}
+
+/** Store catalogue only; shipping lives on /quote in ShippingPage. */
 export function BazaarPage({ home = false }: { home?: boolean } = {}) {
   const { lang } = useI18n();
   const t = storeCopy(lang),
     c = redesignCopy(lang),
-    d = DESIGN_COPY[lang];
+    d = DESIGN_COPY[lang],
+    e = DIRECTORY_COPY[lang],
+    bring = JOURNEY_COPY[lang].bring;
   const params = useRouterState({ select: (state) => state.location.search as BazaarSearch });
   const pending = useRouterState({ select: (state) => state.status === "pending" });
   const navigate = useNavigate();
   const [sheet, setSheet] = useState(false);
   const [favs, setFavs] = useState<string[]>([]);
   useEffect(() => setFavs(readFavs()), []);
+  // Back from an official store site (another tab, or this one via history): offer Bring For Me.
+  const [back, setBack] = useState<string | null>(null);
+  useEffect(() => {
+    const check = () => {
+      if (document.visibilityState !== "visible") return;
+      const id = readHandoff();
+      if (id && DIRECTORY_STORES.some((store) => store.id === id)) setBack(id);
+    };
+    check();
+    document.addEventListener("visibilitychange", check);
+    window.addEventListener("pageshow", check);
+    return () => {
+      document.removeEventListener("visibilitychange", check);
+      window.removeEventListener("pageshow", check);
+    };
+  }, []);
+  const closeBack = () => {
+    writeHandoff(null);
+    setBack(null);
+  };
   const setFilter = (patch: Partial<BazaarSearch>) => {
     void navigate({
       to: home ? "/" : "/stores",
@@ -47,9 +101,52 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
       fav: undefined,
     });
   const results = useMemo(
-    () => selectBazaar({ params, favs, labels: t.goods }),
+    () => selectBazaar({ params, favs, labels: t.goods, stores: DIRECTORY_STORES }),
     [params, favs, t.goods],
   );
+  const countryName = (country: string) =>
+    isEuropeanCountry(country) ? e.country[country] : country;
+  // One rail entry per retailer available in the chosen country.
+  const retailers = useMemo(
+    () =>
+      DIRECTORY_STORES.filter(
+        (store, index, all) =>
+          (!params.country || store.country === params.country) &&
+          all.findIndex(
+            (other) =>
+              other.brand === store.brand && (!params.country || other.country === params.country),
+          ) === index,
+      ),
+    [params.country],
+  );
+  const setCountry = (country: string | undefined) =>
+    setFilter({
+      country,
+      // Keep the chosen retailer only where it has a storefront in that country.
+      store:
+        params.store &&
+        DIRECTORY_STORES.some(
+          (store) =>
+            (store.brand === params.store || store.id === params.store) &&
+            (!country || store.country === country),
+        )
+          ? params.store
+          : undefined,
+    });
+  const brandName = (id: string) =>
+    DIRECTORY_STORES.find((store) => store.id === id || store.brand === id)?.name ?? id;
+  const active: { key: keyof BazaarSearch; label: string }[] = [
+    ...(params.q ? [{ key: "q" as const, label: `“${params.q}”` }] : []),
+    ...(params.country ? [{ key: "country" as const, label: countryName(params.country) }] : []),
+    ...(params.store ? [{ key: "store" as const, label: brandName(params.store) }] : []),
+    ...(params.cat && isPublishedCategory(params.cat)
+      ? [{ key: "cat" as const, label: t.categories[params.cat as StoreCategory] }]
+      : []),
+    ...(params.who && params.who in d.audience
+      ? [{ key: "who" as const, label: d.audience[params.who as keyof typeof d.audience] }]
+      : []),
+    ...(params.fav ? [{ key: "fav" as const, label: t.favorites }] : []),
+  ];
   const toggle = (id: string) => {
     const next = favs.includes(id) ? favs.filter((item) => item !== id) : [...favs, id];
     setFavs(next);
@@ -66,32 +163,6 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
           {PUBLISHED_STORE_CATEGORIES.map((category) => (
             <option key={category} value={category}>
               {t.categories[category]}
-            </option>
-          ))}
-        </Select>
-      </Field>
-      <Field label={c.store}>
-        <Select
-          value={params.store ?? ""}
-          onChange={(e) => setFilter({ store: e.target.value || undefined })}
-        >
-          <option value="">{c.all}</option>
-          {STORES.map((store) => (
-            <option key={store.id} value={store.id}>
-              {store.name}
-            </option>
-          ))}
-        </Select>
-      </Field>
-      <Field label={c.country}>
-        <Select
-          value={params.country ?? ""}
-          onChange={(e) => setFilter({ country: e.target.value || undefined })}
-        >
-          <option value="">{t.allCountries}</option>
-          {[...new Set(STORES.map((store) => store.country))].map((country) => (
-            <option key={country} value={country}>
-              {country === "DE" ? t.germany : country === "INT" ? t.international : country}
             </option>
           ))}
         </Select>
@@ -136,6 +207,75 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
             ))}
           </div>
         </div>
+        {/* Discovery: country first, then the retailer, both one compact scrollable row. */}
+        <div className="rl-discovery">
+          <div className="rl-chip-row rl-country-chips" role="group" aria-label={e.countries}>
+            <Chip selected={!params.country} onClick={() => setCountry(undefined)}>
+              {e.allCountries}
+            </Chip>
+            {EUROPEAN_COUNTRIES.map((country) => (
+              <Chip
+                key={country}
+                data-country={country}
+                selected={params.country === country}
+                onClick={() => setCountry(params.country === country ? undefined : country)}
+              >
+                {e.country[country]}
+              </Chip>
+            ))}
+          </div>
+          <ul className="rl-retailer-rail" aria-label={e.retailers}>
+            {retailers.map((store) => (
+              <li key={store.brand}>
+                <button
+                  type="button"
+                  className="rl-retailer"
+                  data-retailer={store.brand}
+                  aria-pressed={params.store === store.brand}
+                  aria-label={store.name}
+                  title={store.name}
+                  onClick={() =>
+                    setFilter({ store: params.store === store.brand ? undefined : store.brand })
+                  }
+                >
+                  <img
+                    src={storeLogo(store.brand)}
+                    alt=""
+                    width={96}
+                    height={24}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+          {active.length ? (
+            <div className="rl-active-filters" role="group" aria-label={e.active}>
+              {active.map((item) => (
+                <button
+                  type="button"
+                  key={item.key}
+                  className="rl-active-filter"
+                  aria-label={`${e.remove}: ${item.label}`}
+                  onClick={() =>
+                    setFilter(
+                      item.key === "cat"
+                        ? { cat: undefined, sub: undefined }
+                        : { [item.key]: undefined },
+                    )
+                  }
+                >
+                  <bdi>{item.label}</bdi>
+                  <Icon as={X} />
+                </button>
+              ))}
+              <button type="button" className="rl-text-action" onClick={clear}>
+                {e.reset}
+              </button>
+            </div>
+          ) : null}
+        </div>
         <p className="rl-partner-note">
           <Icon as={Info} />
           <span>{c.noPartner}</span>
@@ -146,6 +286,32 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
             {filters}
           </aside>
           <div className="rl-market-results" aria-busy={pending}>
+            {back ? (
+              <div className="rl-handoff-back rl-card" role="status">
+                <div>
+                  <p className="rl-handoff-title">
+                    {e.backTitle.split("{store}")[0]}
+                    <bdi dir="ltr">{storeById(back)?.name ?? brandName(back)}</bdi>
+                    {e.backTitle.split("{store}")[1]}
+                  </p>
+                  <p className="rl-muted">{e.backBody}</p>
+                </div>
+                <div className="rl-handoff-actions">
+                  <Link
+                    to="/stores/request"
+                    search={{ store: back, intent: "buy", item: undefined }}
+                    className="rl-button"
+                    data-variant="primary"
+                    onClick={closeBack}
+                  >
+                    {bring}
+                  </Link>
+                  <Button variant="ghost" aria-label={e.dismiss} onClick={closeBack}>
+                    <Icon as={X} />
+                  </Button>
+                </div>
+              </div>
+            ) : null}
             {!params.cat && !params.q && !params.who && !params.store && !params.fav ? (
               <CategoryDirectory lang={lang} to={home ? "/" : "/stores"} />
             ) : (
@@ -234,18 +400,24 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                     <div className="rl-result-heading">
                       <h2 id="rl-store-list">{t.storesHeading}</h2>
                       <p>{c.noPartner}</p>
+                      <p className="rl-handoff-hint">{e.handoff}</p>
                     </div>
                     <ul
-                      className="rl-results-grid"
+                      className="rl-results-grid rl-store-grid"
                       data-layout="card-grid"
-                      data-layout-cols="catalogue"
+                      data-layout-cols="stores"
                     >
                       {results.stores.map((store) => (
-                        <li className="rl-store-card rl-card" key={store.id} data-store={store.id}>
+                        <li
+                          className="rl-store-card rl-card"
+                          key={store.id}
+                          data-store={store.id}
+                          data-country={store.country}
+                        >
                           <div className="rl-store-top">
                             <span className="rl-store-logo">
                               <img
-                                src={storeLogo(store.id)}
+                                src={storeLogo(store.brand)}
                                 alt={store.name}
                                 width={128}
                                 height={32}
@@ -269,24 +441,8 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                           <h3>
                             <bdi dir="ltr">{store.name}</bdi>
                           </h3>
-                          <Badge>{t.external}</Badge>
-                          <p className="rl-muted">
-                            {store.country === "DE"
-                              ? t.germany
-                              : store.country === "INT"
-                                ? t.international
-                                : store.country}{" "}
-                            ·{" "}
-                            <a
-                              href={store.url}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="rl-store-site"
-                              aria-label={`${t.open} · ${store.host}`}
-                            >
-                              <bdi dir="ltr">{store.host}</bdi>
-                              <Icon as={ArrowUpRight} directional />
-                            </a>
+                          <p className="rl-store-meta">
+                            {countryName(store.country)} · <bdi dir="ltr">{store.host}</bdi>
                           </p>
                           <p className="rl-muted rl-store-categories">
                             {store.categories
@@ -294,15 +450,20 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                               .map((category) => t.categories[category])
                               .join(" · ")}
                           </p>
-                          <details>
-                            <summary>{t.external}</summary>
-                            <p>{t.notes[store.note]}</p>
-                            {store.caution.map((caution) => (
-                              <p key={caution}>{t.cautions[caution]}</p>
-                            ))}
-                          </details>
-                          {/* One primary action; "I bought it myself" is a quiet link under it
-                                  and the store's own site is the linked domain above. */}
+                          {/* The official site opens in a new tab; this page and its filters stay. */}
+                          <a
+                            href={store.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rl-button rl-store-site"
+                            data-variant="secondary"
+                            aria-label={`${e.official} · ${store.host}`}
+                            onClick={() => writeHandoff(store.id)}
+                          >
+                            {e.official}
+                            <Icon as={ArrowUpRight} directional />
+                          </a>
+                          {/* One primary action; "I bought it myself" is a quiet link under it. */}
                           <Link
                             to="/stores/request"
                             search={{ store: store.id, intent: "buy", item: undefined }}
@@ -320,6 +481,14 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                               {t.shipOwn}
                             </Link>
                           </div>
+
+                          <details>
+                            <summary>{t.external}</summary>
+                            <p>{t.notes[store.note]}</p>
+                            {store.caution.map((caution) => (
+                              <p key={caution}>{t.cautions[caution]}</p>
+                            ))}
+                          </details>
                         </li>
                       ))}
                     </ul>
