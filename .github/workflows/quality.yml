@@ -57,6 +57,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      # P0 isolation: REGA != R&L. Read-only; fails closed before anything is installed or built.
+      - name: Project identity guard (R&L only)
+        run: node scripts/project-identity-guard.mjs --project "R&L" --domain www.rlgo.net --worker rega-cargo
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
