@@ -39,21 +39,24 @@ own site):
 Not listed because not verified: amazon.ch (no Swiss storefront), sephora.ch, douglas.ch/.fr,
 dm/Rossmann/OTTO outside Germany, idealo outside Germany.
 
-## Bring For Me boundary (reported, not changed)
+## Bring For Me for all five countries (owner instruction, 2026-10-22, second brief)
 
-Bring For Me accepts product links only from `STORES` hosts (`lib/orders/store-request.ts`). Adding
-the storefronts to `STORES` would also change Bring For Me validation, the global header search
-and the R&L AI shop-name filter, which the brief puts out of scope. So storefront cards offer the
-official site and an honest note ("Bring For Me is not available for this storefront yet");
-German stores keep their Bring For Me action. **Owner decision needed** to enable Bring For Me for
-CH/IT/FR/GB storefronts (add them to `STORES`, review search/AI side-effects, customs from CH/GB).
+First pass kept the storefronts outside `STORES` and showed an honest "not available yet" note,
+because Bring For Me validates product links against `STORES`. The owner then explicitly
+authorized enabling the existing Bring For Me for supported stores in DE, CH, IT, FR and GB.
+Implementation reuses the existing validator: `BRING_FOR_ME_STORES = STORES + REGIONAL_STOREFRONTS`
+is what `lib/orders/store-request.ts` checks, so `zalando-it` accepts only `zalando.it` links,
+unknown store ids are refused and hosts outside the five countries (e.g. amazon.com, amazon.cn,
+zalando.pl) stay refused. `STORES` itself — header search and the R&L AI shop-name filter — is
+unchanged. No retailer API, no purchase promise: the request is still reviewed before any price
+or purchase is confirmed, as before.
 
 ## Design (existing tokens only)
 
 Country chips and the retailer rail are single rows that scroll sideways on narrow screens; rail
 items are logo-only buttons (official wordmark, name as accessible label, `aria-pressed`). Cards:
 48 px logo tile with `object-fit: contain` (logo ≤ 28 px high), name, country · host, two-line
-categories, official-site secondary button, one primary Bring For Me action. Store grid 2 / 3 / 4
+categories, official-site secondary button, one primary Bring For Me action on every card. Store grid 2 / 3 / 4
 columns (phone / tablet / ≥1024 px beside the sidebar); layout lock `storeColumns` added.
 Coming back from an official site (visibilitychange/pageshow, `sessionStorage`, this tab only)
 shows one dismissible card offering Bring For Me for that store; nothing about the external

@@ -22,7 +22,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 
 ## Current state — European stores directory, 2026-10-22
 
-Branch `claude/european-stores-directory-20261022`: `/stores` refined per the owner's Marketplace brief (countries DE/CH/IT/FR/GB, retailer rail, active filters, compact cards, official-site handoff with a return card). 19 verified country storefronts; `STORES` unchanged, so Bring For Me for CH/IT/FR/GB storefronts awaits an owner decision. [Report](docs/verification/european-stores-20261022.md). **Next safe step:** see the report's release section.
+Branch `claude/european-stores-directory-20261022`: `/stores` refined per the owner's Marketplace brief (countries DE/CH/IT/FR/GB, retailer rail, active filters, compact cards, official-site handoff with a return card). 19 verified country storefronts; Bring For Me enabled for all five countries via `BRING_FOR_ME_STORES` (owner instruction); `STORES` (search, R&L AI) unchanged. [Report](docs/verification/european-stores-20261022.md). **Next safe step:** see the report's release section.
 
 ## Current state — Bring For Me Phase 1 on a Draft PR, 2026-10-21
 
