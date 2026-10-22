@@ -3,27 +3,13 @@ import { useState } from "react";
 import { platformAdmin } from "@/lib/admin/api";
 import { useI18n } from "@/lib/i18n";
 import { btnGhost, btnPrimary, controlClass } from "./field";
-import { ADMIN_COPY } from "@/lib/admin/copy";
-const RESOURCES = [
-  "products",
-  "offers",
-  "categories",
-  "reviews",
-  "reports",
-  "orders",
-  "delivery",
-  "transport",
-  "tracking",
-  "users",
-  "roles",
-  "settings",
-  "audit",
-];
+import { ADMIN_COPY, ADMIN_RESOURCES, ADMIN_RESOURCE_NAMES } from "@/lib/admin/copy";
 /** Authenticated operational editor. Closed server adapters validate every field and domain rule. */
 export function PlatformAdmin() {
   const ready = useHydrated();
   const { lang } = useI18n();
   const t = ADMIN_COPY[lang];
+  const names = ADMIN_RESOURCE_NAMES[lang];
   const [resource, setResource] = useState("products");
   const [editable, setEditable] = useState<string[]>([]);
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
@@ -85,9 +71,9 @@ export function PlatformAdmin() {
             setMessage("");
           }}
         >
-          {RESOURCES.map((r) => (
+          {ADMIN_RESOURCES.map((r) => (
             <option key={r} value={r}>
-              {r === "audit" ? t[6] : r}
+              {names[r]}
             </option>
           ))}
         </select>
