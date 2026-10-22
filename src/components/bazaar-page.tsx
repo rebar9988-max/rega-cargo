@@ -427,8 +427,11 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                                 decoding="async"
                               />
                             </span>
+                            {/* The logo tile spans the card (readable wordmarks on narrow
+                                phones); the favourite is a small badge in the card corner. */}
                             <Button
                               variant="ghost"
+                              className="rl-store-fav"
                               aria-pressed={favs.includes(store.id)}
                               aria-label={`${t.favorites} · ${store.name}`}
                               onClick={() => toggle(store.id)}

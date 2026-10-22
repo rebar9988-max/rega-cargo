@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-23 Marketplace follow-up: full-width logo tile, corner favourite (branch `claude/marketplace-logo-tile-20261023`)
+
+Production verification of PR #152 passed 30/30 live checks; its 320 px screenshots showed long wordmarks squeezed by the favourite button sharing the logo row (pre-existing). Logo tile now spans the card, favourite is a corner badge, card logos max 80 px; new narrow-phone logo test. [Report](../verification/marketplace-refinement-20261022.md#follow-up-after-production-verification-2026-10-23-branch-claudemarketplace-logo-tile-20261023).
+
 ## 2026-10-22 Marketplace refinement — existing UX audit (PR #152, branch `claude/marketplace-refinement-20261022`)
 
 Owner brief "Existing UX audit & premium refinement" (refine, never rebuild). Audit of `/stores` and `/stores/request` found four verified issues: uneven logo optical sizes and rail tile widths; store cards not lining up (meta wrapping, 1–2 category lines); inconsistent quiet links; request form store context as plain text, uneven buy/ship pills and an ad-hoc link in the sent state. Fixed with existing tokens/components only (`storeLogoSize`, two-line country/host meta with RTL-correct alignment, equal switch halves, store logo row, system buttons in the sent state). No route, journey, data, copy, colour, font, logo, header, hero, footer or homepage change. 54 `/stores` + `/stores/request` baselines re-rendered in the official image by a temporary branch workflow (removed before merge); header/page header pixel-identical. [Report](../verification/marketplace-refinement-20261022.md). **Released:** merged `30011be` after the green hosted gate (726/16/0); Workers Build `3c949399`, Version `3cb56beb`; live `/stores` and `/stores/request` verified.
