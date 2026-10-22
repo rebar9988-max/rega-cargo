@@ -42,3 +42,7 @@ AI-scoped white/red restrained cards, existing tokens and official brand; reuse 
 ## UI refinement — 2026-10-14
 
 Home header row, section heads and (from 1200 px) hero copy share one inline edge (`--ref-pad`; hero uses container units). Both hero headline lines start at the eyebrow's edge in every script. Touch targets ≥ 44 px on phones: reference header controls 2.75rem, footer links/legal TOC/store heart/chips/market actions `--rl-control-h`. Home section heads stay baseline-aligned (centring them raised font-swap CLS). Featured products: 2 columns on tablets, 4 from 1024 px. Footer reserves bottom-bar space only on phones/tablets (the bottom bar is shown on every page, the reference home included, since 2026-10-19). [Report](../verification/ui-refinement-20261014.md).
+
+## European stores directory — 2026-10-22
+
+`/stores` discovery: country chip row (DE, CH, IT, FR, GB) and a logo-only retailer rail, both single rows that scroll sideways; removable active-filter chips with reset. Store cards: 48 px logo tile (logo ≤ 28 px, `object-fit: contain`), name, country · host, two-line categories, official-site secondary button, one primary Bring For Me action. Store grid has its own layout-lock count `storeColumns` 2/3/4 (`data-layout-cols="stores"`); product sample grid keeps `catalogueColumns`. Existing tokens only; no colour, typography or logo change. [Report](../verification/european-stores-20261022.md).
