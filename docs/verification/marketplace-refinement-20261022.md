@@ -77,6 +77,13 @@ host aligned to the other edge in ckb/ar. In render 3 typecheck and lint passed,
 browser tests passed except one assertion bug in the new request test (`boundingBox().top` →
 `.y`), fixed before the hosted gate. Review shots and the workflow were then deleted.
 
+First hosted gate (run 39860755467): `scope` ✓, `verify` ✓, `layout lock` 724 passed / 16
+skipped / 2 failed — both the new request-switch test in Chromium and Firefox at 320 px ckb:
+one label wrapped, and `.rl-row`'s `align-items: center` set the shorter half 8.5 px lower.
+Fixed (`.rl-intent-switch { align-items: stretch }`, equal-height assertion added) and render 4
+re-rendered the baselines (4 PNGs changed by a few bytes); its report-only run passed the 12
+store browser tests and all 54 page renders. The workflow was removed again.
+
 Baseline review (old `main` vs new, all 54 files): the header, page header and toolbar are
 pixel-identical down to the retailer rail (first changed row 655–742 px on `/stores`); footers
 differ only by sub-pixel text offset (differences disappear under a 1 px blur). `/stores` pages
