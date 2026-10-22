@@ -106,7 +106,7 @@ jobs:
         # is the case for the job container (Playwright CI guidance: HOME=/root).
         env:
           HOME: /root
-        run: npx playwright test ${{ inputs.update_baselines && '--update-snapshots=all' || '' }}
+        run: npx playwright test --reporter=github,list ${{ inputs.update_baselines && '--update-snapshots=all' || '' }}
       - name: Upload report, diffs and rendered baselines
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
