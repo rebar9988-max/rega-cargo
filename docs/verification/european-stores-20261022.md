@@ -80,3 +80,29 @@ visit is claimed.
   authorizes another route. Until then `layout lock` fails only on `/stores` pixel diffs.
 
 Hosted gate, merge, Cloudflare build and production verification: see progress.md / the PR.
+
+## Release and production verification (2026-10-22)
+
+- PR #150 squash-merged as **`d26efeb`** (`main`), 17:33 UTC, after the full gate on head `a6dc806`
+  (run 39821232416): `scope` ✓, `verify` ✓ (identity guard, typecheck, unit tests, lint, build,
+  wrangler dry-run), `layout lock` ✓ 720 passed / 16 skipped / 0 failed (Chromium, WebKit,
+  Firefox), `Workers Builds` ✓. Merged diff: 44 files, no workflow or generated-route change.
+- `main` @ `d26efeb` (run 39823755324): `scope`, `verify`, `layout lock` all success.
+- Production: Cloudflare Workers Builds `a5e35c83-a0e8-4110-991c-1acb74aeb90c` on `d26efeb`
+  succeeded (main builds deploy). The check output carries no version ID and the agent has no
+  Workers deployments API, so the active version/allocation is not stated; the live HTML below
+  is served by the new code.
+- Live checks (real browser via Firecrawl, `maxAge: 0`; the sandbox proxy refuses rlgo.net):
+  - `/stores?lang=en&country=IT` 200, `<html lang="en" dir="rtl">`: country chips, retailer rail,
+    `data-layout-cols="stores"` grid, active-filter chip; cards amazon-it, zalando-it, ebay-it,
+    decathlon-it, sephora-it, douglas-it, each with an official link
+    (`target=_blank rel="noopener noreferrer"`, `https://www.<host>.it/`) and a Bring For Me link
+    `store=<id>&intent=buy`; no SHEIN card.
+  - Screenshots: ckb mobile 390 (header, hero, bottom nav unchanged; chips + rail), ar mobile
+    `country=GB` full page (5 UK storefront cards, 2 columns, no overflow), en desktop 1440
+    `country=DE` (10 retailer logos, 4-column cards, active "Germany" chip + Reset).
+  - `/stores/request?store=zalando-it&intent=buy&lang=ckb` 200, shows "Zalando · zalando.it".
+  - `/` (ckb mobile) unchanged reference homepage.
+- Not verifiable from this session: browser console/network logs on production (no direct
+  browser access); covered by the CI browser suites (Chromium/WebKit/Firefox) on the merged head.
+
