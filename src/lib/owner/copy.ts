@@ -20,6 +20,11 @@ const en = {
   existing:
     "This account already exists. Sign in with its current password; it will not be replaced.",
   loginHint: "Already activated? Sign in with your verified owner account.",
+  sessionHint:
+    "This account signs in with an emailed code and has no password, so nothing is replaced. Sign in with your email code first, then open the invitation link again within 15 minutes and activate.",
+  sessionFailed:
+    "Activation needs a fresh sign-in with an emailed code for this exact email. Sign in, then open the invitation link again within 15 minutes.",
+  signInFirst: "Sign in with an email code",
 };
 type Copy = { [K in keyof typeof en]: string };
 const ckb: Copy = {
@@ -43,6 +48,11 @@ const ckb: Copy = {
   checking: "پشکنینی بانگهێشت…",
   existing: "ئەم هەژمارە هەیە. بە وشەی نهێنی ئێستای بچۆ ژوورەوە؛ ناگۆڕدرێت.",
   loginHint: "پێشتر چالاکت کردووە؟ بە هەژماری پشتڕاستکراوی خاوەن بچۆ ژوورەوە.",
+  sessionHint:
+    "ئەم هەژمارە بە کۆدی ئیمەیڵ دەچێتە ژوورەوە و وشەی نهێنی نییە، بۆیە هیچ شتێک ناگۆڕدرێت. سەرەتا بە کۆدی ئیمەیڵ بچۆ ژوورەوە، پاشان لە ماوەی 15 خولەکدا لینکی بانگهێشتەکە دووبارە بکەرەوە و چالاکی بکە.",
+  sessionFailed:
+    "چالاککردن پێویستی بە چوونەژوورەوەیەکی تازە هەیە بە کۆدی ئیمەیڵ بۆ هەمان ئیمەیڵ. بچۆ ژوورەوە و لە ماوەی 15 خولەکدا لینکی بانگهێشتەکە دووبارە بکەرەوە.",
+  signInFirst: "چوونەژوورەوە بە کۆدی ئیمەیڵ",
 };
 const ar: Copy = {
   ...en,
@@ -63,6 +73,11 @@ const ar: Copy = {
   checking: "جارٍ فحص الدعوة…",
   existing: "الحساب موجود. استخدم كلمة مروره الحالية؛ لن تُستبدل.",
   loginHint: "سبق أن فعّلت حسابك؟ ادخل بحساب المالك المؤكد.",
+  sessionHint:
+    "هذا الحساب يدخل برمز يصل إلى بريده ولا توجد له كلمة مرور، فلا يُستبدل شيء. سجّل الدخول أولاً برمز البريد، ثم افتح رابط الدعوة مجدداً خلال 15 دقيقة وفعّل.",
+  sessionFailed:
+    "يتطلب التفعيل تسجيل دخول حديثاً برمز البريد لنفس البريد تماماً. سجّل الدخول ثم افتح رابط الدعوة خلال 15 دقيقة.",
+  signInFirst: "تسجيل الدخول برمز البريد",
 };
 // TODO(translate-review): other supported locales use the reviewed English fallback.
 export function ownerCopy(lang: Lang): Copy {

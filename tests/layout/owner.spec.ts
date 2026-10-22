@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ownerCopy } from "../../src/lib/owner/copy";
+import { denialVerdict } from "./dev-proxy";
 
 test("owner portal preserves Sorani RTL and works at mobile and desktop widths", async ({
   page,
@@ -16,17 +17,32 @@ test("owner portal preserves Sorani RTL and works at mobile and desktop widths",
 
 test("public privileged signup is denied before auth initialization", async ({ page }) => {
   await page.goto("/owner?lang=en", { waitUntil: "networkidle" });
-  const statuses = await page.evaluate(async () => {
-    const statuses: number[] = [];
-    for (const path of ["sign-up/email", "verify-email", "change-email", "admin/set-role"]) {
-      const response = await fetch(`/api/auth/${path}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: "{}",
-      });
-      statuses.push(response.status);
+  const PATHS = ["sign-up/email", "verify-email", "change-email", "admin/set-role"] as const;
+  // The dev server's ProxyWorker drops the occasional request under the suite's parallel
+  // load (see dev-proxy.ts). A dropped request never reaches the Worker, so it proves
+  // nothing and is re-sent; every real answer is judged, and an acceptance fails at once.
+  const attempts = await page.evaluate(async (paths) => {
+    const collected: Record<string, { status: number; body: string }[]> = {};
+    for (const path of paths) {
+      collected[path] = [];
+      for (let attempt = 0; attempt < 4; attempt += 1) {
+        const response = await fetch(`/api/auth/${path}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+        });
+        const record = { status: response.status, body: (await response.text()).slice(0, 300) };
+        collected[path].push(record);
+        // Stop at the first answer the application actually gave.
+        if (!(record.status === 500 && /Network connection lost/i.test(record.body))) break;
+      }
     }
-    return statuses;
+    return collected;
+  }, PATHS);
+  const statuses = PATHS.map((path) => {
+    const verdict = denialVerdict(attempts[path] ?? []);
+    expect(verdict, `${path}: ${JSON.stringify(attempts[path])}`).toMatchObject({ ok: true });
+    return verdict.ok ? verdict.status : -1;
   });
   expect(statuses).toEqual([403, 403, 403, 403]);
 });
