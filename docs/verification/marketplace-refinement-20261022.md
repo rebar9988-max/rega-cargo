@@ -108,3 +108,20 @@ grow by 63–232 px (two-line meta), request pages change by −38 to +27 px.
   `nav.rl-intent-switch`.
 - Not verified from this session: real-phone rendering, production console logs, the active
   version allocation. Rollback pointer: `main` `499b48d`.
+
+## Follow-up after production verification (2026-10-23, branch `claude/marketplace-logo-tile-20261023`)
+
+A read-only production run (temporary branch `claude/marketplace-live-verify-20261023`, never
+merged, deleted afterwards) passed 30/30 checks on `www.rlgo.net` — Chromium desktop, WebKit
+iPhone and iPad emulation at 320/375/390/430/820/1280/1440 px, plus Chromium and Firefox
+360 px, in ckb/ar/en. Its screenshots showed one remaining issue, present before PR #152 too:
+on phones the store-card logo tile shared its row with the 48 px favourite button, so the tile
+was only about 34–69 px wide and long wordmarks shrank (Sephora ≈ 8 px tall at 320 px).
+
+Fix: the logo tile spans the whole card; the favourite is a round badge (44 px target, 36 px
+circle, existing surface/line tokens) in the card's top corner; card logos are at most 80 px
+wide (`CARD_LOGO`, the 320 px tile is 84 px inside). A first attempt (heart on the name row)
+was rejected by the tests: names such as Decathlon wrapped at 360 px and rows no longer lined
+up. New test: from 320 px every card logo renders at its normalised size (≥ 10 px tall),
+inside its tile, the badge keeps a 44 px target and its icon never covers the logo.
+
