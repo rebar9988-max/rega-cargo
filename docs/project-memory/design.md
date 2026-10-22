@@ -46,3 +46,8 @@ Home header row, section heads and (from 1200 px) hero copy share one inline edg
 ## European stores directory — 2026-10-22
 
 `/stores` discovery: country chip row (DE, CH, IT, FR, GB) and a logo-only retailer rail, both single rows that scroll sideways; removable active-filter chips with reset. Store cards: 48 px logo tile (logo ≤ 28 px, `object-fit: contain`), name, country · host, two-line categories, official-site secondary button, one primary Bring For Me action. Store grid has its own layout-lock count `storeColumns` 2/3/4 (`data-layout-cols="stores"`); product sample grid keeps `catalogueColumns`. Existing tokens only; no colour, typography or logo change. [Report](../verification/european-stores-20261022.md).
+
+## Marketplace refinement — 2026-10-22
+
+Store logos (rail and cards, and the request form's store row) are sized by `storeLogoSize` in `lib/stores.ts`: equal area at the logo's own proportions inside a max box (rail 900 px² in 76×24, cards 1100 px² in 88×28), as `width`/`height` attributes; rail tiles are one size (6 rem). Store cards: country and host on two single lines aligned to the card's start edge (never the LTR host's own), categories reserve two lines, one hairline above the two quiet links (same style, centred). Request form: store row (logo tile, name, host), buy/ship switch as two equal halves (`.rl-intent-switch`), sent state with status icon and system buttons. Existing tokens only. [Report](../verification/marketplace-refinement-20261022.md).
+

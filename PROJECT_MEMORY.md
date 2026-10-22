@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
 - Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-22** (European stores directory). Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
+- Last memory update: **2026-10-22** (Marketplace refinement, PR #152). Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
 ## PERMANENT P0 RULE — REGA / R&L project isolation (owner instruction, 2026-10-22)
@@ -19,6 +19,10 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Enforced by `scripts/project-identity-guard.mjs` (read-only, no dependencies; `npm run guard:identity`), run first in `npm run deploy`, `npm run deploy:staging` and the `verify` job of `quality.yml`, and tested by `scripts/project-identity-guard.test.mjs` (part of `npm test`). Not covered: Cloudflare Workers Builds (no Actions/git context; its build also runs `db:migrate`) — verify its repository connection, Worker and database in Cloudflare.
 - Never mix between the projects: code, database connections/migrations, Cloudflare Workers/bindings, environments, variables/secrets, branches/commits/PRs, CI/CD and run IDs, authentication, domains/routing, project memory/checkpoints, design/branding/assets.
 - Status 2026-10-22: persisted on branch `claude/p0-project-isolation-guard-20261022` (PR, not yet merged; no application, UI, dependency, secret, database or Cloudflare change). Local gate run: see [progress.md](docs/project-memory/progress.md). **Next safe step:** confirm the hosted gate on the PR, merge normally, then run `npm run guard:identity` once from a clean `main` checkout and record it.
+
+## Current state — Marketplace refinement, 2026-10-22
+
+Branch `claude/marketplace-refinement-20261022`, PR #152: refinement of the existing `/stores` directory and `/stores/request` form per the owner's "existing UX audit" brief (refine, never rebuild). Even logo weight (`storeLogoSize`), aligned store cards (two-line country/host, RTL-correct), consistent quiet links, store logo row + equal buy/ship switch + system buttons on the request form. No journey/route/data/copy/brand change; 54 baselines re-rendered in the official image. [Report](docs/verification/marketplace-refinement-20261022.md). Release state: deployments.md.
 
 ## Current state — European stores directory released, 2026-10-22
 
