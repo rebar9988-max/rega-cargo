@@ -120,7 +120,11 @@ export const rlEmailOtp = () =>
         "/rl-admin/verify",
         {
           method: "POST",
-          body: z.object({ email: z.string().max(320), code: z.string().max(12) }),
+          body: z.object({
+            email: z.string().max(320),
+            code: z.string().max(12),
+            lang: z.string().max(8).optional(),
+          }),
         },
         async (ctx) => {
           if (!sameOrigin(ctx.request)) {
@@ -158,6 +162,9 @@ export const rlEmailOtp = () =>
           }
           const session = await ctx.context.internalAdapter.createSession(user.id);
           await setSessionCookie(ctx, { session, user });
+          // The administrator is told their account was used. A mail failure is logged
+          // inside and never keeps them out of their own administration.
+          await mail.deliverAdminSignInNotice(user.email, ctx.body.lang ?? "ckb", new Date());
           return ctx.json({ ok: true, name: user.name, email: user.email });
         },
       ),

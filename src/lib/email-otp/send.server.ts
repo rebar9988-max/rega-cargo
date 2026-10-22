@@ -75,8 +75,49 @@ export function signInMessage(lang: string, code: string) {
   return { subject: t.mail.subject, text, html };
 }
 
+/**
+ * Tell an administrator that their account just signed in to the administration.
+ *
+ * Never blocks the sign-in: a mail outage must not keep an administrator out, so this
+ * reports failure instead of throwing, and waits only briefly.
+ */
+export async function deliverAdminSignInNotice(
+  email: string,
+  lang: string,
+  when: Date,
+): Promise<boolean> {
+  const { adminSignInNotice } = await import("../admin/sign-in-notice.ts");
+  const { isLang } = await import("../langs.ts");
+  const message = adminSignInNotice(isLang(lang) ? lang : "en", when);
+  if (emailTestSinkEnabled()) {
+    (
+      globalThis as { __rlLastAdminNotice?: { email: string; subject: string } }
+    ).__rlLastAdminNotice = { email, subject: message.subject };
+    return true;
+  }
+  const key = readEnv("RESEND_API_KEY");
+  if (!key) return false;
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: senderAddress(), to: [email], ...message }),
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!response.ok) console.error("[admin-sign-in] notice failed", response.status);
+    return response.ok;
+  } catch {
+    console.error("[admin-sign-in] notice failed", "network");
+    return false;
+  }
+}
+
 /** True only when Resend accepted the message. */
-export async function deliverEmailCode(email: string, code: string, lang: string): Promise<boolean> {
+export async function deliverEmailCode(
+  email: string,
+  code: string,
+  lang: string,
+): Promise<boolean> {
   if (emailTestSinkEnabled()) {
     (globalThis as { __rlLastEmailCode?: { email: string; code: string } }).__rlLastEmailCode = {
       email,
