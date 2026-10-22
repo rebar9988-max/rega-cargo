@@ -251,13 +251,13 @@ describe("code generation, storage and verification", () => {
     assert.deepEqual(await verify(email, code as string), { error: "expired" });
   });
 
-  it("enforces the 30-second resend cooldown; a resend replaces the code and keeps the guess count", async () => {
+  it("enforces the resend cooldown; a resend replaces the code and keeps the guess count", async () => {
     const email = "resend@example.com";
     const first = await send(email);
     assert.deepEqual((await send(email)).result, { error: "rate" });
     const wrong = first.code === "111111" ? "222222" : "111111";
     assert.deepEqual(await verify(email, wrong), { error: "code" });
-    await age(email, 31);
+    await age(email, svc.RESEND_COOLDOWN_SECONDS + 1);
     const second = await send(email);
     assert.deepEqual(second.result, { sent: true });
     const rows = await (await sql())<{
@@ -286,9 +286,11 @@ describe("code generation, storage and verification", () => {
 
   it("rate-limits sends per address per hour and per IP", async () => {
     const email = "busy@example.com";
-    for (let i = 0; i < 5; i += 1) {
+    // Read the limit from the module: a future change to the number must not need a
+    // matching edit here, and must not quietly stop this from testing the limit.
+    for (let i = 0; i < svc.EMAIL_HOUR_LIMIT; i += 1) {
       assert.deepEqual((await send(email)).result, { sent: true }, `send ${i + 1}`);
-      await age(email, 61);
+      await age(email, svc.RESEND_COOLDOWN_SECONDS + 1);
     }
     assert.deepEqual((await send(email)).result, { error: "rate" });
     const ip = "203.0.113.77";

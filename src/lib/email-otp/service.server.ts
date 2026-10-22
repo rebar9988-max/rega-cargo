@@ -19,8 +19,8 @@ import { codesMatch, hmacHex, randomCode } from "../phone/codes.ts";
 export const CODE_TTL_MINUTES = 5;
 export const RESEND_COOLDOWN_SECONDS = 30;
 export const MAX_ATTEMPTS = 5;
-const EMAIL_HOUR_LIMIT = 8;
-const EMAIL_DAY_LIMIT = 20;
+export const EMAIL_HOUR_LIMIT = 8;
+export const EMAIL_DAY_LIMIT = 20;
 const IP_SEND_HOUR_LIMIT = 20;
 const IP_VERIFY_HOUR_LIMIT = 30;
 

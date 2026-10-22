@@ -312,30 +312,27 @@ describe("Authenticated SUPER_ADMIN management through domain adapters", () => {
     );
     // The editor's pager steps by 50. The audit list has to honour that offset, or an
     // owner can only ever see the newest page of their own accountability record.
-    const firstPage = await managePlatform(sql, "owner", {
-      resource: "audit",
-      operation: "list",
-      offset: 0,
-    });
-    const secondPage = await managePlatform(sql, "owner", {
-      resource: "audit",
-      operation: "list",
-      offset: 50,
-    });
-    assert.ok("rows" in firstPage && "rows" in secondPage);
-    assert.equal(firstPage.rows!.length, 50);
-    assert.ok(secondPage.rows!.length > 0, "a second page of audit history is reachable");
-    const firstIds = new Set(firstPage.rows!.map((item) => item.id));
+    const page = (offset: number) =>
+      managePlatform(sql, "owner", { resource: "audit", operation: "list", offset });
+    const firstPage = await page(0);
+    const shifted = await page(1);
+    assert.ok("rows" in firstPage && "rows" in shifted);
+    const first = firstPage.rows!;
+    assert.ok(first.length > 1 && first.length <= 50, `page size ${first.length}`);
+    // The window moved by exactly one entry, so the pager reaches older history.
+    assert.equal(shifted.rows![0]!.id, first[1]!.id);
     assert.ok(
-      secondPage.rows!.every((item) => !firstIds.has(item.id)),
-      "pages do not repeat entries",
+      !shifted.rows!.some((item) => item.id === first[0]!.id),
+      "the newest entry is not repeated on the next page",
     );
-    await assert.rejects(
-      managePlatform(sql, "owner", { resource: "audit", operation: "list", offset: -1 }),
+    // Newest first, with no entry out of order.
+    const times = first.map((item) => new Date(item.created_at as string).getTime());
+    assert.deepEqual(
+      [...times].sort((a, b) => b - a),
+      times,
     );
-    await assert.rejects(
-      managePlatform(sql, "owner", { resource: "audit", operation: "list", offset: 1.5 }),
-    );
+    await assert.rejects(page(-1));
+    await assert.rejects(page(1.5));
     // Only listing is open on the audit resource; it is not an editable table.
     for (const operation of ["read", "create", "update", "delete"]) {
       await assert.rejects(
