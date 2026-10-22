@@ -1,3 +1,138 @@
+import type { Lang } from "../langs.ts";
+
+/**
+ * The resources the operational editor can open, and what each is called in every
+ * language the app offers. The picker used to show the raw English keys, so an
+ * administrator reading the site in Sorani, Arabic or Turkish met a list in a language
+ * they may not read at all (owner report 2026-10-22). The keys stay English on the wire;
+ * only the label changes.
+ */
+export const ADMIN_RESOURCES = [
+  "products",
+  "offers",
+  "categories",
+  "reviews",
+  "reports",
+  "orders",
+  "delivery",
+  "transport",
+  "tracking",
+  "users",
+  "roles",
+  "settings",
+  "audit",
+] as const;
+
+export type AdminResource = (typeof ADMIN_RESOURCES)[number];
+
+export const ADMIN_RESOURCE_NAMES: Record<Lang, Record<AdminResource, string>> = {
+  ckb: {
+    products: "کاڵاکان",
+    offers: "ئۆفەرەکان",
+    categories: "پۆلەکان",
+    reviews: "هەڵسەنگاندنەکان",
+    reports: "سکاڵاکان",
+    orders: "داواکارییەکان",
+    delivery: "گەیاندن",
+    transport: "گواستنەوە",
+    tracking: "شوێنپێکردن",
+    users: "بەکارهێنەران",
+    roles: "ڕۆڵەکان",
+    settings: "ڕێکخستنەکان",
+    audit: "تۆماری دەستکاری",
+  },
+  ku: {
+    products: "Berhem",
+    offers: "Pêşkêş",
+    categories: "Kategorî",
+    reviews: "Nirxandin",
+    reports: "Gilî",
+    orders: "Daxwaz",
+    delivery: "Gihandin",
+    transport: "Veguhastin",
+    tracking: "Şopandin",
+    users: "Bikarhêner",
+    roles: "Rol",
+    settings: "Mîheng",
+    audit: "Tomara guhertinan",
+  },
+  en: {
+    products: "Products",
+    offers: "Offers",
+    categories: "Categories",
+    reviews: "Reviews",
+    reports: "Reports",
+    orders: "Orders",
+    delivery: "Delivery",
+    transport: "Transport",
+    tracking: "Tracking",
+    users: "Users",
+    roles: "Roles",
+    settings: "Settings",
+    audit: "Audit log",
+  },
+  de: {
+    products: "Produkte",
+    offers: "Angebote",
+    categories: "Kategorien",
+    reviews: "Bewertungen",
+    reports: "Meldungen",
+    orders: "Bestellungen",
+    delivery: "Lieferung",
+    transport: "Transport",
+    tracking: "Sendungsverfolgung",
+    users: "Benutzer",
+    roles: "Rollen",
+    settings: "Einstellungen",
+    audit: "Änderungsprotokoll",
+  },
+  ar: {
+    products: "المنتجات",
+    offers: "العروض",
+    categories: "الفئات",
+    reviews: "التقييمات",
+    reports: "الشكاوى",
+    orders: "الطلبات",
+    delivery: "التوصيل",
+    transport: "النقل",
+    tracking: "التتبع",
+    users: "المستخدمون",
+    roles: "الأدوار",
+    settings: "الإعدادات",
+    audit: "سجل التعديلات",
+  },
+  fa: {
+    products: "کالاها",
+    offers: "پیشنهادها",
+    categories: "دسته‌بندی‌ها",
+    reviews: "نظرها",
+    reports: "شکایت‌ها",
+    orders: "سفارش‌ها",
+    delivery: "تحویل",
+    transport: "حمل‌ونقل",
+    tracking: "رهگیری",
+    users: "کاربران",
+    roles: "نقش‌ها",
+    settings: "تنظیمات",
+    audit: "گزارش تغییرات",
+  },
+  tr: {
+    products: "Ürünler",
+    offers: "Teklifler",
+    categories: "Kategoriler",
+    reviews: "Değerlendirmeler",
+    reports: "Şikayetler",
+    orders: "Siparişler",
+    delivery: "Teslimat",
+    transport: "Taşıma",
+    tracking: "Takip",
+    users: "Kullanıcılar",
+    roles: "Roller",
+    settings: "Ayarlar",
+    audit: "Denetim kaydı",
+  },
+};
+
 export const ADMIN_COPY = {
   ckb: [
     "بەڕێوەبردنی پلاتفۆرم",

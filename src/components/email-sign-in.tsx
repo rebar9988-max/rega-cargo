@@ -43,10 +43,13 @@ const COOLDOWN = RESEND_COOLDOWN_SECONDS;
 export function EmailSignIn({
   onUser,
   endpoint = "rl-email",
+  sentToLabel,
 }: {
   onUser: (user: Signed) => void;
   /** The administrative entrance never creates an account, so it asks for no name. */
   endpoint?: SignInEndpoint;
+  /** What to say once a code has been asked for; each entrance qualifies it differently. */
+  sentToLabel?: string;
 }) {
   const asksForName = endpoint === "rl-email";
   const { lang } = useI18n();
@@ -92,7 +95,7 @@ export function EmailSignIn({
     const result = await post(
       endpoint,
       "verify",
-      asksForName ? { email: sentTo, code, name } : { email: sentTo, code },
+      asksForName ? { email: sentTo, code, name } : { email: sentTo, code, lang },
     );
     setBusy(false);
     if ("ok" in result && result.ok && result.email) {
@@ -154,7 +157,7 @@ export function EmailSignIn({
       }}
     >
       <p className="text-sm text-muted">
-        {t.sentTo}{" "}
+        {sentToLabel ?? t.sentTo}{" "}
         <bdi dir="ltr" className="font-medium text-ink">
           {sentTo}
         </bdi>

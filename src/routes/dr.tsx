@@ -28,6 +28,7 @@ function AdminEntrance() {
       <section className="mx-auto flex max-w-lg flex-col gap-5 px-[var(--gutter)] py-10">
         <EmailSignIn
           endpoint="rl-admin"
+          sentToLabel={t.sentTo}
           onUser={() => window.location.assign(`/admin?lang=${lang}`)}
         />
       </section>
