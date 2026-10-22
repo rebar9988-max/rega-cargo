@@ -15,14 +15,23 @@
  */
 import type { Sql } from "../db.ts";
 import { codesMatch, hmacHex, randomCode } from "../phone/codes.ts";
+import {
+  CODE_TTL_MINUTES,
+  EMAIL_DAY_LIMIT,
+  EMAIL_HOUR_LIMIT,
+  IP_SEND_HOUR_LIMIT,
+  IP_VERIFY_HOUR_LIMIT,
+  MAX_ATTEMPTS,
+  RESEND_COOLDOWN_SECONDS,
+} from "./limits.ts";
 
-export const CODE_TTL_MINUTES = 5;
-export const RESEND_COOLDOWN_SECONDS = 30;
-export const MAX_ATTEMPTS = 5;
-export const EMAIL_HOUR_LIMIT = 8;
-export const EMAIL_DAY_LIMIT = 20;
-const IP_SEND_HOUR_LIMIT = 20;
-const IP_VERIFY_HOUR_LIMIT = 30;
+export {
+  CODE_TTL_MINUTES,
+  EMAIL_DAY_LIMIT,
+  EMAIL_HOUR_LIMIT,
+  MAX_ATTEMPTS,
+  RESEND_COOLDOWN_SECONDS,
+} from "./limits.ts";
 
 export type Deliver = (email: string, code: string) => Promise<boolean>;
 export type SendResult = { sent: true } | { error: "email" | "rate" | "unavailable" };

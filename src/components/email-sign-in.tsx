@@ -2,6 +2,7 @@ import { useEffect, useId, useState } from "react";
 import { btnPrimary, controlClass } from "@/components/field";
 import { useI18n } from "@/lib/i18n";
 import { emailOtpCopy, type EmailOtpCopy } from "@/lib/email-otp/copy";
+import { RESEND_COOLDOWN_SECONDS } from "@/lib/email-otp/limits";
 
 type Signed = { name: string; email: string };
 type ErrorKey = keyof EmailOtpCopy["errors"];
@@ -15,9 +16,13 @@ async function post(path: "send" | "verify", body: Record<string, string>) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    const json = (await response.json().catch(() => null)) as
-      | { error?: string; sent?: boolean; ok?: boolean; name?: string; email?: string }
-      | null;
+    const json = (await response.json().catch(() => null)) as {
+      error?: string;
+      sent?: boolean;
+      ok?: boolean;
+      name?: string;
+      email?: string;
+    } | null;
     if (response.status === 429) return { error: "rate" as const };
     return json ?? { error: "unavailable" as const };
   } catch {
@@ -25,8 +30,8 @@ async function post(path: "send" | "verify", body: Record<string, string>) {
   }
 }
 
-/** Seconds a resend must wait; mirrors the server's 60-second cooldown (the server stays authoritative). */
-const COOLDOWN = 60;
+/** Seconds a resend must wait. Shared with the server, which stays authoritative. */
+const COOLDOWN = RESEND_COOLDOWN_SECONDS;
 
 export function EmailSignIn({ onUser }: { onUser: (user: Signed) => void }) {
   const { lang } = useI18n();
@@ -111,7 +116,11 @@ export function EmailSignIn({ onUser }: { onUser: (user: Signed) => void }) {
           className={`${controlClass} text-start`}
         />
         {message}
-        <button type="submit" disabled={busy || !email.trim()} className={`${btnPrimary} h-12 w-full rounded-2xl`}>
+        <button
+          type="submit"
+          disabled={busy || !email.trim()}
+          className={`${btnPrimary} h-12 w-full rounded-2xl`}
+        >
           {busy ? t.sending : t.send}
         </button>
       </form>
@@ -126,7 +135,10 @@ export function EmailSignIn({ onUser }: { onUser: (user: Signed) => void }) {
       }}
     >
       <p className="text-sm text-muted">
-        {t.sentTo} <bdi dir="ltr" className="font-medium text-ink">{sentTo}</bdi>
+        {t.sentTo}{" "}
+        <bdi dir="ltr" className="font-medium text-ink">
+          {sentTo}
+        </bdi>
       </p>
       <input
         value={code}
