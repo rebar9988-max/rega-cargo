@@ -91,4 +91,20 @@ grow by 63–232 px (two-line meta), request pages change by −38 to +27 px.
 
 ## Hosted gate, merge and release
 
-Recorded in the PR description and progress.md / deployments.md once they happen.
+- Final PR head `267f537` (run 39863179609): `scope` ✓, `verify` ✓ (identity guard, typecheck,
+  unit tests, lint, build, wrangler dry-run), `layout lock` ✓ 726 passed / 16 skipped (existing)
+  / 0 failed in Chromium, WebKit and Firefox, `Workers Builds: rega-cargo` ✓.
+- Squash-merged as **`30011be`** (`main`). `main` run: `scope`, `verify`, `layout lock`
+  (726/16/0) all success.
+- Cloudflare Workers Build `3c949399-f21a-4760-a537-b0aca02212fa` on `30011be` succeeded, Version
+  ID `3cb56beb-8826-4e83-908b-04cf52cdcfb4`. Active-at-100% is not stated (the Cloudflare
+  connector available here returns no deployments).
+- Live (Firecrawl real browser, `maxAge: 0`; the sandbox proxy refuses rlgo.net):
+  `/stores?lang=en&country=DE` 200, `<html lang="en" dir="rtl">`, rail logos at the normalised
+  sizes (amazon 55×16, otto 49×18, ebay 47×19, zalando 70×13, dm 36×24, rossmann 76×11,
+  douglas 70×13, sephora 76×10, decathlon 67×13, idealo 62×14), store meta
+  `<span>Germany</span><bdi dir="ltr">amazon.de</bdi>`; `/stores/request?store=zalando-it&intent=buy&lang=ckb`
+  200 with the store row (zalando logo 78×14, "Zalando" / "zalando.it") and
+  `nav.rl-intent-switch`.
+- Not verified from this session: real-phone rendering, production console logs, the active
+  version allocation. Rollback pointer: `main` `499b48d`.
