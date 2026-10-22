@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { LANGS } from "./langs.ts";
 import { DIRECTORY_COPY } from "./directory-copy.ts";
 import { selectBazaar } from "./bazaar-listing.ts";
@@ -11,6 +11,11 @@ import {
   REGIONAL_STOREFRONTS,
   STORES,
   BRING_FOR_ME_STORES,
+  CARD_LOGO,
+  RAIL_LOGO,
+  STORE_LOGO_RATIO,
+  storeBrand,
+  storeLogoSize,
 } from "./stores.ts";
 
 const TLD: Record<string, RegExp> = {
@@ -122,4 +127,33 @@ test("directory copy is complete and translated in all seven languages", () => {
       assert.notEqual(copy.country.CH, en.country.CH, `${id}: countries are still English`);
     }
   }
+});
+
+test("store logos: ratios match the SVG files and every logo gets a similar visual weight", () => {
+  for (const store of STORES) {
+    const svg = readFileSync(`public/store-logos/${store.id}.svg`, "utf8");
+    const box = svg
+      .match(/viewBox="([^"]+)"/)?.[1]
+      .trim()
+      .split(/[\s,]+/)
+      .map(Number);
+    assert.ok(box && box.length === 4, `${store.id}: viewBox`);
+    const ratio = STORE_LOGO_RATIO[store.id];
+    assert.ok(ratio, `${store.id}: ratio listed`);
+    assert.ok(Math.abs(ratio - box[2] / box[3]) < 0.01, `${store.id}: ratio ${ratio}`);
+  }
+  for (const spec of [RAIL_LOGO, CARD_LOGO])
+    for (const store of DIRECTORY_STORES) {
+      const id = storeBrand(store);
+      const { width, height } = storeLogoSize(id, spec);
+      // Inside the box, at the logo's own proportions (never stretched).
+      assert.ok(width <= spec.maxWidth && height <= spec.maxHeight, `${id}: ${width}x${height}`);
+      assert.ok(Math.abs(width / height - STORE_LOGO_RATIO[id]) / STORE_LOGO_RATIO[id] < 0.1, id);
+      // Logos the box does not clamp share one area within rounding.
+      if (width < spec.maxWidth && height < spec.maxHeight)
+        assert.ok(Math.abs(width * height - spec.area) / spec.area < 0.06, `${id}: area`);
+    }
+  // Country storefronts use their retailer's logo; a STORES entry uses its own.
+  assert.equal(storeBrand(DIRECTORY_STORES.find((s) => s.id === "zalando-it")!), "zalando");
+  assert.equal(storeBrand(STORES.find((s) => s.id === "amazon-de")!), "amazon-de");
 });

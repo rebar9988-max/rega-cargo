@@ -20,6 +20,9 @@ import {
   readFavs,
   storeById,
   storeLogo,
+  storeLogoSize,
+  CARD_LOGO,
+  RAIL_LOGO,
   writeFavs,
   type StoreCategory,
 } from "@/lib/stores";
@@ -238,11 +241,11 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                     setFilter({ store: params.store === store.brand ? undefined : store.brand })
                   }
                 >
+                  {/* Same visual weight for every wordmark, at its own proportions. */}
                   <img
                     src={storeLogo(store.brand)}
                     alt=""
-                    width={96}
-                    height={24}
+                    {...storeLogoSize(store.brand, RAIL_LOGO)}
                     loading="lazy"
                     decoding="async"
                   />
@@ -419,8 +422,7 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                               <img
                                 src={storeLogo(store.brand)}
                                 alt={store.name}
-                                width={128}
-                                height={32}
+                                {...storeLogoSize(store.brand, CARD_LOGO)}
                                 loading="lazy"
                                 decoding="async"
                               />
@@ -441,7 +443,10 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                           <h3>
                             <bdi dir="ltr">{store.name}</bdi>
                           </h3>
-                          <p className="rl-store-meta">
+                          <p
+                            className="rl-store-meta"
+                            title={`${countryName(store.country)} · ${store.host}`}
+                          >
                             {countryName(store.country)} · <bdi dir="ltr">{store.host}</bdi>
                           </p>
                           <p className="rl-muted rl-store-categories">

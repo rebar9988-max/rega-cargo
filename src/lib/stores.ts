@@ -251,6 +251,55 @@ export function storeLogo(id: string): string {
   return `/store-logos/${id}.svg`;
 }
 
+/**
+ * Width ÷ height of each logo's SVG viewBox (checked against the files in directory.test.ts).
+ * Wordmarks range from 1.5 (dm) to 7.7 (Sephora), so one fixed height makes some logos tiny
+ * and others heavy.
+ */
+export const STORE_LOGO_RATIO: Record<string, number> = {
+  "amazon-de": 603 / 182,
+  decathlon: 1958 / 389,
+  dm: 163.4859612 / 108.1751412,
+  douglas: 680.307 / 126.352,
+  "ebay-de": 1000 / 400.75098,
+  idealo: 246.25 / 57.5,
+  otto: 100 / 37,
+  rossmann: 1684.853 / 235.91749,
+  sephora: 1000 / 129.6,
+  shein: 106 / 22,
+  zalando: 131.7 / 24,
+};
+
+/**
+ * Display size for a store logo with the same visual weight as its neighbours: every logo gets
+ * about the same area, inside a maximum box, at its own proportions (never stretched).
+ */
+export function storeLogoSize(
+  id: string,
+  box: { area: number; maxWidth: number; maxHeight: number },
+): { width: number; height: number } {
+  const ratio = STORE_LOGO_RATIO[id] ?? 4;
+  let width = Math.sqrt(box.area * ratio);
+  let height = width / ratio;
+  if (width > box.maxWidth) {
+    width = box.maxWidth;
+    height = width / ratio;
+  }
+  if (height > box.maxHeight) {
+    height = box.maxHeight;
+    width = height * ratio;
+  }
+  return { width: Math.round(width), height: Math.round(height) };
+}
+/** Retailer rail tiles and store-card logo tiles: one size rule each. */
+export const RAIL_LOGO = { area: 900, maxWidth: 76, maxHeight: 24 } as const;
+export const CARD_LOGO = { area: 1100, maxWidth: 88, maxHeight: 28 } as const;
+
+/** The logo id of a store: its retailer (brand) for a country storefront, else its own id. */
+export function storeBrand(store: StoreEntry | DirectoryStore): string {
+  return "brand" in store ? store.brand : store.id;
+}
+
 /** Filter order: the ten primary groups in catalogue order, then the store-wide "general" bucket. */
 export const STORE_CATEGORIES: StoreCategory[] = [
   "electronics",
