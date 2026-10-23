@@ -272,7 +272,7 @@ export function SiteHeader({
               {j.help}
             </Link>
           </nav>
-          {catalogue ? (
+          {catalogue && path !== "/stores" ? (
             <nav className="page rl-category-nav" aria-label={c.categories}>
               <button
                 ref={trigger}
@@ -289,7 +289,7 @@ export function SiteHeader({
               </button>
             </nav>
           ) : null}
-          {catalogue && active ? (
+          {catalogue && path !== "/stores" && active ? (
             <div
               id="rl-mega"
               className="rl-mega"

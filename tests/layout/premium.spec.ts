@@ -204,7 +204,7 @@ const PRIMARY = [
   "pets",
 ];
 
-test("catalogue: ten category rows, direct URLs, history, subcategories and honest empty states", async ({
+test("catalogue: category pills, direct URLs, history, subcategories and honest empty states", async ({
   page,
 }) => {
   await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
