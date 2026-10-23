@@ -1,0 +1,67 @@
+# TEMPORARY — read-only production verification of PR #152 on https://www.rlgo.net in real
+# Chromium, WebKit (iPhone emulation) and Firefox. Lives only on this branch, which is never
+# merged and is deleted afterwards. Final run 3 (closeout, adds Firefox at every width and the read-only journey). Commits its screenshots back to this branch for review.
+name: tmp live verify
+on:
+  push:
+    branches: [claude/marketplace-live-verify-20261023]
+    paths: [.github/workflows/tmp-live-verify.yml]
+permissions:
+  contents: write
+concurrency:
+  group: tmp-live-verify
+  cancel-in-progress: true
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: "1"
+      LAYOUT_BASE_URL: https://www.rlgo.net
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Live Chromium desktop + WebKit iPhone + WebKit iPad — 320 to 1440 px, ckb/ar/en
+        continue-on-error: true
+        env:
+          HOME: /root
+          TMP_LIVE: "1"
+        run: >-
+          npx playwright test tests/layout/tmp-live.spec.ts
+          --project=chromium-laptop --project=webkit-iphone --project=webkit-ipad-portrait
+          --reporter=github,list
+      - name: Live Chromium mobile + Firefox — same checks, 320 to 1440 px, ckb/ar/en
+        continue-on-error: true
+        env:
+          HOME: /root
+          TMP_LIVE: "1"
+        run: >-
+          npx playwright test tests/layout/tmp-live/premium.spec.ts
+          --project=premium-360 --project=firefox-premium-360
+          --reporter=github,list
+      - name: Existing store tests from main against production (Chromium + Firefox)
+        continue-on-error: true
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/layout/premium.spec.ts
+          --project=premium-360 --project=firefox-premium-360
+          --grep "marketplace refinement|european stores"
+          --reporter=github,list
+      - name: Commit the live screenshots
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add -- tmp-live/
+          others=$(git diff --cached --name-only | grep -cvE '^tmp-live/' || true)
+          test "$others" = 0
+          git commit -m "tmp: live screenshots (never merged)" || exit 0
+          git push origin "HEAD:${GITHUB_REF_NAME}"
