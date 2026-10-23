@@ -233,6 +233,7 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
               <Icon as={Search} />
               <input
                 id="rl-directory-search"
+                size={1}
                 value={query}
                 onChange={(event) => {
                   setQuery(event.target.value);
