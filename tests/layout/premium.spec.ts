@@ -1,4 +1,3 @@
-import { mkdirSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 
 test("slow font swaps keep the mobile hero within the layout-shift budget", async ({ page }) => {
@@ -1036,13 +1035,6 @@ test("store discovery: one brand card, regional sheet, safe product-link handoff
       await expect(page.locator(".rl-store-search input")).toBeVisible();
       await expect(page.locator(".rl-store-compact-footer")).toBeVisible();
       await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
-      if (
-        process.env.RL_REVIEW_SHOTS &&
-        ((lang === "ckb" && width === 390) || (lang === "en" && width === 1440))
-      ) {
-        mkdirSync("docs/review", { recursive: true });
-        await page.screenshot({ path: `docs/review/stores-${lang}-${width}.png`, fullPage: true });
-      }
       const names = await page.locator(".rl-store-card h3").allTextContents();
       expect(new Set(names).size).toBe(names.length);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);

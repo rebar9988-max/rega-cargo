@@ -160,3 +160,12 @@ The five-improvement beta release is verified. Before official/public release: s
 
 Detailed canonical docs (do not duplicate them in memory): [DEPLOY.md](DEPLOY.md) ·
 [docs/integrations/](docs/integrations/inventory.md) · [docs/redesign/](docs/redesign/README.md).
+
+## Store discovery refinement — 2026-10-23 (PR #164)
+
+Owner-approved existing-UI refinement, no rebuild or brand changes. Branch
+`codex/stores-quality-20261023`: one card per brand, regional action sheet, direct validated
+product-link handoff, one category row and compact directory footer. Official-image run
+39958006766: 69 affected page/menu renders passed (12 device skips), 20 focused browser tests
+passed. Full final strict gate and release pending; see
+[verification](docs/verification/store-discovery-20261023.md). Do not repeat the implementation.

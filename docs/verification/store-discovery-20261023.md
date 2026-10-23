@@ -47,3 +47,29 @@ archive); this is an environment limitation, not a passed browser check.
 
 Release, final test counts, screenshots and live verification: pending. Do not claim 100/100
 or production completion from this checkpoint.
+
+## Browser refinement checkpoint (2026-10-23)
+
+Official-image run 39922425475 on 9c49e26: affected page/menu renders passed (69 passed,
+12 intentional device skips); full functional/geometry run: 732 passed, 16 skipped, 4 failed.
+The failed cases were two Chromium interactions with the nested RTL retailer scroller in
+native details, and the new menu test in Chromium/Firefox matching `/privacy` exactly while
+localized links carry a query string. No failing gate was merged or deployed.
+
+Follow-up d50e9f9 wraps expanded retailer choices instead of nesting an RTL scroller inside
+details, retains equal logo tiles, uses a query-safe privacy selector, waits for hydration
+before enabling the new search form, and retains a validated product link through the
+buy/ship intent switch and refresh. Targeted browser proof is running before the final
+standard strict gate. Initial unmasked review images (390 ckb, 1440 en) were inspected;
+temporary review PNGs and workflow will be removed before merge. Native physical phones,
+Lighthouse 100/100 and Cloudflare traffic allocation have not been verified.
+
+## Focused gate and final review
+
+Run **39958006766** on d50e9f9: supported Node 22 typecheck/lint/unit tests/build all passed;
+**69 affected page/menu renders passed, 12 intentional device skips**; **20 focused browser
+tests passed** in Chromium and Firefox. These cover all seven languages, 320–1440 px,
+regional selection, official-site handoff, favourites, forbidden searches, safe product-link
+prefill through intent switching/refresh, equal logos/cards and native-dialog keyboard use.
+Unmasked 390 px ckb and 1440 px en review images inspected. Temporary screenshot capture,
+review PNGs and render workflow removed before marking ready. Final strict gate pending.
