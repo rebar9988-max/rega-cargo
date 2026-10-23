@@ -3,6 +3,9 @@ on:
   push:
     branches: [codex/stores-quality-20261023]
     paths-ignore: ['tests/layout/__screenshots__/**', 'docs/review/**']
+concurrency:
+  group: store-discovery-review-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:

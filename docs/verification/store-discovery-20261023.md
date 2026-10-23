@@ -39,7 +39,9 @@ Local: typecheck passes; lint has zero errors and four existing refresh warnings
 passes without a production database. Directory tests 8/8. Full suite on the container's
 Node 24: 510 pass / 1 fail, an asynchronous closed-stream rejection in the existing AI
 upload test. That unchanged AI file passes 18/18 on the project's supported Node 22.
-The official-image workflow will run the full Node 22 gate, geometry/functional tests and
+A full local rerun on Node 22 passes **762 tests, 4 skipped, 0 failures** (250 script tests
+plus 512 unit tests), with NODE_NO_WARNINGS=1 to keep an existing CLI JSON-stderr test free
+of Node experimental warnings. The official-image workflow runs the full Node 22 gate, geometry/functional tests and
 re-render affected store/menu baselines. Local browser installation failed (truncated CDN
 archive); this is an environment limitation, not a passed browser check.
 
