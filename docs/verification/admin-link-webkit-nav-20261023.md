@@ -59,3 +59,36 @@ skipped or retried.
 ## Task 3 — production verification
 
 See the release section below (recorded after merge and deploy).
+
+## Release and production verification (2026-10-23)
+
+- PR #165 squash-merged as **`020d39b`** (`main`) after the hosted gate on head `a0ac076`
+  (run 39999709330): `scope` ✓, `verify` ✓, `layout lock` ✓ **751 passed / 16 skipped / 0 failed,
+  0 flaky** (Chromium, WebKit iPhone/iPad, Firefox), `Workers Builds` ✓. Temporary diagnostic workflow
+  not in the merged diff.
+- Cloudflare: Workers Build `926c71c5-b491-4166-b6f0-f56d8a9d06b3` on `020d39b` succeeded, Version
+  `445da8ad-0d25-4cba-8778-0b903042c75b`. Traffic allocation of that version is **not verified** (no
+  Workers deployments access from this session); the live pages below serve the new code.
+- Live checks on `https://www.rlgo.net` (Firecrawl real browser, `maxAge: 0`; the sandbox proxy refuses
+  rlgo.net):
+  - `/market?lang=en` desktop 1440: 200; links Sell and Favorite, **no `/admin` link**; desktop nav
+    marks Market; honest empty-catalogue card.
+  - `/market?lang=ckb` phone 390: 200, `<html lang="ckb" dir="rtl">`, **no `/admin` href** in the HTML,
+    bottom bar `aria-current="page"` on Market.
+  - Live client bundle `assets/index-Cfjku_e0.js` (200) contains the recovery code
+    (`rl_chunk_reload`, `beforeunload` guard).
+  - `/stores?lang=ar` phone 390 and `/stores?lang=en` desktop 1440: 200, no admin link; Bring For Me
+    marked current; the Latin-script category rule
+    `html[data-textdir="ltr"] .rl-store-categories { direction: ltr; text-align: right }` is served.
+- Not verifiable here, stated honestly:
+  - **Product pages:** the live Marketplace has no listed products. No test product was created, per
+    the brief.
+  - **Firefox:** rendering cannot be run live (Firecrawl is Chromium). The Firefox category clamp is
+    covered by the CI Firefox test "clamped Latin-script store categories cut at the end of the line"
+    (passed in run 39999709330).
+  - **Browser console:** there is no console access on production. The CI browser suites run on the
+    merged code.
+  - **Physical devices:** not available.
+- Observation, outside this task's scope: on `/stores` desktop the category row from PR #164
+  (another session) is a horizontal swipe row that shows a native scrollbar and cuts the last chip at
+  the edge. This is reported only; it was not changed.
