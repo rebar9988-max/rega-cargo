@@ -100,3 +100,12 @@ Baseline render: temporary workflow run 39911056647 committed exactly 27 `market
 (first changed row 347–459 px), footers identical, pages +45 to +199 px (titled card). Workflow
 removed before the PR.
 
+Release (PR #159): hosted gate on `43ac5af` — `scope` ✓, `verify` ✓, `layout lock` ✓ 732 passed /
+16 existing skips / 0 failed, `Workers Builds` ✓. Squash-merged as **`a9db4fa`**; Cloudflare
+Workers Build `8119d4c4-6f64-46aa-bcb5-a5a3149ecfba` succeeded. Live (Firecrawl, `maxAge: 0`):
+`/market/no-such-product?lang=en` shows "Not found." with European stores + Back to the
+marketplace (links to `/stores` and `/market`); `/market?lang=ckb` unchanged empty-catalogue
+card. Not verifiable live: the offer line, stock labels and result placement (production has
+no listed products) and the no-database error state (production database is up) — both were
+verified on the dev server / official image instead.
+
