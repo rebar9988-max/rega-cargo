@@ -36,13 +36,13 @@ jobs:
         env:
           HOME: /root
         run: >-
-          npx playwright test tests/layout/unified.spec.ts
-          --grep "unified navigation preserves deep links"
-          --project=webkit-ipad-portrait --project=webkit-iphone
-          --repeat-each=40 --retries=0 --workers=3 --reporter=list || true
+          npx playwright test tests/layout/unified.spec.ts tests/layout/hero-silk.spec.ts
+          --project=webkit-ipad-portrait --project=webkit-iphone --project=webkit-ipad-landscape
+          --repeat-each=12 --retries=0 --workers=4 --reporter=list || true
       - name: Print the page snapshot of every failure
         if: always()
         run: |
-          for f in $(find test-results -name error-context.md 2>/dev/null | head -5); do
+          for f in $(find test-results -path '*unified*' -name error-context.md 2>/dev/null | head -4); do
             echo "=== $f"; cat "$f"; done
           echo "failures: $(find test-results -name error-context.md 2>/dev/null | wc -l)"
+          find test-results -name error-context.md 2>/dev/null | sed 's#/error-context.md##' | head -40
