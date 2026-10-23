@@ -15,6 +15,7 @@ jobs:
     env:
       CI: "1"
       WRANGLER_SEND_METRICS: "false"
+      RL_REVIEW_SHOTS: "1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,7 +44,7 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tests/layout/__screenshots__
+          git add tests/layout/__screenshots__ docs/review
           git diff --cached --quiet || git commit -m "Render approved store discovery and menu baselines [skip ci]"
           git push origin HEAD:codex/stores-quality-20261023
       - uses: actions/upload-artifact@v4
@@ -51,6 +52,7 @@ jobs:
         with:
           name: store-discovery-review
           path: |
+            docs/review/
             test-results/
             playwright-report/
             tests/layout/__screenshots__/

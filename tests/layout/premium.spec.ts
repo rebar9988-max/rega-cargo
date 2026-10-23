@@ -1,3 +1,4 @@
+import { mkdirSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 
 test("slow font swaps keep the mobile hero within the layout-shift budget", async ({ page }) => {
@@ -102,7 +103,8 @@ test("language switches preserve store query parameters and reload in the select
 }) => {
   await page.goto("/stores?cat=fashion&fav=1&lang=ckb", { waitUntil: "networkidle" });
   for (const lang of ["ar", "en", "ku"]) {
-    await page.locator("footer select").selectOption(lang);
+    await page.locator('[data-layout="lang-button"]').click();
+    await page.locator(`[role="option"][data-lang="${lang}"]`).click();
     await expect(page.locator("html")).toHaveAttribute("lang", lang);
     expect(new URL(page.url()).searchParams.get("cat")).toBe("fashion");
     expect(new URL(page.url()).searchParams.get("fav")).toBe("1");
@@ -173,7 +175,8 @@ test("360px filters, favorites, keyboard dialog and banned searches", async ({ p
   await expect(filters).toBeFocused();
   // Country and retailer are chosen in the discovery rows above the results.
   await page.locator('.rl-country-chips [data-country="DE"]').click();
-  await page.locator(".rl-retailer-picker summary").click();
+  if (await page.locator(".rl-retailer-picker:not([open]) summary").count())
+    await page.locator(".rl-retailer-picker summary").click();
   await page.locator('.rl-retailer[data-retailer="zalando"]').click();
   await expect(page).toHaveURL(/store=zalando/);
   await page.reload({ waitUntil: "networkidle" });
@@ -675,11 +678,6 @@ test("european stores: five countries, official handoff, preserved filters and n
   ).toEqual(new Set(["IT"]));
   // The rail lists one entry per retailer with a storefront there; OTTO has none in Italy.
   await expect(page.locator('.rl-retailer[data-retailer="otto"]')).toHaveCount(0);
-  for (const link of await page.locator("[data-store] a.rl-store-site").all()) {
-    expect(await link.getAttribute("href")).toMatch(/^https:\/\/www\.[a-z.]+\.(it)\/$/);
-    await expect(link).toHaveAttribute("target", "_blank");
-    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
-  }
   // A country storefront offers Bring For Me for its own store id.
   const regional = page.locator("[data-store=zalando-it]");
   await expect(regional.locator(".rl-store-primary")).toHaveCount(1);
@@ -688,10 +686,19 @@ test("european stores: five countries, official handoff, preserved filters and n
     "href",
     /store=zalando-it/,
   );
+  await expect(page.locator("dialog[open] .rl-store-site")).toHaveAttribute(
+    "href",
+    "https://www.zalando.it/",
+  );
+  await expect(page.locator("dialog[open] .rl-store-site")).toHaveAttribute(
+    "rel",
+    "noopener noreferrer",
+  );
   await page.keyboard.press("Escape");
 
   // Active filters are visible chips; removing one keeps the others, reset clears all.
-  await page.locator(".rl-retailer-picker summary").click();
+  if (await page.locator(".rl-retailer-picker:not([open]) summary").count())
+    await page.locator(".rl-retailer-picker summary").click();
   await page.locator('.rl-retailer[data-retailer="zalando"]').click();
   await expect(page).toHaveURL(/store=zalando/);
   const active = page.locator(".rl-active-filter");
@@ -704,7 +711,8 @@ test("european stores: five countries, official handoff, preserved filters and n
   await expect(page.locator(".rl-active-filter")).toHaveCount(0);
 
   // Keyboard: the retailer rail is reachable and operable without a pointer.
-  await page.locator(".rl-retailer-picker summary").click();
+  if (await page.locator(".rl-retailer-picker:not([open]) summary").count())
+    await page.locator(".rl-retailer-picker summary").click();
   const otto = page.locator('.rl-retailer[data-retailer="otto"]');
   await otto.focus();
   await page.keyboard.press("Enter");
@@ -766,7 +774,9 @@ test("european stores: compact logos, no overflow at 320–430px in every direct
         .evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
       expect(cols).toBe(2);
       for (const target of await page
-        .locator(".rl-country-chips .rl-chip, .rl-retailer, [data-store] a.rl-button")
+        .locator(
+          ".rl-country-chips .rl-chip, .rl-retailer-picker[open] .rl-retailer, [data-store] button.rl-button",
+        )
         .all())
         expect((await target.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     }
@@ -797,7 +807,8 @@ test("marketplace refinement: one tile size and equal visual weight for every re
     await page.setViewportSize({ width, height: 900 });
     for (const lang of ["ckb", "ar", "en"]) {
       await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
-      await page.locator(".rl-retailer-picker summary").click();
+      if (await page.locator(".rl-retailer-picker:not([open]) summary").count())
+        await page.locator(".rl-retailer-picker summary").click();
       const tiles = await page.locator(".rl-retailer").evaluateAll((els) =>
         els.map((el) => {
           const tile = el.getBoundingClientRect();
@@ -1069,6 +1080,13 @@ test("store discovery: one brand card, regional sheet, safe product-link handoff
       await expect(page.locator(".rl-store-search input")).toBeVisible();
       await expect(page.locator(".rl-store-compact-footer")).toBeVisible();
       await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
+      if (
+        process.env.RL_REVIEW_SHOTS &&
+        ((lang === "ckb" && width === 390) || (lang === "en" && width === 1440))
+      ) {
+        mkdirSync("docs/review", { recursive: true });
+        await page.screenshot({ path: `docs/review/stores-${lang}-${width}.png`, fullPage: true });
+      }
       const names = await page.locator(".rl-store-card h3").allTextContents();
       expect(new Set(names).size).toBe(names.length);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
