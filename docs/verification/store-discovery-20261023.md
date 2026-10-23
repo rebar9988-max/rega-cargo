@@ -73,3 +73,13 @@ regional selection, official-site handoff, favourites, forbidden searches, safe 
 prefill through intent switching/refresh, equal logos/cards and native-dialog keyboard use.
 Unmasked 390 px ckb and 1440 px en review images inspected. Temporary screenshot capture,
 review PNGs and render workflow removed before marking ready. Final strict gate pending.
+
+## Final strict gate navigation finding
+
+Run 39958967756: verify/scope and all screenshot baselines passed; layout finished
+735 passed, 16 skipped, 1 failed. Firefox aborted the next document navigation in the
+four-store handoff loop while the previous request page was still hydrating (the trace
+shows disabled request controls). No product assertion or screenshot mismatch failed.
+Each regional handoff now runs in its own fresh page and explicitly waits for the request
+store identity and enabled product-link input. No retries increased or checks removed.
+Full strict gate reruns before merge; release remains pending.

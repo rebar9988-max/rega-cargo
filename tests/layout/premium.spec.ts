@@ -738,22 +738,23 @@ test("european stores: compact logos, no overflow at 320–430px in every direct
   }
 });
 
-test("european stores: Bring For Me opens for a country storefront with its own host", async ({
-  page,
-}) => {
-  for (const [id, host] of [
-    ["zalando-ch", "zalando.ch"],
-    ["amazon-it", "amazon.it"],
-    ["sephora-fr", "sephora.fr"],
-    ["ebay-gb", "ebay.co.uk"],
-  ]) {
+// Each regional handoff gets a fresh page. Starting another document navigation while
+// Firefox is still hydrating the previous request page aborts its in-flight navigation.
+for (const [id, host] of [
+  ["zalando-ch", "zalando.ch"],
+  ["amazon-it", "amazon.it"],
+  ["sephora-fr", "sephora.fr"],
+  ["ebay-gb", "ebay.co.uk"],
+]) {
+  test(`european stores: Bring For Me opens ${id} with its own host`, async ({ page }) => {
     await page.goto(`/stores?lang=en&store=${id}`, { waitUntil: "networkidle" });
     await page.locator(`[data-store=${id}] .rl-store-primary`).click();
     await page.locator('dialog[open] a[data-variant="primary"]').click();
     await expect(page).toHaveURL(new RegExp(`/stores/request\\?.*store=${id}`));
-    await expect(page.locator("main")).toContainText(host);
-  }
-});
+    await expect(page.locator(".rl-request-store")).toContainText(host);
+    await expect(page.locator('main input[name="url"]')).toBeEnabled();
+  });
+}
 
 test("marketplace refinement: one tile size and equal visual weight for every retailer logo", async ({
   page,
