@@ -1,5 +1,9 @@
 # CI/CD and deployments
 
+## 2026-10-23 PR #157 empty-state centring — merged `ffdae5f`, deployed
+
+Gate on `d49bf87` green (layout lock 730/16 skipped/0 failed). Workers Build `2fcef3fe-a7cc-4437-a708-3192e867331f` succeeded; live English empty states centred on `/market` and `/stores`. Rollback pointer: `b591f95`. [Evidence](../verification/market-states-20261023.md).
+
 ## 2026-10-23 PR #156 `/market` empty states — merged `b591f95`, deployed
 
 Gate on `015a234` green (layout lock 728/16 skipped/0 failed, no baseline change). Workers Build `ea9c526f-c6ad-4284-b667-a3ad04e5f809` succeeded; live `/market` verified in ckb/ar/en. Rollback pointer: `31c4a77`. [Evidence](../verification/market-states-20261023.md).

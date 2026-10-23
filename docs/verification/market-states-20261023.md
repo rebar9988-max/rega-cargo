@@ -65,3 +65,10 @@ New test `empty states are centred in every language` (360/1280 px × ckb/ar/en 
 lint 0 errors, `npm test` 254 + 510 / 0 failed / 4 existing skips, build ✓, Playwright
 premium-360 + chromium-laptop `--ignore-snapshots` 103 passed / 4 existing skips / 0 failed.
 
+Release (PR #157): hosted gate on `d49bf87` — `scope` ✓, `verify` ✓, `layout lock` ✓ 730 passed /
+16 existing skips / 0 failed, `Workers Builds` ✓. Squash-merged as **`ffdae5f`**; Cloudflare
+Workers Build `2fcef3fe-a7cc-4437-a708-3192e867331f` succeeded. Live (Firecrawl, `maxAge: 0`):
+`/market?lang=en&q=zzz` (1280 px) and `/stores?lang=en&q=vodka` (360 px) show the empty-state
+text centred above centred actions. Not verifiable from the agent: production console logs and
+the active version allocation (no Workers deployments API); a physical phone.
+
