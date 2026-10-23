@@ -1,6 +1,6 @@
 # TEMPORARY diagnostic (owner task 2026-10-23: root-cause the flaky WebKit iPad navigation test).
 # Runs the navigation tests (incl. the failed-module regression) repeatedly on webkit-ipad-portrait without retries and prints the page
-# snapshot of every failure. Read-only: commits nothing. Removed before merge. (fix run)
+# snapshot of every failure. Read-only: commits nothing. Removed before merge. (fix run 2)
 name: tmp ipad nav diagnose
 on:
   push:

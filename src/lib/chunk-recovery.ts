@@ -66,9 +66,17 @@ export function shouldReloadForChunk(
 
 /**
  * Reload after refreshing this page's modules in the HTTP cache. WebKit otherwise reuses a module
- * whose connection dropped, so a plain script reload failed again without a new request.
+ * whose connection dropped, so a plain script reload failed again without a new request. Never
+ * reloads a page the visitor has meanwhile left (another navigation started or the URL changed).
  */
-export async function reloadWithFreshModules(timeoutMs = 5_000): Promise<void> {
+export async function reloadWithFreshModules(timeoutMs = 3_000): Promise<void> {
+  const page = location.href;
+  let leaving = false;
+  const leave = () => {
+    leaving = true;
+  };
+  addEventListener("beforeunload", leave, { once: true });
+  addEventListener("pagehide", leave, { once: true });
   const urls = new Set<string>();
   for (const link of document.querySelectorAll<HTMLLinkElement>('link[rel="modulepreload"]'))
     urls.add(link.href);
@@ -79,5 +87,7 @@ export async function reloadWithFreshModules(timeoutMs = 5_000): Promise<void> {
     Promise.all(sameOrigin.map((url) => fetch(url, { cache: "reload" }).catch(() => undefined))),
     new Promise((resolve) => setTimeout(resolve, timeoutMs)),
   ]);
-  location.reload();
+  removeEventListener("beforeunload", leave);
+  removeEventListener("pagehide", leave);
+  if (!leaving && location.href === page) location.reload();
 }
