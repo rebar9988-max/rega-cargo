@@ -1000,3 +1000,31 @@ test("empty states are centred in every language, text and actions alike", async
     }
   }
 });
+
+test("marketplace error state: one titled card, centred actions, full touch targets", async ({
+  page,
+}) => {
+  // The layout worker has no database, so /market renders its error state.
+  for (const width of [320, 360, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const lang of ["ckb", "ar", "en"]) {
+      await page.goto(`/market?lang=${lang}`, { waitUntil: "networkidle" });
+      const state = page.locator(".rl-market-unavailable .rl-empty-state");
+      await expect(state).toBeVisible();
+      await expect(state.locator("h2")).toHaveCount(1);
+      const actions = state.locator(".rl-empty-actions > *");
+      await expect(actions).toHaveCount(3);
+      const card = (await state.boundingBox())!;
+      for (const action of await actions.all()) {
+        const box = (await action.boundingBox())!;
+        expect(box.height, `${width} ${lang}`).toBeGreaterThanOrEqual(44);
+        expect(
+          Math.abs(box.x + box.width / 2 - (card.x + card.width / 2)),
+          `${width} ${lang}`,
+        ).toBeLessThan(card.width / 2);
+      }
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      expect(overflow, `${width} ${lang}`).toBe(0);
+    }
+  }
+});

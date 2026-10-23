@@ -12,6 +12,9 @@ const en = {
   min: "Min",
   max: "Max",
   inStock: "In stock",
+  lowStock: "Few left",
+  outOfStock: "Out of stock",
+  backToMarket: "Back to the marketplace",
   newest: "Newest",
   priceSort: "Price",
   offers: "offers",
@@ -106,6 +109,9 @@ const ckb: typeof en = {
   min: "کەمترین",
   max: "زۆرترین",
   inStock: "بەردەست",
+  lowStock: "کەم ماوە",
+  outOfStock: "نەماوە",
+  backToMarket: "گەڕانەوە بۆ بازاڕ",
   newest: "نوێترین",
   priceSort: "نرخ",
   offers: "ئۆفەر",
@@ -200,6 +206,9 @@ const fa: typeof en = {
   min: "کمترین",
   max: "بیشترین",
   inStock: "موجود",
+  lowStock: "موجودی کم",
+  outOfStock: "ناموجود",
+  backToMarket: "بازگشت به بازار",
   newest: "جدیدترین",
   priceSort: "قیمت",
   offers: "پیشنهاد",
@@ -283,6 +292,8 @@ const fa: typeof en = {
   cancelled: "لغو شد",
 };
 
+// TODO(translate-review): lowStock, outOfStock and backToMarket (2026-10-23) need a native review in every
+// language except en and ckb.
 // TODO(translate-review): ar, de, ku and tr below were completed 2026-10-11 and need a native review.
 // de and tr use the formal register; ar uses Modern Standard Arabic; ku uses "tu" like its message file.
 const ar: typeof en = {
@@ -295,6 +306,9 @@ const ar: typeof en = {
   min: "الأدنى",
   max: "الأقصى",
   inStock: "متوفر",
+  lowStock: "كمية محدودة",
+  outOfStock: "غير متوفر",
+  backToMarket: "العودة إلى السوق",
   newest: "الأحدث",
   priceSort: "السعر",
   offers: "عروض",
@@ -389,6 +403,9 @@ const de: typeof en = {
   min: "Min.",
   max: "Max.",
   inStock: "Auf Lager",
+  lowStock: "Nur noch wenige",
+  outOfStock: "Ausverkauft",
+  backToMarket: "Zurück zum Marktplatz",
   newest: "Neueste",
   priceSort: "Preis",
   offers: "Angebote",
@@ -483,6 +500,9 @@ const ku: typeof en = {
   min: "Kêmtirîn",
   max: "Zêdetirîn",
   inStock: "Heye",
+  lowStock: "Hindik maye",
+  outOfStock: "Nemaye",
+  backToMarket: "Vegere bazarê",
   newest: "Ya herî nû",
   priceSort: "Biha",
   offers: "pêşniyar",
@@ -577,6 +597,9 @@ const tr: typeof en = {
   min: "En az",
   max: "En çok",
   inStock: "Stokta",
+  lowStock: "Az kaldı",
+  outOfStock: "Tükendi",
+  backToMarket: "Pazara dön",
   newest: "En yeni",
   priceSort: "Fiyat",
   offers: "teklif",

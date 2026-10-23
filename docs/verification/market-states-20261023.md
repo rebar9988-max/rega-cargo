@@ -72,3 +72,31 @@ Workers Build `2fcef3fe-a7cc-4437-a708-3192e867331f` succeeded. Live (Firecrawl,
 text centred above centred actions. Not verifiable from the agent: production console logs and
 the active version allocation (no Workers deployments API); a physical phone.
 
+## Round 2 (owner: "fix everything, don't stop") — product page and error state
+
+Audit on the dev server (PGLite with seeded dev products; production has none yet):
+
+| # | Finding (verified) | Fix |
+|---|---|---|
+| 1 | Product page offer line in English read "0 IQD Price 15,000 IQD · Shipping · سلێمانی": one paragraph with an Arabic-script city first took the RTL bidi direction and reordered the English labels | city, price and shipping are separate runs with separate `·` elements (`.rl-offer-meta`) |
+| 2 | Stock "few left" / "out of stock" hard-coded in Sorani in every language (hard rule 4) | `lowStock`, `outOfStock` in `market-copy` for all seven languages (translate-review noted) |
+| 3 | Save / review / favourite results appeared at the very end of the page, far from the action | each result is shown under its own action (`role="status"`) |
+| 4 | Not-found product page had only a page header, no way on | Back to the marketplace (`backToMarket`, new key) + European stores |
+| 5 | `/market` error state (no database): untitled muted line and three stacked buttons of different widths | the titled `rl-empty-state` card (existing `errorTitle`) with the actions centred in one wrapping row |
+
+Not changed (reported): the product description is stored only in Sorani (`description_ku`), so
+non-Sorani pages show it in Sorani — a data limitation, not a UI defect; the customer-visible
+"Admin" link on `/market` (the admin pages are protected) — product decision.
+
+Baselines: the 27 `market-*` page baselines change by design (error state) and are re-rendered
+in the official image by a temporary branch workflow, removed before merge.
+
+Local gate: typecheck ✓, lint 0 errors, `npm test` 254 + 510 / 0 failed / 4 existing skips,
+build ✓; Playwright `--ignore-snapshots` premium-360 + chromium-iphone + chromium-laptop 180
+passed / 4 existing skips / 0 failed (new error-state test at 320/360/1280 × ckb/ar/en).
+
+Baseline render: temporary workflow run 39911056647 committed exactly 27 `market-*.png`
+(`6891780`); reviewed — header and page header pixel-identical down to the state area
+(first changed row 347–459 px), footers identical, pages +45 to +199 px (titled card). Workflow
+removed before the PR.
+
