@@ -37,7 +37,10 @@ import { OrderFallback } from "@/components/order-fallback";
 import { TrustSummary } from "@/components/trust-summary";
 import { useOrderAvailability } from "@/lib/orders/use-availability";
 export const Route = createFileRoute("/stores/request")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { url?: string; store: string | undefined; item: string | undefined; intent: string } => ({
+    url: checkProductUrl(search.url, undefined).ok ? String(search.url) : undefined,
     store: typeof search.store === "string" ? search.store : undefined,
     item: typeof search.item === "string" ? search.item : undefined,
     intent: search.intent === "ship" ? "ship" : "buy",
@@ -57,10 +60,10 @@ function RequestPage() {
   const { lang, t: global } = useI18n();
   const t = storeCopy(lang);
   const rc = REQUEST_COPY[lang];
-  const { store: storeId, intent, item } = Route.useSearch();
+  const { store: storeId, intent, item, url: initialUrl } = Route.useSearch();
   const good = goodById(item);
   const store = storeById(storeId) ?? storeById(good?.storeId);
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(initialUrl ?? "");
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
   const [qty, setQty] = useState("1");

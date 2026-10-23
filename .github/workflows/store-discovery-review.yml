@@ -1,0 +1,56 @@
+name: Store discovery review render (temporary)
+on:
+  push:
+    branches: [codex/stores-quality-20261023]
+    paths-ignore: ['tests/layout/__screenshots__/**', 'docs/review/**']
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: "1"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/stores-quality-20261023
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: node scripts/project-identity-guard.mjs --project "R&L"
+      - run: npm ci
+      - run: npm run typecheck && npm run lint && npm test
+      - run: npm run build
+        env:
+          DATABASE_URL: ''
+      - name: Render affected pages and menu in the official image
+        env:
+          HOME: /root
+        run: npx playwright test tests/layout/layout.spec.ts --grep 'stores|menu sheet' --update-snapshots=all
+      - name: Functional and geometry suite
+        env:
+          HOME: /root
+        run: npx playwright test --ignore-snapshots
+      - name: Commit reviewed baselines to this branch only
+        if: ${{ !cancelled() }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tests/layout/__screenshots__
+          git diff --cached --quiet || git commit -m "Render approved store discovery and menu baselines [skip ci]"
+          git push origin HEAD:codex/stores-quality-20261023
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: store-discovery-review
+          path: |
+            test-results/
+            playwright-report/
+            tests/layout/__screenshots__/

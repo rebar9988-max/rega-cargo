@@ -173,10 +173,11 @@ test("360px filters, favorites, keyboard dialog and banned searches", async ({ p
   await expect(filters).toBeFocused();
   // Country and retailer are chosen in the discovery rows above the results.
   await page.locator('.rl-country-chips [data-country="DE"]').click();
+  await page.locator(".rl-retailer-picker summary").click();
   await page.locator('.rl-retailer[data-retailer="zalando"]').click();
   await expect(page).toHaveURL(/store=zalando/);
   await page.reload({ waitUntil: "networkidle" });
-  await expect(page.locator("[data-good]")).toHaveCount(1);
+  await expect(page.locator("[data-good]")).toHaveCount(0);
   await expect(page.locator("[data-store=zalando]")).toHaveCount(1);
   await page.locator("[data-store=zalando] button[aria-pressed]").click();
   await page.goto("/stores?fav=1&lang=en");
@@ -204,17 +205,11 @@ test("catalogue: ten category rows, direct URLs, history, subcategories and hone
   page,
 }) => {
   await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
-  const rows = page.locator(".rl-category-row");
-  await expect(rows).toHaveCount(10);
-  // Food awaits owner approval: visible, not a link, lists nothing.
-  await expect(page.locator('.rl-category-row[data-category="food"]')).toHaveAttribute(
-    "aria-disabled",
-    "true",
-  );
-  await expect(page.locator('a.rl-category-row[data-category="food"]')).toHaveCount(0);
+  await expect(page.locator(".rl-category-row, [data-good]")).toHaveCount(0);
+  await expect(page.locator('.rl-discovery-categories [data-category="food"]')).toHaveCount(0);
   for (const cat of PRIMARY) {
     await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
-    await page.locator(`a.rl-category-row[data-category="${cat}"]`).click();
+    await page.locator(`.rl-discovery-categories [data-category="${cat}"]`).click();
     await expect(page).toHaveURL(new RegExp(`cat=${cat}(&|$)`));
     await expect(page.locator(".rl-subcategories")).toBeVisible();
     // A published category with no listed store shows the honest empty state, never invented items.
@@ -232,7 +227,7 @@ test("catalogue: ten category rows, direct URLs, history, subcategories and hone
   await expect(page.locator('[data-sub-detail="tablets"]')).toHaveCount(0);
   // Language and other filters are kept when choosing a category.
   await page.goto("/stores?lang=ckb&country=DE", { waitUntil: "networkidle" });
-  await page.locator('a.rl-category-row[data-category="pets"]').click();
+  await page.locator('.rl-discovery-categories [data-category="pets"]').click();
   await expect(page).toHaveURL(/cat=pets/);
   await expect(page).toHaveURL(/country=DE/);
   await expect(page.locator("html")).toHaveAttribute("lang", "ckb");
@@ -423,8 +418,9 @@ test("compact forms and store cards at 360px", async ({ page }) => {
   await page.goto("/stores?lang=ckb", { waitUntil: "networkidle" });
   const card = page.locator("[data-store=zalando]");
   await expect(card.locator(".rl-button[data-variant=primary]")).toHaveCount(1);
-  await expect(card.locator("a.rl-store-site")).toHaveAttribute("href", /zalando/);
-  await expect(card.locator("a.rl-store-site")).toHaveAttribute("target", "_blank");
+  await card.locator(".rl-store-primary").click();
+  await expect(page.locator("dialog[open] a.rl-store-site")).toHaveAttribute("href", /zalando/);
+  await expect(page.locator("dialog[open] a.rl-store-site")).toHaveAttribute("target", "_blank");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   expect(overflow).toBe(0);
 });
@@ -498,7 +494,7 @@ test("header category strip: directly under the header, swipeable, active state,
   page,
 }) => {
   for (const lang of ["ckb", "ku", "de", "en", "ar", "fa", "tr"]) {
-    await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
     const header = page.locator(".rl-site-header");
     const strip = page.locator('[data-layout="category-strip"]');
     await expect(strip, lang).toBeVisible();
@@ -534,7 +530,7 @@ test("header category strip: directly under the header, swipeable, active state,
     }
   }
   // Choosing a category marks it (aria-current) and keeps it in view after scrolling there.
-  await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+  await page.goto("/?lang=en", { waitUntil: "networkidle" });
   const pets = page.locator('[data-layout="category-strip"] a[data-category="pets"]');
   await pets.click();
   await expect(page).toHaveURL(/cat=pets/);
@@ -543,12 +539,12 @@ test("header category strip: directly under the header, swipeable, active state,
   await expect(pets).toBeInViewport();
   // A direct link to a category far down the strip also opens with it in view, and no name
   // is cut off in any language (fixed-width items, up to three lines).
-  await page.goto("/stores?lang=en&cat=beauty", { waitUntil: "networkidle" });
+  await page.goto("/?lang=en&cat=beauty", { waitUntil: "networkidle" });
   await expect(
     page.locator('[data-layout="category-strip"] a[data-category="beauty"]'),
   ).toBeInViewport();
   for (const lang of ["ckb", "ku", "de", "en", "ar", "fa", "tr"]) {
-    await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+    await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
     // A cut-off name hides a whole extra line (at least one font size). Firefox counts the
     // font's ascent/descent of the last visible line in scrollHeight (about 5px over the
@@ -562,7 +558,7 @@ test("header category strip: directly under the header, swipeable, active state,
     );
     expect(cut, lang).toEqual([]);
   }
-  await page.goto("/stores?lang=en&cat=pets", { waitUntil: "networkidle" });
+  await page.goto("/?lang=en&cat=pets", { waitUntil: "networkidle" });
   // "More" opens the full menu; the header search button opens the search field.
   await page.locator('[data-layout="category-strip"] button').click();
   await expect(page.locator('[data-layout="sheet"]')).toBeVisible();
@@ -687,9 +683,15 @@ test("european stores: five countries, official handoff, preserved filters and n
   // A country storefront offers Bring For Me for its own store id.
   const regional = page.locator("[data-store=zalando-it]");
   await expect(regional.locator(".rl-store-primary")).toHaveCount(1);
-  await expect(regional.locator(".rl-store-primary")).toHaveAttribute("href", /store=zalando-it/);
+  await regional.locator(".rl-store-primary").click();
+  await expect(page.locator('dialog[open] a[data-variant="primary"]')).toHaveAttribute(
+    "href",
+    /store=zalando-it/,
+  );
+  await page.keyboard.press("Escape");
 
   // Active filters are visible chips; removing one keeps the others, reset clears all.
+  await page.locator(".rl-retailer-picker summary").click();
   await page.locator('.rl-retailer[data-retailer="zalando"]').click();
   await expect(page).toHaveURL(/store=zalando/);
   const active = page.locator(".rl-active-filter");
@@ -702,6 +704,7 @@ test("european stores: five countries, official handoff, preserved filters and n
   await expect(page.locator(".rl-active-filter")).toHaveCount(0);
 
   // Keyboard: the retailer rail is reachable and operable without a pointer.
+  await page.locator(".rl-retailer-picker summary").click();
   const otto = page.locator('.rl-retailer[data-retailer="otto"]');
   await otto.focus();
   await page.keyboard.press("Enter");
@@ -711,9 +714,10 @@ test("european stores: five countries, official handoff, preserved filters and n
   // Handoff: the official site opens in a new tab; coming back offers Bring For Me for it.
   await page.goto("/stores?lang=en&country=DE&cat=fashion", { waitUntil: "networkidle" });
   await context.route(/zalando\.de/, (route) => route.fulfill({ body: "<title>stub</title>" }));
+  await page.locator("[data-store=zalando] .rl-store-primary").click();
   const [popup] = await Promise.all([
     context.waitForEvent("page"),
-    page.locator("[data-store=zalando] a.rl-store-site").click(),
+    page.locator("dialog[open] a.rl-store-site").click(),
   ]);
   await popup.close();
   await page.bringToFront();
@@ -780,6 +784,7 @@ test("european stores: Bring For Me opens for a country storefront with its own 
   ]) {
     await page.goto(`/stores?lang=en&store=${id}`, { waitUntil: "networkidle" });
     await page.locator(`[data-store=${id}] .rl-store-primary`).click();
+    await page.locator('dialog[open] a[data-variant="primary"]').click();
     await expect(page).toHaveURL(new RegExp(`/stores/request\\?.*store=${id}`));
     await expect(page.locator("main")).toContainText(host);
   }
@@ -792,6 +797,7 @@ test("marketplace refinement: one tile size and equal visual weight for every re
     await page.setViewportSize({ width, height: 900 });
     for (const lang of ["ckb", "ar", "en"]) {
       await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+      await page.locator(".rl-retailer-picker summary").click();
       const tiles = await page.locator(".rl-retailer").evaluateAll((els) =>
         els.map((el) => {
           const tile = el.getBoundingClientRect();
@@ -857,17 +863,16 @@ test("marketplace refinement: store cards in a row line up (meta, categories, ac
             lines,
             hostCut: host.scrollWidth > host.clientWidth + 1,
             edgeGap: Math.abs(edges[0] - edges[1]),
-            site: top(".rl-store-site"),
             primary: top(".rl-store-primary"),
           };
         }),
       );
-      expect(cards.length, `${width} ${lang}`).toBeGreaterThan(10);
+      expect(cards.length, `${width} ${lang}`).toBe(10);
       const lineHeight = Math.min(...cards.flatMap((card) => card.lines));
       const rows = new Map<number, typeof cards>();
       for (const card of cards) rows.set(card.row, [...(rows.get(card.row) ?? []), card]);
       for (const [row, cells] of rows) {
-        for (const key of ["name", "meta", "metaHeight", "site", "primary"] as const) {
+        for (const key of ["name", "meta", "metaHeight", "primary"] as const) {
           const values = cells.map((cell) => cell[key]);
           expect(
             Math.max(...values) - Math.min(...values),
@@ -964,7 +969,7 @@ test("marketplace refinement: store-card logos keep their full size on narrow ph
           };
         }),
       );
-      expect(cards.length).toBeGreaterThan(10);
+      expect(cards.length).toBe(10);
       for (const card of cards) {
         // Rendered at the normalised size (never squeezed by the card), inside its tile.
         expect(Math.abs(card.w - card.attr), `${width} ${lang} ${card.id} width`).toBeLessThan(1);
@@ -1050,4 +1055,55 @@ test("clamped Latin-script store categories cut at the end of the line, right-al
       .first()
       .evaluate((el) => getComputedStyle(el).direction),
   ).toBe("rtl");
+});
+
+test("store discovery: one brand card, regional sheet, safe product-link handoff and compact footer", async ({
+  page,
+}) => {
+  for (const lang of ["ckb", "ar", "en"]) {
+    for (const width of [320, 390, 820, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/stores?lang=${lang}`, { waitUntil: "networkidle" });
+      await expect(page.locator(".rl-store-card")).toHaveCount(10);
+      await expect(page.locator("[data-good], .rl-category-row")).toHaveCount(0);
+      await expect(page.locator(".rl-store-search input")).toBeVisible();
+      await expect(page.locator(".rl-store-compact-footer")).toBeVisible();
+      await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
+      const names = await page.locator(".rl-store-card h3").allTextContents();
+      expect(new Set(names).size).toBe(names.length);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
+      await page.locator("[data-store=zalando] .rl-store-primary").click();
+      const dialog = page.locator("dialog[open]");
+      await expect(dialog).toBeVisible();
+      await dialog.locator("select").selectOption("zalando-it");
+      await expect(dialog.locator(".rl-store-site")).toHaveAttribute(
+        "href",
+        "https://www.zalando.it/",
+      );
+      await expect(dialog.locator('a[data-variant="primary"]')).toHaveAttribute(
+        "href",
+        /store=zalando-it/,
+      );
+      await expect(dialog.locator('a[href*="intent=ship"]')).toHaveAttribute(
+        "href",
+        /store=zalando-it/,
+      );
+      await page.keyboard.press("Escape");
+      await expect(page.locator("[data-store=zalando] .rl-store-primary")).toBeFocused();
+    }
+  }
+  await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+  const search = page.locator("#rl-directory-search");
+  await search.fill("https://www.zalando.it/shoe");
+  await search.press("Enter");
+  await expect(page).toHaveURL(/\/stores\/request\?.*store=zalando-it/);
+  await expect(page.locator('input[name="url"]')).toHaveValue("https://www.zalando.it/shoe");
+  await page.goBack();
+  await search.fill("https://www.amazon.de/vodka");
+  await search.press("Enter");
+  await expect(page.locator("#rl-link-error")).toBeVisible();
+  await expect(page).toHaveURL(/\/stores\?/);
+  await search.fill("Decathlon");
+  await search.press("Enter");
+  await expect(page.locator(".rl-store-card")).toHaveCount(1);
 });
