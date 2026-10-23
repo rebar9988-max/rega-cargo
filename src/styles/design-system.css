@@ -2385,7 +2385,7 @@ a.rl-category-row:active {
   padding-block-end: var(--rl-space-2);
 }
 .rl-store-compact-footer {
-  padding-block: var(--rl-space-3);
+  padding-block-start: var(--rl-space-3);
 }
 .rl-compact-links {
   display: flex;
