@@ -978,3 +978,25 @@ test("marketplace refinement: store-card logos keep their full size on narrow ph
     }
   }
 });
+
+test("empty states are centred in every language, text and actions alike", async ({ page }) => {
+  for (const width of [360, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const lang of ["ckb", "ar", "en"]) {
+      await page.goto(`/stores?lang=${lang}&q=vodka`, { waitUntil: "networkidle" });
+      const state = page.locator(".rl-empty-state");
+      await expect(state).toBeVisible();
+      const card = (await state.boundingBox())!;
+      const centre = card.x + card.width / 2;
+      for (const part of await state.locator("h2, p, .rl-button").all()) {
+        const text = await part.evaluate((el) => {
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          const r = range.getBoundingClientRect();
+          return r.x + r.width / 2;
+        });
+        expect(Math.abs(text - centre), `${width} ${lang}`).toBeLessThan(4);
+      }
+    }
+  }
+});
