@@ -196,3 +196,8 @@ Invitation-only native Better Auth owner activation is in progress on `codex/rl-
 
 
 2026-10-19 email OTP: #131 merged `e0778e1` (feature `63ad833`). Customer email-code sign-in/registration through Better Auth + Resend; migration 0018 applied to production after a backup branch. Hosted gate green, real delivery confirmed; live session run pending the inbox code. [Evidence](../verification/email-otp-20261019.md).
+
+
+## 2026-10-23 — Admin link and WebKit navigation recovery (owner brief "R&L final fixes & production verification")
+
+Branch `claude/market-admin-link-ipad-nav-20261023`. Task 1: admin link only for approved admins (`marketViewerCanAdmin`/`viewerIsAdmin`, fail closed), 12 compliance e2e tests pass. Task 2: flaky WebKit navigation root-caused (failed page module → error page without navigation; WebKit shared message and reused failed module) and fixed in `chunk-recovery.ts`/`error-component.tsx`; 5 unit tests + cross-browser regression test; temporary WebKit diagnostic final run 39996735987: 352 passed, 0 failed (3 WebKit projects × 8, under load, no retries). Local gate and hosted gate: see the PR. Task 3 (production verification): recorded after release in the [report](../verification/admin-link-webkit-nav-20261023.md).
