@@ -212,3 +212,8 @@ tests. Earlier four failures are resolved (nested RTL scroller -> wrapped retail
 localized privacy-link selector). New search waits for hydration; product links survive the
 intent switch and refresh. Temporary renderer/review files removed; final standard strict
 gate and release pending. [Evidence](../verification/store-discovery-20261023.md).
+
+
+## 2026-10-23 — Admin link and WebKit navigation recovery (owner brief "R&L final fixes & production verification")
+
+Branch `claude/market-admin-link-ipad-nav-20261023`. Task 1: admin link only for approved admins (`marketViewerCanAdmin`/`viewerIsAdmin`, fail closed), 12 compliance e2e tests pass. Task 2: flaky WebKit navigation root-caused (failed page module → error page without navigation; WebKit shared message and reused failed module) and fixed in `chunk-recovery.ts`/`error-component.tsx`; 5 unit tests + cross-browser regression test; temporary WebKit diagnostic final run 39996735987: 352 passed, 0 failed (3 WebKit projects × 8, under load, no retries). Local gate and hosted gate: see the PR. Task 3 (production verification): recorded after release in the [report](../verification/admin-link-webkit-nav-20261023.md).

@@ -28,6 +28,41 @@ test("unified navigation preserves deep links and marks the current customer jou
   }
 });
 
+test("a page module that fails to load recovers with its navigation in every browser", async ({
+  page,
+  isMobile,
+}) => {
+  // A dropped module request (or a deploy that replaced the files) once left this test's /track
+  // on the route error page, which has no header or bottom bar: the router reloads once per
+  // error message per tab, WebKit gives every failed module the same message, and a plain
+  // script reload in WebKit reuses the failed module. /market fails once; /track fails on load
+  // and again on its first recovery.
+  const failures: Record<string, number> = { "market.index": 1, track: 2 };
+  await page.route(/\/assets\/(market\.index|track)-[\w-]+\.js$/, (route) => {
+    const chunk = /\/assets\/(market\.index|track)-/.exec(route.request().url())![1];
+    if (failures[chunk] === 0) return route.continue();
+    failures[chunk]--;
+    return route.abort("connectionreset");
+  });
+  for (const [path, current] of [
+    ["/market?lang=en", "/market"],
+    ["/track?lang=en", "/track"],
+  ]) {
+    await page.goto(path, { waitUntil: "networkidle" });
+    const nav = page.locator(
+      isMobile && page.viewportSize()!.width < 1024
+        ? '[data-layout="bottom-bar"]'
+        : ".rl-primary-nav",
+    );
+    await expect(nav.locator('[aria-current="page"]')).toHaveAttribute(
+      "href",
+      new RegExp(`^${current}`),
+    );
+  }
+  // Every planned failure happened, so the recovery above was really exercised.
+  expect(failures).toEqual({ "market.index": 0, track: 0 });
+});
+
 test("Bring For Me preserves input, progressively discloses details and focuses field errors", async ({
   page,
 }) => {

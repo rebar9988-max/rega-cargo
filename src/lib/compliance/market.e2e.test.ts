@@ -352,3 +352,24 @@ describe("per-user action limit", () => {
     assert.equal(limited, 10);
   });
 });
+
+describe("admin navigation and admin data are for approved admins only", () => {
+  it("shows admin navigation to approved admins and super admins, nobody else", async () => {
+    await sql`insert into user_roles (user_id, role, status, display_name) values
+      ('nav-pending-admin', 'admin', 'pending', 'Pending'),
+      ('nav-super', 'super_admin', 'approved', 'Owner'),
+      ('nav-removed-admin', 'admin', 'removed', 'Removed')`;
+    assert.equal(await market.viewerIsAdmin(null), false);
+    assert.equal(await market.viewerIsAdmin("nav-customer-without-roles"), false);
+    assert.equal(await market.viewerIsAdmin(seller), false);
+    assert.equal(await market.viewerIsAdmin("nav-pending-admin"), false);
+    assert.equal(await market.viewerIsAdmin("nav-removed-admin"), false);
+    assert.equal(await market.viewerIsAdmin(admin), true);
+    assert.equal(await market.viewerIsAdmin("nav-super"), true);
+  });
+  it("refuses the admin queue server-side to customers, sellers and pending admins", async () => {
+    for (const user of ["nav-customer-without-roles", seller, "nav-pending-admin"])
+      await assert.rejects(market.adminQueue(user), (err: { code?: string }) => err.code === "forbidden", user);
+    await assert.doesNotReject(market.adminQueue(admin));
+  });
+});

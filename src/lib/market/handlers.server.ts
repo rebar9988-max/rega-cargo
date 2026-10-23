@@ -637,6 +637,16 @@ export async function reportProblem(userId: string, subject: unknown, body: unkn
   return { ok: true };
 }
 
+/**
+ * Whether the viewer may see admin navigation. Display only: every admin action and the
+ * /admin data are refused server-side (adminQueue, adminSet) for anyone else anyway.
+ */
+export async function viewerIsAdmin(userId: string | null): Promise<boolean> {
+  if (!userId) return false;
+  const sql = await sqlOf();
+  return approved(await roles(sql, userId), "admin");
+}
+
 export async function adminQueue(userId: string) {
   const sql = await sqlOf();
   const mine = await roles(sql, userId);

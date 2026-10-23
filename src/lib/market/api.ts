@@ -24,6 +24,19 @@ function fail(err: unknown): { error: string } {
   return { error: "invalid" };
 }
 
+/** Admin navigation is rendered only for approved admins; fails closed on any error. */
+export const marketViewerCanAdmin = createServerFn({ method: "GET" }).handler(
+  async (): Promise<{ admin: boolean }> => {
+    try {
+      const { resolveUserId } = await import("@/lib/auth/resolve-user.server");
+      const { viewerIsAdmin } = await import("./handlers.server");
+      return { admin: await viewerIsAdmin(await resolveUserId()) };
+    } catch {
+      return { admin: false };
+    }
+  },
+);
+
 export const marketHome = createServerFn({ method: "GET" })
   .validator((input: Record<string, unknown>) => input)
   .handler(async ({ data }) => {

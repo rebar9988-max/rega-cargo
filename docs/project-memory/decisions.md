@@ -149,3 +149,7 @@ all regional stores, compliance, all modules and production safeguards. REGA log
 was corrected in the same session; never use it here. Modern Web Guidance was consulted only
 for native-dialog technical behaviour, not as design authority. See
 [verification checkpoint](../verification/store-discovery-20261023.md).
+
+## 2026-10-23 — Recover failed page modules in the error page, not in the test
+
+The flaky WebKit navigation test was fixed in the product (module-load recovery in the route error page) instead of the test, per the owner brief (no weakening, skipping or retries). Decisions: refresh the page's same-origin modules with `cache: "reload"` before reloading, because WebKit's script reload reuses a failed module (measured 0/16 vs 4/4); cap at two automatic reloads per page per minute so a permanently missing module still shows the error page with its retry button; stand aside while TanStack's own reload runs; ignore failures after `beforeunload` (WebKit cancels in-flight modules on navigation) — `beforeunload`, not `unload`, keeps bfcache eligibility. The error page's design is unchanged. Temporary diagnostic workflow used on the branch only and removed before merge.
