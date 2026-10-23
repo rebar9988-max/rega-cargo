@@ -22,6 +22,26 @@ function routerReloadKeys(): Set<string> {
 /** The router's reload markers when this document started (read before the app renders). */
 const routerKeysAtStart = typeof window === "undefined" ? null : routerReloadKeys();
 
+/**
+ * Set once a navigation away from this document starts. WebKit then cancels module loads still in
+ * flight and reports them as failed; reloading for those would take the visitor's navigation away.
+ * (A beforeunload listener keeps the page eligible for the back/forward cache; unload would not.)
+ */
+let leaving = false;
+if (typeof window !== "undefined") {
+  addEventListener("beforeunload", () => {
+    leaving = true;
+  });
+  addEventListener("pageshow", () => {
+    leaving = false;
+  });
+}
+
+/** Whether a navigation away from this document has started. */
+export function isLeavingPage(): boolean {
+  return leaving;
+}
+
 /** Whether TanStack Router itself is reloading this document for the error (its marker is new). */
 export function routerIsReloading(error: unknown): boolean {
   if (!routerKeysAtStart || !(error instanceof Error)) return false;
@@ -71,12 +91,6 @@ export function shouldReloadForChunk(
  */
 export async function reloadWithFreshModules(timeoutMs = 3_000): Promise<void> {
   const page = location.href;
-  let leaving = false;
-  const leave = () => {
-    leaving = true;
-  };
-  addEventListener("beforeunload", leave, { once: true });
-  addEventListener("pagehide", leave, { once: true });
   const urls = new Set<string>();
   for (const link of document.querySelectorAll<HTMLLinkElement>('link[rel="modulepreload"]'))
     urls.add(link.href);
@@ -87,7 +101,5 @@ export async function reloadWithFreshModules(timeoutMs = 3_000): Promise<void> {
     Promise.all(sameOrigin.map((url) => fetch(url, { cache: "reload" }).catch(() => undefined))),
     new Promise((resolve) => setTimeout(resolve, timeoutMs)),
   ]);
-  removeEventListener("beforeunload", leave);
-  removeEventListener("pagehide", leave);
   if (!leaving && location.href === page) location.reload();
 }
