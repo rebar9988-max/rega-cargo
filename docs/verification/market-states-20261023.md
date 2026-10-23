@@ -109,3 +109,18 @@ card. Not verifiable live: the offer line, stock labels and result placement (pr
 no listed products) and the no-database error state (production database is up) — both were
 verified on the dev server / official image instead.
 
+## Firefox clamp ellipsis (PR #162)
+
+Open low-severity observation from the closeout run (recorded in PR #160 / issues.md): Firefox put
+the line-clamp ellipsis of English store categories at the line start inside the always-RTL card.
+Fix: Latin-script `.rl-store-categories` get `direction: ltr` + `text-align: right` (text stays on
+the right edge; Sorani/Arabic unchanged). Test: computed `direction: ltr` / `text-align: right` in
+en and `rtl` in ckb (Chromium + Firefox). Hosted gate on `3cf5bfc`: `scope` ✓, `verify` ✓,
+`layout lock` ✓ 733 passed / 16 existing skips / 0 failed — no Chromium/WebKit baseline changed;
+1 flaky retry in an unrelated test (`unified.spec.ts` bottom-bar `aria-current` for `/track` on
+WebKit iPad, passed on the configured retry; global navigation, outside this scope — reported,
+not changed). Merged as **`089ddaf`**; Workers Build `4f4805b3-9bba-4b91-9086-38dcae7d69d4`
+succeeded; the live inline stylesheet on `/stores?lang=en` contains
+`html[data-textdir="ltr"] .rl-store-categories { text-align: right; direction: ltr; }`. Firefox
+rendering itself was not re-run against production from this session.
+
