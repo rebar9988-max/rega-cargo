@@ -1028,3 +1028,26 @@ test("marketplace error state: one titled card, centred actions, full touch targ
     }
   }
 });
+
+test("clamped Latin-script store categories cut at the end of the line, right-aligned", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/stores?lang=en", { waitUntil: "networkidle" });
+  const cats = page.locator("[data-store] .rl-store-categories").first();
+  await expect(cats).toBeVisible();
+  const style = await cats.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { direction: cs.direction, align: cs.textAlign };
+  });
+  // LTR block → the line-clamp ellipsis is at the line end in every engine (Firefox included).
+  expect(style).toEqual({ direction: "ltr", align: "right" });
+  // Sorani keeps the card's own direction.
+  await page.goto("/stores?lang=ckb", { waitUntil: "networkidle" });
+  expect(
+    await page
+      .locator("[data-store] .rl-store-categories")
+      .first()
+      .evaluate((el) => getComputedStyle(el).direction),
+  ).toBe("rtl");
+});

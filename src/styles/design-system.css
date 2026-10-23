@@ -1299,6 +1299,13 @@
   overflow: hidden;
   font-size: var(--text-xs);
 }
+/* Latin-script category lists: give the clamped block its text's own direction, so Firefox
+   puts the ellipsis at the end of the cut line (it used the RTL card's start). The text stays
+   on the right edge like every other text block (styles.css). */
+html[data-textdir="ltr"] .rl-store-categories {
+  direction: ltr;
+  text-align: right;
+}
 .rl-market-layout {
   display: grid;
   gap: var(--rl-space-4);
