@@ -1,5 +1,12 @@
 # CI/CD and deployments
 
+## 2026-10-23 Marketplace refinement closeout — production evidence (no deployment)
+
+- #152/#154 store-card and request code is unchanged on `main` through `8b97c45` (no diff in `bazaar-page.tsx`, `stores.request.tsx`, `stores.ts`; no store/request selector change in `design-system.css`); the parallel PRs #156–#161 changed `/market`, empty states and docs.
+- Latest `main` deployment at closeout: #161 (`8b97c45`) Workers Build `1ba36f12-57c5-4a46-9df2-3e1ff4650e1b`, Version `59ac83f1-d4fc-40e0-8b7f-4ff46273c1e3`, 06:45:27 UTC. Cloudflare connector: Worker `rega-cargo` `modified_on` 2026-10-23T06:45:23Z (matches); the Worker code returned at 23:5x UTC contained the #154 markup (`rl-store-fav` ×5, `CARD_LOGO` `maxWidth: 80`, `rl-intent-switch`, `rl-request-store`, no `rl-store-head`).
+- **Active version / traffic allocation: UNVERIFIED.** The connector has no deployments/versions endpoint and Wrangler has no credentials in the agent session; 100 % is not assumed.
+- Final read-only production run (GitHub Actions run 39911846868, 06:30 UTC, against the then-live #158 deployment, Version `f4f5eae3`): 59/59 passed — see the verification report. No redeploy (no defect found by this closeout).
+
 ## 2026-10-23 PR #159 product page + error state polish — merged `a9db4fa`, deployed
 
 Gate on `43ac5af` green (layout lock 732/16 skipped/0 failed; 27 `market-*` baselines re-rendered in the official image). Workers Build `8119d4c4-6f64-46aa-bcb5-a5a3149ecfba` succeeded; live not-found page verified. Rollback pointer: `37d60c5`. [Evidence](../verification/market-states-20261023.md).
