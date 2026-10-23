@@ -1,0 +1,62 @@
+# TEMPORARY — owner-instructed ("fix everything", 2026-10-23), same scope as the PR #150/#152
+# baseline workflows. Re-renders exactly the 27 /market page baselines (market-{ckb,ar,en}.png
+# x 9 screenshot projects) in the official Playwright image and commits them back to this
+# branch, because the agent sandbox cannot download Actions artifacts. Removed before merge.
+name: tmp market baselines
+on:
+  push:
+    branches: [claude/market-polish-20261023]
+    paths: [.github/workflows/tmp-market-baselines.yml]
+permissions:
+  contents: write
+concurrency:
+  group: tmp-market-baselines
+  cancel-in-progress: true
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: "1"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build without production DB migrations
+        run: npm run build
+        env:
+          DATABASE_URL: ''
+      - name: Re-render only the /market page baselines
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/layout/layout.spec.ts
+          --grep "market (ckb|ar|en)$"
+          --project=chromium-iphone --project=chromium-iphone-se
+          --project=chromium-ipad-portrait --project=chromium-ipad-landscape
+          --project=chromium-laptop --project=chromium-laptop-1440
+          --project=webkit-iphone --project=webkit-ipad-portrait --project=webkit-ipad-landscape
+          --update-snapshots=all
+      - name: Commit exactly the /market baselines
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add -- 'tests/layout/__screenshots__/*/market-ckb.png' \
+                     'tests/layout/__screenshots__/*/market-ar.png' \
+                     'tests/layout/__screenshots__/*/market-en.png'
+          git status --short
+          changed=$(git diff --cached --name-only | wc -l)
+          others=$(git diff --cached --name-only | grep -cvE '^tests/layout/__screenshots__/[a-z0-9-]+/market-(ckb|ar|en)\.png$' || true)
+          echo "staged=$changed others=$others"
+          test "$others" = 0
+          test "$changed" -gt 0
+          git commit -m "test(layout): re-render the /market baselines in the official Playwright image"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
