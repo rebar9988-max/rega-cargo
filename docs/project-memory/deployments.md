@@ -1,5 +1,9 @@
 # CI/CD and deployments
 
+## 2026-10-23 PR #162 Firefox clamp ellipsis — merged `089ddaf`, deployed
+
+Gate on `3cf5bfc` green (layout lock 733/16 skipped/0 failed; 1 unrelated flaky retry in `unified.spec.ts` on WebKit iPad). Workers Build `4f4805b3-9bba-4b91-9086-38dcae7d69d4` succeeded; live CSS contains the rule. Rollback pointer: `8b97c45`. [Evidence](../verification/market-states-20261023.md).
+
 ## 2026-10-23 Marketplace refinement closeout — production evidence (no deployment)
 
 - #152/#154 store-card and request code is unchanged on `main` through `8b97c45` (no diff in `bazaar-page.tsx`, `stores.request.tsx`, `stores.ts`; no store/request selector change in `design-system.css`); the parallel PRs #156–#161 changed `/market`, empty states and docs.

@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-23 Firefox clamp ellipsis on English store categories (PR #162 merged `089ddaf`, released)
+
+Closes the low-severity observation from the marketplace closeout (PR #160). Open observation: `unified.spec.ts` bottom-bar `aria-current` flaked once on WebKit iPad (global navigation, outside the marketplace scope).
+
 ## 2026-10-23 Marketplace product page + error state polish (PR #159 merged `a9db4fa`, released)
 
 Offer facts readable in every language, stock labels translated, results under their action, not-found offers a way back, `/market` error state as the titled empty-state card (27 baselines re-rendered in the official image). [Report](../verification/market-states-20261023.md).
