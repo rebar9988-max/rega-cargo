@@ -1,7 +1,7 @@
 // TEMPORARY diagnostic (removed before merge): does an in-page reload re-request a failed module, by delay?
 import { test } from "@playwright/test";
-for (const delay of [0, 300, 1000, 2500])
-  for (const how of ["reload", "replace"] as const)
+for (const delay of [0, 1000])
+  for (const how of ["refetch-reload", "refetch-script-reload"] as const)
     test(`tmp: in-page ${how} after ${delay}ms`, async ({ page }) => {
       let requests = 0;
       let fail = 1;
@@ -18,7 +18,16 @@ for (const delay of [0, 300, 1000, 2500])
       await page.getByRole("heading", { level: 1 }).first().waitFor();
       const errorShown = await page.getByText("Something went wrong").count();
       await page.waitForTimeout(delay);
-      await page.evaluate((h) => (h === "reload" ? location.reload() : location.replace(location.href)), how);
+      console.log("refetch", how, await page.evaluate(async (h) => {
+        const urls = [...document.querySelectorAll<HTMLLinkElement>('link[rel="modulepreload"]')].map((l) => l.href);
+        const statuses = await Promise.all(urls.map((u) =>
+          h === "refetch-reload"
+            ? fetch(u, { cache: "reload" }).then((r) => r.status, () => 0)
+            : import(/* @vite-ignore */ `${u}?retry=${Date.now()}`).then(() => 200, () => 0),
+        ));
+        location.reload();
+        return urls.filter((_, i) => statuses[i] !== 200).length + " failed of " + urls.length;
+      }, how));
       await page.waitForTimeout(2500);
       console.log("RESULT", how, delay, "errorShown", errorShown, "bar", await page.locator('[data-layout="bottom-bar"]').count(), "requests", requests);
     });
