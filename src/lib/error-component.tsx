@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 import { pagesCopyFromDocument } from "@/lib/pages-copy";
-import { routerIsReloading, shouldReloadForChunk } from "@/lib/chunk-recovery";
+import { reloadWithFreshModules, routerIsReloading, shouldReloadForChunk } from "@/lib/chunk-recovery";
 
 /**
  * Route error fallback. Never shows the error message or stack (they can name
@@ -25,7 +25,7 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
       }
       const page = location.pathname + location.search;
       if (shouldReloadForChunk(error, page, Date.now(), storage, routerIsReloading(error)))
-        location.reload();
+        void reloadWithFreshModules();
     });
     return () => clearTimeout(timer);
   }, [error]);

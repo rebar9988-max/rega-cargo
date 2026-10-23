@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  CHUNK_RELOADS,
   CHUNK_RELOAD_WINDOW_MS,
   isChunkLoadError,
   shouldReloadForChunk,
@@ -40,12 +41,17 @@ test("WebKit's shared message still recovers each page once (the flaky navigatio
 
 test("a module that keeps failing shows the error page instead of reloading in a loop", () => {
   const storage = memory();
-  assert.equal(shouldReloadForChunk(chromium("track-1.js"), "/track", 1_000, storage), true);
-  assert.equal(shouldReloadForChunk(chromium("track-1.js"), "/track", 2_000, storage), false);
+  const error = chromium("track-1.js");
+  assert.equal(CHUNK_RELOADS, 2);
+  assert.equal(shouldReloadForChunk(error, "/track", 1_000, storage), true);
+  assert.equal(shouldReloadForChunk(error, "/track", 2_000, storage), true);
+  assert.equal(shouldReloadForChunk(error, "/track", 3_000, storage), false);
   assert.equal(
-    shouldReloadForChunk(chromium("track-1.js"), "/track", 1_000 + CHUNK_RELOAD_WINDOW_MS, storage),
+    shouldReloadForChunk(error, "/track", 1_000 + CHUNK_RELOAD_WINDOW_MS, storage),
     true,
   );
+  // Other pages keep their own allowance.
+  assert.equal(shouldReloadForChunk(error, "/market", 3_000, storage), true);
 });
 
 test("the router's own reload of the same document is not doubled", () => {

@@ -32,10 +32,11 @@ test("a page module that fails to load recovers with its navigation in every bro
   page,
   isMobile,
 }) => {
-  // A dropped request (or a deploy that replaced the files) once left this test's /track on the
-  // route error page, which has no header or bottom bar. /market fails once (the router's own
-  // reload recovers it); /track fails on load and again after that reload, as WebKit reports
-  // every failed module with the same message the router already used for /market.
+  // A dropped module request (or a deploy that replaced the files) once left this test's /track
+  // on the route error page, which has no header or bottom bar: the router reloads once per
+  // error message per tab, WebKit gives every failed module the same message, and a plain
+  // script reload in WebKit reuses the failed module. /market fails once; /track fails on load
+  // and again on its first recovery.
   const failures: Record<string, number> = { "market.index": 1, track: 2 };
   await page.route(/\/assets\/(market\.index|track)-[\w-]+\.js$/, (route) => {
     const chunk = /\/assets\/(market\.index|track)-/.exec(route.request().url())![1];

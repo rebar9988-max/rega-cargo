@@ -1,6 +1,6 @@
 # TEMPORARY diagnostic (owner task 2026-10-23: root-cause the flaky WebKit iPad navigation test).
 # Runs the navigation tests (incl. the failed-module regression) repeatedly on webkit-ipad-portrait without retries and prints the page
-# snapshot of every failure. Read-only: commits nothing. Removed before merge. (refetch run)
+# snapshot of every failure. Read-only: commits nothing. Removed before merge. (fix run)
 name: tmp ipad nav diagnose
 on:
   push:
@@ -32,20 +32,13 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: ''
-      - name: What WebKit reports for a failed route module
-        env:
-          HOME: /root
-        run: >-
-          npx playwright test tests/layout/zz-tmp-webkit.spec.ts
-          --project=webkit-iphone --project=webkit-ipad-portrait
-          --retries=0 --workers=2 --reporter=list 2>&1 | grep -E "RESULT|modulepreload|\[(webkit|chromium)" || true
       - name: Repeat the navigation test (no retries)
         env:
           HOME: /root
         run: >-
           npx playwright test tests/layout/unified.spec.ts
           --project=webkit-ipad-portrait --project=webkit-iphone --project=webkit-ipad-landscape
-          --repeat-each=2 --retries=0 --workers=4 --reporter=list || true
+          --repeat-each=10 --retries=0 --workers=4 --reporter=list || true
       - name: Print the page snapshot of every failure
         if: always()
         run: |
