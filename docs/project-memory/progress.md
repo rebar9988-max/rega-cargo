@@ -196,3 +196,19 @@ Invitation-only native Better Auth owner activation is in progress on `codex/rl-
 
 
 2026-10-19 email OTP: #131 merged `e0778e1` (feature `63ad833`). Customer email-code sign-in/registration through Better Auth + Resend; migration 0018 applied to production after a backup branch. Hosted gate green, real delivery confirmed; live session run pending the inbox code. [Evidence](../verification/email-otp-20261019.md).
+
+## 2026-10-23 — Store discovery refinement in progress
+
+Branch `codex/stores-quality-20261023`: recording inspected, root causes verified, existing
+store component refined (brand grouping, action sheet, direct search/link input, no sample
+catalogue, compact footer). Local typecheck/lint/build and directory tests pass; full supported
+Node 22 and browser gate pending. Not deployed. See
+[checkpoint](../verification/store-discovery-20261023.md). Resume here; do not rebuild.
+
+### PR #164 — final gate continuation
+
+Focused official-image run 39958006766 passed: 69 renders / 12 device skips and 20 browser
+tests. Earlier four failures are resolved (nested RTL scroller -> wrapped retailer choices;
+localized privacy-link selector). New search waits for hydration; product links survive the
+intent switch and refresh. Temporary renderer/review files removed; final standard strict
+gate and release pending. [Evidence](../verification/store-discovery-20261023.md).

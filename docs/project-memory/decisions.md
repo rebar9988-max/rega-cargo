@@ -139,3 +139,13 @@ Owner's second brief (chat, "PR #150 final CI recovery & production deployment")
 
 Owner brief (chat, "R&L Marketplace — existing UX audit & premium refinement") explicitly asks for visual refinement of the existing Marketplace (spacing, card dimensions, compact standardized store logos, buttons, hierarchy) while locking logo, brand colours, header, hero, footer and homepage. This is the explicit approval the "Modern Web Guidance: non-visual scope" rule requires for a visual change, limited to `/stores` and `/stores/request`; the rule itself is unchanged and the skill was not used. Decisions: (1) logos are normalised by equal area at their own proportions (`storeLogoSize`, ratios tested against the SVG viewBoxes) instead of one fixed height; (2) store meta shows country and host on two fixed lines, because one line truncated hosts on phones; (3) the same temporary, branch-only commit-back workflow as PR #150 re-rendered exactly the affected 54 baselines (the sandbox cannot install npm packages or download artifacts), and was removed before merge with its review screenshots.
 
+
+## 2026-10-23 — Owner-authorized store discovery refinement
+
+Owner supplied a recording and a detailed brief permitting substantial existing-UI changes
+except main brand colours and rebuilding from scratch. Scope: R&L `/stores`, its shared menu
+resources and safe handoff to the existing request form. Preserve the official R&L logo,
+all regional stores, compliance, all modules and production safeguards. REGA logo attachment
+was corrected in the same session; never use it here. Modern Web Guidance was consulted only
+for native-dialog technical behaviour, not as design authority. See
+[verification checkpoint](../verification/store-discovery-20261023.md).

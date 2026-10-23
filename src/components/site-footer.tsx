@@ -11,11 +11,33 @@ import { ITEMS_COPY } from "@/lib/items-copy";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { JOURNEY_COPY } from "@/lib/journey-copy";
-export function SiteFooter({ bottomBar = true }: { bottomBar?: boolean }) {
+export function SiteFooter({
+  bottomBar = true,
+  compact = false,
+}: {
+  bottomBar?: boolean;
+  compact?: boolean;
+}) {
   const { lang, t, setLang } = useI18n();
   const c = redesignCopy(lang);
   const j = JOURNEY_COPY[lang];
   const legal = SITE_COPY[lang].legal;
+  if (compact)
+    return (
+      <footer
+        className={`rl-site-footer rl-store-compact-footer ${bottomBar ? "clear-bottom-bar" : ""}`}
+      >
+        <nav className="page rl-compact-links" aria-label={c.footerLegal}>
+          <Link to="/contact">{t.nav.contact}</Link>
+          {(["impressum", "privacy", "terms"] as const).map((doc) => (
+            <Link key={doc} to={`/${doc}`}>
+              {legal[doc]}
+            </Link>
+          ))}
+          <Link to="/prohibited-items">{ITEMS_COPY[lang].link}</Link>
+        </nav>
+      </footer>
+    );
   return (
     <footer className={`rl-site-footer rl-defer ${bottomBar ? "clear-bottom-bar" : ""}`}>
       <div className="page rl-footer-grid">
