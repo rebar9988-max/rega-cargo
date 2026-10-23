@@ -1,5 +1,9 @@
 # CI/CD and deployments
 
+## 2026-10-23 PR #156 `/market` empty states — merged `b591f95`, deployed
+
+Gate on `015a234` green (layout lock 728/16 skipped/0 failed, no baseline change). Workers Build `ea9c526f-c6ad-4284-b667-a3ad04e5f809` succeeded; live `/market` verified in ckb/ar/en. Rollback pointer: `31c4a77`. [Evidence](../verification/market-states-20261023.md).
+
 ## 2026-10-23 PR #154 Marketplace follow-up (logo tile, corner favourite) — merged `9d4c476`, deployed
 
 Squash-merged after the full hosted gate on head `4e21e38` (run 39871878678: scope, verify, layout lock 728 passed / 16 skipped / 0 failed, Workers Builds). Cloudflare Workers Build `5b831d60-a692-4a15-9dee-ea3f9c690796` succeeded, Version ID `1881b5b7-118b-4b34-a278-ddb034df74d6`. Production verification (read-only GitHub Actions run 39873759891 against `https://www.rlgo.net`, official Playwright image): 30/30 passed — Chromium desktop, WebKit iPhone and iPad emulation at 320/375/390/430/820/1280/1440 px × ckb/ar/en (no overflow, equal rail tiles, aligned cards, two-line meta, hosts not cut, card logos at full size ≥ 10 px, 44 px favourite badge not covering logos, request store row and equal switch) plus the Chromium/Firefox 360 px store tests. Earlier PR #153 (docs only) built `e5e8ee34` / Version `677e21d3`. Active-at-100% not verified (no deployments access). Rollback pointer: `main` `a3066ed`. [Evidence](../verification/marketplace-refinement-20261022.md).

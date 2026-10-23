@@ -1,6 +1,6 @@
 # Progress
 
-## 2026-10-23 `/market` honest empty states (branch `claude/market-honest-states-20261023`)
+## 2026-10-23 `/market` honest empty states (PR #156 merged `b591f95`, released) + empty-state centring fix
 
 Empty catalogue: honest `marketEmpty` copy in the `rl-empty-state` card, no useless filter form; filtered empty: filters kept, reset offered; pager only with pages. Local gate green. [Report](../verification/market-states-20261023.md).
 

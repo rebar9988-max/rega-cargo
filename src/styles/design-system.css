@@ -1531,6 +1531,12 @@
   border-radius: var(--rl-radius-card);
   background: var(--rl-surface);
 }
+/* Centred in every language: the Latin-script rule (styles.css) right-aligns text blocks
+   directly, so inheriting the card's centring is not enough. */
+.rl-empty-state h2,
+.rl-empty-state p {
+  text-align: center;
+}
 .rl-empty-state h2 {
   font-size: var(--text-2xl);
 }
