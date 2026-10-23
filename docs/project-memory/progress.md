@@ -1,6 +1,6 @@
 # Progress
 
-## 2026-10-23 `/market` honest empty states (PR #156 merged `b591f95`, released) + empty-state centring fix
+## 2026-10-23 `/market` honest empty states (PR #156 `b591f95`) + empty-state centring (PR #157 `ffdae5f`), both released
 
 Empty catalogue: honest `marketEmpty` copy in the `rl-empty-state` card, no useless filter form; filtered empty: filters kept, reset offered; pager only with pages. Local gate green. [Report](../verification/market-states-20261023.md).
 
