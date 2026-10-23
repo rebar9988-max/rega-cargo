@@ -135,3 +135,27 @@ the active version allocation. The throwaway branch `claude/marketplace-live-ver
 could not be deleted from the agent session (proxy policy); it is never merged and its workflow
 runs only on pushes to that branch.
 
+## Closeout (2026-10-23)
+
+- PRs #152–#155 merged. Store-card and request code is unchanged on `main` through `8b97c45`
+  (parallel PRs #156–#161 touched `/market`, empty states and docs only). Latest deployment at
+  closeout: Build `1ba36f12`, Version `59ac83f1` (06:45 UTC); Cloudflare `modified_on` matches,
+  and the Worker code contained the #154 changes. **Traffic allocation UNVERIFIED** (no
+  deployments access from the agent).
+- Final production run 3 (GitHub Actions run 39911846868, 06:30 UTC, read-only, nothing submitted):
+  **59/59 passed** — Chromium desktop, WebKit iPhone and WebKit iPad (27), Chromium mobile and
+  Firefox (18) at 320/375/390/430/820/1280/1440 px × ckb/ar/en: `<html dir="rtl">` with
+  `data-textdir` per language, no horizontal overflow, equal rail tiles, aligned store-card
+  rows, two-line meta with hosts never cut, card logos at full normalised size, favourite badge
+  ≥ 44×44 px not covering the logo, request store row and equal switch; journey stores →
+  country → retailer → official-site link (new tab, `noopener noreferrer`) → favourite toggle
+  → Bring For Me → request page → ship switch → back keeps the filters. Plus the 7 existing
+  store tests from `main` in Chromium and Firefox (14).
+- Physical device: **not available** to the agent; all mobile results are browser emulation.
+- Observation: Firefox puts the ellipsis of a clamped English category line at the line start
+  inside the RTL card (pre-existing). A parallel session opened PR #162 for it; not changed here.
+- Branch `claude/marketplace-live-verify-20261023` (temporary files only; never merged) could not
+  be deleted: GitHub REST returned HTTP 403 "Write access to this GitHub API path is not
+  permitted through this proxy" and `git push --delete` was disconnected. Owner deletion:
+  https://github.com/rebar9988-max/rega-cargo/branches
+
