@@ -1838,11 +1838,14 @@
   font-weight: var(--rl-weight-semibold);
 }
 .rl-market-unavailable {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: var(--rl-space-3);
   padding-block: var(--rl-space-4) var(--rl-space-8);
+}
+/* Offer facts (city, price, shipping) as separate runs with separate dots, so each run keeps
+   its own text direction and the dots stay between them in every language. */
+.rl-offer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--rl-space-1);
 }
 .rl-compare-page {
   display: flex;

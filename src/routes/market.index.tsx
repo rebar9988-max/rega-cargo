@@ -49,29 +49,32 @@ function MarketHome() {
     return (
       <Shell>
         <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
-        <div className="page rl-market-unavailable" role="status">
-          <p className="text-sm text-muted">
-            {data.error === "unavailable" ? pc.unavailable : pc.errorBody}
-          </p>
-          <Link to="/stores" className={btnPrimary}>
-            {j.stores}
-          </Link>
-          <Link
-            to="/stores/request"
-            search={{ intent: "buy", store: undefined, item: undefined }}
-            className="rl-button"
-            data-variant="secondary"
-          >
-            {j.bring}
-          </Link>
-          <button
-            type="button"
-            onClick={() => void router.invalidate()}
-            className="rl-button"
-            data-variant="secondary"
-          >
-            {pc.retry}
-          </button>
+        <div className="page rl-market-unavailable">
+          <div className="rl-empty-state" role="status">
+            <h2>{pc.errorTitle}</h2>
+            <p>{data.error === "unavailable" ? pc.unavailable : pc.errorBody}</p>
+            <div className="rl-empty-actions">
+              <Link to="/stores" className={btnPrimary}>
+                {j.stores}
+              </Link>
+              <Link
+                to="/stores/request"
+                search={{ intent: "buy", store: undefined, item: undefined }}
+                className="rl-button"
+                data-variant="secondary"
+              >
+                {j.bring}
+              </Link>
+              <button
+                type="button"
+                onClick={() => void router.invalidate()}
+                className="rl-button"
+                data-variant="secondary"
+              >
+                {pc.retry}
+              </button>
+            </div>
+          </div>
         </div>
       </Shell>
     );

@@ -7,6 +7,8 @@ import { PageHeader, Shell } from "@/components/shell";
 import { useI18n } from "@/lib/i18n";
 import { iqd, marketCopy } from "@/lib/market-copy";
 import { contactHref } from "@/lib/market";
+import { JOURNEY_COPY } from "@/lib/journey-copy";
+import { DEFAULT_MARKET_SEARCH } from "@/lib/market/search";
 import { marketAlert, marketFavorite, marketProduct, marketReport, marketReview } from "@/lib/market/api";
 
 export const Route = createFileRoute("/market/$slug")({
@@ -29,11 +31,18 @@ function ProductPage() {
   const { lang } = useI18n();
   const t = marketCopy(lang);
   const [data, setData] = useState(initial);
-  const [message, setMessage] = useState("");
+  // Each result is shown under the action that produced it, not at the end of the page.
+  const [note, setNote] = useState<{ at: "favorite" | "alert" | "review"; text: string } | null>(null);
   if ("error" in data) {
     return (
       <Shell>
         <PageHeader kicker="R&L" title={t.notfound} lede={t.marketLede} />
+        <div className="page py-10">
+          <div className="rl-empty-actions">
+            <Link to="/market" search={DEFAULT_MARKET_SEARCH} className={btnPrimary}>{t.backToMarket}</Link>
+            <Link to="/stores" className={btnGhost}>{JOURNEY_COPY[lang].stores}</Link>
+          </div>
+        </div>
       </Shell>
     );
   }
@@ -57,7 +66,7 @@ function ProductPage() {
               className={btnGhost}
               onClick={async () => {
                 const result = await marketFavorite({ data: { slug, on: !data.favorite } });
-                if ("error" in result) setMessage(t[result.error as "invalid"] ?? t.invalid);
+                if ("error" in result) setNote({ at: "favorite", text: t[result.error as "invalid"] ?? t.invalid });
                 else void reload();
               }}
             >
@@ -65,6 +74,7 @@ function ProductPage() {
             </button>
             <Link to="/move" search={{ product: slug, item: name }} className={btnPrimary}>{t.deliver}</Link>
           </div>
+          {note?.at === "favorite" ? <p role="status" className="text-sm text-clay">{note.text}</p> : null}
           <ul className="flex flex-col gap-3">
             {data.offers.map((offer) => {
               const best = offer.id === data.cheapestId;
@@ -75,8 +85,14 @@ function ProductPage() {
                     <p className="font-semibold">{offer.sellerName}</p>
                     <p className="text-lg font-semibold text-pine"><bdi dir="ltr">{iqd(offer.total)}</bdi></p>
                   </div>
-                  <p className="mt-1 text-sm text-muted">{offer.city} · {t.price} <bdi dir="ltr">{iqd(offer.price)}</bdi> · {t.shipping} <bdi dir="ltr">{iqd(offer.shipping)}</bdi></p>
-                  <p className="mt-1 text-sm">{offer.stock === "in" ? t.inStock : offer.stock === "low" ? "کەم ماوە" : "نەماوە"}</p>
+                  {/* One run per fact: a city in Arabic script must not reorder the labels around it. */}
+                  <p className="rl-offer-meta mt-1 text-sm text-muted">
+                    {offer.city ? <><span>{offer.city}</span><span aria-hidden="true">·</span></> : null}
+                    <span>{t.price} <bdi dir="ltr">{iqd(offer.price)}</bdi></span>
+                    <span aria-hidden="true">·</span>
+                    <span>{t.shipping} <bdi dir="ltr">{iqd(offer.shipping)}</bdi></span>
+                  </p>
+                  <p className="mt-1 text-sm">{offer.stock === "in" ? t.inStock : offer.stock === "low" ? t.lowStock : t.outOfStock}</p>
                   {href ? (
                     <a href={href} target="_blank" rel="noreferrer" className={`${btnPrimary} mt-3`}>{t.visit}</a>
                   ) : (
@@ -105,7 +121,7 @@ function ProductPage() {
               event.preventDefault();
               const target = new FormData(event.currentTarget).get("target");
               const result = await marketAlert({ data: { slug, target: Number(target) } });
-              setMessage("error" in result ? t[result.error as "invalid"] ?? t.invalid : t.saved);
+              setNote({ at: "alert", text: "error" in result ? t[result.error as "invalid"] ?? t.invalid : t.saved });
               if (!("error" in result)) void reload();
             }}
           >
@@ -113,6 +129,7 @@ function ProductPage() {
               <input name="target" dir="ltr" inputMode="numeric" defaultValue={data.alert ?? ""} className={controlClass} required />
             </Field>
             <button className={btnPrimary} type="submit">{t.save}</button>
+            {note?.at === "alert" ? <p role="status" className="text-sm text-clay">{note.text}</p> : null}
           </form>
           <form
             className="flex flex-col gap-3"
@@ -120,7 +137,7 @@ function ProductPage() {
               event.preventDefault();
               const form = new FormData(event.currentTarget);
               const result = await marketReview({ data: { slug, rating: Number(form.get("rating")), body: String(form.get("body") ?? "") } });
-              setMessage("error" in result ? t[result.error as "invalid"] ?? t.invalid : t.saved);
+              setNote({ at: "review", text: "error" in result ? t[result.error as "invalid"] ?? t.invalid : t.saved });
               if (!("error" in result)) void reload();
             }}
           >
@@ -132,6 +149,7 @@ function ProductPage() {
               <textarea name="body" className={`${controlClass} h-24 py-3`} />
             </Field>
             <button className={btnGhost} type="submit">{t.send}</button>
+            {note?.at === "review" ? <p role="status" className="text-sm text-clay">{note.text}</p> : null}
             <ul className="flex flex-col gap-2">
               {data.reviews.map((review) => (
                 <li key={review.at} className="text-sm text-muted"><bdi dir="ltr">{review.rating}/5</bdi> {review.body}</li>
@@ -139,7 +157,6 @@ function ProductPage() {
             </ul>
           </form>
           <Report />
-          {message ? <p className="text-sm text-clay">{message}</p> : null}
         </div>
       </div>
     </Shell>
@@ -165,7 +182,7 @@ export function Report() {
       <input name="subject" required placeholder={t.subject} aria-label={t.subject} className={controlClass} />
       <textarea name="body" required placeholder={t.body} aria-label={t.body} className={`${controlClass} h-24 py-3`} />
       <button className={btnGhost} type="submit">{t.send}</button>
-      {message ? <p className="text-sm">{message}</p> : null}
+      {message ? <p role="status" className="text-sm">{message}</p> : null}
     </form>
   );
 }
