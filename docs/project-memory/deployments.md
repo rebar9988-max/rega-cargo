@@ -1,5 +1,9 @@
 # CI/CD and deployments
 
+## 2026-10-23 PR #159 product page + error state polish — merged `a9db4fa`, deployed
+
+Gate on `43ac5af` green (layout lock 732/16 skipped/0 failed; 27 `market-*` baselines re-rendered in the official image). Workers Build `8119d4c4-6f64-46aa-bcb5-a5a3149ecfba` succeeded; live not-found page verified. Rollback pointer: `37d60c5`. [Evidence](../verification/market-states-20261023.md).
+
 ## 2026-10-23 PR #157 empty-state centring — merged `ffdae5f`, deployed
 
 Gate on `d49bf87` green (layout lock 730/16 skipped/0 failed). Workers Build `2fcef3fe-a7cc-4437-a708-3192e867331f` succeeded; live English empty states centred on `/market` and `/stores`. Rollback pointer: `b591f95`. [Evidence](../verification/market-states-20261023.md).

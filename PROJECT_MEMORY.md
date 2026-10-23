@@ -26,7 +26,7 @@ PR #152 (merged `30011be`): refinement of the existing `/stores` directory and `
 
 ## Current state — `/market` honest empty states, 2026-10-23
 
-PR #156 (`b591f95`) released: empty catalogue shows the honest `marketEmpty` card without a useless filter form, filtered-empty keeps filters + reset, pager only with pages. Follow-up: empty-state text centred in Latin-script languages. [Report](docs/verification/market-states-20261023.md).
+PR #156 (`b591f95`) released: empty catalogue shows the honest `marketEmpty` card without a useless filter form, filtered-empty keeps filters + reset, pager only with pages. Follow-up: empty-state text centred in Latin-script languages. PR #159 (`a9db4fa`) released: product-page offer facts readable in every language, stock labels translated, results under their action, not-found way back, titled `/market` error-state card. [Report](docs/verification/market-states-20261023.md).
 
 ## Current state — European stores directory released, 2026-10-22
 
