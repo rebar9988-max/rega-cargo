@@ -21,6 +21,7 @@ import { catalogueCopy } from "@/lib/catalogue-copy";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
+import { useHydrated } from "@/lib/use-hydrated";
 import { storeCopy } from "@/lib/store-copy";
 import {
   DIRECTORY_STORES,
@@ -66,6 +67,7 @@ function writeHandoff(id: string | null) {
 /** Store catalogue only; shipping lives on /quote in ShippingPage. */
 export function BazaarPage({ home = false }: { home?: boolean } = {}) {
   const { lang } = useI18n();
+  const ready = useHydrated();
   const t = storeCopy(lang),
     c = redesignCopy(lang),
     d = DESIGN_COPY[lang],
@@ -233,6 +235,7 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
               <Icon as={Search} />
               <input
                 id="rl-directory-search"
+                disabled={!ready}
                 size={1}
                 value={query}
                 onChange={(event) => {
@@ -244,7 +247,9 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                 aria-invalid={linkError}
                 aria-describedby={linkError ? "rl-link-error" : undefined}
               />
-              <Button type="submit">{copy.go}</Button>
+              <Button type="submit" disabled={!ready}>
+                {copy.go}
+              </Button>
             </form>
             {linkError ? (
               <p id="rl-link-error" role="alert">

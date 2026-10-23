@@ -2416,3 +2416,12 @@ a.rl-category-row:active {
     padding-block: var(--rl-space-1);
   }
 }
+
+/* Expanded retailer choices wrap instead of nested RTL scrolling inside native details. */
+.rl-retailer-picker .rl-retailer-rail {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+.rl-retailer-picker .rl-retailer {
+  scroll-margin-block-start: var(--rl-filter-sticky);
+}

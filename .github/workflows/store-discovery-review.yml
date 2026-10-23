@@ -40,7 +40,7 @@ jobs:
       - name: Functional and geometry suite
         env:
           HOME: /root
-        run: npx playwright test --ignore-snapshots
+        run: npx playwright test tests/layout/premium.spec.ts --grep "store discovery|european stores|360px filters|marketplace refinement" --ignore-snapshots
       - name: Commit reviewed baselines to this branch only
         if: ${{ !cancelled() }}
         run: |

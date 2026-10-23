@@ -519,7 +519,7 @@ test("store discovery: one swipeable category row with preserved filters in ever
       expect(Math.abs(box!.y - boxes[0]!.y)).toBeLessThanOrEqual(1);
     }
     await page.locator('[data-layout="menu-button"]').click();
-    await expect(page.locator('[data-layout="sheet"] a[href="/privacy"]')).toBeVisible();
+    await expect(page.locator('[data-layout="sheet"] a[href^="/privacy"]')).toBeVisible();
     await page.keyboard.press("Escape");
     await page.locator('[data-layout="search-button"]').click();
     await expect(page.locator('input[type="search"][aria-expanded="true"]')).toBeFocused();
@@ -1072,6 +1072,10 @@ test("store discovery: one brand card, regional sheet, safe product-link handoff
   await search.press("Enter");
   await expect(page).toHaveURL(/\/stores\/request\?.*store=zalando-it/);
   await expect(page.locator('input[name="url"]')).toHaveValue("https://www.zalando.it/shoe");
+  await page.locator('.rl-intent-switch a[href*="intent=ship"]').click();
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(page.locator('input[name="url"]')).toHaveValue("https://www.zalando.it/shoe");
+  await page.goBack();
   await page.goBack();
   await search.fill("https://www.amazon.de/vodka");
   await search.press("Enter");

@@ -317,7 +317,7 @@ function RequestPage() {
               <nav className="rl-row rl-intent-switch" aria-label={j.bring}>
                 <Link
                   to="/stores/request"
-                  search={{ store: storeId, item, intent: "buy" }}
+                  search={{ store: storeId, item, intent: "buy", url: initialUrl }}
                   className="rl-chip"
                   aria-current={intent === "buy" ? "page" : undefined}
                 >
@@ -325,7 +325,7 @@ function RequestPage() {
                 </Link>
                 <Link
                   to="/stores/request"
-                  search={{ store: storeId, item, intent: "ship" }}
+                  search={{ store: storeId, item, intent: "ship", url: initialUrl }}
                   className="rl-chip"
                   aria-current={intent === "ship" ? "page" : undefined}
                 >
