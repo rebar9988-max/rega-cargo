@@ -1,5 +1,9 @@
 # Progress
 
+## 2026-10-23 `/market` honest empty states (branch `claude/market-honest-states-20261023`)
+
+Empty catalogue: honest `marketEmpty` copy in the `rl-empty-state` card, no useless filter form; filtered empty: filters kept, reset offered; pager only with pages. Local gate green. [Report](../verification/market-states-20261023.md).
+
 ## 2026-10-23 Marketplace follow-up: full-width logo tile, corner favourite (PR #154, merged `9d4c476`, released)
 
 Production verification of PR #152 passed 30/30 live checks; its 320 px screenshots showed long wordmarks squeezed by the favourite button sharing the logo row (pre-existing). Logo tile now spans the card, favourite is a corner badge, card logos max 80 px; new narrow-phone logo test. Gate 728/16/0; Build `5b831d60` / Version `1881b5b7`; live run 30/30 on www.rlgo.net. [Report](../verification/marketplace-refinement-20261022.md#follow-up-after-production-verification-2026-10-23-branch-claudemarketplace-logo-tile-20261023).

@@ -1525,6 +1525,7 @@
 }
 .rl-empty-state {
   padding-block: var(--rl-space-8);
+  padding-inline: var(--rl-space-3);
   text-align: center;
   border: var(--rl-border) solid var(--rl-line);
   border-radius: var(--rl-radius-card);
@@ -1536,6 +1537,25 @@
 .rl-empty-state p {
   color: var(--rl-muted);
   margin-block: var(--rl-space-2) var(--rl-space-3);
+}
+/* Actions in an empty state: one centred row that wraps, every action a full touch target. */
+.rl-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rl-space-2);
+  padding-inline: var(--rl-space-2);
+}
+.rl-empty-actions .rl-text-action {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--rl-control-h);
+  padding-inline: var(--rl-space-1);
+  color: var(--rl-ink);
+  font-weight: var(--rl-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: var(--rl-underline-offset);
 }
 .rl-form-layout {
   display: grid;
