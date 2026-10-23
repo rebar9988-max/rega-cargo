@@ -10,7 +10,7 @@ import { marketCopy } from "@/lib/market-copy";
 
 import { MarketProductCard } from "@/components/market-product-card";
 import { JOURNEY_COPY } from "@/lib/journey-copy";
-import { validateMarketSearch } from "@/lib/market/search";
+import { marketView, validateMarketSearch } from "@/lib/market/search";
 export const Route = createFileRoute("/market/")({
   validateSearch: validateMarketSearch,
   loaderDeps: ({ search }) => ({
@@ -79,6 +79,7 @@ function MarketHome() {
   function set(patch: Partial<typeof search>) {
     void navigate({ search: { ...search, page: 1, ...patch } });
   }
+  const view = marketView(search, data.items.length, data.pages);
   return (
     <Shell>
       <PageHeader kicker={t.marketKicker} title={t.marketTitle} lede={t.marketLede} />
@@ -98,133 +99,131 @@ function MarketHome() {
             {t.favorite}
           </button>
         </div>
-        <form
-          key={JSON.stringify(search)}
-          className="rl-card rl-compare-filters"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const form = new FormData(event.currentTarget);
-            set({
-              q: String(form.get("q") ?? ""),
-              category: String(form.get("category") ?? ""),
-              brand: String(form.get("brand") ?? ""),
-              min: String(form.get("min") ?? ""),
-              max: String(form.get("max") ?? ""),
-              stock: form.get("stock") === "on" ? "in" : "",
-              sort: String(form.get("sort") ?? "price") === "new" ? "new" : "price",
-            });
-          }}
-        >
-          <input
-            name="q"
-            defaultValue={search.q}
-            placeholder={t.search}
-            aria-label={t.search}
-            className={controlClass}
-          />
-          <select
-            name="category"
-            defaultValue={search.category}
-            aria-label={t.all}
-            className={controlClass}
-          >
-            <option value="">{t.all}</option>
-            {data.categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {lang === "ckb" ? cat.name_ku : cat.name_en}
-              </option>
-            ))}
-          </select>
-          <select
-            name="brand"
-            defaultValue={search.brand}
-            aria-label={t.brand}
-            className={controlClass}
-          >
-            <option value="">{t.brand}</option>
-            {data.brands.map((brand) => (
-              <option key={brand} value={brand}>
-                {brand}
-              </option>
-            ))}
-          </select>
-          <select
-            name="sort"
-            defaultValue={search.sort}
-            aria-label={t.priceSort}
-            className={controlClass}
-          >
-            <option value="price">{t.priceSort}</option>
-            <option value="new">{t.newest}</option>
-          </select>
-          <input
-            name="min"
-            defaultValue={search.min}
-            inputMode="numeric"
-            dir="ltr"
-            placeholder={t.min}
-            aria-label={t.min}
-            className={controlClass}
-          />
-          <input
-            name="max"
-            defaultValue={search.max}
-            inputMode="numeric"
-            dir="ltr"
-            placeholder={t.max}
-            aria-label={t.max}
-            className={controlClass}
-          />
-          <label className="flex h-12 items-center gap-2 text-sm">
-            <input name="stock" type="checkbox" defaultChecked={search.stock === "in"} />
-            {t.inStock}
-          </label>
-          <button type="submit" className={btnPrimary}>
-            {t.search}
-          </button>
-        </form>
-        <p className="text-sm text-muted">{t.freeSort}</p>
-        {data.items.length === 0 ? (
-          <div
-            className="flex flex-col items-start gap-3 rounded-2xl border border-line bg-surface p-5"
-            role="status"
-          >
-            <p className="text-sm text-muted">{t.none}</p>
-            <Link to="/stores" className={btnPrimary}>
-              {j.stores}
-            </Link>
-            <Link
-              to="/stores/request"
-              search={{ intent: "buy", store: undefined, item: undefined }}
-              className="rl-text-link"
+        {view.filters ? (
+          <>
+            <form
+              key={JSON.stringify(search)}
+              className="rl-card rl-compare-filters"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const form = new FormData(event.currentTarget);
+                set({
+                  q: String(form.get("q") ?? ""),
+                  category: String(form.get("category") ?? ""),
+                  brand: String(form.get("brand") ?? ""),
+                  min: String(form.get("min") ?? ""),
+                  max: String(form.get("max") ?? ""),
+                  stock: form.get("stock") === "on" ? "in" : "",
+                  sort: String(form.get("sort") ?? "price") === "new" ? "new" : "price",
+                });
+              }}
             >
-              {j.bring}
-            </Link>
-            {search.q ||
-            search.category ||
-            search.brand ||
-            search.min ||
-            search.max ||
-            search.stock ||
-            search.saved ? (
-              <Link
-                to="/market"
-                search={{
-                  sort: "price",
-                  page: 1,
-                  q: "",
-                  category: "",
-                  brand: "",
-                  min: "",
-                  max: "",
-                  stock: "",
-                  saved: "",
-                }}
-                className="text-sm font-medium text-pine"
+              <input
+                name="q"
+                defaultValue={search.q}
+                placeholder={t.search}
+                aria-label={t.search}
+                className={controlClass}
+              />
+              <select
+                name="category"
+                defaultValue={search.category}
+                aria-label={t.all}
+                className={controlClass}
               >
-                {t.all}
+                <option value="">{t.all}</option>
+                {data.categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {lang === "ckb" ? cat.name_ku : cat.name_en}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="brand"
+                defaultValue={search.brand}
+                aria-label={t.brand}
+                className={controlClass}
+              >
+                <option value="">{t.brand}</option>
+                {data.brands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="sort"
+                defaultValue={search.sort}
+                aria-label={t.priceSort}
+                className={controlClass}
+              >
+                <option value="price">{t.priceSort}</option>
+                <option value="new">{t.newest}</option>
+              </select>
+              <input
+                name="min"
+                defaultValue={search.min}
+                inputMode="numeric"
+                dir="ltr"
+                placeholder={t.min}
+                aria-label={t.min}
+                className={controlClass}
+              />
+              <input
+                name="max"
+                defaultValue={search.max}
+                inputMode="numeric"
+                dir="ltr"
+                placeholder={t.max}
+                aria-label={t.max}
+                className={controlClass}
+              />
+              <label className="flex h-12 items-center gap-2 text-sm">
+                <input name="stock" type="checkbox" defaultChecked={search.stock === "in"} />
+                {t.inStock}
+              </label>
+              <button type="submit" className={btnPrimary}>
+                {t.search}
+              </button>
+            </form>
+            <p className="text-sm text-muted">{t.freeSort}</p>
+          </>
+        ) : null}
+        {view.empty ? (
+          <div className="rl-empty-state" role="status">
+            <p>{view.empty === "catalogue" ? j.marketEmpty : t.none}</p>
+            <div className="rl-empty-actions">
+              <Link to="/stores" className={btnPrimary}>
+                {j.stores}
               </Link>
-            ) : null}
+              <Link
+                to="/stores/request"
+                search={{ intent: "buy", store: undefined, item: undefined }}
+                className="rl-button"
+                data-variant="secondary"
+              >
+                {j.bring}
+              </Link>
+              {view.reset ? (
+                <Link
+                  to="/market"
+                  search={{
+                    sort: "price",
+                    page: 1,
+                    q: "",
+                    category: "",
+                    brand: "",
+                    min: "",
+                    max: "",
+                    stock: "",
+                    saved: "",
+                  }}
+                  className="rl-text-action"
+                >
+                  {t.all}
+                </Link>
+              ) : null}
+            </div>
           </div>
         ) : null}
         <ul data-layout="card-grid" className="card-grid">
@@ -232,33 +231,35 @@ function MarketHome() {
             <MarketProductCard key={item.slug} item={item} />
           ))}
         </ul>
-        <div className="flex gap-3">
-          {search.page > 1 ? (
-            <button
-              type="button"
-              aria-label={PAGES_COPY[lang].prev}
-              className="inline-flex size-12 items-center justify-center rounded-full text-sm text-pine"
-              onClick={() => set({ page: search.page - 1 })}
-            >
-              ←
-            </button>
-          ) : null}
-          <span className="inline-flex items-center text-sm text-muted">
-            <bdi dir="ltr">
-              {search.page} / {data.pages}
-            </bdi>
-          </span>
-          {search.page < data.pages ? (
-            <button
-              type="button"
-              aria-label={PAGES_COPY[lang].next}
-              className="inline-flex size-12 items-center justify-center rounded-full text-sm text-pine"
-              onClick={() => navigate({ search: { ...search, page: search.page + 1 } })}
-            >
-              →
-            </button>
-          ) : null}
-        </div>
+        {view.pager ? (
+          <div className="flex gap-3">
+            {search.page > 1 ? (
+              <button
+                type="button"
+                aria-label={PAGES_COPY[lang].prev}
+                className="inline-flex size-12 items-center justify-center rounded-full text-sm text-pine"
+                onClick={() => set({ page: search.page - 1 })}
+              >
+                ←
+              </button>
+            ) : null}
+            <span className="inline-flex items-center text-sm text-muted">
+              <bdi dir="ltr">
+                {search.page} / {data.pages}
+              </bdi>
+            </span>
+            {search.page < data.pages ? (
+              <button
+                type="button"
+                aria-label={PAGES_COPY[lang].next}
+                className="inline-flex size-12 items-center justify-center rounded-full text-sm text-pine"
+                onClick={() => navigate({ search: { ...search, page: search.page + 1 } })}
+              >
+                →
+              </button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </Shell>
   );
