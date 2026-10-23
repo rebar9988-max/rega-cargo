@@ -1,27 +1,27 @@
-// TEMPORARY diagnostic (removed before merge): what WebKit reports for a failed route module.
+// TEMPORARY diagnostic (removed before merge): how a failed route module recovers per browser.
 import { test } from "@playwright/test";
-test("tmp: failed route module message", async ({ page }) => {
-  let n = 0;
-  await page.addInitScript(() => {
-    const original = console.error;
-    console.error = (...args: unknown[]) => {
-      original(
-        "ERR",
-        ...args.map((a) => (a instanceof Error ? `${a.name}|${a.message}|${String(a)}` : a)),
-      );
-    };
-    addEventListener("unhandledrejection", (e) =>
-      original("UNHANDLED", e.reason instanceof Error ? `${e.reason.name}|${e.reason.message}` : String(e.reason)),
-    );
-  });
-  page.on("console", (m) => console.log("console", m.type(), m.text().slice(0, 300)));
-  page.on("pageerror", (e) => console.log("pageerror", e.name, e.message));
-  page.on("framenavigated", (f) => f === page.mainFrame() && console.log("nav", f.url()));
-  await page.route(/\/assets\/track-[\w-]+\.js$/, (route) =>
-    n++ === 0 ? route.abort("connectionreset") : route.continue(),
-  );
-  await page.goto("/track?lang=en", { waitUntil: "networkidle" });
-  await page.waitForTimeout(4000);
-  console.log("RESULT aborted", n, "bottom-bar", await page.locator('[data-layout="bottom-bar"]').count(),
-    "storage", await page.evaluate(() => JSON.stringify(sessionStorage)));
-});
+for (const mode of ["abort", "503"] as const)
+  for (const plan of [{ track: 1 }, { "market.index": 1, track: 1 }, { track: 2 }] as Record<string, number>[])
+    test(`tmp: ${mode} ${JSON.stringify(plan)}`, async ({ page }) => {
+      const left = { ...plan };
+      const seen: Record<string, number> = {};
+      const navs: string[] = [];
+      page.on("framenavigated", (f) => f === page.mainFrame() && navs.push(new URL(f.url()).pathname));
+      await page.route(/\/assets\/(market\.index|track)-[\w-]+\.js$/, (route) => {
+        const chunk = /\/assets\/(market\.index|track)-/.exec(route.request().url())![1];
+        seen[chunk] = (seen[chunk] ?? 0) + 1;
+        if (!left[chunk]) return route.continue();
+        left[chunk]--;
+        return mode === "abort"
+          ? route.abort("connectionreset")
+          : route.fulfill({ status: 503, body: "unavailable" });
+      });
+      const out: string[] = [];
+      for (const path of Object.keys(plan).includes("market.index") ? ["/market?lang=en", "/track?lang=en"] : ["/track?lang=en"]) {
+        await page.goto(path, { waitUntil: "networkidle" });
+        await page.waitForTimeout(3000);
+        out.push(`${path} bar=${await page.locator('[data-layout="bottom-bar"]').count()}`);
+      }
+      console.log("RESULT", mode, JSON.stringify(plan), out.join(" "), "requests", JSON.stringify(seen), "navs", navs.join(","),
+        "storage", await page.evaluate(() => Object.keys(sessionStorage).join(";")));
+    });
