@@ -32,13 +32,20 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: ''
+      - name: What WebKit reports for a failed route module
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/layout/zz-tmp-webkit.spec.ts
+          --project=webkit-iphone --project=webkit-ipad-portrait --project=chromium-iphone
+          --retries=0 --workers=1 --reporter=list 2>&1 | grep -E "console|pageerror|nav |RESULT|passed|failed" || true
       - name: Repeat the navigation test (no retries)
         env:
           HOME: /root
         run: >-
           npx playwright test tests/layout/unified.spec.ts
           --project=webkit-ipad-portrait --project=webkit-iphone --project=webkit-ipad-landscape
-          --repeat-each=10 --retries=0 --workers=4 --reporter=list || true
+          --repeat-each=2 --retries=0 --workers=4 --reporter=list || true
       - name: Print the page snapshot of every failure
         if: always()
         run: |
