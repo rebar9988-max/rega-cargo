@@ -1,0 +1,48 @@
+# TEMPORARY diagnostic (owner task 2026-10-23: root-cause the flaky WebKit iPad navigation test).
+# Runs the unchanged test repeatedly on webkit-ipad-portrait without retries and prints the page
+# snapshot of every failure. Read-only: commits nothing. Removed before merge.
+name: tmp ipad nav diagnose
+on:
+  push:
+    branches: [claude/market-admin-link-ipad-nav-20261023]
+    paths: [.github/workflows/tmp-ipad-nav-diagnose.yml]
+permissions:
+  contents: read
+concurrency:
+  group: tmp-ipad-nav-diagnose
+  cancel-in-progress: true
+jobs:
+  repeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: "1"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build without production DB migrations
+        run: npm run build
+        env:
+          DATABASE_URL: ''
+      - name: Repeat the navigation test (no retries)
+        env:
+          HOME: /root
+        run: >-
+          npx playwright test tests/layout/unified.spec.ts
+          --grep "unified navigation preserves deep links"
+          --project=webkit-ipad-portrait --project=webkit-iphone
+          --repeat-each=40 --retries=0 --workers=3 --reporter=list || true
+      - name: Print the page snapshot of every failure
+        if: always()
+        run: |
+          for f in $(find test-results -name error-context.md 2>/dev/null | head -5); do
+            echo "=== $f"; cat "$f"; done
+          echo "failures: $(find test-results -name error-context.md 2>/dev/null | wc -l)"

@@ -5,7 +5,7 @@ import { PAGES_COPY } from "@/lib/pages-copy";
 import { PageHeader, Shell } from "@/components/shell";
 import { btnPrimary, controlClass } from "@/components/field";
 import { useI18n } from "@/lib/i18n";
-import { marketHome } from "@/lib/market/api";
+import { marketHome, marketViewerCanAdmin } from "@/lib/market/api";
 import { marketCopy } from "@/lib/market-copy";
 
 import { MarketProductCard } from "@/components/market-product-card";
@@ -24,7 +24,13 @@ export const Route = createFileRoute("/market/")({
     page: search.page,
     saved: search.saved,
   }),
-  loader: ({ deps }) => marketHome({ data: { ...deps, saved: deps.saved === "1" } }),
+  loader: async ({ deps }) => {
+    const [home, viewer] = await Promise.all([
+      marketHome({ data: { ...deps, saved: deps.saved === "1" } }),
+      marketViewerCanAdmin(),
+    ]);
+    return { ...home, canAdmin: viewer.admin };
+  },
   head: ({ match }) =>
     seo({
       lang: match.context.initialLang,
@@ -91,9 +97,12 @@ function MarketHome() {
           <Link to="/market/sell" className="text-pine">
             {t.sell}
           </Link>
-          <Link to="/admin" className="text-pine">
-            {t.admin}
-          </Link>
+          {/* Approved admins only; /admin itself is refused server-side to everyone else. */}
+          {data.canAdmin ? (
+            <Link to="/admin" className="text-pine">
+              {t.admin}
+            </Link>
+          ) : null}
           <button
             type="button"
             className="text-pine"
