@@ -189,6 +189,7 @@ test("catalogue opens filters on the first click after a delayed client module",
   await page.goto("/stores?lang=en", { waitUntil: "domcontentloaded" });
   const filters = page.locator(".rl-mobile-filters");
   await expect(filters).toBeDisabled();
+  await expect(page.locator(".rl-store-search button[type=submit]")).toBeDisabled();
   await expect(page.locator(".rl-audience-chips button").first()).toBeDisabled();
   release();
   await expect(filters).toBeEnabled();

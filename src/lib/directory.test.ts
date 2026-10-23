@@ -157,3 +157,53 @@ test("store logos: ratios match the SVG files and every logo gets a similar visu
   assert.equal(storeBrand(DIRECTORY_STORES.find((s) => s.id === "zalando-it")!), "zalando");
   assert.equal(storeBrand(STORES.find((s) => s.id === "amazon-de")!), "amazon-de");
 });
+
+test("discovery groups filtered storefronts without losing any regional store or saved item", async () => {
+  const { groupStorefronts } = await import("./store-discovery.ts");
+  const all = groupStorefronts(DIRECTORY_STORES);
+  assert.equal(all.length, new Set(DIRECTORY_STORES.map((s) => s.brand)).size);
+  assert.equal(all.flat().length, DIRECTORY_STORES.length);
+  for (const country of EUROPEAN_COUNTRIES) {
+    const filtered = selectBazaar({
+      params: { country },
+      favs: [],
+      labels: {},
+      stores: DIRECTORY_STORES,
+    }).stores;
+    assert.ok(
+      groupStorefronts(filtered)
+        .flat()
+        .every((s) => s.country === country),
+    );
+  }
+  const saved = selectBazaar({
+    params: { fav: 1 },
+    favs: ["zalando-it"],
+    labels: {},
+    stores: DIRECTORY_STORES,
+  }).stores;
+  assert.deepEqual(
+    groupStorefronts(saved)
+      .flat()
+      .map((s) => s.id),
+    ["zalando-it"],
+  );
+});
+
+test("product-link discovery retains the exact regional store and refuses unsafe or prohibited URLs", async () => {
+  const { productLinkTarget } = await import("./store-discovery.ts");
+  assert.deepEqual(productLinkTarget("https://www.zalando.it/shoe"), {
+    url: "https://www.zalando.it/shoe",
+    store: "zalando-it",
+  });
+  for (const url of [
+    "javascript:alert(1)",
+    "http://www.amazon.de/x",
+    "https://amazon.de.evil.test/x",
+    "https://u:p@amazon.de/x",
+    "https://127.0.0.1/x",
+    "https://www.amazon.de/vodka",
+    "https://www.amazon.de/" + "x".repeat(2200),
+  ])
+    assert.equal(productLinkTarget(url), null, url.slice(0, 80));
+});

@@ -31,6 +31,7 @@ import { catalogueCopy } from "@/lib/catalogue-copy";
 import { isPublishedCategory, publishedSubcategories } from "@/lib/catalogue";
 import { rawGet, rawSet } from "@/lib/storage";
 import { rlAiEnabled } from "@/lib/ai/flag";
+import { ITEMS_COPY } from "@/lib/items-copy";
 import { JOURNEY_COPY } from "@/lib/journey-copy";
 import { refHomeCopy } from "@/lib/ref-home-copy";
 import type { ShellSearch } from "./shell";
@@ -239,12 +240,13 @@ export function SiteHeader({
               <HeaderLangPicker lang={lang} setLang={setLang} title={d.language} />
               {/* Phones and tablets: account sits last in the bar (desktop keeps its place above). */}
               <Link
-                to="/account"
+                to={path === "/stores" ? "/stores" : "/account"}
                 data-layout="account-button"
                 className="rl-icon-button rl-mobile-only"
-                aria-label={c.account}
+                aria-label={path === "/stores" ? d.wishlist : c.account}
+                {...(path === "/stores" ? { search: { fav: 1 as const } } : {})}
               >
-                <Icon as={UserRound} />
+                <Icon as={path === "/stores" ? Heart : UserRound} />
               </Link>
               <span className="rl-desktop-only">
                 <ThemeToggle />
@@ -270,7 +272,7 @@ export function SiteHeader({
               {j.help}
             </Link>
           </nav>
-          {catalogue ? (
+          {catalogue && path !== "/stores" ? (
             <nav className="page rl-category-nav" aria-label={c.categories}>
               <button
                 ref={trigger}
@@ -287,7 +289,7 @@ export function SiteHeader({
               </button>
             </nav>
           ) : null}
-          {catalogue && active ? (
+          {catalogue && path !== "/stores" && active ? (
             <div
               id="rl-mega"
               className="rl-mega"
@@ -334,7 +336,7 @@ export function SiteHeader({
           ) : null}
         </header>
       )}
-      {catalogue ? (
+      {catalogue && path !== "/stores" ? (
         <CategoryStrip
           label={c.categories}
           more={d.more}
@@ -425,6 +427,28 @@ export function SiteHeader({
             <Link to="/stores" search={{ fav: 1 }} onClick={() => setMobile(false)}>
               {d.wishlist}
             </Link>
+          </nav>
+          <nav className="rl-stack" aria-label={c.footerLegal}>
+            {(["impressum", "privacy", "terms"] as const).map((doc) => (
+              <Link
+                key={doc}
+                to={`/${doc}`}
+                className="rl-mobile-menu-link"
+                onClick={() => setMobile(false)}
+              >
+                {SITE_COPY[lang].legal[doc]}
+              </Link>
+            ))}
+            <Link
+              to="/prohibited-items"
+              className="rl-mobile-menu-link"
+              onClick={() => setMobile(false)}
+            >
+              {ITEMS_COPY[lang].link}
+            </Link>
+            <a href="/rl-cargo.pdf" download className="rl-mobile-menu-link">
+              {c.pdf}
+            </a>
           </nav>
           <label className="rl-stack">
             <span>{d.language}</span>

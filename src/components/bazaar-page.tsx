@@ -1,17 +1,27 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Heart, SlidersHorizontal, ArrowUpRight, Info, X } from "lucide-react";
+import {
+  Heart,
+  SlidersHorizontal,
+  ArrowUpRight,
+  Info,
+  X,
+  Search,
+  Store,
+  Link2,
+  PackageCheck,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Shell, PageHeader } from "./shell";
-import { Badge, BottomSheet, Button, Chip, Icon, Select, Skeleton } from "./ui";
+import { Shell } from "./shell";
+import { BottomSheet, Button, Chip, Icon, Select, Skeleton } from "./ui";
 import { Field } from "./field";
-import { CategoryDirectory, SubcategoryPanel } from "./category-directory";
-import { responsiveImage } from "@/lib/images";
+import { SubcategoryPanel } from "./category-directory";
 import type { BazaarSearch } from "@/lib/bazaar-search";
 import { selectBazaar } from "@/lib/bazaar-listing";
 import { catalogueCopy } from "@/lib/catalogue-copy";
 import { redesignCopy } from "@/lib/redesign-copy";
 import { DESIGN_COPY } from "@/lib/design-copy";
 import { useI18n } from "@/lib/i18n";
+import { useHydrated } from "@/lib/use-hydrated";
 import { storeCopy } from "@/lib/store-copy";
 import {
   DIRECTORY_STORES,
@@ -29,6 +39,8 @@ import {
 import { DIRECTORY_COPY } from "@/lib/directory-copy";
 import { PUBLISHED_STORE_CATEGORIES, isPublishedCategory } from "@/lib/catalogue";
 
+import { groupStorefronts, productLinkTarget } from "@/lib/store-discovery";
+import { DISCOVERY_COPY } from "@/lib/discovery-copy";
 import { JOURNEY_COPY } from "@/lib/journey-copy";
 
 /**
@@ -55,12 +67,18 @@ function writeHandoff(id: string | null) {
 /** Store catalogue only; shipping lives on /quote in ShippingPage. */
 export function BazaarPage({ home = false }: { home?: boolean } = {}) {
   const { lang } = useI18n();
+  const ready = useHydrated();
   const t = storeCopy(lang),
     c = redesignCopy(lang),
     d = DESIGN_COPY[lang],
     e = DIRECTORY_COPY[lang],
     bring = JOURNEY_COPY[lang].bring;
+  const copy = DISCOVERY_COPY[lang];
+  const [query, setQuery] = useState("");
+  const [linkError, setLinkError] = useState(false);
+  const [chosen, setChosen] = useState<string | null>(null);
   const params = useRouterState({ select: (state) => state.location.search as BazaarSearch });
+  useEffect(() => setQuery(params.q ?? ""), [params.q]);
   const pending = useRouterState({ select: (state) => state.status === "pending" });
   const navigate = useNavigate();
   const [sheet, setSheet] = useState(false);
@@ -107,6 +125,9 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
     () => selectBazaar({ params, favs, labels: t.goods, stores: DIRECTORY_STORES }),
     [params, favs, t.goods],
   );
+  const groups = useMemo(() => groupStorefronts(results.stores), [results.stores]);
+  const selected = DIRECTORY_STORES.find((store) => store.id === chosen);
+  const variants = selected ? results.stores.filter((store) => store.brand === selected.brand) : [];
   const countryName = (country: string) =>
     isEuropeanCountry(country) ? e.country[country] : country;
   // One rail entry per retailer available in the chosen country.
@@ -170,11 +191,6 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
           ))}
         </Select>
       </Field>
-      <Field label={c.price} hint={c.priceUnavailable}>
-        <Select disabled value="">
-          <option value="">{t.awaiting}</option>
-        </Select>
-      </Field>
       <Chip
         selected={params.fav === 1}
         onClick={() => setFilter({ fav: params.fav ? undefined : 1 })}
@@ -189,105 +205,199 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
   );
   return (
     <Shell search={{ q: params.q ?? "", setQ: (q) => setFilter({ q: q || undefined }) }}>
-      <PageHeader kicker={JOURNEY_COPY[lang].stores} title={c.storesTitle} lede={t.lede} />
-      <section className="page rl-marketplace">
-        {/* One toolbar: the filter sheet button first, then the audience chips in a single
-                scrollable row. */}
-        <div className="rl-market-toolbar">
-          <Button variant="secondary" className="rl-mobile-filters" onClick={() => setSheet(true)}>
-            <Icon as={SlidersHorizontal} />
-            <span className="rl-filters-label">{c.filters}</span>
-          </Button>
-          <div className="rl-chip-row rl-audience-chips">
-            {(["women", "men", "kids"] as const).map((who) => (
-              <Chip
-                key={who}
-                selected={params.who === who}
-                onClick={() => setFilter({ who: params.who === who ? undefined : who })}
-              >
-                {d.audience[who]}
-              </Chip>
-            ))}
-          </div>
-        </div>
-        {/* Discovery: country first, then the retailer, both one compact scrollable row. */}
-        <div className="rl-discovery">
-          <div className="rl-chip-row rl-country-chips" role="group" aria-label={e.countries}>
-            <Chip selected={!params.country} onClick={() => setCountry(undefined)}>
-              {e.allCountries}
-            </Chip>
-            {EUROPEAN_COUNTRIES.map((country) => (
-              <Chip
-                key={country}
-                data-country={country}
-                selected={params.country === country}
-                onClick={() => setCountry(params.country === country ? undefined : country)}
-              >
-                {e.country[country]}
-              </Chip>
-            ))}
-          </div>
-          <ul className="rl-retailer-rail" aria-label={e.retailers}>
-            {retailers.map((store) => (
-              <li key={store.brand}>
-                <button
-                  type="button"
-                  className="rl-retailer"
-                  data-retailer={store.brand}
-                  aria-pressed={params.store === store.brand}
-                  aria-label={store.name}
-                  title={store.name}
-                  onClick={() =>
-                    setFilter({ store: params.store === store.brand ? undefined : store.brand })
+      <section className="rl-store-hero">
+        <div className="page rl-store-hero-inner">
+          <div className="rl-stack">
+            <h1>{copy.title}</h1>
+            <p className="rl-muted">{copy.body}</p>
+            <form
+              className="rl-store-search"
+              role="search"
+              onSubmit={(event) => {
+                event.preventDefault();
+                setLinkError(false);
+                if (/^https?:|www\./i.test(query.trim())) {
+                  const target = productLinkTarget(query.trim());
+                  if (!target) {
+                    setLinkError(true);
+                    return;
                   }
-                >
-                  {/* Same visual weight for every wordmark, at its own proportions. */}
-                  <img
-                    src={storeLogo(store.brand)}
-                    alt=""
-                    {...storeLogoSize(store.brand, RAIL_LOGO)}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </button>
+                  void navigate({
+                    to: "/stores/request",
+                    search: { ...target, intent: "buy", item: undefined },
+                  });
+                } else setFilter({ q: query.trim() || undefined });
+              }}
+            >
+              <label className="sr-only" htmlFor="rl-directory-search">
+                {copy.search}
+              </label>
+              <Icon as={Search} />
+              <input
+                id="rl-directory-search"
+                disabled={!ready}
+                size={1}
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setLinkError(false);
+                }}
+                placeholder={copy.search}
+                maxLength={2048}
+                aria-invalid={linkError}
+                aria-describedby={linkError ? "rl-link-error" : undefined}
+              />
+              <Button type="submit" disabled={!ready}>
+                {copy.go}
+              </Button>
+            </form>
+            {linkError ? (
+              <p id="rl-link-error" role="alert">
+                {copy.invalid}
+              </p>
+            ) : null}
+          </div>
+          <ol className="rl-store-steps" aria-label={copy.help}>
+            {[Store, Link2, PackageCheck].map((StepIcon, index) => (
+              <li key={copy.steps[index]}>
+                <span>
+                  <Icon as={StepIcon} />
+                </span>
+                <p>{copy.steps[index]}</p>
               </li>
             ))}
-          </ul>
-          {active.length ? (
-            <div className="rl-active-filters" role="group" aria-label={e.active}>
-              {active.map((item) => (
-                <button
-                  type="button"
-                  key={item.key}
-                  className="rl-active-filter"
-                  aria-label={`${e.remove}: ${item.label}`}
+          </ol>
+        </div>
+      </section>
+      <section className="page rl-marketplace rl-store-discovery">
+        {/* One toolbar: the filter sheet button first, then the audience chips in a single
+                scrollable row. */}
+        <div className="rl-store-filters">
+          <div className="rl-market-toolbar">
+            <Button
+              variant="secondary"
+              className="rl-mobile-filters"
+              onClick={() => setSheet(true)}
+            >
+              <Icon as={SlidersHorizontal} />
+              <span className="rl-filters-label">{c.filters}</span>
+            </Button>
+            <div className="rl-chip-row rl-audience-chips">
+              {(["women", "men", "kids"] as const).map((who) => (
+                <Chip
+                  key={who}
+                  selected={params.who === who}
+                  onClick={() => setFilter({ who: params.who === who ? undefined : who })}
+                >
+                  {d.audience[who]}
+                </Chip>
+              ))}
+            </div>
+          </div>
+          {/* Discovery: country first, then the retailer, both one compact scrollable row. */}
+          <div className="rl-discovery">
+            <div className="rl-chip-row rl-country-chips" role="group" aria-label={e.countries}>
+              <Chip selected={!params.country} onClick={() => setCountry(undefined)}>
+                {e.allCountries}
+              </Chip>
+              {EUROPEAN_COUNTRIES.map((country) => (
+                <Chip
+                  key={country}
+                  data-country={country}
+                  selected={params.country === country}
+                  onClick={() => setCountry(params.country === country ? undefined : country)}
+                >
+                  <span aria-hidden="true">
+                    {{ DE: "🇩🇪", CH: "🇨🇭", IT: "🇮🇹", FR: "🇫🇷", GB: "🇬🇧" }[country]}
+                  </span>
+                  {e.country[country]}
+                </Chip>
+              ))}
+            </div>
+            <div
+              className="rl-chip-row rl-discovery-categories"
+              role="group"
+              aria-label={c.categories}
+            >
+              <Chip
+                selected={!params.cat}
+                onClick={() => setFilter({ cat: undefined, sub: undefined })}
+              >
+                {t.allCategories}
+              </Chip>
+              {PUBLISHED_STORE_CATEGORIES.map((category) => (
+                <Chip
+                  key={category}
+                  data-category={category}
+                  selected={params.cat === category}
                   onClick={() =>
-                    setFilter(
-                      item.key === "cat"
-                        ? { cat: undefined, sub: undefined }
-                        : { [item.key]: undefined },
-                    )
+                    setFilter({
+                      cat: params.cat === category ? undefined : category,
+                      sub: undefined,
+                    })
                   }
                 >
-                  <bdi>{item.label}</bdi>
-                  <Icon as={X} />
-                </button>
+                  {t.categories[category]}
+                </Chip>
               ))}
-              <button type="button" className="rl-text-action" onClick={clear}>
-                {e.reset}
-              </button>
             </div>
-          ) : null}
+            <details className="rl-retailer-picker">
+              <summary>{e.allRetailers}</summary>
+              <ul className="rl-retailer-rail" aria-label={e.retailers}>
+                {retailers.map((store) => (
+                  <li key={store.brand}>
+                    <button
+                      type="button"
+                      className="rl-retailer"
+                      data-retailer={store.brand}
+                      aria-pressed={params.store === store.brand}
+                      aria-label={store.name}
+                      title={store.name}
+                      onClick={() =>
+                        setFilter({ store: params.store === store.brand ? undefined : store.brand })
+                      }
+                    >
+                      {/* Same visual weight for every wordmark, at its own proportions. */}
+                      <img
+                        src={storeLogo(store.brand)}
+                        alt=""
+                        {...storeLogoSize(store.brand, RAIL_LOGO)}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </details>
+            {active.length ? (
+              <div className="rl-active-filters" role="group" aria-label={e.active}>
+                {active.map((item) => (
+                  <button
+                    type="button"
+                    key={item.key}
+                    className="rl-active-filter"
+                    aria-label={`${e.remove}: ${item.label}`}
+                    onClick={() =>
+                      setFilter(
+                        item.key === "cat"
+                          ? { cat: undefined, sub: undefined }
+                          : { [item.key]: undefined },
+                      )
+                    }
+                  >
+                    <bdi>{item.label}</bdi>
+                    <Icon as={X} />
+                  </button>
+                ))}
+                <button type="button" className="rl-text-action" onClick={clear}>
+                  {e.reset}
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
-        <p className="rl-partner-note">
-          <Icon as={Info} />
-          <span>{c.noPartner}</span>
-        </p>
         <div className="rl-market-layout">
-          <aside className="rl-filter-sidebar" aria-label={c.filters}>
-            <h2>{c.filters}</h2>
-            {filters}
-          </aside>
           <div className="rl-market-results" aria-busy={pending}>
             {back ? (
               <div className="rl-handoff-back rl-card" role="status">
@@ -315,11 +425,7 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                 </div>
               </div>
             ) : null}
-            {!params.cat && !params.q && !params.who && !params.store && !params.fav ? (
-              <CategoryDirectory lang={lang} to={home ? "/" : "/stores"} />
-            ) : (
-              <SubcategoryPanel lang={lang} to={home ? "/" : "/stores"} params={params} />
-            )}
+            <SubcategoryPanel lang={lang} to={home ? "/" : "/stores"} params={params} />
             {pending ? (
               <div className="rl-results-grid">
                 {[0, 1, 2, 3].map((i) => (
@@ -328,9 +434,7 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
               </div>
             ) : (
               <>
-                {!results.goods.length &&
-                !results.stores.length &&
-                (!params.cat || isPublishedCategory(params.cat)) ? (
+                {!results.stores.length && (!params.cat || isPublishedCategory(params.cat)) ? (
                   <div className="rl-empty-state" role="status">
                     <h2>{c.emptyTitle}</h2>
                     <p>{params.cat ? catalogueCopy(lang).emptyCategory : c.emptyBody}</p>
@@ -339,167 +443,83 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
                     </Button>
                   </div>
                 ) : null}
-                {results.goods.length ? (
-                  <section aria-labelledby="rl-samples">
-                    <div className="rl-result-heading">
-                      <h2 id="rl-samples">{c.samples}</h2>
-                      <p>{c.samplesBody}</p>
-                    </div>
-                    <ul
-                      className="rl-results-grid"
-                      data-layout="card-grid"
-                      data-layout-cols="catalogue"
-                    >
-                      {results.goods.map((good, index) => (
-                        <li key={good.id} className="rl-product-card" data-good={good.id}>
-                          <Link
-                            to="/stores/request"
-                            search={{ store: good.storeId, intent: "buy", item: good.id }}
-                            className="rl-product-image"
-                          >
-                            <img
-                              {...responsiveImage(
-                                good.image,
-                                "(min-width: 1024px) 280px, (min-width: 768px) 30vw, 45vw",
-                              )}
-                              alt={t.goods[good.id]}
-                              width={640}
-                              height={640}
-                              loading={index < 2 ? "eager" : "lazy"}
-                              decoding="async"
-                            />
-                            <Badge>{c.exampleTitle}</Badge>
-                          </Link>
-                          <div className="rl-product-body">
-                            <p className="rl-eyebrow">
-                              <bdi dir="ltr">{storeById(good.storeId)?.name}</bdi>
-                            </p>
-                            <h3>{t.goods[good.id]}</h3>
-                            <p className="rl-muted">{t.awaiting}</p>
-                            <Link
-                              to="/stores/request"
-                              search={{ store: good.storeId, intent: "buy", item: good.id }}
-                              className="rl-button"
-                              data-variant="primary"
-                            >
-                              {t.order}
-                            </Link>
-                            <div className="rl-product-quick" aria-label={c.quickActions}>
-                              <Link
-                                to="/stores/request"
-                                search={{ store: good.storeId, intent: "ship", item: good.id }}
-                              >
-                                {t.shipOwn}
-                              </Link>
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                ) : null}
                 {results.stores.length ? (
                   <section aria-labelledby="rl-store-list" className="rl-defer">
                     <div className="rl-result-heading">
                       <h2 id="rl-store-list">{t.storesHeading}</h2>
-                      <p>{c.noPartner}</p>
-                      <p className="rl-handoff-hint">{e.handoff}</p>
+                      <span className="rl-muted" aria-live="polite">
+                        {groups.length}
+                      </span>
                     </div>
                     <ul
                       className="rl-results-grid rl-store-grid"
                       data-layout="card-grid"
                       data-layout-cols="stores"
                     >
-                      {results.stores.map((store) => (
-                        <li
-                          className="rl-store-card rl-card"
-                          key={store.id}
-                          data-store={store.id}
-                          data-country={store.country}
-                        >
-                          <div className="rl-store-top">
-                            <span className="rl-store-logo">
-                              <img
-                                src={storeLogo(store.brand)}
-                                alt={store.name}
-                                {...storeLogoSize(store.brand, CARD_LOGO)}
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            </span>
-                            {/* The logo tile spans the card (readable wordmarks on narrow
+                      {groups.map((group) => {
+                        const store = group[0];
+                        return (
+                          <li
+                            className="rl-store-card rl-card"
+                            key={store.id}
+                            data-store={store.id}
+                            data-country={store.country}
+                          >
+                            <div className="rl-store-top">
+                              <span className="rl-store-logo">
+                                <img
+                                  src={storeLogo(store.brand)}
+                                  alt={store.name}
+                                  {...storeLogoSize(store.brand, CARD_LOGO)}
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              </span>
+                              {/* The logo tile spans the card (readable wordmarks on narrow
                                 phones); the favourite is a small badge in the card corner. */}
+                              <Button
+                                variant="ghost"
+                                className="rl-store-fav"
+                                aria-pressed={favs.includes(store.id)}
+                                aria-label={`${t.favorites} · ${store.name}`}
+                                onClick={() => toggle(store.id)}
+                              >
+                                <Heart
+                                  aria-hidden="true"
+                                  className="rl-icon"
+                                  fill={favs.includes(store.id) ? "currentColor" : "none"}
+                                />
+                              </Button>
+                            </div>
+                            <h3>
+                              <bdi dir="ltr">{store.name}</bdi>
+                            </h3>
+                            <p
+                              className="rl-store-meta"
+                              title={`${countryName(store.country)} · ${store.host}`}
+                            >
+                              <span>{countryName(store.country)}</span>
+                              <bdi dir="ltr">{store.host}</bdi>
+                            </p>
+                            <p className="rl-muted rl-store-categories">
+                              {store.categories
+                                .filter(isPublishedCategory)
+                                .slice(0, 2)
+                                .map((category) => t.categories[category])
+                                .join(" · ")}
+                            </p>
                             <Button
-                              variant="ghost"
-                              className="rl-store-fav"
-                              aria-pressed={favs.includes(store.id)}
-                              aria-label={`${t.favorites} · ${store.name}`}
-                              onClick={() => toggle(store.id)}
+                              className="rl-store-primary"
+                              onClick={() => setChosen(store.id)}
+                              aria-haspopup="dialog"
+                              aria-label={`${copy.choose} · ${store.name}`}
                             >
-                              <Heart
-                                aria-hidden="true"
-                                className="rl-icon"
-                                fill={favs.includes(store.id) ? "currentColor" : "none"}
-                              />
+                              {copy.choose}
+                              <Icon as={ArrowUpRight} directional />
                             </Button>
-                          </div>
-                          <h3>
-                            <bdi dir="ltr">{store.name}</bdi>
-                          </h3>
-                          <p
-                            className="rl-store-meta"
-                            title={`${countryName(store.country)} · ${store.host}`}
-                          >
-                            <span>{countryName(store.country)}</span>
-                            <bdi dir="ltr">{store.host}</bdi>
-                          </p>
-                          <p className="rl-muted rl-store-categories">
-                            {store.categories
-                              .filter(isPublishedCategory)
-                              .map((category) => t.categories[category])
-                              .join(" · ")}
-                          </p>
-                          {/* The official site opens in a new tab; this page and its filters stay. */}
-                          <a
-                            href={store.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rl-button rl-store-site"
-                            data-variant="secondary"
-                            aria-label={`${e.official} · ${store.host}`}
-                            onClick={() => writeHandoff(store.id)}
-                          >
-                            {e.official}
-                            <Icon as={ArrowUpRight} directional />
-                          </a>
-                          {/* One primary action; "I bought it myself" is a quiet link under it. */}
-                          <Link
-                            to="/stores/request"
-                            search={{ store: store.id, intent: "buy", item: undefined }}
-                            className="rl-button rl-store-primary"
-                            data-variant="primary"
-                          >
-                            {t.assist}
-                          </Link>
-                          <div className="rl-store-links">
-                            <Link
-                              to="/stores/request"
-                              search={{ store: store.id, intent: "ship", item: undefined }}
-                              className="rl-text-action"
-                            >
-                              {t.shipOwn}
-                            </Link>
-                          </div>
-
-                          <details>
-                            <summary>{t.external}</summary>
-                            <p>{t.notes[store.note]}</p>
-                            {store.caution.map((caution) => (
-                              <p key={caution}>{t.cautions[caution]}</p>
-                            ))}
-                          </details>
-                        </li>
-                      ))}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </section>
                 ) : null}
@@ -507,7 +527,66 @@ export function BazaarPage({ home = false }: { home?: boolean } = {}) {
             )}
           </div>
         </div>
+        <p className="rl-partner-note">
+          <Icon as={Info} />
+          <span>{c.noPartner}</span>
+        </p>
       </section>
+      <BottomSheet
+        open={Boolean(selected)}
+        onClose={() => setChosen(null)}
+        title={selected?.name ?? copy.choose}
+      >
+        {selected ? (
+          <div className="rl-stack rl-store-actions">
+            <Field label={copy.region}>
+              <Select value={selected.id} onChange={(event) => setChosen(event.target.value)}>
+                {variants.map((store) => (
+                  <option key={store.id} value={store.id}>
+                    {countryName(store.country)} · {store.host}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <p className="rl-muted">{e.handoff}</p>
+            <a
+              href={selected.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rl-button rl-store-site"
+              data-variant="secondary"
+              onClick={() => {
+                writeHandoff(selected.id);
+                setChosen(null);
+              }}
+            >
+              {e.official}
+              <Icon as={ArrowUpRight} directional />
+            </a>
+            <Link
+              to="/stores/request"
+              search={{ store: selected.id, intent: "buy", item: undefined }}
+              className="rl-button"
+              data-variant="primary"
+            >
+              {t.assist}
+            </Link>
+            <Link
+              to="/stores/request"
+              search={{ store: selected.id, intent: "ship", item: undefined }}
+              className="rl-button"
+              data-variant="secondary"
+            >
+              {t.shipOwn}
+            </Link>
+            {selected.caution.length ? (
+              <p className="rl-muted">
+                {selected.caution.map((caution) => t.cautions[caution]).join(" ")}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </BottomSheet>
       <BottomSheet open={sheet} onClose={() => setSheet(false)} title={c.filters}>
         {filters}
         <Button onClick={() => setSheet(false)}>{c.showResults}</Button>
