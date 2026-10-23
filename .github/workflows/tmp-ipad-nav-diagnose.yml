@@ -37,8 +37,8 @@ jobs:
           HOME: /root
         run: >-
           npx playwright test tests/layout/zz-tmp-webkit.spec.ts
-          --project=webkit-iphone --project=webkit-ipad-portrait --project=chromium-iphone
-          --retries=0 --workers=2 --reporter=list 2>&1 | grep -E "RESULT|\[(webkit|chromium)" || true
+          --project=webkit-iphone --project=webkit-ipad-portrait
+          --retries=0 --workers=2 --reporter=list 2>&1 | grep -E "RESULT|modulepreload|\[(webkit|chromium)" || true
       - name: Repeat the navigation test (no retries)
         env:
           HOME: /root

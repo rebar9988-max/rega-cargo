@@ -1,27 +1,34 @@
-// TEMPORARY diagnostic (removed before merge): how a failed route module recovers per browser.
+// TEMPORARY diagnostic (removed before merge): which recovery re-requests a failed route module.
 import { test } from "@playwright/test";
-for (const mode of ["abort", "503"] as const)
-  for (const plan of [{ track: 1 }, { "market.index": 1, track: 1 }, { track: 2 }] as Record<string, number>[])
-    test(`tmp: ${mode} ${JSON.stringify(plan)}`, async ({ page }) => {
-      const left = { ...plan };
-      const seen: Record<string, number> = {};
-      const navs: string[] = [];
-      page.on("framenavigated", (f) => f === page.mainFrame() && navs.push(new URL(f.url()).pathname));
-      await page.route(/\/assets\/(market\.index|track)-[\w-]+\.js$/, (route) => {
-        const chunk = /\/assets\/(market\.index|track)-/.exec(route.request().url())![1];
-        seen[chunk] = (seen[chunk] ?? 0) + 1;
-        if (!left[chunk]) return route.continue();
-        left[chunk]--;
-        return mode === "abort"
-          ? route.abort("connectionreset")
-          : route.fulfill({ status: 503, body: "unavailable" });
-      });
-      const out: string[] = [];
-      for (const path of Object.keys(plan).includes("market.index") ? ["/market?lang=en", "/track?lang=en"] : ["/track?lang=en"]) {
-        await page.goto(path, { waitUntil: "networkidle" });
-        await page.waitForTimeout(3000);
-        out.push(`${path} bar=${await page.locator('[data-layout="bottom-bar"]').count()}`);
-      }
-      console.log("RESULT", mode, JSON.stringify(plan), out.join(" "), "requests", JSON.stringify(seen), "navs", navs.join(","),
-        "storage", await page.evaluate(() => Object.keys(sessionStorage).join(";")));
+for (const strategy of ["page.reload", "goto-same", "fetch-reload-then-reload", "new-page", "goto-cachebust-query"] as const)
+  test(`tmp: recover by ${strategy}`, async ({ page, context }) => {
+    let requests = 0;
+    let fail = 1;
+    await context.route(/\/assets\/track-[\w-]+\.js$/, (route) => {
+      requests++;
+      if (fail-- > 0) return route.abort("connectionreset");
+      return route.continue();
     });
+    await page.goto("/track?lang=en", { waitUntil: "networkidle" });
+    await page.waitForTimeout(2500);
+    const stuck = await page.locator('[data-layout="bottom-bar"]').count();
+    let target = page;
+    if (strategy === "page.reload") await page.reload({ waitUntil: "networkidle" });
+    if (strategy === "goto-same") await page.goto("/track?lang=en", { waitUntil: "networkidle" });
+    if (strategy === "goto-cachebust-query") await page.goto("/track?lang=en&r=1", { waitUntil: "networkidle" });
+    if (strategy === "fetch-reload-then-reload") {
+      const hrefs = await page.evaluate(async () => {
+        const urls = [...document.querySelectorAll<HTMLLinkElement>('link[rel="modulepreload"]')].map((l) => l.href);
+        await Promise.all(urls.map((u) => fetch(u, { cache: "reload" }).catch(() => null)));
+        return urls.filter((u) => u.includes("track-"));
+      });
+      console.log("modulepreload track hrefs", hrefs);
+      await page.reload({ waitUntil: "networkidle" });
+    }
+    if (strategy === "new-page") {
+      target = await context.newPage();
+      await target.goto("/track?lang=en", { waitUntil: "networkidle" });
+    }
+    await target.waitForTimeout(2500);
+    console.log("RESULT", strategy, "stuckBar", stuck, "afterBar", await target.locator('[data-layout="bottom-bar"]').count(), "requests", requests);
+  });
