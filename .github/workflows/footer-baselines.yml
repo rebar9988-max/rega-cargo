@@ -1,0 +1,50 @@
+name: Footer baseline verification (temporary)
+on:
+  push:
+    branches: [codex/compact-footer-20261024]
+    paths-ignore: ['tests/layout/__screenshots__/**']
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: '1'
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/compact-footer-20261024
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck && npm test && npm run lint
+      - run: npm run build
+        env:
+          DATABASE_URL: ''
+      - run: npx playwright test --update-snapshots=all
+        env:
+          HOME: /root
+      - name: Commit official-image baselines to this branch only
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git add tests/layout/__screenshots__
+          if ! git diff --cached --quiet; then
+            git -c user.name='Codex' -c user.email='codex@openai.com' commit -m 'Update footer baselines in the official Playwright image'
+            git push origin HEAD:codex/compact-footer-20261024
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: footer-layout-report
+          path: |
+            playwright-report/
+            test-results/
+            tests/layout/__screenshots__/
+          retention-days: 3
