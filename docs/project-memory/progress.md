@@ -219,3 +219,10 @@ gate and release pending. [Evidence](../verification/store-discovery-20261023.md
 Branch `claude/market-admin-link-ipad-nav-20261023`. Task 1: admin link only for approved admins (`marketViewerCanAdmin`/`viewerIsAdmin`, fail closed), 12 compliance e2e tests pass. Task 2: flaky WebKit navigation root-caused (failed page module → error page without navigation; WebKit shared message and reused failed module) and fixed in `chunk-recovery.ts`/`error-component.tsx`; 5 unit tests + cross-browser regression test; temporary WebKit diagnostic final run 39996735987: 352 passed, 0 failed (3 WebKit projects × 8, under load, no retries). Local gate and hosted gate: see the PR. Task 3 (production verification): recorded after release in the [report](../verification/admin-link-webkit-nav-20261023.md).
 
 2026-10-23 release: PR #165 merged `020d39b` (gate run 39999709330: layout lock 751/16/0, no flaky); Workers Build `926c71c5`, Version `445da8ad` (allocation not verified). Live: no admin link on `/market` (en desktop, ckb phone), recovery code in the live bundle, `/stores` ar/en 200. Product pages not verifiable (no listings); Firefox and console covered by CI only.
+
+## 2026-10-24 — Shared footer (PR #167)
+
+Footer-only implementation and official-image baseline review complete. Supported Node 22
+769 pass / 4 skip / 0 fail; official-image browser run 40068780275: 760 pass / 16 skip / 0 fail.
+279 affected baselines updated. Final strict gate (including narrow phones) and production
+release pending. [Evidence](../verification/compact-footer-20261024.md).
