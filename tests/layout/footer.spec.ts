@@ -37,3 +37,25 @@ test("shared footer stays compact and preserves keyboard-accessible resources", 
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   }
 });
+
+test("footer preferences and expanded resources fit narrow phones", async ({ page }) => {
+  for (const width of [320, 360, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/?lang=ckb", { waitUntil: "networkidle" });
+    const footer = page.locator("footer.rl-site-footer");
+    await expect(footer.locator(".rl-footer-preferences button")).toBeEnabled();
+    expect((await footer.boundingBox())!.height).toBeLessThan(600);
+    for (const summary of await footer.locator("summary").all()) await summary.click();
+    const overflow = await footer.locator("a, select, button, summary").evaluateAll((elements) =>
+      elements
+        .filter((element) => {
+          const box = element.getBoundingClientRect();
+          return (
+            box.width > 0 && (box.left < -1 || box.right > document.documentElement.clientWidth + 1)
+          );
+        })
+        .map((element) => element.tagName),
+    );
+    expect(overflow, `footer controls at ${width}px`).toEqual([]);
+  }
+});

@@ -173,3 +173,11 @@ product-link handoff, one category row and compact directory footer. Official-im
 39958006766: 69 affected page/menu renders passed (12 device skips), 20 focused browser tests
 passed. Full final strict gate and release pending; see
 [verification](docs/verification/store-discovery-20261023.md). Do not repeat the implementation.
+
+## Shared footer — 2026-10-24 (PR #167, final gate pending)
+
+Owner-authorized footer-only refinement and official-image review completed; local quality
+checks and 760 browser checks passed (16 intentional skips). Continue PR #167 through the
+ordinary strict gate and release, preserving the rest of R&L. See
+[evidence](docs/verification/compact-footer-20261024.md). Pre-change Cloudflare allocation
+is directly verified: Version 13b74c75 at 100%; older access limitations are historical.

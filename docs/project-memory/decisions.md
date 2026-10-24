@@ -153,3 +153,12 @@ for native-dialog technical behaviour, not as design authority. See
 ## 2026-10-23 — Recover failed page modules in the error page, not in the test
 
 The flaky WebKit navigation test was fixed in the product (module-load recovery in the route error page) instead of the test, per the owner brief (no weakening, skipping or retries). Decisions: refresh the page's same-origin modules with `cache: "reload"` before reloading, because WebKit's script reload reuses a failed module (measured 0/16 vs 4/4); cap at two automatic reloads per page per minute so a permanently missing module still shows the error page with its retry button; stand aside while TanStack's own reload runs; ignore failures after `beforeunload` (WebKit cancels in-flight modules on navigation) — `beforeunload`, not `unload`, keeps bfcache eligibility. The error page's design is unchanged. Temporary diagnostic workflow used on the branch only and removed before merge.
+
+## 2026-10-24 — Owner-scoped compact shared footer
+
+The owner's recording/screenshots explicitly authorize footer-only visual refinement.
+Preserve official artwork/palette, all links and seven locales. Use native collapsed resource
+groups, compact identity/contact details and one preferences row across screen sizes.
+Existing compact stores footer stays intact. Modern Web Guidance was restricted to
+nonvisual accessibility guidance. Temporary branch-only baseline renderer removed before
+release; ordinary strict gate remains required. [Evidence](../verification/compact-footer-20261024.md).
