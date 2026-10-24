@@ -194,3 +194,14 @@ Workers Deployments API restored previously verified main-built static version 2
 ## 2026-10-23 — PR #165 admin link + WebKit module recovery
 
 `main` `020d39b`; Workers Build `926c71c5-b491-4166-b6f0-f56d8a9d06b3` succeeded, Version `445da8ad-0d25-4cba-8778-0b903042c75b`. Gate on PR head: scope/verify/layout lock (751/16/0) green. Live `/market` and `/stores` verified (see [report](../verification/admin-link-webkit-nav-20261023.md)); version allocation not readable from the session.
+
+## 2026-10-24 — #164 store discovery closeout and allocation verification
+
+#164 `34d5463` merged after strict gate 39961137799 (742/16 skipped/0 failed), deployed
+2026-10-23 13:44 UTC as Version `5b6b976c`. Current main `193dc8e` includes #165 and
+#166. Its Workers Builds `9e058054-7318-4f77-a2f3-1d69949fb5ac` succeeded. Read-only
+Cloudflare Deployments API confirms deployment `d130320b-79e9-4904-bea4-1ab4e203335e`,
+Version `13b74c75-3728-4333-92e4-a7aa8723e4f0`, **100% traffic**, created 2026-10-23
+18:20:14 UTC. This replaces the earlier session-specific "allocation unverified" status.
+Production browser proof: 35/35 passed (26 Chromium/Firefox journeys + 9 WebKit iPhone/iPad and Chromium desktop cases; run 40106077322). No deployment/settings/data mutation needed.
+[evidence](../verification/store-discovery-20261023.md).
