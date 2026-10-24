@@ -1,0 +1,39 @@
+name: Store discovery production proof
+on:
+  push:
+    branches: [codex/stores-live-proof-20261024]
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    env:
+      CI: "1"
+      LAYOUT_BASE_URL: https://www.rlgo.net
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: node scripts/project-identity-guard.mjs --project "R&L" --domain www.rlgo.net --worker rega-cargo
+      - run: npm ci
+      - name: Chromium and Firefox production journeys
+        env:
+          HOME: /root
+        run: npx playwright test tests/layout/premium.spec.ts --grep 'store discovery|european stores|360px filters|marketplace refinement'
+      - name: WebKit phones and tablet plus Chromium desktop
+        env:
+          HOME: /root
+        run: npx playwright test tests/layout/store-live.spec.ts --project=webkit-iphone --project=webkit-ipad-portrait --project=chromium-laptop
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: store-discovery-production-proof
+          path: |
+            test-results/
+            playwright-report/
