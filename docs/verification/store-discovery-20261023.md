@@ -45,8 +45,7 @@ of Node experimental warnings. The official-image workflow runs the full Node 22
 re-render affected store/menu baselines. Local browser installation failed (truncated CDN
 archive); this is an environment limitation, not a passed browser check.
 
-Release, final test counts, screenshots and live verification: pending. Do not claim 100/100
-or production completion from this checkpoint.
+The entries below are historical checkpoints. The final closeout at the end supersedes their pending status.
 
 ## Browser refinement checkpoint (2026-10-23)
 
@@ -83,3 +82,37 @@ shows disabled request controls). No product assertion or screenshot mismatch fa
 Each regional handoff now runs in its own fresh page and explicitly waits for the request
 store identity and enabled product-link input. No retries increased or checks removed.
 Full strict gate reruns before merge; release remains pending.
+
+## Release and production closeout — 2026-10-24
+
+PR #164 merged as `34d546340463c0b2d93d28605436db1c3c260627` after the final
+strict gate **39961137799**: verify/scope success; **742 browser/layout passes,
+16 intentional device skips, zero failures**. No safeguard bypassed. Supported Node 22
+local suite: 762 passes, 4 skips; typecheck/lint/build/Worker dry-run pass.
+
+The release automatically deployed on 2026-10-23 at 13:44 UTC as Version
+`5b6b976c-30d4-4334-ad2e-7591ca633e1f`. Later PR #165 fixes failed page-module
+recovery and the marketplace admin link; docs-only #166 is current main `193dc8e`.
+Its Workers Builds check `9e058054-7318-4f77-a2f3-1d69949fb5ac` succeeded.
+
+On 2026-10-24, direct read-only Cloudflare Deployments API verification confirms
+Worker `rega-cargo`, deployment `d130320b-79e9-4904-bea4-1ab4e203335e`, Version
+`13b74c75-3728-4333-92e4-a7aa8723e4f0`, **100% traffic**. Created 2026-10-23
+18:20:14 UTC, no preview. This supersedes older session-specific allocation limits.
+No new deployment, settings, secret, database or domain change was needed for this check.
+
+Real-browser production review: canonical www.rlgo.net; Sorani directory has ten brand
+cards, zero sample-product cards and no horizontal document overflow. At 1363×936,
+page height is 1874 px versus the earlier 7682 px baseline. Zalando's Italy selector
+updates all three actions to zalando.it / store=zalando-it; the buy action reaches the
+existing request form and its product-link input is enabled. English search placeholder
+is visible and functional in the live browser. Official R&L logo/palette unchanged.
+
+Production browser automation: 35/35 passed (26 Chromium/Firefox journeys + 9 WebKit iPhone/iPad and Chromium desktop cases; run 40106077322) (run 40106077322).
+
+Limitations: no physical-device check or Lighthouse score measured in this closeout.
+New non-English copy remains marked for native-language review. The read-only test
+branch `codex/stores-live-proof-20261024` is never merged or deployed and has no public
+preview. PR #167 is separate footer work and was not changed by this task.
+
+Production WebKit phone proof: [Sorani directory](assets/store-discovery-20261024-phone.png).

@@ -219,3 +219,13 @@ gate and release pending. [Evidence](../verification/store-discovery-20261023.md
 Branch `claude/market-admin-link-ipad-nav-20261023`. Task 1: admin link only for approved admins (`marketViewerCanAdmin`/`viewerIsAdmin`, fail closed), 12 compliance e2e tests pass. Task 2: flaky WebKit navigation root-caused (failed page module → error page without navigation; WebKit shared message and reused failed module) and fixed in `chunk-recovery.ts`/`error-component.tsx`; 5 unit tests + cross-browser regression test; temporary WebKit diagnostic final run 39996735987: 352 passed, 0 failed (3 WebKit projects × 8, under load, no retries). Local gate and hosted gate: see the PR. Task 3 (production verification): recorded after release in the [report](../verification/admin-link-webkit-nav-20261023.md).
 
 2026-10-23 release: PR #165 merged `020d39b` (gate run 39999709330: layout lock 751/16/0, no flaky); Workers Build `926c71c5`, Version `445da8ad` (allocation not verified). Live: no admin link on `/market` (en desktop, ckb phone), recovery code in the live bundle, `/stores` ar/en 200. Product pages not verifiable (no listings); Firefox and console covered by CI only.
+
+## 2026-10-24 — Store discovery release closeout
+
+Supersedes the pending #164 checkpoints above. #164 merged `34d5463`; strict gate
+39961137799 passed 742/16 skipped/0 failed. Direct Cloudflare API confirms current
+Version `13b74c75` at 100% traffic on main `193dc8e` (#165/#166 already released).
+Live store directory has 10 brand cards, no sample products, no document overflow;
+Italy action sheet/request handoff works. Production automation: 35/35 passed (26 Chromium/Firefox journeys + 9 WebKit iPhone/iPad and Chromium desktop cases; run 40106077322).
+[evidence](../verification/store-discovery-20261023.md). Remaining: native-device and
+native-language review; no measured Lighthouse score. Separate footer PR #167 untouched.

@@ -51,7 +51,7 @@ Home header row, section heads and (from 1200 px) hero copy share one inline edg
 
 Store logos (rail and cards, and the request form's store row) are sized by `storeLogoSize` in `lib/stores.ts`: equal area at the logo's own proportions inside a max box (rail 900 px² in 76×24, cards 1100 px² in 80×28), as `width`/`height` attributes; rail tiles are one size (6 rem). Store cards: country and host on two single lines aligned to the card's start edge (never the LTR host's own), categories reserve two lines, one hairline above the two quiet links (same style, centred). Request form: store row (logo tile, name, host), buy/ship switch as two equal halves (`.rl-intent-switch`), sent state with status icon and system buttons. Existing tokens only. [Report](../verification/marketplace-refinement-20261022.md). Follow-up 2026-10-23: the card logo tile spans the whole card and the favourite is a round corner badge (44 px target), so wordmarks stay full size on 320–430 px phones.
 
-## Store discovery refinement — 2026-10-23 (PR #164, pending)
+## Store discovery refinement — 2026-10-23 (PR #164, released)
 
 Owner-authorized substantial existing-UI refinement; official R&L logo and palette unchanged.
 `/stores`: compact three-step hero and direct store/product-link search; one in-content

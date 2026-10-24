@@ -6,7 +6,7 @@ Memory is a guide, not proof: **re-verify against code, GitHub and production be
 - Primary production domain: https://www.rlgo.net (Cloudflare Worker `rega-cargo`); apex and HTTP variants redirect directly to canonical HTTPS www. Retired cargo.regaplatform.com detached; production workers.dev and version previews disabled.
 - Staging: Worker `rega-cargo-staging` retained with no public URL; workers.dev and version previews disabled. Cloudflare Builds branch previews disabled.
 - Repo: `rebar9988-max/rega-cargo`, default branch `main`
-- Last memory update: **2026-10-23** (Marketplace refinement #152 and follow-up #154, released and live-verified). Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
+- Last memory update: **2026-10-24** (store discovery #164 release closeout; direct Cloudflare allocation and live browser verification). Continuation after PR #115/#116: see [current release evidence](docs/verification/release-hardening-20261018.md). Owner permits pending legal content during beta; public-stage release still requires completion. R&L AI permanent baseline remains intact.
 
 
 ## PERMANENT P0 RULE — REGA / R&L project isolation (owner instruction, 2026-10-22)
@@ -165,11 +165,16 @@ The five-improvement beta release is verified. Before official/public release: s
 Detailed canonical docs (do not duplicate them in memory): [DEPLOY.md](DEPLOY.md) ·
 [docs/integrations/](docs/integrations/inventory.md) · [docs/redesign/](docs/redesign/README.md).
 
-## Store discovery refinement — 2026-10-23 (PR #164)
+## Store discovery refinement — released (PR #164), closeout 2026-10-24
 
-Owner-approved existing-UI refinement, no rebuild or brand changes. Branch
-`codex/stores-quality-20261023`: one card per brand, regional action sheet, direct validated
-product-link handoff, one category row and compact directory footer. Official-image run
-39958006766: 69 affected page/menu renders passed (12 device skips), 20 focused browser tests
-passed. Full final strict gate and release pending; see
-[verification](docs/verification/store-discovery-20261023.md). Do not repeat the implementation.
+Owner-approved existing-UI refinement; official R&L logo/palette preserved, no rebuild.
+PR #164 merged `34d5463`: one card per brand (29 regional entries -> 10 brand cards),
+regional action sheet, validated product-link handoff, one category row, no sample
+catalogue and compact directory footer. Strict gate 39961137799: 742 passed, 16 skipped,
+0 failed. Local Node 22: 762 passed, 4 skipped. Current main `193dc8e` also includes
+#165 recovery/admin-link fix and #166 docs. Direct Cloudflare API on 2026-10-24:
+deployment `d130320b`, Version `13b74c75`, **100% traffic** (supersedes earlier access
+limits). Live Sorani/English directory and Italy request handoff verified. Production
+automation result: 35/35 passed (26 Chromium/Firefox journeys + 9 WebKit iPhone/iPad and Chromium desktop cases; run 40106077322). See [evidence](docs/verification/store-discovery-20261023.md).
+Native hardware, Lighthouse score and native translation review remain unclaimed.
+Do not repeat the implementation. Separate open PR #167 was not changed.
