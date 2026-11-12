@@ -16,7 +16,9 @@ the live connector list. A name in this table does not mean the tool is connecte
 | Database schema and migrations | Neon MCP `get_database_tables`, `describe_table_schema`, read-only `run_sql` on project `old-cherry-79292410` | `npm run db:migrate` (only with an approved `DATABASE_URL`) | Make a Neon branch or snapshot before any migration (DEPLOY.md) |
 | Compliance blocklist check | Neon `run_sql` read-only counts, `npm test` (`src/lib/compliance/*.test.ts`) | — | Never edit the prohibited tables. DB triggers block this anyway |
 | Library and platform docs | Context7 (`/websites/developers_cloudflare_hyperdrive`, `/cloudflare/workers-sdk`) | WebFetch on official docs | |
-| Production browser QA | Local Playwright + `/opt/pw-browsers/chromium` against https://cargo.regaplatform.com | `curl` status checks | TinyFish is metered: do not use without approval |
+| Production browser QA | Local Playwright with `executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'` against https://cargo.regaplatform.com | `curl` status checks | Playwright 1.63 expects browser build 1243, which the cloud image lacks: always pass `executablePath`, never `playwright install`. TinyFish is metered: do not use |
+| Performance / a11y / SEO audit | `CHROME_PATH=<same chrome> npx -y lighthouse@12.8.2 <url> --chrome-flags="--headless=new --no-sandbox"` | — | Not a project dependency; read-only against production |
+| Dependency vulnerabilities | `npm audit --omit=dev --audit-level=high` | — | Free, local |
 | Design reference | Figma MCP (`get_design_context`, `get_screenshot`) when given a figma.com URL | repo design system at `/_design` | View seat only: no edits to team files |
-| Error monitoring | Sentry MCP | Cloudflare Workers observability (enabled in `wrangler.jsonc`) | Sentry has no project yet. Instrumenting it would need a new dependency and owner approval |
+| Error monitoring | `npx wrangler tail rega-cargo` | Sentry MCP (org exists, 0 projects) | Sentry has no project yet. Instrumenting it would need a new dependency and owner approval |
 | Marketing visuals | Canva / Adobe | — | Never redraw or modify the R&L logo |
