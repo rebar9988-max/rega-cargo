@@ -13,6 +13,7 @@ export default tseslint.config(
       ".output/**",
       ".wrangler/**",
       ".vercel/**",
+      ".wrangler/**",
       ".nitro/**",
       "node_modules/**",
       "playwright-report/**",
