@@ -189,7 +189,7 @@ export function SiteHeader({
             <button
               type="button"
               data-layout="menu-button"
-              className="rl-icon-button rl-mobile-only"
+              className="rl-icon-button"
               aria-label={t.menuOpen}
               aria-expanded={mobile}
               onClick={() => setMobile(true)}
