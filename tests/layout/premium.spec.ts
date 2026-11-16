@@ -1024,7 +1024,7 @@ test("clamped Latin-script store categories cut at the end of the line, right-al
   ).toBe("rtl");
 });
 
-test("store discovery: one brand card, regional sheet, safe product-link handoff and compact footer", async ({
+test("store discovery: one brand card, regional sheet, safe product-link handoff and no internal footer", async ({
   page,
 }) => {
   for (const lang of ["ckb", "ar", "en"]) {
@@ -1034,7 +1034,7 @@ test("store discovery: one brand card, regional sheet, safe product-link handoff
       await expect(page.locator(".rl-store-card")).toHaveCount(10);
       await expect(page.locator("[data-good], .rl-category-row")).toHaveCount(0);
       await expect(page.locator(".rl-store-search input")).toBeVisible();
-      await expect(page.locator(".rl-store-compact-footer")).toBeVisible();
+      await expect(page.locator(".rl-site-footer")).toHaveCount(0);
       await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
       const names = await page.locator(".rl-store-card h3").allTextContents();
       expect(new Set(names).size).toBe(names.length);

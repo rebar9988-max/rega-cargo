@@ -75,10 +75,10 @@ export function Shell({
         {t.skip}
       </a>
       <SiteHeader search={search} reference={reference} />
-      <main id="content" className="flex-1">
+      <main id="content" className={path === "/" ? "flex-1" : "flex-1 clear-bottom-bar"}>
         {children}
       </main>
-      <SiteFooter bottomBar compact={path === "/stores"} />
+      {path === "/" ? <SiteFooter bottomBar /> : null}
     </div>
   );
 }
