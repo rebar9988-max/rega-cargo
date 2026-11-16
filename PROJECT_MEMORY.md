@@ -178,3 +178,9 @@ limits). Live Sorani/English directory and Italy request handoff verified. Produ
 automation result: 35/35 passed (26 Chromium/Firefox journeys + 9 WebKit iPhone/iPad and Chromium desktop cases; run 40106077322). See [evidence](docs/verification/store-discovery-20261023.md).
 Native hardware, Lighthouse score and native translation review remain unclaimed.
 Do not repeat the implementation. Separate open PR #167 was not changed.
+
+## Home-only footer repair — 2026-11-16 (in progress)
+
+PR #169, branch `codex/home-only-footer`. Shared Shell previously rendered the large footer on every route except the compact stores variant. Exact home-path rendering now keeps it after main, and internal main uses the existing bottom-bar safe-area clearance. Existing legal menu button is available on desktop as well as mobile; no duplicate menu, branding or footer design changes. Regression inventory is derived from real page routes in `tests/layout/footer.spec.ts`; existing domain/store expectations updated.
+
+Initial typecheck, lint (four existing warnings), no-DB build and Worker dry-run passed. Node 24 exposed an asynchronous stream error in the unchanged AI test; supported Node 22 rerun is pending. Local Chromium needs single-process launch in this environment; Sorani phone route inventory passed, remaining browser/full screenshot gate pending. GitHub quality and baseline-render workflows started. Production was independently verified before changes: www.rlgo.net HTTP 200; Worker rega-cargo version 76238782-d8d2-480d-b104-7579e2f8a114 allocated 100%. Nothing merged/deployed. Continue by reviewing generated internal-page baselines, completing strict CI and then normal merge/deploy/live verification. Do not claim completion or 100/100 yet.
