@@ -2117,11 +2117,22 @@ html[data-textdir="ltr"] .rl-store-categories {
   }
 }
 @media (min-width: 64rem) {
+  .rl-header-row {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+  }
+  .rl-header-row > [data-layout="menu-button"] {
+    grid-row: 1;
+    grid-column: 1;
+  }
+  .rl-site-header .rl-brand {
+    grid-column: 2;
+  }
   .rl-header-actions {
-    grid-column: 3;
+    grid-column: 4;
   }
   .rl-header-search {
     grid-row: 1;
+    grid-column: 3;
   }
 }
 /* Keep real content painted when sections enter the viewport. WebKit can

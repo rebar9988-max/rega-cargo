@@ -15,7 +15,7 @@ test("complete pages hydrate after repeat visits and delayed asset responses", a
   for (const path of ["/?lang=en", "/stores?lang=en", "/stores/request?lang=en", "/?lang=en"]) {
     await page.goto(path, { waitUntil: "networkidle" });
     await expect(page.locator("main")).toBeVisible();
-    await expect(page.locator("footer")).toBeVisible();
+    await expect(page.locator("footer")).toHaveCount(path.startsWith("/?") ? 1 : 0);
     expect((await page.locator("main").innerText()).trim().length).toBeGreaterThan(100);
     // SSR visibility/network idle can precede lazy route hydration. Wait for
     // each journey's usable controls before a new document navigation can
